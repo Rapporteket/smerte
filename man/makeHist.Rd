@@ -4,7 +4,7 @@
 \alias{makeHist}
 \title{Make a histogram, either plot or its data}
 \usage{
-makeHist(df, var, bins, makeTable = FALSE)
+makeHist(df, var, bins, makeTable = FALSE, ...)
 }
 \arguments{
 \item{df}{dataframe from which output is to be made}
