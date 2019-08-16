@@ -4,6 +4,7 @@
 #' purposes
 #'
 #' @return regData data frame
+#'
 #' @export
 
 getFakeRegData <- function() {
