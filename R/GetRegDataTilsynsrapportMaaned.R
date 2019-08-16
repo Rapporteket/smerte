@@ -4,6 +4,8 @@
 #'
 #' @param registryName String providing the current registryName
 #' @param reshId String providing reshId for filtering in query
+#' @param startDate Start date ...
+#' @param endDate End date...
 #' @return regData data frame
 #' @export
 

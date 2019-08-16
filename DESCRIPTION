@@ -18,13 +18,14 @@ License: GPL-3
 Depends:
   R (>= 3.5.0)
 Imports:
-  DT,
-  kableExtra,
-  magrittr,
-  rapbase,
-  rmarkdown,
-  shiny,
-  zoo
+    datasets,
+    DT,
+    kableExtra,
+    magrittr,
+    rapbase,
+    rmarkdown,
+    shiny,
+    zoo
 Remotes:
   Rapporteket/raplog
 Encoding: UTF-8
@@ -32,4 +33,4 @@ LazyData: true
 RoxygenNote: 6.1.1
 Suggests: 
     covr,
-    testthat
+    testthat (>= 2.1.0)

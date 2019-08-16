@@ -7,8 +7,12 @@
 #' @param bins numeric vector defining the number of equally large groups
 #' @param makeTable Logical that if TRUE function will return a data frame
 #' containin the bin borders and count within each bin
+#' @param ... Optional arguments to be passed to other functions
 #'
 #' @return a graphical object or data frame
+#'
+#' @importFrom graphics hist
+#'
 #' @export
 #'
 #' @examples
