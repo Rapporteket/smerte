@@ -7,7 +7,7 @@
 [![Lifecycle: maturing](https://img.shields.io/badge/lifecycle-maturing-blue.svg)](https://www.tidyverse.org/lifecycle/#maturing)
 <!-- badges: end -->
 
-The goal of smerte is to ...
+Pakke for Smerteregisteret. Lager rapporter for lokale og nasjonale data.
 
 ## Installation
 
