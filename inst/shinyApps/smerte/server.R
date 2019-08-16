@@ -45,7 +45,8 @@ server <- function(input, output, session) {
   # render file function for re-use
   contentFile <- function(file, srcFile, tmpFile, type) {
     src <- normalizePath(system.file(srcFile, package="smerte"))
-    hospitalName <-getHospitalName(rapbase::getUserReshId(session))
+    #hospitalName <-getHospitalName(rapbase::getUserReshId(session))
+    hospitalName <- "Testsykehus"
 
     # temporarily switch to the temp dir, in case we do not have write
     # permission to the current working directory
