@@ -1,7 +1,7 @@
 library(shiny)
 library(magrittr)
 library(rapbase)
-library(smerteregisteret)
+library(smerte)
 
 server <- function(input, output, session) {
 
@@ -18,7 +18,7 @@ server <- function(input, output, session) {
                      startDate=input$period[1], endDate=input$period[2],
                      tableFormat="html")
     }
-    system.file(srcFile, package="smerteregisteret") %>%
+    system.file(srcFile, package="smerte") %>%
       knitr::knit() %>%
       markdown::markdownToHTML(.,
                                options = c('fragment_only',
@@ -40,7 +40,7 @@ server <- function(input, output, session) {
 
   # render file function for re-use
   contentFile <- function(file, srcFile, tmpFile, type) {
-    src <- normalizePath(system.file(srcFile, package="smerteregisteret"))
+    src <- normalizePath(system.file(srcFile, package="smerte"))
     hospitalName <-getHospitalName(rapbase::getUserReshId(session))
 
     # temporarily switch to the temp dir, in case we do not have write
