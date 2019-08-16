@@ -1,4 +1,4 @@
-Package: smerteregisteret
+Package: smerte
 Type: Package
 Title: R-pakke for smerteregisteret
 Version: 0.1.0.9000
