@@ -17,6 +17,10 @@ server <- function(input, output, session) {
       params <- list(reshId=rapbase::getUserReshId(session),
                      startDate=input$period[1], endDate=input$period[2],
                      tableFormat="html")
+    } else {
+      params <- list(reshId=rapbase::getUserReshId(session),
+                     startDate=input$period[1], endDate=input$period[2],
+                     tableFormat="html")
     }
     system.file(srcFile, package="smerte") %>%
       knitr::knit() %>%
