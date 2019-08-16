@@ -11,7 +11,7 @@ Authors@R: c(
            family = "Edvardsen",
            role = c("aut"),
            email = "biorakel@gmail.com",
-           comment = c(ORCID = "0000-0002-5210-3656"))
+           comment = c(ORCID = "0000-0002-5210-3656")))
 Maintainer: Janne Mannseth <janne.mannseth@helse-bergen.no>
 Description: Pakke for det nasjonale registeret "Smerteregisteret". Utarbeiding av rapporter for lokale og nasjonale data.
 License: What license is it under?
