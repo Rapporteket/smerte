@@ -1,8 +1,8 @@
 # smerte
 
 <!-- badges: start -->
-[![Travis build status](https://travis-ci.org/Rapporteket/smerte.svg?branch=master)](https://travis-ci.org/Rapporteket/smerte)
-[![AppVeyor build status](https://ci.appveyor.com/api/projects/status/github/Rapporteket/smerte?branch=master&svg=true)](https://ci.appveyor.com/project/Rapporteket/smerte)
+[![Travis build status](https://travis-ci.org/Rapporteket/smerte.svg?branch=rel)](https://travis-ci.org/Rapporteket/smerte)
+[![AppVeyor build status](https://ci.appveyor.com/api/projects/status/github/Rapporteket/smerte?branch=rel&svg=true)](https://ci.appveyor.com/project/Rapporteket/smerte)
 [![Codecov test coverage](https://codecov.io/gh/Rapporteket/smerte/branch/rel/graph/badge.svg)](https://codecov.io/gh/Rapporteket/smerte?branch=rel)
 [![Lifecycle: maturing](https://img.shields.io/badge/lifecycle-maturing-blue.svg)](https://www.tidyverse.org/lifecycle/#maturing)
 <!-- badges: end -->
