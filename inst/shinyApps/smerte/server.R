@@ -1,18 +1,22 @@
 library(shiny)
 library(magrittr)
-library(rapRegTemplate)
+library(rapbase)
+library(smerteregisteret)
 
 server <- function(input, output, session) {
 
-  # Last inn data
-  regData <- getFakeRegData()
+  raplog::appLogger(session)
+
+  regData <- mtcars
 
   # Gjenbrukbar funksjon for å bearbeide Rmd til html
   htmlRenderRmd <- function(srcFile, params = list()) {
     # set param needed for report meta processing
     context <- Sys.getenv("R_RAP_INSTANCE")
     if (context %in% c("DEV", "TEST", "QA", "PRODUCTION")) {
-      params <- list(reshId=rapbase::getUserReshId(session))
+      params <- list(reshId=rapbase::getUserReshId(session),
+                     startDate=input$period[1], endDate=input$period[2],
+                     tableFormat="html")
     }
     system.file(srcFile, package="smerteregisteret") %>%
       knitr::knit() %>%
@@ -23,8 +27,55 @@ server <- function(input, output, session) {
       shiny::HTML()
   }
 
+
+  # filename function for re-use
+  downloadFilename <- function(fileBaseName, type) {
+    paste(paste0(fileBaseName,
+                 as.character(as.integer(as.POSIXct(Sys.time())))),
+          sep = '.', switch(
+            type,
+            PDF = 'pdf', HTML = 'html', REVEAL = 'html', BEAMER = 'pdf')
+    )
+  }
+
+  # render file function for re-use
+  contentFile <- function(file, srcFile, tmpFile, type) {
+    src <- normalizePath(system.file(srcFile, package="smerteregisteret"))
+    hospitalName <-getHospitalName(rapbase::getUserReshId(session))
+
+    # temporarily switch to the temp dir, in case we do not have write
+    # permission to the current working directory
+    owd <- setwd(tempdir())
+    on.exit(setwd(owd))
+    file.copy(src, tmpFile, overwrite = TRUE)
+
+    library(rmarkdown)
+    out <- render(tmpFile, output_format = switch(
+      type,
+      PDF = pdf_document(),
+      HTML = html_document(),
+      BEAMER = beamer_presentation(theme = "Hannover"),
+      REVEAL = revealjs::revealjs_presentation(theme = "sky")
+    ), params = list(tableFormat=switch(
+      type,
+      PDF = "latex",
+      HTML = "html",
+      BEAMER = "latex",
+      REVEAL = "html"),
+      hospitalName=hospitalName,
+      reshId=rapbase::getUserReshId(session),
+      startDate=input$period[1],
+      endDate=input$period[2]
+    ), output_dir = tempdir())
+    # active garbage collection to prevent memory hogging?
+    gc()
+    file.rename(out, file)
+  }
+
+
+
   # widget
-  output$appUserName <- renderText(getUserName(session))
+  output$appUserName <- renderText(getUserFullName(session))
   output$appOrgName <- renderText(getUserReshId(session))
 
 
@@ -38,15 +89,29 @@ server <- function(input, output, session) {
     htmlRenderRmd("tilsynsrapportMaaned.Rmd")
   })
 
+  output$downloadReportTilsyn <- downloadHandler(
+    filename = function() {
+      downloadFilename("tilsynsrapportMaaned",
+                       input$formatTilsyn)
+    },
+
+    content = function(file) {
+      contentFile(file, "tilsynsrapportMaaned.Rmd",
+                  "tmpTilsynsrapportMaaned.Rmd",
+                  input$formatTilsyn)
+    }
+  )
+
   # Figur og tabell
   ## Figur
   output$distPlot <- renderPlot({
-    makeHist(df = regData, var = input$var, bins = input$bins)
+    #raplog::repLogger(session, msg = "Test parent frame")
+    makeHist(df = regData, var = input$var, bins = input$bins, makeTable = FALSE, session = session)
   })
 
   ## Tabell
   output$distTable <- renderTable({
-    makeHist(df = regData, var = input$var, bins = input$bins, makeTable = TRUE)
+    makeHist(df = regData, var = input$var, bins = input$bins, makeTable = TRUE, session = session)
   })
 
   # Sammendrag

@@ -1,14 +1,13 @@
 Package: smerteregisteret
 Type: Package
 Title: R-pakke for smerteregisteret
-Version: 0.1.0
+Version: 0.1.0.9000
 Author: Janne Mannseth
 Maintainer: Janne Mannseth <janne.mannseth@helse-bergen.no>
 Description: Pakke for det nasjonale registeret "Smerteregisteret". Utarbeiding av rapporter for lokale og nasjonale data.
 License: What license is it under?
 Depends:
-  R (>= 3.5.0),
-  rapbase (>= 1.0.0)
+  R (>= 3.5.0)
 Imports:
   DT,
   kableExtra,
@@ -18,7 +17,7 @@ Imports:
   shiny,
   zoo
 Remotes:
-  Rapporteket/rapbase@rel
+  Rapporteket/raplog
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 6.1.1
