@@ -7,7 +7,7 @@
 [![Lifecycle: maturing](https://img.shields.io/badge/lifecycle-maturing-blue.svg)](https://www.tidyverse.org/lifecycle/#maturing)
 <!-- badges: end -->
 
-Pakke for Smerteregisteret. Lager rapporter for lokale og nasjonale data.
+Pakke for Smerteregisteret. Lager rapporter for lokale og nasjonale data. Se også [nettsida for denne R-pakken](https://rapporteket.github.io/smerte/)
 
 ## Installation
 
