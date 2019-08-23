@@ -19,7 +19,7 @@ server <- function(input, output, session) {
                      tableFormat="html")
     } else {
       params <- list(reshId=rapbase::getUserReshId(session),
-                     startDate=input$period[1], endDate=input$period[2],
+                     year=input$yearSet,
                      tableFormat="html")
     }
     system.file(srcFile, package="smerte") %>%
@@ -45,8 +45,12 @@ server <- function(input, output, session) {
   # render file function for re-use
   contentFile <- function(file, srcFile, tmpFile, type) {
     src <- normalizePath(system.file(srcFile, package="smerte"))
-    #hospitalName <-getHospitalName(rapbase::getUserReshId(session))
-    hospitalName <- "Testsykehus"
+    context <- Sys.getenv("R_RAP_INSTANCE")
+    if (context %in% c("DEV", "TEST", "QA", "PRODUCTION")) {
+      hospitalName <-getHospitalName(rapbase::getUserReshId(session))
+    } else {
+      hospitalName <- "Ukjent sykehus"
+    }
 
     # temporarily switch to the temp dir, in case we do not have write
     # permission to the current working directory
