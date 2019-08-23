@@ -6,6 +6,7 @@ params:
   reshId: 'locallyDefined'
   startDate: '2017-01-01'
   endDate: '2017-12-31'
+  year: '2016'
   tableFormat: 'html'
 title: '`r paste(params$title, params$hospitalName, "i perioden", params$startDate, "-", params$endDate)`'
 author: '`r params$author`'
@@ -49,8 +50,7 @@ context <- Sys.getenv("R_RAP_INSTANCE")
 if (context %in% c("DEV", "TEST", "QA", "PRODUCTION")) {
   dat <- getRegDataLokalTilsynsrapportMaaned(registryName = "smerte",
                                              reshId = params$reshId,
-                                             startDate = params$startDate,
-                                             endDate = params$endDate)
+                                             year = params$year)
 } else {
   #Dataimport: skal hente lokale data for hvert sykehus
   # setwd("//ihelse.net/Kvalitetsregister/HBE/2014-00752/OpenQReg/datadumper/prod/Lokale data/Datadump Alle Variable Numerisk/2019-04-01/")

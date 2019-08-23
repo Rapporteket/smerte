@@ -14,8 +14,7 @@ NULL
 
 #' @rdname getRegData
 #' @export
-getRegDataLokalTilsynsrapportMaaned <- function(registryName, reshId, startDate,
-                                           endDate) {
+getRegDataLokalTilsynsrapportMaaned <- function(registryName, reshId, year) {
 
   dbType <- "mysql"
   registryName <- paste0(registryName, reshId)
@@ -44,8 +43,7 @@ ON
 WHERE
   var.AvdRESH = "
 
-  query <- paste0(query, reshId, " AND (DATE(var.RegDato11) BETWEEN '",
-                  startDate, "' AND '", endDate, "');")
+  query <- paste0(query, reshId, " AND (YEAR(var.RegDato11)=", year, ");")
 
   regData <- rapbase::LoadRegData(registryName, query, dbType)
 
