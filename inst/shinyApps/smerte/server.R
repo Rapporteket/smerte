@@ -18,7 +18,7 @@ server <- function(input, output, session) {
                      year=input$yearSet,
                      tableFormat="html")
     } else {
-      params <- list(reshId=rapbase::getUserReshId(session),
+      params <- list(reshId="100082",
                      year=input$yearSet,
                      tableFormat="html")
     }
