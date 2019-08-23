@@ -14,6 +14,7 @@ getRegDataTilsynsrapportMaaned <- function(registryName, reshId, startDate,
 
   dbType <- "mysql"
   registryName <- paste0(registryName, reshId)
+  print(registryName)
 
   query <- "
 SELECT
@@ -33,7 +34,7 @@ SELECT
 FROM
   AlleVarNum var
 LEFT JOIN
-  Avdelingsoversikt avd
+  avdelingsoversikt avd
 ON
   avd.DEPARTMENT_ID = var.InnlAvd
 WHERE
