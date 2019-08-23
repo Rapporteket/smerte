@@ -90,6 +90,12 @@ server <- function(input, output, session) {
   })
 
   # Tilsynsrapport
+  ## years available
+  years <- getLocalYears(registryName = "smerte",
+                         reshId = rapbase::getUserReshId(session))[[1]]
+  output$years <- renderUI({
+    selectInput("yearSet", "Velg år:", years)
+  })
   output$tilsynsrapport <- renderUI({
     htmlRenderRmd("LokalTilsynsrapportMaaned.Rmd")
   })
