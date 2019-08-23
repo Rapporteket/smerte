@@ -53,8 +53,8 @@ if (context %in% c("DEV", "TEST", "QA", "PRODUCTION")) {
                                         endDate = params$endDate)
 } else {
   #Dataimport: skal hente lokale data for hvert sykehus
-  setwd("//ihelse.net/Kvalitetsregister/HBE/2014-00752/OpenQReg/datadumper/prod/Lokale data/Datadump Alle Variable Numerisk/2019-04-01/")
-  dat <- read.csv(file = "Datadump_Alle_variabler_numerisk.csv", header = TRUE, sep = ";")
+  # setwd("//ihelse.net/Kvalitetsregister/HBE/2014-00752/OpenQReg/datadumper/prod/Lokale data/Datadump Alle Variable Numerisk/2019-04-01/")
+  dat <- read.csv(file = "//ihelse.net/Kvalitetsregister/HBE/2014-00752/OpenQReg/datadumper/prod/Lokale data/Datadump Alle Variable Numerisk/2019-04-01/Datadump_Alle_variabler_numerisk.csv", header = TRUE, sep = ";")
 }
 
 #Bruker for øyeblikket kun 2019-data
