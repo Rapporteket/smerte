@@ -15,11 +15,11 @@ server <- function(input, output, session) {
     context <- Sys.getenv("R_RAP_INSTANCE")
     if (context %in% c("DEV", "TEST", "QA", "PRODUCTION")) {
       params <- list(reshId=rapbase::getUserReshId(session),
-                     startDate=input$period[1], endDate=input$period[2],
+                     year=input$yearSet,
                      tableFormat="html")
     } else {
       params <- list(reshId=rapbase::getUserReshId(session),
-                     startDate=input$period[1], endDate=input$period[2],
+                     year=input$yearSet,
                      tableFormat="html")
     }
     system.file(srcFile, package="smerte") %>%
@@ -46,8 +46,12 @@ server <- function(input, output, session) {
   # render file function for re-use
   contentFile <- function(file, srcFile, tmpFile, type) {
     src <- normalizePath(system.file(srcFile, package="smerte"))
-    #hospitalName <-getHospitalName(rapbase::getUserReshId(session))
-    hospitalName <- "Testsykehus"
+    context <- Sys.getenv("R_RAP_INSTANCE")
+    if (context %in% c("DEV", "TEST", "QA", "PRODUCTION")) {
+      hospitalName <-getHospitalName(rapbase::getUserReshId(session))
+    } else {
+      hospitalName <- "Ukjent sykehus"
+    }
 
     # temporarily switch to the temp dir, in case we do not have write
     # permission to the current working directory
@@ -91,6 +95,19 @@ server <- function(input, output, session) {
   })
 
   # Tilsynsrapport
+  ## years available, hardcoded if outside known context
+  if (Sys.getenv("R_RAP_INSTANCE") %in% c("DEV", "TEST", "QA", "PRODUCTION")) {
+    years <- getLocalYears(registryName = "smerte",
+                           reshId = rapbase::getUserReshId(session))[[1]]
+    # remove NAs if they exists (bad registry)
+    years <- years[!is.na(years)]
+  } else {
+    years <- c("2016", "2017", "2018", "2019")
+  }
+
+  output$years <- renderUI({
+    selectInput("yearSet", "Velg år:", years)
+  })
   output$tilsynsrapport <- renderUI({
     htmlRenderRmd("LokalTilsynsrapportMaaned.Rmd")
   })

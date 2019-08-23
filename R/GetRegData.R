@@ -3,12 +3,21 @@
 #' Provides a dataframe containing data from a registry
 #'
 #' @param registryName String providing the current registryName
-#' @return regData data frame
-#' @export
+#' @param reshId String providing reshId
+#' @param startDate Start date ...
+#' @param endDate End date...
+#' @name getRegData
+#' @aliases getRegDataTilsynsrapportMaaned getLocalYears
+#' getRegDataLokalTilsynsrapportMaaned
+NULL
 
-getRegData <- function(registryName) {
+
+#' @rdname getRegData
+#' @export
+getRegDataLokalTilsynsrapportMaaned <- function(registryName, reshId, year) {
 
   dbType <- "mysql"
+  registryName <- paste0(registryName, reshId)
 
   query <- "
 SELECT
@@ -28,12 +37,34 @@ SELECT
 FROM
   AlleVarNum var
 LEFT JOIN
-  Avdelingsoversikt avd
+  avdelingsoversikt avd
 ON
-  avd.DEPARTMENT_ID = var.InnlAvd;
-"
+  avd.DEPARTMENT_ID = var.InnlAvd
+WHERE
+  var.AvdRESH = "
+
+  query <- paste0(query, reshId, " AND (YEAR(var.RegDato11)=", year, ");")
 
   regData <- rapbase::LoadRegData(registryName, query, dbType)
 
   return(regData)
+}
+
+
+#' @rdname getRegData
+#' @export
+getLocalYears <- function(registryName, reshId) {
+
+  dbType <- "mysql"
+  registryName <- paste0(registryName, reshId)
+
+  query <- "
+SELECT
+  YEAR(RegDato11) as year
+FROM
+  AlleVarNum
+GROUP BY
+  YEAR(RegDato11);
+"
+  rapbase::LoadRegData(registryName, query, dbType)
 }

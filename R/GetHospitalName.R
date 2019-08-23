@@ -15,7 +15,7 @@
 
 getHospitalName <- function(reshID) {
 
-  regName <- "smerte"
+  regName <- paste0("smerte", reshID)
   dbType <- "mysql"
   query <- paste0("SELECT SykehusNavn FROM AlleVarNum WHERE AvdRESH = '",
                  reshID, "' LIMIT 1")

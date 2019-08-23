@@ -1,13 +1,14 @@
 ---
 params:
-  title: 'Månedlig tilsynsrapport fra Smerteregisterets ved'
+  title: 'Månedlig tilsynsrapport for lokalt smerteregister ved'
   author: 'Rapporteket'
   hospitalName: 'Ukjent sukehus'
   reshId: 'locallyDefined'
   startDate: '2017-01-01'
   endDate: '2017-12-31'
+  year: '2016'
   tableFormat: 'html'
-title: '`r paste(params$title, params$hospitalName, "i perioden", params$startDate, "-", params$endDate)`'
+title: '`r paste(params$title, params$hospitalName, "for", params$year)`'
 author: '`r params$author`'
 date: '`r format(Sys.time(), "%d %B, %Y")`'
 header-includes:
@@ -47,10 +48,9 @@ library(kableExtra)
 context <- Sys.getenv("R_RAP_INSTANCE")
 
 if (context %in% c("DEV", "TEST", "QA", "PRODUCTION")) {
-  dat <- getRegDataTilsynsrapportMaaned(registryName = "smerte",
-                                        reshId = params$reshId,
-                                        startDate = params$startDate,
-                                        endDate = params$endDate)
+  dat <- getRegDataLokalTilsynsrapportMaaned(registryName = "smerte",
+                                             reshId = params$reshId,
+                                             year = params$year)
 } else {
   #Dataimport: skal hente lokale data for hvert sykehus
   # setwd("//ihelse.net/Kvalitetsregister/HBE/2014-00752/OpenQReg/datadumper/prod/Lokale data/Datadump Alle Variable Numerisk/2019-04-01/")
@@ -190,7 +190,8 @@ mst(tab = sum_tilsyn_maned,
                  "Ant henv"),
     type = params$tableFormat,
     cap = paste0("Antall tilsyn per måned for de ulike behandlergruppene."),
-    digs = 0)
+    digs = 0,
+    align = c("l", "r", "r", "r", "r", "r", "r", "r", "r", "r"))
 
 #knitr::kable(sum_tilsyn_maned, caption = paste0("Antall tilsyn per måned for de ulike behandlergruppene."), col.names = c("Måned", "Fysio", "Lege", "Psykolog", "Sosionom", "Sykepleier", "Beh tilsyn", "Pas tilsyn", "Ant pas", "Ant henv")) %>% kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = F)
 ```

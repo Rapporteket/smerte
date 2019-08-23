@@ -30,10 +30,7 @@ ui <- tagList(
     tabPanel("Tilsynsrapport",
       sidebarLayout(
         sidebarPanel(
-          dateRangeInput(inputId = "period", label = "Periode:",
-                         start = "2017-01-01", end = NULL,
-                         format = "dd-mm-yyyy", language = "nb",
-                         weekstart = 1),
+          uiOutput("years"),
           radioButtons('formatTilsyn',
                        'Format for nedlasting',
                        c('PDF', 'HTML', 'BEAMER', 'REVEAL'),

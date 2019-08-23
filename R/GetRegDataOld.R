@@ -3,17 +3,12 @@
 #' Provides a dataframe containing data from a registry
 #'
 #' @param registryName String providing the current registryName
-#' @param reshId String providing reshId for filtering in query
-#' @param startDate Start date ...
-#' @param endDate End date...
 #' @return regData data frame
 #' @export
 
-getRegDataTilsynsrapportMaaned <- function(registryName, reshId, startDate,
-                                           endDate) {
+getRegData <- function(registryName) {
 
   dbType <- "mysql"
-  registryName <- paste0(registryName, reshId)
 
   query <- "
 SELECT
@@ -33,14 +28,10 @@ SELECT
 FROM
   AlleVarNum var
 LEFT JOIN
-  avdelingsoversikt avd
+  Avdelingsoversikt avd
 ON
-  avd.DEPARTMENT_ID = var.InnlAvd
-WHERE
-  var.AvdRESH = "
-
-  query <- paste0(query, reshId, " AND (DATE(var.RegDato11) BETWEEN '",
-                  startDate, "' AND '", endDate, "');")
+  avd.DEPARTMENT_ID = var.InnlAvd;
+"
 
   regData <- rapbase::LoadRegData(registryName, query, dbType)
 
