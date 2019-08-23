@@ -24,7 +24,8 @@ Imports:
     rapbase,
     rmarkdown,
     shiny,
-    zoo
+    zoo,
+    revealjs
 Remotes:
   Rapporteket/raplog
 Encoding: UTF-8
