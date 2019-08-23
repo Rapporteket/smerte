@@ -92,6 +92,13 @@ Denne tabellen viser hvor mange som har fått tilsyn av smerteteamet totalt i ti
 
 # Data for tabell over tilsyn
 tilsynsdata <- dat %>% count(Tilsett) %>% mutate(prosent = round(100*(n/sum(n))))
+#Gi navn i stedet for tall til alternativene for tilsyn/ikke tilsyn
+tilsynsdata2 = tilsynsdata %>% mutate(tilsynAarsak = case_when(Tilsett == 1 ~ "Ja",
+                                                               Tilsett == 2 ~ "Nei, ikke behov",
+                                                               Tilsett == 3 ~ "Nei, ikke kapasitet",
+                                                               Tilsett == 4 ~ "Nei, men gitt råd",
+                                                               Tilsett == 5 ~ "Nei, annen grunn"))
+
 tilsynsdata[, 1] <- c("Ja", "Nei, ikke behov", "Nei, ikke kapasitet", "Nei, men gitt råd", "Nei, annen grunn")
 antall_svar <- tilsynsdata %>% summarise(sum(n))
 
