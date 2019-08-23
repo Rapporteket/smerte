@@ -7,8 +7,7 @@
 \alias{getRegDataLokalTilsynsrapportMaaned}
 \title{Provide dataframe of registry data}
 \usage{
-getRegDataLokalTilsynsrapportMaaned(registryName, reshId, startDate,
-  endDate)
+getRegDataLokalTilsynsrapportMaaned(registryName, reshId, year)
 
 getLocalYears(registryName, reshId)
 
