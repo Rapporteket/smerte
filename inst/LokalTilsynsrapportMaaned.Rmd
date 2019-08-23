@@ -47,10 +47,10 @@ library(kableExtra)
 context <- Sys.getenv("R_RAP_INSTANCE")
 
 if (context %in% c("DEV", "TEST", "QA", "PRODUCTION")) {
-  dat <- getRegDataTilsynsrapportMaaned(registryName = "smerte",
-                                        reshId = params$reshId,
-                                        startDate = params$startDate,
-                                        endDate = params$endDate)
+  dat <- getRegDataLokalTilsynsrapportMaaned(registryName = "smerte",
+                                             reshId = params$reshId,
+                                             startDate = params$startDate,
+                                             endDate = params$endDate)
 } else {
   #Dataimport: skal hente lokale data for hvert sykehus
   # setwd("//ihelse.net/Kvalitetsregister/HBE/2014-00752/OpenQReg/datadumper/prod/Lokale data/Datadump Alle Variable Numerisk/2019-04-01/")
