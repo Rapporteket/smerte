@@ -13,6 +13,7 @@ getRegDataTilsynsrapportMaaned <- function(registryName, reshId, startDate,
                                            endDate) {
 
   dbType <- "mysql"
+  registryName <- paste0(registryName, reshId)
 
   query <- "
 SELECT
