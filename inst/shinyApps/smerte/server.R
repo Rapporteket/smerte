@@ -91,18 +91,18 @@ server <- function(input, output, session) {
 
   # Tilsynsrapport
   output$tilsynsrapport <- renderUI({
-    htmlRenderRmd("tilsynsrapportMaaned.Rmd")
+    htmlRenderRmd("LokalTilsynsrapportMaaned.Rmd")
   })
 
   output$downloadReportTilsyn <- downloadHandler(
     filename = function() {
-      downloadFilename("tilsynsrapportMaaned",
+      downloadFilename("LokalTilsynsrapportMaaned",
                        input$formatTilsyn)
     },
 
     content = function(file) {
-      contentFile(file, "tilsynsrapportMaaned.Rmd",
-                  "tmpTilsynsrapportMaaned.Rmd",
+      contentFile(file, "LokalTilsynsrapportMaaned.Rmd",
+                  "tmpLokalTilsynsrapportMaaned.Rmd",
                   input$formatTilsyn)
     }
   )

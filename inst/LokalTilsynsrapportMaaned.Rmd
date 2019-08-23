@@ -33,7 +33,7 @@ library(zoo)
 library(dplyr)
 library(magrittr)
 library(lubridate)
-library(smerte)
+library(smerteregisteret)
 library(knitr)
 library(kableExtra)
 
