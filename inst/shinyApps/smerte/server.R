@@ -49,8 +49,10 @@ server <- function(input, output, session) {
     context <- Sys.getenv("R_RAP_INSTANCE")
     if (context %in% c("DEV", "TEST", "QA", "PRODUCTION")) {
       hospitalName <-getHospitalName(rapbase::getUserReshId(session))
+      reshId <- rapbase::getUserReshId(session)
     } else {
       hospitalName <- "Ukjent sykehus"
+      reshId <- "100082"
     }
 
     # temporarily switch to the temp dir, in case we do not have write
@@ -73,9 +75,8 @@ server <- function(input, output, session) {
       BEAMER = "latex",
       REVEAL = "html"),
       hospitalName=hospitalName,
-      reshId=rapbase::getUserReshId(session),
-      startDate=input$period[1],
-      endDate=input$period[2]
+      reshId=reshId,
+      year=input$yearSet
     ), output_dir = tempdir())
     # active garbage collection to prevent memory hogging?
     gc()
