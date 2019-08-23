@@ -15,7 +15,7 @@ server <- function(input, output, session) {
     context <- Sys.getenv("R_RAP_INSTANCE")
     if (context %in% c("DEV", "TEST", "QA", "PRODUCTION")) {
       params <- list(reshId=rapbase::getUserReshId(session),
-                     startDate=input$period[1], endDate=input$period[2],
+                     year=input$yearSet,
                      tableFormat="html")
     } else {
       params <- list(reshId=rapbase::getUserReshId(session),
@@ -90,9 +90,16 @@ server <- function(input, output, session) {
   })
 
   # Tilsynsrapport
-  ## years available
-  years <- getLocalYears(registryName = "smerte",
-                         reshId = rapbase::getUserReshId(session))[[1]]
+  ## years available, hardcoded if outside known context
+  if (Sys.getenv("R_RAP_INSTANCE") %in% c("DEV", "TEST", "QA", "PRODUCTION")) {
+    years <- getLocalYears(registryName = "smerte",
+                           reshId = rapbase::getUserReshId(session))[[1]]
+    # remove NAs if they exists (bad registry)
+    years <- years[!is.na(years)]
+  } else {
+    years <- c("2016", "2017", "2018", "2019")
+  }
+
   output$years <- renderUI({
     selectInput("yearSet", "Velg år:", years)
   })
