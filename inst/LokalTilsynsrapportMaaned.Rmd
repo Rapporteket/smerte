@@ -52,7 +52,7 @@ if (context %in% c("DEV", "TEST", "QA", "PRODUCTION")) {
                                              reshId = params$reshId,
                                              year = params$year)
 } else {
-  #Dataimport: skal hente lokale data for hvert sykehus (tar vekk sti, og erstatter med lokal fil)
+  #Dataimport: skal hente lokale data for hvert sykehus (tar vekk sti, og erstatter med lokal filB)
   path <- read.csv(file = "H:/path.csv", header = FALSE, sep = ";")
   path <- as.data.frame(lapply(path, as.character), stringsAsFactors=FALSE)
   path <- path$V1
