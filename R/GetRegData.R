@@ -4,11 +4,9 @@
 #'
 #' @param registryName String providing the current registryName
 #' @param reshId String providing reshId
-#' @param startDate Start date ...
-#' @param endDate End date...
+#' @param year Integer four digit year to be reported from
 #' @name getRegData
-#' @aliases getRegDataTilsynsrapportMaaned getLocalYears
-#' getRegDataLokalTilsynsrapportMaaned
+#' @aliases getRegDataLokalTilsynsrapportMaaned getLocalYears
 NULL
 
 
