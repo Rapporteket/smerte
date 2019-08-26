@@ -52,13 +52,15 @@ if (context %in% c("DEV", "TEST", "QA", "PRODUCTION")) {
                                              reshId = params$reshId,
                                              year = params$year)
 } else {
-  #Dataimport: skal hente lokale data for hvert sykehus
-  # setwd("//ihelse.net/Kvalitetsregister/HBE/2014-00752/OpenQReg/datadumper/prod/Lokale data/Datadump Alle Variable Numerisk/2019-04-01/")
-  dat <- read.csv(file = "//ihelse.net/Kvalitetsregister/HBE/2014-00752/OpenQReg/datadumper/prod/Lokale data/Datadump Alle Variable Numerisk/2019-04-01/Datadump_Alle_variabler_numerisk.csv", header = TRUE, sep = ";")
+  #Dataimport: skal hente lokale data for hvert sykehus (tar vekk sti, og erstatter med lokal fil)
+  path <- read.csv(file = "H:/path.csv", header = FALSE, sep = ";")
+  path <- as.data.frame(lapply(path, as.character), stringsAsFactors=FALSE)
+  path <- path$V1
+  dat <- read.csv(file = path, header = TRUE, sep = ";")
 }
 
 #Bruker for øyeblikket kun 2019-data
-#dat = dat %>% filter(year(date(RegDato11)) == "2017")
+#dat = dat %>% filter(year(date(RegDato11)) == "2017") #year
 ```
 
 ```{r makeStandardTableFunction, eval=TRUE}
