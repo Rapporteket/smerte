@@ -5,6 +5,7 @@
 #' @param registryName String providing the current registryName
 #' @param reshId String providing reshId
 #' @param year Integer four digit year to be reported from
+#' @param ... Optional arguments to be passed to the function
 #' @name getRegData
 #' @aliases getRegDataLokalTilsynsrapportMaaned getLocalYears
 NULL
@@ -12,10 +13,15 @@ NULL
 
 #' @rdname getRegData
 #' @export
-getRegDataLokalTilsynsrapportMaaned <- function(registryName, reshId, year) {
+getRegDataLokalTilsynsrapportMaaned <- function(registryName, reshId, year, ...) {
 
   dbType <- "mysql"
   registryName <- paste0(registryName, reshId)
+
+  if ("session" %in% names(list(...))) {
+    raplog::repLogger(session = session,
+                      msg = paste("Load data from", registryName))
+  }
 
   query <- "
 SELECT
