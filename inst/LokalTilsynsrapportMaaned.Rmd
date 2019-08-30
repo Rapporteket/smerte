@@ -218,7 +218,7 @@ mst(tab = sum_tilsyn_maned,
 
 Denne tabellen viser en oversikt over hvordan pasientene er fordelt mellom avdelingene på sykehuset i løpet av hele tidsperioden.
 
-```{r, warning = FALSE, message=FALSE}
+```{r avdelingstabell, warning = FALSE, message=FALSE, results='asis'}
 ###Her klargjøres data for avdelingsoversikt
 #Antall/n er pas tils
 sum_tilsyn_avdeling = tilsyn_full %>% 
