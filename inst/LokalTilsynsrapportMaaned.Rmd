@@ -8,6 +8,7 @@ params:
   endDate: '2017-12-31'
   year: '2016'
   tableFormat: 'html'
+  session: list()
 title: '`r paste(params$title, params$hospitalName, "for", params$year)`'
 author: '`r params$author`'
 date: '`r format(Sys.time(), "%d %B, %Y")`'
@@ -49,7 +50,8 @@ context <- Sys.getenv("R_RAP_INSTANCE")
 if (context %in% c("DEV", "TEST", "QA", "PRODUCTION")) {
   dat <- getRegDataLokalTilsynsrapportMaaned(registryName = "smerte",
                                              reshId = params$reshId,
-                                             year = params$year)
+                                             year = params$year,
+                                             session=session)
 } else {
   #Dataimport: skal hente lokale data for hvert sykehus (tar vekk sti, og erstatter med lokal filB)
   path <- read.csv(file = "H:/path.csv", header = FALSE, sep = ";")

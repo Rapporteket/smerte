@@ -6,7 +6,7 @@
 \alias{getLocalYears}
 \title{Provide dataframe of registry data}
 \usage{
-getRegDataLokalTilsynsrapportMaaned(registryName, reshId, year)
+getRegDataLokalTilsynsrapportMaaned(registryName, reshId, year, ...)
 
 getLocalYears(registryName, reshId)
 }
@@ -16,6 +16,8 @@ getLocalYears(registryName, reshId)
 \item{reshId}{String providing reshId}
 
 \item{year}{Integer four digit year to be reported from}
+
+\item{...}{Optional arguments to be passed to the function}
 }
 \description{
 Provides a dataframe containing data from a registry

@@ -16,7 +16,8 @@ server <- function(input, output, session) {
     if (context %in% c("DEV", "TEST", "QA", "PRODUCTION")) {
       params <- list(reshId=rapbase::getUserReshId(session),
                      year=input$yearSet,
-                     tableFormat="html")
+                     tableFormat="html",
+                     session = session)
     } else {
       params <- list(reshId="100082",
                      year=input$yearSet,
@@ -76,7 +77,8 @@ server <- function(input, output, session) {
       REVEAL = "html"),
       hospitalName=hospitalName,
       reshId=reshId,
-      year=input$yearSet
+      year=input$yearSet,
+      session=session
     ), output_dir = tempdir())
     # active garbage collection to prevent memory hogging?
     gc()
