@@ -39,7 +39,6 @@ library(knitr)
 library(kableExtra)
 
 #FIX: Må det legges inn noe som avjgør lokasjon
-#FIX: når vil de ha rapporten for (dato)
 #FIX3: bytte fra RegDato11 til StartDatoTO? (spør LJ/Stefanie)
 
 ```
@@ -59,8 +58,9 @@ if (context %in% c("DEV", "TEST", "QA", "PRODUCTION")) {
   dat <- read.csv(file = path, header = TRUE, sep = ";")
 }
 
-#Bruker for øyeblikket kun 2019-data
-#dat = dat %>% filter(year(date(RegDato11)) == "2017") #year
+#Må kunne laste inn data for de ulike årene
+aar <- params$year
+dat = dat %>% filter(year(date(RegDato11)) == aar) #year
 ```
 
 ```{r makeStandardTableFunction, eval=TRUE}
