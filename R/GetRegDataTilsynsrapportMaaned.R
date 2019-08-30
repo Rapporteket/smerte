@@ -30,6 +30,7 @@ SELECT
   var.ForlopsID,
   avd.DEPARTMENT_ID,
   avd.DEPARTMENT_NAME
+  avd.DEPARTMENT_SHORTNAME
 FROM
   AlleVarNum var
 LEFT JOIN
