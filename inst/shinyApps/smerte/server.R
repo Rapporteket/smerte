@@ -191,7 +191,7 @@ server <- function(input, output, session) {
     userFullName <- rapbase::getUserFullName(session)
     userEmail <- rapbase::getUserEmail(session)
     if (length(rv$subscriptionTab) == 0) {
-      p(paste("Ingen aktive abonnement for", userName))
+      p(paste("Ingen aktive abonnement for", userFullName))
     } else {
       tagList(
         p(paste0("Aktive abonnement som sendes per epost til ", userFullName,
