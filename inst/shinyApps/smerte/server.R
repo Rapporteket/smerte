@@ -51,7 +51,7 @@ server <- function(input, output, session) {
       hospitalName <-getHospitalName(rapbase::getUserReshId(session))
       reshId <- rapbase::getUserReshId(session)
     } else {
-      hospitalName <- "Ukjent sykehus"
+      hospitalName <- "Helse Bergen HF"
       reshId <- "100082"
     }
 
