@@ -260,10 +260,10 @@ mst(tab = sum_tilsyn_avdeling,
     digs = 0,
     align = c("l", "r", "r", "r", "r", "r", "r", "r", "r"))
 
-# knitr::kable(sum_tilsyn_avdeling, caption = paste0("Antall tilsyn per avdeling. Behandlertilsyn er summen av tilsynene fra hver ulike behandler. 
-#                      Pasienttilsyn, derimot, er antall tilsyn pasientene har mottatt, hvor flere behandlere 
-#                      kan ha vært tilstede samtidig."), col.names = c("Avdeling", "Fysio", "Lege", 
-#                                                                      "Psykolog", "Sosionom", "Sykepleier", 
+# knitr::kable(sum_tilsyn_avdeling, caption = paste0("Antall tilsyn per avdeling. Behandlertilsyn er summen av tilsynene fra hver ulike behandler.
+#                      Pasienttilsyn, derimot, er antall tilsyn pasientene har mottatt, hvor flere behandlere
+#                      kan ha vært tilstede samtidig."), col.names = c("Avdeling", "Fysio", "Lege",
+#                                                                      "Psykolog", "Sosionom", "Sykepleier",
 #                                                                      "Beh tilsyn", "Pas tilsyn", "Ant pas"))%>%
 # kable_styling(latex_options = c("hold_position", "scale_down"))
 
