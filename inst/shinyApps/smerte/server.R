@@ -183,17 +183,19 @@ server <- function(input, output, session) {
   ## lag tabell over gjeldende status for abonnement
   output$activeSubscriptions <- DT::renderDataTable(
     rv$subscriptionTab, server = FALSE, escape = FALSE, selection = 'none',
-    options = list(dom = 't')
+    options = list(dom = 't'), rownames = FALSE
   )
 
   ## lag side som viser status for abonnement, også når det ikke finnes noen
   output$subscriptionContent <- renderUI({
-    userName <- rapbase::getUserName(session)
+    userFullName <- rapbase::getUserFullName(session)
+    userEmail <- rapbase::getUserEmail(session)
     if (length(rv$subscriptionTab) == 0) {
       p(paste("Ingen aktive abonnement for", userName))
     } else {
       tagList(
-        p(paste0("Aktive abonnement som sendes per epost til ", userName, ":")),
+        p(paste0("Aktive abonnement som sendes per epost til ", userFullName,
+                 " (", userEmail, "):")),
         DT::dataTableOutput("activeSubscriptions")
       )
     }
@@ -201,29 +203,35 @@ server <- function(input, output, session) {
 
   ## nye abonnement
   observeEvent (input$subscribe, {
-    package <- "rapRegTemplate"
+    package <- "smerte"
     owner <- getUserName(session)
+    interval <- strsplit(input$subscriptionFreq, "-")[[1]][2]
+    intervalName <- strsplit(input$subscriptionFreq, "-")[[1]][1]
     runDayOfYear <- rapbase::makeRunDayOfYearSequence(
-      interval = input$subscriptionFreq
-    )
-    email <- "test@test.no" # need new function i rapbase
-    if (input$subscriptionRep == "Samlerapport1") {
-      synopsis <- "Automatisk samlerapport1"
-      fun <- "samlerapport1Fun"
+      interval = interval)
+
+    email <- rapbase::getUserEmail(session)
+    organization <- rapbase::getUserReshId(session)
+
+    if (input$subscriptionRep == "Lokalt tilsyn") {
+      synopsis <- "Rutinemessig utsending av lokal tilsynsrapport"
+      fun <- "lokalTilsynFun"
       paramNames <- c("p1", "p2")
       paramValues <- c("Alder", 1)
 
     }
-    if (input$subscriptionRep == "Samlerapport2") {
-      synopsis <- "Automatisk samlerapport2"
-      fun <- "samlerapport2Fun"
+    if (input$subscriptionRep == "Nasjonalt tilsyn") {
+      synopsis <- "Rutinemesig utsending av nasjonal tilsynsrapport"
+      fun <- "nasjonaltTilsynFun"
       paramNames <- c("p1", "p2")
       paramValues <- c("BMI", 2)
     }
     rapbase::createAutoReport(synopsis = synopsis, package = package,
                               fun = fun, paramNames = paramNames,
                               paramValues = paramValues, owner = owner,
-                              email = email, runDayOfYear = runDayOfYear)
+                              email = email, organization = organization,
+                              runDayOfYear = runDayOfYear,
+                              interval = interval, intervalName = intervalName)
     rv$subscriptionTab <- rapbase::makeUserSubscriptionTab(session)
   })
 
