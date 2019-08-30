@@ -56,6 +56,16 @@ if (context %in% c("DEV", "TEST", "QA", "PRODUCTION")) {
   path <- as.data.frame(lapply(path, as.character), stringsAsFactors=FALSE)
   path <- path$V1
   dat <- read.csv(file = path, header = TRUE, sep = ";")
+  
+  avdpath <- read.csv(file = "H:/avdelingpath.csv", header = FALSE, sep = ";")
+  avdpath <- as.data.frame(lapply(avdpath, as.character), stringsAsFactors=FALSE)
+  avdpath <- avdpath$V1
+  avd <- read.csv(file = avdpath, header = TRUE, sep = ";")
+  #Endrer navn til å matche rapporteket
+  avd <- avd %>% rename(DEPARTMENT_ID = AvdID, DEPARTMENT_NAME = AvdNavn)
+
+#Samler datasettene vha InnlAvd i allevarnum og departmentID i avdelingsoversikt
+dat <- merge(x = dat, y = avd, by.x = c("InnlAvd"), by.y = c("DEPARTMENT_ID"))
 }
 
 #Må kunne laste inn data for de ulike årene
@@ -136,7 +146,7 @@ if (context == "") {
 }
 
 #Organiserer data etter tilsynstype og måned
-tilsyn_full = dat %>% select(AntPasTils, AntTilsLege, AntTilsSykPleier, AntTilsFysioT, AntTilsPsyk, AntTilsSosio, RegDato11, PasientID, ForlopsID, Tilsett) %>% 
+tilsyn_full = dat %>% select(AntPasTils, AntTilsLege, AntTilsSykPleier, AntTilsFysioT, AntTilsPsyk, AntTilsSosio, RegDato11, PasientID, ForlopsID, Tilsett, DEPARTMENT_NAME, InnlAvd) %>% 
                            gather(key = tilsynstype, value=antall, 
                            AntPasTils, AntTilsLege, AntTilsSykPleier, AntTilsFysioT, AntTilsPsyk, AntTilsSosio) %>% 
                            mutate(antall = replace(antall, is.na(antall), 0), 
@@ -205,6 +215,56 @@ Denne tabellen viser en oversikt over hvordan pasientene er fordelt mellom avdel
 
 ```{r, warning = FALSE, message=FALSE}
 ###Her klargjøres data for avdelingsoversikt
+#Antall/n er pas tils
+sum_tilsyn_avdeling = tilsyn_full %>% 
+                     group_by(tilsynstype, DEPARTMENT_NAME) %>% 
+                     summarise(antall = sum(antall)) %>% 
+                     spread(tilsynstype, antall) %>% rowwise() %>% 
+                     mutate(behandlertilsyn = sum(Fysioterapeut, Lege, Psykolog, Sosionom, Sykepleier))
 
+#antall_pas_avdeling = tilsyn %>% distinct(pasientid, .keep_all = TRUE) %>% count(avdeling_navn) 
+antall_pas_avdeling = tilsyn_full %>% distinct(ForlopsID, .keep_all = TRUE) %>% count(DEPARTMENT_NAME) 
+
+sum_tilsyn_avdeling = bind_cols(sum_tilsyn_avdeling, antall_pas_avdeling[,2])
+
+# Finne summen av hver tilsynstype
+total_tilsyn_avdeling = colSums(sum_tilsyn_avdeling[, -1])
+
+#Få inn navnet på den nye "avdelingen"
+sum_tilsyn_avdeling$DEPARTMENT_NAME = as.character(sum_tilsyn_avdeling$DEPARTMENT_NAME)
+
+#Ta vekk de som ikke har hatt pasienter (f.eks andre sykehus sine avdelinger)
+sum_tilsyn_avdeling <- sum_tilsyn_avdeling[!is.na(sum_tilsyn_avdeling$DEPARTMENT_NAME), ]
+
+#Fra de med flest til færrest pasienter
+sum_tilsyn_avdeling <- arrange(sum_tilsyn_avdeling, desc(n))
+#Få inn navnet på den nye raden
+
+#Legge på totalrad nederst
+sum_tilsyn_avdeling = bind_rows(sum_tilsyn_avdeling, total_tilsyn_avdeling)
+
+#Legge til navn
+sum_tilsyn_avdeling[nrow(sum_tilsyn_avdeling), 1] <- "Total"
+
+#levels(sum_tilsyn_avdeling$DEPARTMENT_NAME)=c(levels(sum_tilsyn_avdeling$DEPARTMENT_NAME), "Total")
+#sum_tilsyn_avdeling$DEPARTMENT_NAME[is.na(sum_tilsyn_avdeling$DEPARTMENT_NAME)] = "Total"
+
+# Bytte på rekkefølgen slik at behandlertilsyn kommer før pasienttilsyn
+sum_tilsyn_avdeling = sum_tilsyn_avdeling[,c(1,2,3,4,5,6,8,7,9)]
+sum_tilsyn_avdeling = sum_tilsyn_avdeling %>% mutate(DEPARTMENT_NAME = str_replace_all(DEPARTMENT_NAME, "\n", " "))
+
+mst(tab = sum_tilsyn_avdeling,
+    colnames = c("Avdeling", "Fysio", "Lege", "Psykolog", "Sosionom", "Sykepleier", "Beh tilsyn", "Pas tilsyn", "Ant pas"),
+    type = params$tableFormat,
+    cap = paste0("Antall tilsyn per avdeling. Vises i synkende rekkefølge fra flest pasienter til færrest."),
+    digs = 0,
+    align = c("l", "r", "r", "r", "r", "r", "r", "r", "r"))
+
+# knitr::kable(sum_tilsyn_avdeling, caption = paste0("Antall tilsyn per avdeling. Behandlertilsyn er summen av tilsynene fra hver ulike behandler. 
+#                      Pasienttilsyn, derimot, er antall tilsyn pasientene har mottatt, hvor flere behandlere 
+#                      kan ha vært tilstede samtidig."), col.names = c("Avdeling", "Fysio", "Lege", 
+#                                                                      "Psykolog", "Sosionom", "Sykepleier", 
+#                                                                      "Beh tilsyn", "Pas tilsyn", "Ant pas"))%>%
+# kable_styling(latex_options = c("hold_position", "scale_down"))
 
 ```
