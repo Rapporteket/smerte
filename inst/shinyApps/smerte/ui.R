@@ -1,4 +1,5 @@
 library(shiny)
+library(shinyalert)
 library(rapbase)
 
 addResourcePath('rap', system.file('www', package='rapbase'))
@@ -21,10 +22,12 @@ ui <- tagList(
     theme = "rap/bootstrap.css",
 
     tabPanel("Veiledning",
+      useShinyalert(),
       mainPanel(width = 12,
         htmlOutput("veiledning", inline = TRUE),
         appNavbarUserWidget(user = uiOutput("appUserName"),
-                            organization = uiOutput("appOrgName"))
+                            organization = uiOutput("appOrgName"),
+                            addUserInfo = TRUE)
       )
     ),
     tabPanel("Tilsynsrapport",
