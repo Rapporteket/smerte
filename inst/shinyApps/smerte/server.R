@@ -184,7 +184,7 @@ server <- function(input, output, session) {
   ## lag tabell over gjeldende status for abonnement
   output$activeSubscriptions <- DT::renderDataTable(
     rv$subscriptionTab, server = FALSE, escape = FALSE, selection = 'none',
-    options = list(dom = 'tp'), rownames = FALSE
+    options = list(dom = 'tp', ordering = FALSE), rownames = FALSE
   )
 
   ## lag side som viser status for abonnement, også når det ikke finnes noen
