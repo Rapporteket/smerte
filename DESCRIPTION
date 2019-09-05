@@ -25,6 +25,7 @@ Imports:
     raplog,
     rmarkdown,
     shiny,
+    shinyalert,
     zoo,
     revealjs
 Remotes:
