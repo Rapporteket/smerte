@@ -15,10 +15,11 @@ server <- function(input, output, session) {
     # set param needed for report meta processing
     context <- Sys.getenv("R_RAP_INSTANCE")
     if (context %in% c("DEV", "TEST", "QA", "PRODUCTION")) {
-      params <- list(reshId=rapbase::getUserReshId(session),
-                     year=input$yearSet,
-                     tableFormat="html",
-                     session = session)
+      # params <- list(reshId=rapbase::getUserReshId(session),
+      #                year=input$yearSet,
+      #                tableFormat="html",
+      #                session = session)
+      #params <- params
     } else {
       params <- list(reshId="100082",
                      year=input$yearSet,
@@ -118,6 +119,7 @@ server <- function(input, output, session) {
                   params = list(hospitalName=getHospitalName(reshId),
                                 reshId=reshId,
                                 year=input$yearSet,
+                                tableFormat='html',
                                 session=session)
                   )
   })
