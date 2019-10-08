@@ -47,7 +47,7 @@ ON
 WHERE
   var.AvdRESH = "
 
-  query <- paste0(query, reshId, " AND (YEAR(var.RegDato11)=", year, ");")
+  query <- paste0(query, reshId, " AND YEAR(var.RegDato11)=", year, ";")
 
   regData <- rapbase::LoadRegData(registryName, query, dbType)
 
