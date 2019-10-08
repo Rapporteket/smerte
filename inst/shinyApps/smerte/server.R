@@ -6,7 +6,7 @@ library(smerte)
 
 server <- function(input, output, session) {
 
-  #raplog::appLogger(session)
+  raplog::appLogger(session)
 
   regData <- mtcars
 
