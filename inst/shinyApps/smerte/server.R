@@ -15,11 +15,7 @@ server <- function(input, output, session) {
     # set param needed for report meta processing
     context <- Sys.getenv("R_RAP_INSTANCE")
     if (context %in% c("DEV", "TEST", "QA", "PRODUCTION")) {
-      # params <- list(reshId=rapbase::getUserReshId(session),
-      #                year=input$yearSet,
-      #                tableFormat="html",
-      #                session = session)
-      #params <- params
+      params <- params
     } else {
       params <- list(reshId="100082",
                      year=input$yearSet,
@@ -100,17 +96,16 @@ server <- function(input, output, session) {
   })
 
   # Tilsynsrapport
-  ## years available, hardcoded if outside known context
-  if (Sys.getenv("R_RAP_INSTANCE") %in% c("DEV", "TEST", "QA", "PRODUCTION")) {
-    years <- getLocalYears(registryName = "smerte",
-                           reshId = rapbase::getUserReshId(session))[[1]]
-    # remove NAs if they exists (bad registry)
-    years <- years[!is.na(years)]
-  } else {
-    years <- c("2016", "2017", "2018", "2019")
-  }
-
   output$years <- renderUI({
+    ## years available, hardcoded if outside known context
+    if (Sys.getenv("R_RAP_INSTANCE") %in% c("DEV", "TEST", "QA", "PRODUCTION")) {
+      years <- getLocalYears(registryName = "smerte",
+                             reshId = rapbase::getUserReshId(session))[[1]]
+      # remove NAs if they exists (bad registry)
+      years <- years[!is.na(years)]
+    } else {
+      years <- c("2016", "2017", "2018", "2019")
+    }
     selectInput("yearSet", "Velg år:", years)
   })
   output$tilsynsrapport <- renderUI({
