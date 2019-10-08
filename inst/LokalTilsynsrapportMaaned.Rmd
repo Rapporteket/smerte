@@ -44,7 +44,9 @@ library(kableExtra)
 
 ```
 
-```{r get data, warning = FALSE, message=FALSE}
+```{r get data, warning = FALSE, message=TRUE}
+
+print(class(session))
 context <- Sys.getenv("R_RAP_INSTANCE")
 
 if (context %in% c("DEV", "TEST", "QA", "PRODUCTION")) {
