@@ -100,7 +100,7 @@ server <- function(input, output, session) {
     ## years available, hardcoded if outside known context
     if (Sys.getenv("R_RAP_INSTANCE") %in% c("DEV", "TEST", "QA", "PRODUCTION")) {
       years <- getLocalYears(registryName = "smerte",
-                             reshId = rapbase::getUserReshId(session))[[1]]
+                             reshId = rapbase::getUserReshId(session))
       # remove NAs if they exists (bad registry)
       years <- years[!is.na(years)]
     } else {
