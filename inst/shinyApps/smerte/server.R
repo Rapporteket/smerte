@@ -113,7 +113,13 @@ server <- function(input, output, session) {
     selectInput("yearSet", "Velg år:", years)
   })
   output$tilsynsrapport <- renderUI({
-    htmlRenderRmd("LokalTilsynsrapportMaaned.Rmd")
+    reshId <- rapbase::getUserReshId(session)
+    htmlRenderRmd(srcFile = "LokalTilsynsrapportMaaned.Rmd",
+                  params = list(hospitalName=getHospitalName(reshId),
+                                reshId=reshId,
+                                year=input$yearSet,
+                                session=session)
+                  )
   })
 
   output$downloadReportTilsyn <- downloadHandler(
