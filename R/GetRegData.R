@@ -19,7 +19,7 @@ getRegDataLokalTilsynsrapportMaaned <- function(registryName, reshId, year, ...)
   registryName <- paste0(registryName, reshId)
 
   if ("session" %in% names(list(...))) {
-    raplog::repLogger(session = session,
+    raplog::repLogger(session = list(...)[["session"]],
                       msg = paste("Load data from", registryName))
   }
 
@@ -47,7 +47,8 @@ ON
 WHERE
   var.AvdRESH = "
 
-  query <- paste0(query, reshId, " AND (YEAR(var.RegDato11)=", year, ");")
+  query <- paste0(query, "'", reshId, "'", " AND YEAR(var.RegDato11)=",
+                  year, ";")
 
   regData <- rapbase::LoadRegData(registryName, query, dbType)
 

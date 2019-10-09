@@ -25,9 +25,11 @@ Imports:
     raplog,
     rmarkdown,
     shiny,
+    shinyalert,
     zoo,
     revealjs
 Remotes:
+  Rapporteket/rapbase@rel,
   Rapporteket/raplog
 Encoding: UTF-8
 LazyData: true

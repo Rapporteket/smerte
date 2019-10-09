@@ -1,11 +1,12 @@
 library(shiny)
+library(shinyalert)
 library(magrittr)
 library(rapbase)
 library(smerte)
 
 server <- function(input, output, session) {
 
-  #raplog::appLogger(session)
+  raplog::appLogger(session)
 
   regData <- mtcars
 
@@ -14,10 +15,7 @@ server <- function(input, output, session) {
     # set param needed for report meta processing
     context <- Sys.getenv("R_RAP_INSTANCE")
     if (context %in% c("DEV", "TEST", "QA", "PRODUCTION")) {
-      params <- list(reshId=rapbase::getUserReshId(session),
-                     year=input$yearSet,
-                     tableFormat="html",
-                     session = session)
+      params <- params
     } else {
       params <- list(reshId="100082",
                      year=input$yearSet,
@@ -98,21 +96,27 @@ server <- function(input, output, session) {
   })
 
   # Tilsynsrapport
-  ## years available, hardcoded if outside known context
-  if (Sys.getenv("R_RAP_INSTANCE") %in% c("DEV", "TEST", "QA", "PRODUCTION")) {
-    years <- getLocalYears(registryName = "smerte",
-                           reshId = rapbase::getUserReshId(session))[[1]]
-    # remove NAs if they exists (bad registry)
-    years <- years[!is.na(years)]
-  } else {
-    years <- c("2016", "2017", "2018", "2019")
-  }
-
   output$years <- renderUI({
+    ## years available, hardcoded if outside known context
+    if (Sys.getenv("R_RAP_INSTANCE") %in% c("DEV", "TEST", "QA", "PRODUCTION")) {
+      years <- getLocalYears(registryName = "smerte",
+                             reshId = rapbase::getUserReshId(session))
+      # remove NAs if they exists (bad registry)
+      years <- years[!is.na(years)]
+    } else {
+      years <- c("2016", "2017", "2018", "2019")
+    }
     selectInput("yearSet", "Velg år:", years)
   })
   output$tilsynsrapport <- renderUI({
-    htmlRenderRmd("LokalTilsynsrapportMaaned.Rmd")
+    reshId <- rapbase::getUserReshId(session)
+    htmlRenderRmd(srcFile = "LokalTilsynsrapportMaaned.Rmd",
+                  params = list(hospitalName=getHospitalName(reshId),
+                                reshId=reshId,
+                                year=input$yearSet,
+                                tableFormat='html',
+                                session=session)
+                  )
   })
 
   output$downloadReportTilsyn <- downloadHandler(
@@ -183,17 +187,19 @@ server <- function(input, output, session) {
   ## lag tabell over gjeldende status for abonnement
   output$activeSubscriptions <- DT::renderDataTable(
     rv$subscriptionTab, server = FALSE, escape = FALSE, selection = 'none',
-    options = list(dom = 't')
+    options = list(dom = 'tp', ordering = FALSE), rownames = FALSE
   )
 
   ## lag side som viser status for abonnement, også når det ikke finnes noen
   output$subscriptionContent <- renderUI({
-    userName <- rapbase::getUserName(session)
+    userFullName <- rapbase::getUserFullName(session)
+    userEmail <- rapbase::getUserEmail(session)
     if (length(rv$subscriptionTab) == 0) {
-      p(paste("Ingen aktive abonnement for", userName))
+      p(paste("Ingen aktive abonnement for", userFullName))
     } else {
       tagList(
-        p(paste0("Aktive abonnement som sendes per epost til ", userName, ":")),
+        p(paste0("Aktive abonnement som sendes per epost til ", userFullName,
+                 " (", userEmail, "):")),
         DT::dataTableOutput("activeSubscriptions")
       )
     }
@@ -201,29 +207,35 @@ server <- function(input, output, session) {
 
   ## nye abonnement
   observeEvent (input$subscribe, {
-    package <- "rapRegTemplate"
+    package <- "smerte"
     owner <- getUserName(session)
+    interval <- strsplit(input$subscriptionFreq, "-")[[1]][2]
+    intervalName <- strsplit(input$subscriptionFreq, "-")[[1]][1]
     runDayOfYear <- rapbase::makeRunDayOfYearSequence(
-      interval = input$subscriptionFreq
-    )
-    email <- "test@test.no" # need new function i rapbase
-    if (input$subscriptionRep == "Samlerapport1") {
-      synopsis <- "Automatisk samlerapport1"
-      fun <- "samlerapport1Fun"
+      interval = interval)
+
+    email <- rapbase::getUserEmail(session)
+    organization <- rapbase::getUserReshId(session)
+
+    if (input$subscriptionRep == "Lokalt tilsyn") {
+      synopsis <- "Rutinemessig utsending av lokal tilsynsrapport"
+      fun <- "lokalTilsynFun"
       paramNames <- c("p1", "p2")
       paramValues <- c("Alder", 1)
 
     }
-    if (input$subscriptionRep == "Samlerapport2") {
-      synopsis <- "Automatisk samlerapport2"
-      fun <- "samlerapport2Fun"
+    if (input$subscriptionRep == "Nasjonalt tilsyn") {
+      synopsis <- "Rutinemesig utsending av nasjonal tilsynsrapport"
+      fun <- "nasjonaltTilsynFun"
       paramNames <- c("p1", "p2")
       paramValues <- c("BMI", 2)
     }
     rapbase::createAutoReport(synopsis = synopsis, package = package,
                               fun = fun, paramNames = paramNames,
                               paramValues = paramValues, owner = owner,
-                              email = email, runDayOfYear = runDayOfYear)
+                              email = email, organization = organization,
+                              runDayOfYear = runDayOfYear,
+                              interval = interval, intervalName = intervalName)
     rv$subscriptionTab <- rapbase::makeUserSubscriptionTab(session)
   })
 
@@ -232,5 +244,15 @@ server <- function(input, output, session) {
     selectedRepId <- strsplit(input$del_button, "_")[[1]][2]
     rapbase::deleteAutoReport(selectedRepId)
     rv$subscriptionTab <- rapbase::makeUserSubscriptionTab(session)
+  })
+
+
+  # Brukerinformasjon
+  userInfo <- rapbase::howWeDealWithPersonalData(session)
+  observeEvent(input$userInfo, {
+    shinyalert("Dette vet Rapporteket om deg:", userInfo,
+               type = "", imageUrl = "rap/logo.svg",
+               closeOnEsc = TRUE, closeOnClickOutside = TRUE,
+               html = TRUE, confirmButtonText = "Den er grei!")
   })
 }
