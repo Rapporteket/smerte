@@ -76,8 +76,6 @@ server <- function(input, output, session) {
       year=input$yearSet,
       session=session
     ), output_dir = tempdir())
-    # active garbage collection to prevent memory hogging?
-    gc()
     file.rename(out, file)
   }
 
