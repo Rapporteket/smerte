@@ -8,8 +8,6 @@ server <- function(input, output, session) {
 
   raplog::appLogger(session)
 
-  regData <- mtcars
-
   # Gjenbrukbar funksjon for å bearbeide Rmd til html
   htmlRenderRmd <- function(srcFile, params = list()) {
     # set param needed for report meta processing
