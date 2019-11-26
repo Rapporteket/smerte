@@ -115,13 +115,17 @@ server <- function(input, output, session) {
   })
   output$tilsynsrapport <- renderUI({
     reshId <- rapbase::getUserReshId(session)
-    htmlRenderRmd(srcFile = "LokalTilsynsrapportMaaned.Rmd",
-                  params = list(hospitalName=getHospitalName(reshId),
-                                reshId=reshId,
-                                year=input$yearSet,
-                                tableFormat='html',
-                                session=session)
-                  )
+    if (is.null(input$yearSet)) {
+      NULL
+    } else {
+      htmlRenderRmd(srcFile = "LokalTilsynsrapportMaaned.Rmd",
+                    params = list(hospitalName=getHospitalName(reshId),
+                                  reshId=reshId,
+                                  year=input$yearSet,
+                                  tableFormat='html',
+                                  session=session)
+      )
+    }
   })
 
   output$downloadReportTilsyn <- downloadHandler(
