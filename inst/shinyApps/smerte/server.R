@@ -187,17 +187,20 @@ server <- function(input, output, session) {
       interval = interval)
     email <- rapbase::getUserEmail(session)
     synopsis <- "Rutinemessig utsending av lokal tilsynsrapport"
+    baseName <- "LokalTilsynsrapportMaaned"
+    registryName <- makeRegistryName(baseName = "smerte", reshID = reshId,
+                                     localRegistry = TRUE)
     fun <- "subscriptionLocalTilsyn"
     if (input$subscriptionRep == "Lokalt tilsyn per måned 2016") {
       year <- "2016"
-
     }
-    if (input$subscriptionRep == "Nasjonalt tilsyn") {
+    if (input$subscriptionRep == "Lokalt tilsyn per måned 2017") {
       year <- "2017"
     }
     paramNames <- c("baseName", "reshId", "registryName", "author",
                     "hospitalName", "year", "type")
-    paramValues <- c("BMI", 2)
+    paramValues <- c(baseName, reshId, registryName, author, hospitalName,
+                     year, input$subscriptionFileFormat)
     rapbase::createAutoReport(synopsis = synopsis, package = package,
                               fun = fun, paramNames = paramNames,
                               paramValues = paramValues, owner = owner,
