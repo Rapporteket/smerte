@@ -46,9 +46,7 @@ library(kableExtra)
 
 ```{r get data, warning = FALSE, message=TRUE}
 
-context <- Sys.getenv("R_RAP_INSTANCE")
-
-if (context %in% c("DEV", "TEST", "QA", "PRODUCTION")) {
+if (rapbase::isRapContext()) {
   dat <- getRegDataLokalTilsynsrapportMaaned(registryName = "smerte",
                                              reshId = params$reshId,
                                              year = params$year,

@@ -13,8 +13,7 @@ server <- function(input, output, session) {
   # Gjenbrukbar funksjon for å bearbeide Rmd til html
   htmlRenderRmd <- function(srcFile, params = list()) {
     # set param needed for report meta processing
-    context <- Sys.getenv("R_RAP_INSTANCE")
-    if (context %in% c("DEV", "TEST", "QA", "PRODUCTION")) {
+    if (rapbase::isRapContext()) {
       params <- params
     } else {
       params <- list(reshId="100082",
@@ -45,8 +44,7 @@ server <- function(input, output, session) {
   # render file function for re-use
   contentFile <- function(file, srcFile, tmpFile, type) {
     src <- normalizePath(system.file(srcFile, package="smerte"))
-    context <- Sys.getenv("R_RAP_INSTANCE")
-    if (context %in% c("DEV", "TEST", "QA", "PRODUCTION")) {
+    if (rapbase::isRapContext()) {
       hospitalName <-getHospitalName(rapbase::getUserReshId(session))
       reshId <- rapbase::getUserReshId(session)
     } else {
@@ -107,7 +105,7 @@ server <- function(input, output, session) {
   # Tilsynsrapport
   output$years <- renderUI({
     ## years available, hardcoded if outside known context
-    if (Sys.getenv("R_RAP_INSTANCE") %in% c("DEV", "TEST", "QA", "PRODUCTION")) {
+    if (rapbase::isRapContext()) {
       years <- getLocalYears(registryName = "smerte",
                              reshId = rapbase::getUserReshId(session))
       # remove NAs if they exists (bad registry)
