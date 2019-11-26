@@ -1,5 +1,7 @@
+library(magrittr)
 library(shiny)
 library(shinyalert)
+library(shinycssloaders)
 library(rapbase)
 
 addResourcePath('rap', system.file('www', package='rapbase'))
@@ -41,7 +43,9 @@ ui <- tagList(
           downloadButton('downloadReportTilsyn', 'Last ned')
         ),
         mainPanel(
-          htmlOutput("tilsynsrapport", inline = TRUE)
+          htmlOutput("tilsynsrapport", inline = TRUE) %>%
+            withSpinner(color = "#18bc9c",color.background = "#ffffff",
+                        type = 2)
         )
       )
     ),
