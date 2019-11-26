@@ -139,22 +139,6 @@ server <- function(input, output, session) {
     }
   )
 
-  # Figur og tabell
-  ## Figur
-  output$distPlot <- renderPlot({
-    #raplog::repLogger(session, msg = "Test parent frame")
-    makeHist(df = regData, var = input$var, bins = input$bins, makeTable = FALSE, session = session)
-  })
-
-  ## Tabell
-  output$distTable <- renderTable({
-    makeHist(df = regData, var = input$var, bins = input$bins, makeTable = TRUE, session = session)
-  })
-
-  # Sammendrag
-  # output$distSummary <- renderTable({
-  #   as.data.frame(sapply(regData, summary))[input$var]
-  # }, rownames = TRUE)
 
   # Samlerapport
   ## vis
