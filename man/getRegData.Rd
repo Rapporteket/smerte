@@ -6,14 +6,12 @@
 \alias{getLocalYears}
 \title{Provide dataframe of registry data}
 \usage{
-getRegDataLokalTilsynsrapportMaaned(registryName, reshId, year, ...)
+getRegDataLokalTilsynsrapportMaaned(registryName, year, ...)
 
 getLocalYears(registryName, reshId)
 }
 \arguments{
 \item{registryName}{String providing the current registryName}
-
-\item{reshId}{String providing reshId}
 
 \item{year}{Integer four digit year to be reported from}
 

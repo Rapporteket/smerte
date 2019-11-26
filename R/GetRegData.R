@@ -3,7 +3,6 @@
 #' Provides a dataframe containing data from a registry
 #'
 #' @param registryName String providing the current registryName
-#' @param reshId String providing reshId
 #' @param year Integer four digit year to be reported from
 #' @param ... Optional arguments to be passed to the function
 #' @name getRegData
@@ -13,10 +12,9 @@ NULL
 
 #' @rdname getRegData
 #' @export
-getRegDataLokalTilsynsrapportMaaned <- function(registryName, reshId, year, ...) {
+getRegDataLokalTilsynsrapportMaaned <- function(registryName, year, ...) {
 
   dbType <- "mysql"
-  registryName <- paste0(registryName, reshId)
 
   if ("session" %in% names(list(...))) {
     raplog::repLogger(session = list(...)[["session"]],
@@ -46,14 +44,11 @@ LEFT JOIN
 ON
   avd.DEPARTMENT_ID = var.InnlAvd
 WHERE
-  var.AvdRESH = "
+  YEAR(var.RegDato11) = "
 
-  query <- paste0(query, "'", reshId, "'", " AND YEAR(var.RegDato11)=",
-                  year, ";")
+  query <- paste0(query, year, ";")
 
-  regData <- rapbase::LoadRegData(registryName, query, dbType)
-
-  return(regData)
+  rapbase::LoadRegData(registryName, query, dbType)
 }
 
 

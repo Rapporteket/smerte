@@ -8,6 +8,20 @@ server <- function(input, output, session) {
 
   raplog::appLogger(session)
 
+  # Parameters that will remain throughout the session
+  ## setting values that do depend on a Rapporteket context
+  if (rapbase::isRapContext()) {
+    reshId <- rapbase::getUserReshId(session)
+    hospitalName <- getHospitalName(reshId)
+    userFullName <- rapbase::getUserFullName(session)
+    userRole <- rapbase::getUserRole(session)
+    author <- paste0(userFullName, "/", "Rapporteket")
+  } else {
+    ### if need be, define your (local) values here
+    hospitalName <- "Helse Bergen HF"
+    reshId <- "100082"
+  }
+
   # Gjenbrukbar funksjon for å bearbeide Rmd til html
   htmlRenderRmd <- function(srcFile, params = list()) {
     # set param needed for report meta processing
@@ -42,14 +56,6 @@ server <- function(input, output, session) {
   # render file function for re-use
   contentFile <- function(file, srcFile, tmpFile, type) {
     src <- normalizePath(system.file(srcFile, package="smerte"))
-    if (rapbase::isRapContext()) {
-      hospitalName <-getHospitalName(rapbase::getUserReshId(session))
-      reshId <- rapbase::getUserReshId(session)
-    } else {
-      hospitalName <- "Helse Bergen HF"
-      reshId <- "100082"
-    }
-
     # temporarily switch to the temp dir, in case we do not have write
     # permission to the current working directory
     owd <- setwd(tempdir())
@@ -72,7 +78,9 @@ server <- function(input, output, session) {
       hospitalName=hospitalName,
       reshId=reshId,
       year=input$yearSet,
-      session=session
+      registryName=makeRegistryName(baseName = "smerte", reshID = reshId,
+                                    localRegistry = TRUE),
+      author=author
     ), output_dir = tempdir())
     file.rename(out, file)
   }
@@ -113,15 +121,16 @@ server <- function(input, output, session) {
   })
   output$tilsynsrapport <- renderUI({
     reshId <- rapbase::getUserReshId(session)
+    registryName <- makeRegistryName(baseName = "smerte", reshID = reshId,
+                                     localRegistry = TRUE)
     if (is.null(input$yearSet)) {
       NULL
     } else {
       htmlRenderRmd(srcFile = "LokalTilsynsrapportMaaned.Rmd",
-                    params = list(hospitalName=getHospitalName(reshId),
-                                  reshId=reshId,
+                    params = list(hospitalName=hospitalName,
                                   year=input$yearSet,
                                   tableFormat='html',
-                                  session=session)
+                                  registryName=registryName)
       )
     }
   })
@@ -170,28 +179,25 @@ server <- function(input, output, session) {
   ## nye abonnement
   observeEvent (input$subscribe, {
     package <- "smerte"
-    owner <- getUserName(session)
+    owner <- rapbase::getUserName(session)
     interval <- strsplit(input$subscriptionFreq, "-")[[1]][2]
     intervalName <- strsplit(input$subscriptionFreq, "-")[[1]][1]
+    organization <- rapbase::getUserReshId(session)
     runDayOfYear <- rapbase::makeRunDayOfYearSequence(
       interval = interval)
-
     email <- rapbase::getUserEmail(session)
-    organization <- rapbase::getUserReshId(session)
-
-    if (input$subscriptionRep == "Lokalt tilsyn") {
-      synopsis <- "Rutinemessig utsending av lokal tilsynsrapport"
-      fun <- "lokalTilsynFun"
-      paramNames <- c("p1", "p2")
-      paramValues <- c("Alder", 1)
+    synopsis <- "Rutinemessig utsending av lokal tilsynsrapport"
+    fun <- "subscriptionLocalTilsyn"
+    if (input$subscriptionRep == "Lokalt tilsyn per måned 2016") {
+      year <- "2016"
 
     }
     if (input$subscriptionRep == "Nasjonalt tilsyn") {
-      synopsis <- "Rutinemesig utsending av nasjonal tilsynsrapport"
-      fun <- "nasjonaltTilsynFun"
-      paramNames <- c("p1", "p2")
-      paramValues <- c("BMI", 2)
+      year <- "2017"
     }
+    paramNames <- c("baseName", "reshId", "registryName", "author",
+                    "hospitalName", "year", "type")
+    paramValues <- c("BMI", 2)
     rapbase::createAutoReport(synopsis = synopsis, package = package,
                               fun = fun, paramNames = paramNames,
                               paramValues = paramValues, owner = owner,

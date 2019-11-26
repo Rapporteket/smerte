@@ -8,7 +8,7 @@ params:
   endDate: '2017-12-31'
   year: '2016'
   tableFormat: 'html'
-  session: list()
+  registryName: 'rapbase'
 title: '`r paste(params$title, params$hospitalName, "for", params$year)`'
 author: '`r params$author`'
 date: '`r format(Sys.time(), "%d %B, %Y")`'
@@ -47,10 +47,8 @@ library(kableExtra)
 ```{r get data, warning = FALSE, message=TRUE}
 
 if (rapbase::isRapContext()) {
-  dat <- getRegDataLokalTilsynsrapportMaaned(registryName = "smerte",
-                                             reshId = params$reshId,
-                                             year = params$year,
-                                             session=params$session)
+  dat <- getRegDataLokalTilsynsrapportMaaned(registryName = params$registryName,
+                                             year = params$year)
 } else {
   #Dataimport: skal hente lokale data for hvert sykehus (tar vekk sti, og erstatter med lokal filB)
   path <- read.csv(file = "H:/path.csv", header = FALSE, sep = ";")
@@ -138,7 +136,7 @@ Denne tabellen viser hvor mange som har fått tilsyn av de ulike behandlergruppe
 ```{r behandlertabell, warning = FALSE, message=FALSE, results='asis'}
 ###Her klargjøres data for behandlertabell
 
-if (context == "") {
+if (!rapbase::isRapContext()) {
   #Må gjøre variablene numerisk for bruk i tabell
   dat$AntTilsLege <- as.numeric(levels(dat$AntTilsLege))[dat$AntTilsLege]
   #dat$AntTilsLege <- as.numeric((dat$AntTilsLege))
