@@ -23,7 +23,7 @@ getHospitalName <- function(reshID) {
   d <- rapbase::LoadRegData(regName, dbType = dbType, query = query)[1,1]
 
   if (is.na(d)) {
-    return("_udefinert sykehus_")
+    return("Ikke Eksisternede Sykehus")
   } else {
     return(d)
   }
