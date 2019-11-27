@@ -16,12 +16,12 @@ header-includes:
   - \usepackage[english, norsk]{babel}
   - \usepackage{booktabs}
   - \usepackage{rotating}
-output:
-  html_document:
-    theme: flatly
-    toc: yes
-  pdf_document: default
-  word_document: default
+#output:
+#  html_document:
+#    theme: flatly
+#    toc: yes
+#  pdf_document: default
+#  word_document: default
 ---
 ```{r set options and load packages, include = FALSE}
 knitr::opts_chunk$set(echo=FALSE)
