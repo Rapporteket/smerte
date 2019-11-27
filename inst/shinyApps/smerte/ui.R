@@ -29,7 +29,7 @@ ui <- tagList(
           uiOutput("years"),
           radioButtons('formatTilsyn',
                        'Format for nedlasting',
-                       c('PDF', 'HTML', 'BEAMER', 'REVEAL'),
+                       c('PDF', 'HTML'),
                        inline = FALSE),
           downloadButton('downloadReportTilsyn', 'Last ned')
         ),
