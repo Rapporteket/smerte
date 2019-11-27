@@ -26,6 +26,7 @@ header-includes:
 ```{r set options and load packages, include = FALSE}
 knitr::opts_chunk$set(echo=FALSE)
 options(knitr.table.format = params$tableFormat)
+options(tinytex.verbose = TRUE)
 
 # Pakker
 library(xtable)
