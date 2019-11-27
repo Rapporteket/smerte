@@ -11,6 +11,7 @@
 #' @param reshId Single element list with the organization id of the subscriber
 #' as its value
 #' @param registryName Single element list which value is the regisry name
+#' @param year Single element list which value is the year used by the report
 #' @param author Single element list holding the name of the subscriber as its
 #' value
 #' @param hospitalName Single element list with a (human readable) org name as
@@ -21,7 +22,7 @@
 #' @return Full path of file produced
 #' @export
 
-subscriptionLocalTilsyn <- function(baseName, reshId, registryName,
+subscriptionLocalTilsyn <- function(baseName, reshId, registryName, year,
                                     author, hospitalName, type) {
 
   raplog::subLogger(author = author, registryName = registryName,
@@ -36,14 +37,15 @@ subscriptionLocalTilsyn <- function(baseName, reshId, registryName,
 
   outFile <- tempfile(pattern = baseName[[1]], fileext = paste0(".", type[[1]]))
 
+
   rmarkdown::render(input = sourceFile,
                     output_format = switch(
-                      type,
-                      pdf = pdf_document,
-                      html = html_document
+                      type[[1]],
+                      pdf = "pdf_document",
+                      html = "html_document"
                     ),
                     output_file = outFile,
-                    params = c(reshId,registryName,author,hospitalName,
+                    params = c(reshId,registryName, year, author, hospitalName,
                                list(tableFormat=tableFormat)),
                     clean = TRUE,
                     intermediates_dir = tempdir())

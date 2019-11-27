@@ -4,7 +4,7 @@
 \alias{subscriptionLocalTilsyn}
 \title{Provide reports according to subscription}
 \usage{
-subscriptionLocalTilsyn(baseName, reshId, registryName, author,
+subscriptionLocalTilsyn(baseName, reshId, registryName, year, author,
   hospitalName, type)
 }
 \arguments{
@@ -15,6 +15,8 @@ Value must be provided without the file extention (\emph{i.e.} ".Rmd")}
 as its value}
 
 \item{registryName}{Single element list which value is the regisry name}
+
+\item{year}{Single element list which value is the year used by the report}
 
 \item{author}{Single element list holding the name of the subscriber as its
 value}
