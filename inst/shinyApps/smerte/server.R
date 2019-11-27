@@ -81,7 +81,7 @@ server <- function(input, output, session) {
       registryName=makeRegistryName(baseName = "smerte", reshID = reshId,
                                     localRegistry = TRUE),
       author=author
-    ), output_dir = tempdir())
+    ), output_dir = tempdir(), clean = FALSE)
     file.rename(out, file)
   }
 
