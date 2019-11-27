@@ -4,6 +4,7 @@
 #'
 #' @param registryName String providing the current registryName
 #' @param year Integer four digit year to be reported from
+#' @param reshId String providing organization Id
 #' @param ... Optional arguments to be passed to the function
 #' @name getRegData
 #' @aliases getRegDataLokalTilsynsrapportMaaned getLocalYears

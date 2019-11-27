@@ -16,6 +16,8 @@ getLocalYears(registryName, reshId)
 \item{year}{Integer four digit year to be reported from}
 
 \item{...}{Optional arguments to be passed to the function}
+
+\item{reshId}{String providing organization Id}
 }
 \description{
 Provides a dataframe containing data from a registry
