@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Function reference • smerte</title>
+<title>Provide registry name corresponding to db config entry — makeRegistryName • smerte</title>
 
 
 <!-- jquery -->
@@ -35,7 +35,10 @@
 
 
 
-<meta property="og:title" content="Function reference" />
+<meta property="og:title" content="Provide registry name corresponding to db config entry — makeRegistryName" />
+<meta property="og:description" content="Provides the registry name key to be used for reading correspponding
+entries from the (yaml) configuration file" />
+<meta name="twitter:card" content="summary" />
 
 
 
@@ -54,7 +57,7 @@
   </head>
 
   <body>
-    <div class="container template-reference-index">
+    <div class="container template-reference-topic">
       <header>
       <div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -96,72 +99,58 @@
       </header>
 
 <div class="row">
-  <div class="contents col-md-9">
+  <div class="col-md-9 contents">
     <div class="page-header">
-      <h1>Reference</h1>
+    <h1>Provide registry name corresponding to db config entry</h1>
+    
+    <div class="hidden name"><code>makeRegistryName.Rd</code></div>
     </div>
 
-    <table class="ref-index">
+    <div class="ref-description">
+    <p>Provides the registry name key to be used for reading correspponding
+entries from the (yaml) configuration file</p>
+    </div>
 
-    <colgroup>
-      
-      <col class="alias" />
-      <col class="title" />
-    </colgroup>
+    <pre class="usage"><span class='fu'>makeRegistryName</span>(<span class='no'>baseName</span>, <span class='kw'>reshID</span> <span class='kw'>=</span> <span class='no'>reshID</span>, <span class='kw'>role</span> <span class='kw'>=</span> <span class='st'>"LU"</span>,
+  <span class='kw'>localRegistry</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</pre>
 
-    <tbody>
-      <tr>
-        <th colspan="2">
-          <h2 id="section-all-functions" class="hasAnchor"><a href="#section-all-functions" class="anchor"></a>All functions</h2>
-          <p class="section-desc"></p>
-        </th>
-      </tr>
-      <tr>
-        
-        <td>
-          <p><code><a href="getHospitalName.html">getHospitalName()</a></code> </p>
-        </td>
-        <td><p>Get hospital name from registry data</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="getRegData.html">getRegDataLokalTilsynsrapportMaaned()</a></code> <code><a href="getRegData.html">getLocalYears()</a></code> </p>
-        </td>
-        <td><p>Provide dataframe of registry data</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="getRegDataTilsynsrapportMaaned.html">getRegDataTilsynsrapportMaaned()</a></code> </p>
-        </td>
-        <td><p>Provide dataframe of registry data</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="makeHist.html">makeHist()</a></code> </p>
-        </td>
-        <td><p>Make a histogram, either plot or its data</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="makeRegistryName.html">makeRegistryName()</a></code> </p>
-        </td>
-        <td><p>Provide registry name corresponding to db config entry</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="subscriptionLocalTilsyn.html">subscriptionLocalTilsyn()</a></code> </p>
-        </td>
-        <td><p>Provide reports according to subscription</p></td>
-      </tr>
-    </tbody>
+    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
+    <table class="ref-arguments">
+    <colgroup><col class="name" /><col class="desc" /></colgroup>
+    <tr>
+      <th>baseName</th>
+      <td><p>String giving the prefix base of the name</p></td>
+    </tr>
+    <tr>
+      <th>reshID</th>
+      <td><p>String providing the current reshID. At Rapporteket, reshID
+should already be present in the current R session</p></td>
+    </tr>
+    <tr>
+      <th>role</th>
+      <td><p>String defining the current role of the user. Defaults to "LU"</p></td>
+    </tr>
+    <tr>
+      <th>localRegistry</th>
+      <td><p>Logical that if TRUE (default) make the function return
+a registry name corresponing to the local registry. If FALSE the function
+will try to return the name of the national registry falling back to the
+local registry name if not successfully so</p></td>
+    </tr>
     </table>
-  </div>
 
+    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
+
+    <p>registryName String containing the registry name as used in config</p>
+
+  </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
-      <li><a href="#section-all-functions">All functions</a></li>
+      <li><a href="#arguments">Arguments</a></li>
+      <li><a href="#value">Value</a></li>
     </ul>
+
   </div>
 </div>
 

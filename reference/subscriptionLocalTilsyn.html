@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Function reference • smerte</title>
+<title>Provide reports according to subscription — subscriptionLocalTilsyn • smerte</title>
 
 
 <!-- jquery -->
@@ -35,7 +35,13 @@
 
 
 
-<meta property="og:title" content="Function reference" />
+<meta property="og:title" content="Provide reports according to subscription — subscriptionLocalTilsyn" />
+<meta property="og:description" content="When called, typically through a chain of events initiated by a chron
+process, this is the function that actually produces the report to be
+shiped off to the recipient. The actual call to this function is made
+through do.call and has the effect of providing the parameters as class
+list. Hence, values must be extracted by list operations." />
+<meta name="twitter:card" content="summary" />
 
 
 
@@ -54,7 +60,7 @@
   </head>
 
   <body>
-    <div class="container template-reference-index">
+    <div class="container template-reference-topic">
       <header>
       <div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -96,72 +102,74 @@
       </header>
 
 <div class="row">
-  <div class="contents col-md-9">
+  <div class="col-md-9 contents">
     <div class="page-header">
-      <h1>Reference</h1>
+    <h1>Provide reports according to subscription</h1>
+    
+    <div class="hidden name"><code>subscriptionLocalTilsyn.Rd</code></div>
     </div>
 
-    <table class="ref-index">
+    <div class="ref-description">
+    <p>When called, typically through a chain of events initiated by a chron
+process, this is the function that actually produces the report to be
+shiped off to the recipient. The actual call to this function is made
+through do.call and has the effect of providing the parameters as class
+<em>list</em>. Hence, values must be extracted by list operations.</p>
+    </div>
 
-    <colgroup>
-      
-      <col class="alias" />
-      <col class="title" />
-    </colgroup>
+    <pre class="usage"><span class='fu'>subscriptionLocalTilsyn</span>(<span class='no'>baseName</span>, <span class='no'>reshId</span>, <span class='no'>registryName</span>, <span class='no'>year</span>, <span class='no'>author</span>,
+  <span class='no'>hospitalName</span>, <span class='no'>type</span>)</pre>
 
-    <tbody>
-      <tr>
-        <th colspan="2">
-          <h2 id="section-all-functions" class="hasAnchor"><a href="#section-all-functions" class="anchor"></a>All functions</h2>
-          <p class="section-desc"></p>
-        </th>
-      </tr>
-      <tr>
-        
-        <td>
-          <p><code><a href="getHospitalName.html">getHospitalName()</a></code> </p>
-        </td>
-        <td><p>Get hospital name from registry data</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="getRegData.html">getRegDataLokalTilsynsrapportMaaned()</a></code> <code><a href="getRegData.html">getLocalYears()</a></code> </p>
-        </td>
-        <td><p>Provide dataframe of registry data</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="getRegDataTilsynsrapportMaaned.html">getRegDataTilsynsrapportMaaned()</a></code> </p>
-        </td>
-        <td><p>Provide dataframe of registry data</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="makeHist.html">makeHist()</a></code> </p>
-        </td>
-        <td><p>Make a histogram, either plot or its data</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="makeRegistryName.html">makeRegistryName()</a></code> </p>
-        </td>
-        <td><p>Provide registry name corresponding to db config entry</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="subscriptionLocalTilsyn.html">subscriptionLocalTilsyn()</a></code> </p>
-        </td>
-        <td><p>Provide reports according to subscription</p></td>
-      </tr>
-    </tbody>
+    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
+    <table class="ref-arguments">
+    <colgroup><col class="name" /><col class="desc" /></colgroup>
+    <tr>
+      <th>baseName</th>
+      <td><p>Single element list with value of Rmd template for the report.
+Value must be provided without the file extention (<em>i.e.</em> ".Rmd")</p></td>
+    </tr>
+    <tr>
+      <th>reshId</th>
+      <td><p>Single element list with the organization id of the subscriber
+as its value</p></td>
+    </tr>
+    <tr>
+      <th>registryName</th>
+      <td><p>Single element list which value is the regisry name</p></td>
+    </tr>
+    <tr>
+      <th>year</th>
+      <td><p>Single element list which value is the year used by the report</p></td>
+    </tr>
+    <tr>
+      <th>author</th>
+      <td><p>Single element list holding the name of the subscriber as its
+value</p></td>
+    </tr>
+    <tr>
+      <th>hospitalName</th>
+      <td><p>Single element list with a (human readable) org name as
+its value</p></td>
+    </tr>
+    <tr>
+      <th>type</th>
+      <td><p>Single element list which value defining report file format,
+currently one of "pdf" or "html"</p></td>
+    </tr>
     </table>
-  </div>
 
+    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
+
+    <p>Full path of file produced</p>
+
+  </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
-      <li><a href="#section-all-functions">All functions</a></li>
+      <li><a href="#arguments">Arguments</a></li>
+      <li><a href="#value">Value</a></li>
     </ul>
+
   </div>
 </div>
 
