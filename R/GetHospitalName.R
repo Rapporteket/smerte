@@ -20,6 +20,12 @@ getHospitalName <- function(reshID) {
   query <- paste0("SELECT SykehusNavn FROM AlleVarNum WHERE AvdRESH = '",
                  reshID, "' LIMIT 1")
 
-  rapbase::LoadRegData(regName, dbType = dbType, query = query)[1,1]
+  d <- rapbase::LoadRegData(regName, dbType = dbType, query = query)[1,1]
+
+  if (is.na(d)) {
+    return("_udefinert sykehus_")
+  } else {
+    return(d)
+  }
 
 }
