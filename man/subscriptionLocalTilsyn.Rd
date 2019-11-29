@@ -4,8 +4,8 @@
 \alias{subscriptionLocalTilsyn}
 \title{Provide reports according to subscription}
 \usage{
-subscriptionLocalTilsyn(baseName, reshId, registryName, year, author,
-  hospitalName, type)
+subscriptionLocalTilsyn(baseName, reshId, registryName, author,
+  hospitalName, year, type)
 }
 \arguments{
 \item{baseName}{Single element list with value of Rmd template for the report.
@@ -16,13 +16,13 @@ as its value}
 
 \item{registryName}{Single element list which value is the regisry name}
 
-\item{year}{Single element list which value is the year used by the report}
-
 \item{author}{Single element list holding the name of the subscriber as its
 value}
 
 \item{hospitalName}{Single element list with a (human readable) org name as
 its value}
+
+\item{year}{Single element list which value is the year used by the report}
 
 \item{type}{Single element list which value defining report file format,
 currently one of "pdf" or "html"}
