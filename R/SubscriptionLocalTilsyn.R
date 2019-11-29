@@ -22,11 +22,12 @@
 #' @return Full path of file produced
 #' @export
 
-subscriptionLocalTilsyn <- function(baseName, reshId, registryName, year,
-                                    author, hospitalName, type) {
 
-  raplog::subLogger(author = author, registryName = registryName,
-                    reshId = reshId,
+subscriptionLocalTilsyn <- function(baseName, reshId, registryName,
+                                    author, hospitalName, year, type) {
+
+  raplog::subLogger(author = author[[1]], registryName = registryName[[1]],
+                    reshId = reshId[[1]],
                     msg = "Subscription report: LokalTilsynsrapportMaaned")
 
   sourceFile <- system.file(paste0(baseName[[1]], ".Rmd"), package = "smerte")
