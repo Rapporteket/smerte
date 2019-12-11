@@ -20,7 +20,8 @@ ui <- tagList(
         htmlOutput("veiledning", inline = TRUE),
         appNavbarUserWidget(user = uiOutput("appUserName"),
                             organization = uiOutput("appOrgName"),
-                            addUserInfo = TRUE)
+                            addUserInfo = TRUE),
+        tags$head(tags$link(rel="shortcut icon", href="rap/favicon.ico"))
       )
     ),
     tabPanel("Tilsynsrapport",
