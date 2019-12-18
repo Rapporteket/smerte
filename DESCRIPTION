@@ -30,7 +30,7 @@ Imports:
     zoo,
     revealjs
 Remotes:
-  Rapporteket/rapbase@rel,
+  Rapporteket/rapbase,
   Rapporteket/raplog
 Encoding: UTF-8
 LazyData: true
