@@ -35,9 +35,9 @@ ui <- tagList(
           downloadButton('downloadReportTilsyn', 'Last ned')
         ),
         mainPanel(
-          htmlOutput("tilsynsrapport", inline = TRUE) %>%
-            withSpinner(color = "#18bc9c",color.background = "#ffffff",
-                        type = 2)
+          htmlOutput("tilsynsrapport", inline = TRUE) #%>%
+            # withSpinner(color = "#18bc9c",color.background = "#ffffff",
+            #             type = 2)
         )
       )
     ),
