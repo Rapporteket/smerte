@@ -9,11 +9,11 @@
 #' @return String containing a valid registry name
 #' @export
 
-makeRegistryName <- function(baseName, reshID=reshID) {
+makeRegistryName <- function(baseName, reshID) {
 
   if (isNationalReg(reshID)) {
     conf <- rapbase::getConfig(fileName = "rapbaseConfig.yml")
-    return(paste0(baseName, conf$reg$noric$nationalAccess$nameKey))
+    return(paste0(baseName, conf$reg$smerte$nationalAccess$nameKey))
   } else {
     return(paste0(baseName, reshID))
   }
