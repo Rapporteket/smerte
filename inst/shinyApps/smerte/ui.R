@@ -13,6 +13,7 @@ ui <- tagList(
                 regTitle),
     windowTitle = regTitle,
     theme = "rap/bootstrap.css",
+    id = "tabs",
 
     tabPanel("Veiledning",
       useShinyalert(),
@@ -46,9 +47,7 @@ ui <- tagList(
       ,
       sidebarLayout(
         sidebarPanel(width = 3,
-          selectInput("subscriptionRep", "Rapport:",
-                      c("Lokalt tilsyn per måned 2016",
-                        "Lokalt tilsyn per måned 2017")),
+          uiOutput("subscriptionRepList"),
           selectInput("subscriptionFreq", "Frekvens:",
                       list(Årlig="Årlig-year",
                             Kvartalsvis="Kvartalsvis-quarter",

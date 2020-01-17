@@ -22,6 +22,14 @@ server <- function(input, output, session) {
     reshId <- "100082"
   }
 
+  # Hide tabs depending on context
+  ## do now show local reports in national context
+  if (isNationalReg(reshId)) {
+    hideTab(inputId = "tabs", target = "Tilsynsrapport")
+  }
+
+
+
   # Gjenbrukbar funksjon for å bearbeide Rmd til html
   htmlRenderRmd <- function(srcFile, params = list()) {
     # set param needed for report meta processing
@@ -78,8 +86,7 @@ server <- function(input, output, session) {
       hospitalName=hospitalName,
       reshId=reshId,
       year=input$yearSet,
-      registryName=makeRegistryName(baseName = "smerte", reshID = reshId,
-                                    localRegistry = TRUE),
+      registryName=makeRegistryName(baseName = "smerte", reshID = reshId),
       author=author
     ), output_dir = tempdir())
     file.rename(out, file)
@@ -121,8 +128,7 @@ server <- function(input, output, session) {
   })
   output$tilsynsrapport <- renderUI({
     reshId <- rapbase::getUserReshId(session)
-    registryName <- makeRegistryName(baseName = "smerte", reshID = reshId,
-                                     localRegistry = TRUE)
+    registryName <- makeRegistryName(baseName = "smerte", reshID = reshId)
     if (is.null(input$yearSet)) {
       NULL
     } else {
@@ -177,36 +183,50 @@ server <- function(input, output, session) {
   })
 
   ## nye abonnement
+  ### lag liste over mulige valg styrt av lokal eller nasjonal sesjon
+  output$subscriptionRepList <- renderUI({
+    if (isNationalReg(reshId)) {
+      selectInput("subscriptionRep", "Rapport:",
+                  c(""))
+    } else {
+      selectInput("subscriptionRep", "Rapport:",
+                  c("Lokalt tilsyn per måned 2016",
+                    "Lokalt tilsyn per måned 2017"))
+    }
+  })
+
   observeEvent (input$subscribe, {
-    package <- "smerte"
-    owner <- rapbase::getUserName(session)
-    interval <- strsplit(input$subscriptionFreq, "-")[[1]][2]
-    intervalName <- strsplit(input$subscriptionFreq, "-")[[1]][1]
-    organization <- rapbase::getUserReshId(session)
-    runDayOfYear <- rapbase::makeRunDayOfYearSequence(
-      interval = interval)
-    email <- rapbase::getUserEmail(session)
-    synopsis <- "Rutinemessig utsending av lokal tilsynsrapport"
-    baseName <- "LokalTilsynsrapportMaaned"
-    registryName <- makeRegistryName(baseName = "smerte", reshID = reshId,
-                                     localRegistry = TRUE)
-    fun <- "subscriptionLocalTilsyn"
-    if (input$subscriptionRep == "Lokalt tilsyn per måned 2016") {
-      year <- "2016"
+    if (nchar(input$subscriptionRep) > 0) {
+
+      package <- "smerte"
+      owner <- rapbase::getUserName(session)
+      interval <- strsplit(input$subscriptionFreq, "-")[[1]][2]
+      intervalName <- strsplit(input$subscriptionFreq, "-")[[1]][1]
+      organization <- rapbase::getUserReshId(session)
+      runDayOfYear <- rapbase::makeRunDayOfYearSequence(
+        interval = interval)
+      email <- rapbase::getUserEmail(session)
+      synopsis <- "Rutinemessig utsending av lokal tilsynsrapport"
+      baseName <- "LokalTilsynsrapportMaaned"
+      registryName <- makeRegistryName(baseName = "smerte", reshID = reshId)
+      fun <- "subscriptionLocalTilsyn"
+      if (input$subscriptionRep == "Lokalt tilsyn per måned 2016") {
+        year <- "2016"
+      }
+      if (input$subscriptionRep == "Lokalt tilsyn per måned 2017") {
+        year <- "2017"
+      }
+      paramNames <- c("baseName", "reshId", "registryName", "author",
+                      "hospitalName", "year", "type")
+      paramValues <- c(baseName, reshId, registryName, author, hospitalName,
+                       year, input$subscriptionFileFormat)
+      rapbase::createAutoReport(synopsis = synopsis, package = package,
+                                fun = fun, paramNames = paramNames,
+                                paramValues = paramValues, owner = owner,
+                                email = email, organization = organization,
+                                runDayOfYear = runDayOfYear,
+                                interval = interval, intervalName = intervalName)
     }
-    if (input$subscriptionRep == "Lokalt tilsyn per måned 2017") {
-      year <- "2017"
-    }
-    paramNames <- c("baseName", "reshId", "registryName", "author",
-                    "hospitalName", "year", "type")
-    paramValues <- c(baseName, reshId, registryName, author, hospitalName,
-                     year, input$subscriptionFileFormat)
-    rapbase::createAutoReport(synopsis = synopsis, package = package,
-                              fun = fun, paramNames = paramNames,
-                              paramValues = paramValues, owner = owner,
-                              email = email, organization = organization,
-                              runDayOfYear = runDayOfYear,
-                              interval = interval, intervalName = intervalName)
     rv$subscriptionTab <- rapbase::makeUserSubscriptionTab(session)
   })
 
