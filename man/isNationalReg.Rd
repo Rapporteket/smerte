@@ -4,7 +4,7 @@
 \alias{isNationalReg}
 \title{Is organization a national registry?}
 \usage{
-isNationalReg(reshID)
+isNationalReg(reshId)
 }
 \arguments{
 \item{reshId}{Integer organization ID}
