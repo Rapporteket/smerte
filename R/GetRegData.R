@@ -32,6 +32,7 @@ SELECT
   var.AntPasTils,
   var.Tilsett,
   var.RegDato11,
+  var.StartdatoTO,
   var.InnlAvd,
   var.PasientID,
   var.ForlopsID,
