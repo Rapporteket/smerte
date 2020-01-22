@@ -10,6 +10,10 @@ getRegDataTilsynsrapportMaaned(registryName, reshId, startDate, endDate)
 \item{registryName}{String providing the current registryName}
 
 \item{reshId}{String providing reshId for filtering in query}
+
+\item{startDate}{Start date ...}
+
+\item{endDate}{End date...}
 }
 \value{
 regData data frame

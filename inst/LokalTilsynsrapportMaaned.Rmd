@@ -1,29 +1,32 @@
 ---
 params:
-  title: 'Månedlig tilsynsrapport fra Smerteregisterets ved'
+  title: 'Månedlig tilsynsrapport for lokalt smerteregister ved'
   author: 'Rapporteket'
   hospitalName: 'Ukjent sukehus'
   reshId: 'locallyDefined'
   startDate: '2017-01-01'
   endDate: '2017-12-31'
+  year: '2016'
   tableFormat: 'html'
-title: '`r paste(params$title, params$hospitalName, "i perioden", params$startDate, "-", params$endDate)`'
+  registryName: 'rapbase'
+title: '`r paste(params$title, params$hospitalName, "for", params$year)`'
 author: '`r params$author`'
-date: '`r format(Sys.time(), "%d %B, %Y")`'
+date: '`r format(Sys.time(), "%d\\. %B, %Y")`'
 header-includes:
   - \usepackage[english, norsk]{babel}
   - \usepackage{booktabs}
   - \usepackage{rotating}
-output:
-  html_document:
-    theme: flatly
-    toc: yes
-  pdf_document: default
-  word_document: default
+#output:
+#  html_document:
+#    theme: flatly
+#    toc: yes
+#  pdf_document: default
+#  word_document: default
 ---
 ```{r set options and load packages, include = FALSE}
 knitr::opts_chunk$set(echo=FALSE)
 options(knitr.table.format = params$tableFormat)
+options(tinytex.verbose = TRUE)
 
 # Pakker
 library(xtable)
@@ -33,32 +36,45 @@ library(zoo)
 library(dplyr)
 library(magrittr)
 library(lubridate)
-library(smerteregisteret)
+library(smerte)
 library(knitr)
 library(kableExtra)
 
 #FIX: Må det legges inn noe som avjgør lokasjon
-#FIX: når vil de ha rapporten for (dato)
-#FIX3: bytte fra RegDato11 til StartDatoTO? (spør LJ/Stefanie)
+#FIX3: bytte fra RegDato11 til StartdatoTO? (spør LJ/Stefanie)
 
 ```
 
-```{r get data, warning = FALSE, message=FALSE}
-context <- Sys.getenv("R_RAP_INSTANCE")
+```{r get data, warning = FALSE, message=TRUE}
 
-if (context %in% c("DEV", "TEST", "QA", "PRODUCTION")) {
-  dat <- getRegDataTilsynsrapportMaaned(registryName = "smerte",
-                                        reshId = params$reshId,
-                                        startDate = params$startDate,
-                                        endDate = params$endDate)
+if (rapbase::isRapContext()) {
+  dat <- getRegDataLokalTilsynsrapportMaaned(registryName = params$registryName,
+                                             year = params$year)
 } else {
-  #Dataimport: skal hente lokale data for hvert sykehus
-  setwd("//ihelse.net/Kvalitetsregister/HBE/2014-00752/OpenQReg/datadumper/prod/Lokale data/Datadump Alle Variable Numerisk/2019-04-01/")
-  dat <- read.csv(file = "Datadump_Alle_variabler_numerisk.csv", header = TRUE, sep = ";")
+  #Dataimport: skal hente lokale data for hvert sykehus (tar vekk sti, og erstatter med lokal filB)
+  path <- read.csv(file = "H:/path.csv", header = FALSE, sep = ";")
+  path <- as.data.frame(lapply(path, as.character), stringsAsFactors=FALSE)
+  path <- path$V1
+  dat <- read.csv(file = path, header = TRUE, sep = ";")
+  
+  avdpath <- read.csv(file = "H:/avdelingpath.csv", header = FALSE, sep = ";")
+  avdpath <- as.data.frame(lapply(avdpath, as.character), stringsAsFactors=FALSE)
+  avdpath <- avdpath$V1
+  avd <- read.csv(file = avdpath, header = TRUE, sep = ";", encoding = "UTF-8")
+  #Endrer navn til å matche rapporteket
+  avd <- avd %>% rename(DEPARTMENT_ID = AvdID, DEPARTMENT_NAME = AvdNavn, DEPARTMENT_SHORTNAME = AvdNavnKort)
+
+  #Samler datasettene vha InnlAvd i allevarnum og departmentID i avdelingsoversikt
+  dat <- merge(x = dat, y = avd, by.x = c("InnlAvd"), by.y = c("DEPARTMENT_ID"))
+
+  #Må kunne laste inn data for de ulike årene
+  aar <- params$year
+  dat = dat %>% filter(year(date(StartdatoTO)) == aar) #year #denne virker? Er ikke alle registert på regdato?
+  #dat = dat %>% filter(year(date(RegDato11)) == aar) #year
+
 }
 
-#Bruker for øyeblikket kun 2019-data
-#dat = dat %>% filter(year(date(RegDato11)) == "2017")
+
 ```
 
 ```{r makeStandardTableFunction, eval=TRUE}
@@ -92,8 +108,17 @@ Denne tabellen viser hvor mange som har fått tilsyn av smerteteamet totalt i ti
 
 # Data for tabell over tilsyn
 tilsynsdata <- dat %>% count(Tilsett) %>% mutate(prosent = round(100*(n/sum(n))))
-tilsynsdata[, 1] <- c("Ja", "Nei, ikke behov", "Nei, ikke kapasitet", "Nei, men gitt råd", "Nei, annen grunn")
-antall_svar <- tilsynsdata %>% summarise(sum(n))
+#Gi navn i stedet for tall til alternativene for tilsyn/ikke tilsyn
+tilsynsdata = tilsynsdata %>% mutate(tilsynAarsak = case_when(Tilsett == 1 ~ "Ja",
+                                                               Tilsett == 2 ~ "Nei, ikke behov",
+                                                               Tilsett == 3 ~ "Nei, ikke kapasitet",
+                                                               Tilsett == 4 ~ "Nei, men gitt råd",
+                                                               Tilsett == 5 ~ "Nei, annen grunn",
+                                                               is.na(Tilsett) ~ "Mangler verdi",
+                                                               FALSE ~ "Ikke angitt"))
+tilsynsdata <- tilsynsdata[ ,c(4,2,3)]
+
+#tilsynsdata[, 1] <- c("Ja", "Nei, ikke behov", "Nei, ikke kapasitet", "Nei, men gitt råd", "Nei, annen grunn")
 
 #Tilsynstabell
 mst(tab = tilsynsdata, colnames = c("Har pasienten fått tilsyn?", "Antall ",
@@ -102,6 +127,7 @@ mst(tab = tilsynsdata, colnames = c("Har pasienten fått tilsyn?", "Antall ",
     type = params$tableFormat,
     digs = 0,
     align = c("l", "r", "r", "r"))
+
 ```
 
 
@@ -112,7 +138,7 @@ Denne tabellen viser hvor mange som har fått tilsyn av de ulike behandlergruppe
 ```{r behandlertabell, warning = FALSE, message=FALSE, results='asis'}
 ###Her klargjøres data for behandlertabell
 
-if (context == "") {
+if (!rapbase::isRapContext()) {
   #Må gjøre variablene numerisk for bruk i tabell
   dat$AntTilsLege <- as.numeric(levels(dat$AntTilsLege))[dat$AntTilsLege]
   #dat$AntTilsLege <- as.numeric((dat$AntTilsLege))
@@ -127,11 +153,11 @@ if (context == "") {
 }
 
 #Organiserer data etter tilsynstype og måned
-tilsyn_full = dat %>% select(AntPasTils, AntTilsLege, AntTilsSykPleier, AntTilsFysioT, AntTilsPsyk, AntTilsSosio, RegDato11, PasientID, ForlopsID, Tilsett) %>% 
+tilsyn_full = dat %>% select(AntPasTils, AntTilsLege, AntTilsSykPleier, AntTilsFysioT, AntTilsPsyk, AntTilsSosio, StartdatoTO, PasientID, ForlopsID, Tilsett, DEPARTMENT_NAME, DEPARTMENT_SHORTNAME, InnlAvd) %>% 
                            gather(key = tilsynstype, value=antall, 
                            AntPasTils, AntTilsLege, AntTilsSykPleier, AntTilsFysioT, AntTilsPsyk, AntTilsSosio) %>% 
                            mutate(antall = replace(antall, is.na(antall), 0), 
-                           month = months(as.Date(RegDato11)),
+                           month = months(as.Date(StartdatoTO)),
                                                  
                      tilsynstype=str_replace_all(tilsynstype,"AntTilsLege", 
                                                  "Lege"),
@@ -145,14 +171,14 @@ tilsyn_full = dat %>% select(AntPasTils, AntTilsLege, AntTilsSykPleier, AntTilsF
                                                   "Sosionom"),
                      tilsynstype=str_replace_all(tilsynstype, "AntPasTils", 
                                                   "Total"),
-                     yearmonth = as.yearmon(RegDato11))
+                     yearmonth = as.yearmon(StartdatoTO))
 
 
 # Lage månedsnavn i rekkefølge slik som de er i året
 #NB: legge inn "aar" som kommer fra det bruker velger
 manednamn = months(as.Date(paste0("2019-",1:12,"-01")))
 
-tilsyn_full = tilsyn_full %>% mutate(monthname = factor(months(as.Date(RegDato11)), levels = manednamn)) 
+tilsyn_full = tilsyn_full %>% mutate(monthname = factor(months(as.Date(StartdatoTO)), levels = manednamn)) 
 
 sum_tilsyn_maned = tilsyn_full %>% 
                      group_by(tilsynstype, monthname) %>% 
@@ -183,7 +209,8 @@ mst(tab = sum_tilsyn_maned,
                  "Ant henv"),
     type = params$tableFormat,
     cap = paste0("Antall tilsyn per måned for de ulike behandlergruppene."),
-    digs = 0)
+    digs = 0,
+    align = c("l", "r", "r", "r", "r", "r", "r", "r", "r", "r"))
 
 #knitr::kable(sum_tilsyn_maned, caption = paste0("Antall tilsyn per måned for de ulike behandlergruppene."), col.names = c("Måned", "Fysio", "Lege", "Psykolog", "Sosionom", "Sykepleier", "Beh tilsyn", "Pas tilsyn", "Ant pas", "Ant henv")) %>% kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = F)
 ```
@@ -193,8 +220,58 @@ mst(tab = sum_tilsyn_maned,
 
 Denne tabellen viser en oversikt over hvordan pasientene er fordelt mellom avdelingene på sykehuset i løpet av hele tidsperioden.
 
-```{r, warning = FALSE, message=FALSE}
+```{r avdelingstabell, warning = FALSE, message=FALSE, results='asis'}
 ###Her klargjøres data for avdelingsoversikt
+#Antall/n er pas tils
+sum_tilsyn_avdeling = tilsyn_full %>% 
+                     group_by(tilsynstype, DEPARTMENT_SHORTNAME) %>% 
+                     summarise(antall = sum(antall)) %>% 
+                     spread(tilsynstype, antall) %>% rowwise() %>% 
+                     mutate(behandlertilsyn = sum(Fysioterapeut, Lege, Psykolog, Sosionom, Sykepleier))
 
+#antall_pas_avdeling = tilsyn %>% distinct(pasientid, .keep_all = TRUE) %>% count(avdeling_navn) 
+antall_pas_avdeling = tilsyn_full %>% distinct(ForlopsID, .keep_all = TRUE) %>% count(DEPARTMENT_SHORTNAME) 
+
+sum_tilsyn_avdeling = bind_cols(sum_tilsyn_avdeling, antall_pas_avdeling[,2])
+
+# Finne summen av hver tilsynstype
+total_tilsyn_avdeling = colSums(sum_tilsyn_avdeling[, -1])
+
+#Få inn navnet på den nye "avdelingen"
+sum_tilsyn_avdeling$DEPARTMENT_SHORTNAME = as.character(sum_tilsyn_avdeling$DEPARTMENT_SHORTNAME)
+
+#Ta vekk de som ikke har hatt pasienter (f.eks andre sykehus sine avdelinger)
+sum_tilsyn_avdeling <- sum_tilsyn_avdeling[!is.na(sum_tilsyn_avdeling$DEPARTMENT_SHORTNAME), ]
+
+#Fra de med flest til færrest pasienter
+sum_tilsyn_avdeling <- arrange(sum_tilsyn_avdeling, desc(n))
+#Få inn navnet på den nye raden
+
+#Legge på totalrad nederst
+sum_tilsyn_avdeling = bind_rows(sum_tilsyn_avdeling, total_tilsyn_avdeling)
+
+#Legge til navn
+sum_tilsyn_avdeling[nrow(sum_tilsyn_avdeling), 1] <- "Total"
+
+#levels(sum_tilsyn_avdeling$DEPARTMENT_NAME)=c(levels(sum_tilsyn_avdeling$DEPARTMENT_NAME), "Total")
+#sum_tilsyn_avdeling$DEPARTMENT_NAME[is.na(sum_tilsyn_avdeling$DEPARTMENT_NAME)] = "Total"
+
+# Bytte på rekkefølgen slik at behandlertilsyn kommer før pasienttilsyn
+sum_tilsyn_avdeling = sum_tilsyn_avdeling[,c(1,2,3,4,5,6,8,7,9)]
+sum_tilsyn_avdeling = sum_tilsyn_avdeling %>% mutate(DEPARTMENT_SHORTNAME = str_replace_all(DEPARTMENT_SHORTNAME, "\n", " "))
+#DEPARTMENT_SHORTNAME
+mst(tab = sum_tilsyn_avdeling,
+    colnames = c("Avdeling", "Fysio", "Lege", "Psyk", "Sosio", "Sykepl", "Beh tilsyn", "Pas tilsyn", "Ant pas"),
+    type = params$tableFormat,
+    cap = paste0("Antall tilsyn per avdeling. Vises i synkende rekkefølge fra flest pasienter til færrest."),
+    digs = 0,
+    align = c("l", "r", "r", "r", "r", "r", "r", "r", "r"))
+
+# knitr::kable(sum_tilsyn_avdeling, caption = paste0("Antall tilsyn per avdeling. Behandlertilsyn er summen av tilsynene fra hver ulike behandler.
+#                      Pasienttilsyn, derimot, er antall tilsyn pasientene har mottatt, hvor flere behandlere
+#                      kan ha vært tilstede samtidig."), col.names = c("Avdeling", "Fysio", "Lege",
+#                                                                      "Psykolog", "Sosionom", "Sykepleier",
+#                                                                      "Beh tilsyn", "Pas tilsyn", "Ant pas"))%>%
+# kable_styling(latex_options = c("hold_position", "scale_down"))
 
 ```

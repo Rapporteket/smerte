@@ -4,6 +4,8 @@
 #'
 #' @param registryName String providing the current registryName
 #' @param reshId String providing reshId for filtering in query
+#' @param startDate Start date ...
+#' @param endDate End date...
 #' @return regData data frame
 #' @export
 
@@ -11,6 +13,7 @@ getRegDataTilsynsrapportMaaned <- function(registryName, reshId, startDate,
                                            endDate) {
 
   dbType <- "mysql"
+  registryName <- paste0(registryName, reshId)
 
   query <- "
 SELECT
@@ -22,15 +25,17 @@ SELECT
   var.AntPasTils,
   var.Tilsett,
   var.RegDato11,
+  var.StartdatoTO,
   var.InnlAvd,
   var.PasientID,
   var.ForlopsID,
   avd.DEPARTMENT_ID,
-  avd.DEPARTMENT_NAME
+  avd.DEPARTMENT_NAME,
+  avd.DEPARTMENT_SHORTNAME
 FROM
   AlleVarNum var
 LEFT JOIN
-  Avdelingsoversikt avd
+  avdelingsoversikt avd
 ON
   avd.DEPARTMENT_ID = var.InnlAvd
 WHERE

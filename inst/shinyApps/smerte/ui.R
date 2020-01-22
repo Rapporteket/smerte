@@ -1,125 +1,68 @@
+library(magrittr)
 library(shiny)
+library(shinyalert)
+library(shinycssloaders)
 library(rapbase)
 
 addResourcePath('rap', system.file('www', package='rapbase'))
 regTitle = "Smerteregisteret"
-logo <- includeHTML(system.file('www/logo.svg', package='rapbase'))
-logoCode <- paste0("var header = $('.navbar> .container-fluid');\n",
-                   "header.append('<div class=\"navbar-brand\" style=\"float:left;font-size:75%\">",
-                   logo,
-                   "</div>');\n",
-                   "console.log(header)")
-logoWidget <- tags$script(shiny::HTML(logoCode))
 
 ui <- tagList(
   navbarPage(
-    # title = div(img(src="rap/logo.svg", alt="Rapporteket", height="26px"),
-    #             regTitle),
     title = div(a(includeHTML(system.file('www/logo.svg', package='rapbase'))),
                 regTitle),
     windowTitle = regTitle,
     theme = "rap/bootstrap.css",
+    id = "tabs",
 
     tabPanel("Veiledning",
+      useShinyalert(),
       mainPanel(width = 12,
         htmlOutput("veiledning", inline = TRUE),
         appNavbarUserWidget(user = uiOutput("appUserName"),
-                            organization = uiOutput("appOrgName"))
+                            organization = uiOutput("appOrgName"),
+                            addUserInfo = TRUE),
+        tags$head(tags$link(rel="shortcut icon", href="rap/favicon.ico"))
       )
     ),
     tabPanel("Tilsynsrapport",
       sidebarLayout(
         sidebarPanel(
-          dateRangeInput(inputId = "period", label = "Periode:",
-                         start = "2017-01-01", end = NULL,
-                         format = "dd-mm-yyyy", language = "nb",
-                         weekstart = 1),
+          uiOutput("years"),
           radioButtons('formatTilsyn',
                        'Format for nedlasting',
-                       c('PDF', 'HTML', 'BEAMER', 'REVEAL'),
+                       c('PDF', 'HTML'),
                        inline = FALSE),
           downloadButton('downloadReportTilsyn', 'Last ned')
         ),
         mainPanel(
-          htmlOutput("tilsynsrapport", inline = TRUE)
+          htmlOutput("tilsynsrapport", inline = TRUE) #%>%
+            # withSpinner(color = "#18bc9c",color.background = "#ffffff",
+            #             type = 2)
         )
       )
     ),
-    tabPanel("Figur og tabell"
+
+    tabPanel("Abonnement"
       ,
       sidebarLayout(
         sidebarPanel(width = 3,
-          selectInput(inputId = "var",
-                      label = "Variabel:",
-                      c("mpg", "disp", "hp", "drat", "wt", "qsec")),
-          sliderInput(inputId = "bins",
-                      label = "Antall grupper:",
-                      min = 1,
-                      max = 12,
-                      value = 5)
+          uiOutput("subscriptionRepList"),
+          selectInput("subscriptionFreq", "Frekvens:",
+                      list(Årlig="Årlig-year",
+                            Kvartalsvis="Kvartalsvis-quarter",
+                            Månedlig="Månedlig-month",
+                            Ukentlig="Ukentlig-week",
+                            Daglig="Daglig-DSTday"),
+                      selected = "Månedlig-month"),
+          selectInput("subscriptionFileFormat", "Format:",
+                      c("html", "pdf")),
+          actionButton("subscribe", "Bestill!")
         ),
         mainPanel(
-          tabsetPanel(
-            tabPanel("Figur", plotOutput("distPlot")),
-            tabPanel("Tabell", tableOutput("distTable"))
-          )
+          uiOutput("subscriptionContent")
         )
       )
-    ),
-    # tabPanel("Sammendrag",
-    # sidebarLayout(
-    #   sidebarPanel(width = 3,
-    #                selectInput(inputId = "var",
-    #                            label = "Variabel:",
-    #                            c("mpg", "disp", "hp", "drat", "wt", "qsec")),
-    #                sliderInput(inputId = "bins",
-    #                            label = "Antall grupper:",
-    #                            min = 1,
-    #                            max = 12,
-    #                            value = 5)
-    #   ),
-    #            mainPanel(
-    #              tabsetPanel(
-    #                tabPanel("Sammendrag", tableOutput("distSummary")),
-    #              )
-    #            )
-    #   )
-    # ),
-    tabPanel("Samlerapport"
-        ,
-        tabPanel("Fordeling av mpg",
-          sidebarLayout(
-            sidebarPanel(width = 3,
-              selectInput(inputId = "varS",
-                          label = "Variabel:",
-                          c("mpg", "disp", "hp", "drat", "wt", "qsec")),
-              sliderInput(inputId = "binsS",
-                          label = "Antall grupper:",
-                          min = 1,
-                          max = 12,
-                          value = 5),
-              downloadButton("downloadSamlerapport", "Last ned!")
-            ),
-            mainPanel(
-              uiOutput("samlerapport")
-            )
-          )
-        )
-      ),
-    tabPanel("Abonnement"
-      # ,
-      # sidebarLayout(
-      #   sidebarPanel(width = 3,
-      #     selectInput("subscriptionRep", "Rapport:", c("Samlerapport1", "Samlerapport2")),
-      #     selectInput("subscriptionFreq", "Frekvens:",
-      #                 list(Årlig="year", Kvartalsvis="quarter", Månedlig="month", Ukentlig="week", Daglig="DSTday"),
-      #                 selected = "month"),
-      #     actionButton("subscribe", "Bestill!")
-      #   ),
-      #   mainPanel(
-      #     uiOutput("subscriptionContent")
-      #   )
-      # )
     )
 
   ) # navbarPage

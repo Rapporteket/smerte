@@ -2,15 +2,22 @@
 % Please edit documentation in R/GetRegData.R
 \name{getRegData}
 \alias{getRegData}
+\alias{getRegDataLokalTilsynsrapportMaaned}
+\alias{getLocalYears}
 \title{Provide dataframe of registry data}
 \usage{
-getRegData(registryName)
+getRegDataLokalTilsynsrapportMaaned(registryName, year, ...)
+
+getLocalYears(registryName, reshId)
 }
 \arguments{
 \item{registryName}{String providing the current registryName}
-}
-\value{
-regData data frame
+
+\item{year}{Integer four digit year to be reported from}
+
+\item{...}{Optional arguments to be passed to the function}
+
+\item{reshId}{String providing organization Id}
 }
 \description{
 Provides a dataframe containing data from a registry

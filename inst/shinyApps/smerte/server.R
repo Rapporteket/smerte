@@ -1,29 +1,52 @@
 library(shiny)
+library(shinyalert)
 library(magrittr)
 library(rapbase)
-library(smerteregisteret)
+library(smerte)
 
 server <- function(input, output, session) {
 
   raplog::appLogger(session)
 
-  regData <- mtcars
+  # Parameters that will remain throughout the session
+  ## setting values that do depend on a Rapporteket context
+  if (rapbase::isRapContext()) {
+    reshId <- rapbase::getUserReshId(session)
+    hospitalName <- getHospitalName(reshId)
+    userFullName <- rapbase::getUserFullName(session)
+    userRole <- rapbase::getUserRole(session)
+    author <- paste0(userFullName, "/", "Rapporteket")
+  } else {
+    ### if need be, define your (local) values here
+    hospitalName <- "Helse Bergen HF"
+    reshId <- "100082"
+  }
+
+  # Hide tabs depending on context
+  ## do now show local reports in national context
+  if (isNationalReg(reshId)) {
+    hideTab(inputId = "tabs", target = "Tilsynsrapport")
+  }
+
+
 
   # Gjenbrukbar funksjon for å bearbeide Rmd til html
   htmlRenderRmd <- function(srcFile, params = list()) {
     # set param needed for report meta processing
-    context <- Sys.getenv("R_RAP_INSTANCE")
-    if (context %in% c("DEV", "TEST", "QA", "PRODUCTION")) {
-      params <- list(reshId=rapbase::getUserReshId(session),
-                     startDate=input$period[1], endDate=input$period[2],
+    if (rapbase::isRapContext()) {
+      params <- params
+    } else {
+      params <- list(reshId="100082",
+                     year=input$yearSet,
                      tableFormat="html")
     }
-    system.file(srcFile, package="smerteregisteret") %>%
+    system.file(srcFile, package="smerte") %>%
       knitr::knit() %>%
       markdown::markdownToHTML(.,
                                options = c('fragment_only',
                                            'base64_images',
-                                           'highlight_code')) %>%
+                                           'highlight_code'),
+                                            encoding = "utf-8") %>%
       shiny::HTML()
   }
 
@@ -40,9 +63,7 @@ server <- function(input, output, session) {
 
   # render file function for re-use
   contentFile <- function(file, srcFile, tmpFile, type) {
-    src <- normalizePath(system.file(srcFile, package="smerteregisteret"))
-    hospitalName <-getHospitalName(rapbase::getUserReshId(session))
-
+    src <- normalizePath(system.file(srcFile, package="smerte"))
     # temporarily switch to the temp dir, in case we do not have write
     # permission to the current working directory
     owd <- setwd(tempdir())
@@ -63,12 +84,11 @@ server <- function(input, output, session) {
       BEAMER = "latex",
       REVEAL = "html"),
       hospitalName=hospitalName,
-      reshId=rapbase::getUserReshId(session),
-      startDate=input$period[1],
-      endDate=input$period[2]
+      reshId=reshId,
+      year=input$yearSet,
+      registryName=makeRegistryName(baseName = "smerte", reshID = reshId),
+      author=author
     ), output_dir = tempdir())
-    # active garbage collection to prevent memory hogging?
-    gc()
     file.rename(out, file)
   }
 
@@ -78,6 +98,15 @@ server <- function(input, output, session) {
   output$appUserName <- renderText(getUserFullName(session))
   output$appOrgName <- renderText(getUserReshId(session))
 
+  # Brukerinformasjon
+  userInfo <- rapbase::howWeDealWithPersonalData(session)
+  observeEvent(input$userInfo, {
+    shinyalert("Dette vet Rapporteket om deg:", userInfo,
+               type = "", imageUrl = "rap/logo.svg",
+               closeOnEsc = TRUE, closeOnClickOutside = TRUE,
+               html = TRUE,
+               confirmButtonText = rapbase::noOptOutOk())
+  })
 
   # Veiledning
   output$veiledning <- renderUI({
@@ -85,65 +114,43 @@ server <- function(input, output, session) {
   })
 
   # Tilsynsrapport
+  output$years <- renderUI({
+    ## years available, hardcoded if outside known context
+    if (rapbase::isRapContext()) {
+      years <- getLocalYears(registryName = "smerte",
+                             reshId = rapbase::getUserReshId(session))
+      # remove NAs if they exists (bad registry)
+      years <- years[!is.na(years)]
+    } else {
+      years <- c("2016", "2017", "2018", "2019")
+    }
+    selectInput("yearSet", "Velg år:", years)
+  })
   output$tilsynsrapport <- renderUI({
-    htmlRenderRmd("tilsynsrapportMaaned.Rmd")
+    reshId <- rapbase::getUserReshId(session)
+    registryName <- makeRegistryName(baseName = "smerte", reshID = reshId)
+    if (is.null(input$yearSet)) {
+      NULL
+    } else {
+      htmlRenderRmd(srcFile = "LokalTilsynsrapportMaaned.Rmd",
+                    params = list(hospitalName=hospitalName,
+                                  year=input$yearSet,
+                                  tableFormat='html',
+                                  registryName=registryName)
+      )
+    }
   })
 
   output$downloadReportTilsyn <- downloadHandler(
     filename = function() {
-      downloadFilename("tilsynsrapportMaaned",
+      downloadFilename("LokalTilsynsrapportMaaned",
                        input$formatTilsyn)
     },
 
     content = function(file) {
-      contentFile(file, "tilsynsrapportMaaned.Rmd",
-                  "tmpTilsynsrapportMaaned.Rmd",
+      contentFile(file, "LokalTilsynsrapportMaaned.Rmd",
+                  "tmpLokalTilsynsrapportMaaned.Rmd",
                   input$formatTilsyn)
-    }
-  )
-
-  # Figur og tabell
-  ## Figur
-  output$distPlot <- renderPlot({
-    #raplog::repLogger(session, msg = "Test parent frame")
-    makeHist(df = regData, var = input$var, bins = input$bins, makeTable = FALSE, session = session)
-  })
-
-  ## Tabell
-  output$distTable <- renderTable({
-    makeHist(df = regData, var = input$var, bins = input$bins, makeTable = TRUE, session = session)
-  })
-
-  # Sammendrag
-  # output$distSummary <- renderTable({
-  #   as.data.frame(sapply(regData, summary))[input$var]
-  # }, rownames = TRUE)
-
-  # Samlerapport
-  ## vis
-  output$samlerapport <- renderUI({
-    htmlRenderRmd(srcFile = "samlerapport.Rmd",
-                  params = list(var = input$varS, bins = input$binsS))
-  })
-
-  ## last ned
-  output$downloadSamlerapport <- downloadHandler(
-    filename = function() {
-      "rapRegTemplateSamlerapport.html"
-    },
-    content = function(file) {
-      srcFile <- normalizePath(system.file("samlerapport.Rmd",
-                                           package = "rapRegTemplate"))
-      tmpFile <- "tmpSamlerapport.Rmd"
-      owd <- setwd(tempdir())
-      on.exit(setwd(owd))
-      file.copy(srcFile, tmpFile, overwrite = TRUE)
-      out <- rmarkdown::render(tmpFile,
-                               output_format =  rmarkdown::html_document(),
-                               params = list(var = input$varS,
-                                             bins = input$binsS),
-                               output_dir = tempdir())
-      file.rename(out, file)
     }
   )
 
@@ -157,47 +164,69 @@ server <- function(input, output, session) {
   ## lag tabell over gjeldende status for abonnement
   output$activeSubscriptions <- DT::renderDataTable(
     rv$subscriptionTab, server = FALSE, escape = FALSE, selection = 'none',
-    options = list(dom = 't')
+    options = list(dom = 'tp', ordering = FALSE), rownames = FALSE
   )
 
   ## lag side som viser status for abonnement, også når det ikke finnes noen
   output$subscriptionContent <- renderUI({
-    userName <- rapbase::getUserName(session)
+    userFullName <- rapbase::getUserFullName(session)
+    userEmail <- rapbase::getUserEmail(session)
     if (length(rv$subscriptionTab) == 0) {
-      p(paste("Ingen aktive abonnement for", userName))
+      p(paste("Ingen aktive abonnement for", userFullName))
     } else {
       tagList(
-        p(paste0("Aktive abonnement som sendes per epost til ", userName, ":")),
+        p(paste0("Aktive abonnement som sendes per epost til ", userFullName,
+                 " (", userEmail, "):")),
         DT::dataTableOutput("activeSubscriptions")
       )
     }
   })
 
   ## nye abonnement
-  observeEvent (input$subscribe, {
-    package <- "rapRegTemplate"
-    owner <- getUserName(session)
-    runDayOfYear <- rapbase::makeRunDayOfYearSequence(
-      interval = input$subscriptionFreq
-    )
-    email <- "test@test.no" # need new function i rapbase
-    if (input$subscriptionRep == "Samlerapport1") {
-      synopsis <- "Automatisk samlerapport1"
-      fun <- "samlerapport1Fun"
-      paramNames <- c("p1", "p2")
-      paramValues <- c("Alder", 1)
+  ### lag liste over mulige valg styrt av lokal eller nasjonal sesjon
+  output$subscriptionRepList <- renderUI({
+    if (isNationalReg(reshId)) {
+      selectInput("subscriptionRep", "Rapport:",
+                  c(""))
+    } else {
+      selectInput("subscriptionRep", "Rapport:",
+                  c("Lokalt tilsyn per måned 2016",
+                    "Lokalt tilsyn per måned 2017"))
+    }
+  })
 
+  observeEvent (input$subscribe, {
+    if (nchar(input$subscriptionRep) > 0) {
+
+      package <- "smerte"
+      owner <- rapbase::getUserName(session)
+      interval <- strsplit(input$subscriptionFreq, "-")[[1]][2]
+      intervalName <- strsplit(input$subscriptionFreq, "-")[[1]][1]
+      organization <- rapbase::getUserReshId(session)
+      runDayOfYear <- rapbase::makeRunDayOfYearSequence(
+        interval = interval)
+      email <- rapbase::getUserEmail(session)
+      synopsis <- "Rutinemessig utsending av lokal tilsynsrapport"
+      baseName <- "LokalTilsynsrapportMaaned"
+      registryName <- makeRegistryName(baseName = "smerte", reshID = reshId)
+      fun <- "subscriptionLocalTilsyn"
+      if (input$subscriptionRep == "Lokalt tilsyn per måned 2016") {
+        year <- "2016"
+      }
+      if (input$subscriptionRep == "Lokalt tilsyn per måned 2017") {
+        year <- "2017"
+      }
+      paramNames <- c("baseName", "reshId", "registryName", "author",
+                      "hospitalName", "year", "type")
+      paramValues <- c(baseName, reshId, registryName, author, hospitalName,
+                       year, input$subscriptionFileFormat)
+      rapbase::createAutoReport(synopsis = synopsis, package = package,
+                                fun = fun, paramNames = paramNames,
+                                paramValues = paramValues, owner = owner,
+                                email = email, organization = organization,
+                                runDayOfYear = runDayOfYear,
+                                interval = interval, intervalName = intervalName)
     }
-    if (input$subscriptionRep == "Samlerapport2") {
-      synopsis <- "Automatisk samlerapport2"
-      fun <- "samlerapport2Fun"
-      paramNames <- c("p1", "p2")
-      paramValues <- c("BMI", 2)
-    }
-    rapbase::createAutoReport(synopsis = synopsis, package = package,
-                              fun = fun, paramNames = paramNames,
-                              paramValues = paramValues, owner = owner,
-                              email = email, runDayOfYear = runDayOfYear)
     rv$subscriptionTab <- rapbase::makeUserSubscriptionTab(session)
   })
 

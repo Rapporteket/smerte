@@ -4,7 +4,7 @@
 \alias{makeHist}
 \title{Make a histogram, either plot or its data}
 \usage{
-makeHist(df, var, bins, makeTable = FALSE)
+makeHist(df, var, bins, makeTable = FALSE, ...)
 }
 \arguments{
 \item{df}{dataframe from which output is to be made}
@@ -15,6 +15,8 @@ makeHist(df, var, bins, makeTable = FALSE)
 
 \item{makeTable}{Logical that if TRUE function will return a data frame
 containin the bin borders and count within each bin}
+
+\item{...}{Optional arguments to be passed to other functions}
 }
 \value{
 a graphical object or data frame
