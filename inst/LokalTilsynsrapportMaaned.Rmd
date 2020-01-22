@@ -41,7 +41,7 @@ library(knitr)
 library(kableExtra)
 
 #FIX: Må det legges inn noe som avjgør lokasjon
-#FIX3: bytte fra RegDato11 til StartDatoTO? (spør LJ/Stefanie)
+#FIX3: bytte fra RegDato11 til StartdatoTO? (spør LJ/Stefanie)
 
 ```
 
@@ -69,7 +69,8 @@ if (rapbase::isRapContext()) {
 
   #Må kunne laste inn data for de ulike årene
   aar <- params$year
-  dat = dat %>% filter(year(date(RegDato11)) == aar) #year
+  dat = dat %>% filter(year(date(StartdatoTO)) == aar) #year #denne virker? Er ikke alle registert på regdato?
+  #dat = dat %>% filter(year(date(RegDato11)) == aar) #year
 
 }
 
@@ -152,11 +153,11 @@ if (!rapbase::isRapContext()) {
 }
 
 #Organiserer data etter tilsynstype og måned
-tilsyn_full = dat %>% select(AntPasTils, AntTilsLege, AntTilsSykPleier, AntTilsFysioT, AntTilsPsyk, AntTilsSosio, RegDato11, PasientID, ForlopsID, Tilsett, DEPARTMENT_NAME, DEPARTMENT_SHORTNAME, InnlAvd) %>% 
+tilsyn_full = dat %>% select(AntPasTils, AntTilsLege, AntTilsSykPleier, AntTilsFysioT, AntTilsPsyk, AntTilsSosio, StartdatoTO, PasientID, ForlopsID, Tilsett, DEPARTMENT_NAME, DEPARTMENT_SHORTNAME, InnlAvd) %>% 
                            gather(key = tilsynstype, value=antall, 
                            AntPasTils, AntTilsLege, AntTilsSykPleier, AntTilsFysioT, AntTilsPsyk, AntTilsSosio) %>% 
                            mutate(antall = replace(antall, is.na(antall), 0), 
-                           month = months(as.Date(RegDato11)),
+                           month = months(as.Date(StartdatoTO)),
                                                  
                      tilsynstype=str_replace_all(tilsynstype,"AntTilsLege", 
                                                  "Lege"),
@@ -170,14 +171,14 @@ tilsyn_full = dat %>% select(AntPasTils, AntTilsLege, AntTilsSykPleier, AntTilsF
                                                   "Sosionom"),
                      tilsynstype=str_replace_all(tilsynstype, "AntPasTils", 
                                                   "Total"),
-                     yearmonth = as.yearmon(RegDato11))
+                     yearmonth = as.yearmon(StartdatoTO))
 
 
 # Lage månedsnavn i rekkefølge slik som de er i året
 #NB: legge inn "aar" som kommer fra det bruker velger
 manednamn = months(as.Date(paste0("2019-",1:12,"-01")))
 
-tilsyn_full = tilsyn_full %>% mutate(monthname = factor(months(as.Date(RegDato11)), levels = manednamn)) 
+tilsyn_full = tilsyn_full %>% mutate(monthname = factor(months(as.Date(StartdatoTO)), levels = manednamn)) 
 
 sum_tilsyn_maned = tilsyn_full %>% 
                      group_by(tilsynstype, monthname) %>% 
