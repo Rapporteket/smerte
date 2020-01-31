@@ -1,0 +1,47 @@
+#' Provide dataframe of registry data
+#'
+#' Provides a dataframe containing data from a registry
+#'
+#' @param registryName String providing the current registryName
+#' @param reshId String providing reshId for filtering in query
+#' @param startDate Start date ...
+#' @param endDate End date...
+#' @return regData data frame
+#' @export
+
+getRegDataRapportDekningsgrad <- function(registryName, reshId, startDate,
+                                           endDate) {
+
+  dbType <- "mysql"
+  registryName <- paste0(registryName, reshId)
+
+  query <- "
+SELECT
+  var.Tilsett,
+  var.RegDato11,
+  var.StartdatoTO,
+  var.InnlAvd,
+  var.PasientID,
+  var.ForlopsID,
+  var.InklKritOppf,
+  var.SkrSamtykke,
+  var.SkriftligSamtyk,
+  avd.DEPARTMENT_ID,
+  avd.DEPARTMENT_NAME,
+  avd.DEPARTMENT_SHORTNAME
+FROM
+  AlleVarNum var
+LEFT JOIN
+  avdelingsoversikt avd
+ON
+  avd.DEPARTMENT_ID = var.InnlAvd
+WHERE
+  var.AvdRESH = "
+
+  query <- paste0(query, reshId, " AND (DATE(var.StartdatoTO) BETWEEN '",
+                  startDate, "' AND '", endDate, "');")
+
+  regData <- rapbase::LoadRegData(registryName, query, dbType)
+
+  return(regData)
+}
