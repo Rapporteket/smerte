@@ -1,0 +1,114 @@
+---
+params:
+  title: 'Rapport for lokal dekningsgrad ved'
+  author: 'Rapporteket'
+  hospitalName: 'Ukjent sukehus'
+  reshId: 'locallyDefined'
+  startDate: '2017-01-01'
+  endDate: '2017-12-31'
+  year: '2016'
+  tableFormat: 'html'
+  registryName: 'rapbase'
+title: '`r paste(params$title, params$hospitalName, "for", params$year)`'
+author: '`r params$author`'
+date: '`r format(Sys.time(), "%d\\. %B, %Y")`'
+header-includes:
+  - \usepackage[english, norsk]{babel}
+  - \usepackage{booktabs}
+  - \usepackage{rotating}
+#output:
+#  html_document:
+#    theme: flatly
+#    toc: yes
+#  pdf_document: default
+#  word_document: default
+---
+```{r set options and load packages, include = FALSE}
+knitr::opts_chunk$set(echo=FALSE)
+options(knitr.table.format = params$tableFormat)
+options(tinytex.verbose = TRUE)
+
+# Pakker
+library(xtable)
+library(tidyverse)
+library(stringr)
+library(zoo)
+library(dplyr)
+library(magrittr)
+library(lubridate)
+library(smerte)
+library(knitr)
+library(kableExtra)
+
+#FIX: Må det legges inn noe som avjgør lokasjon
+#FIX3: bytte fra RegDato11 til StartdatoTO? (spør LJ/Stefanie)
+
+```
+
+```{r get data, warning = FALSE, message=TRUE}
+
+if (rapbase::isRapContext()) {
+  dat <- getRegDataRapportDekningsgrad(registryName = params$registryName,
+                                             year = params$year)
+} else {
+  #Dataimport: skal hente lokale data for hvert sykehus (tar vekk sti, og erstatter med lokal filB)
+  path <- read.csv(file = "H:/path.csv", header = FALSE, sep = ";")
+  path <- as.data.frame(lapply(path, as.character), stringsAsFactors=FALSE)
+  path <- path$V1
+  dat <- read.csv(file = path, header = TRUE, sep = ";")
+  
+  avdpath <- read.csv(file = "H:/avdelingpath.csv", header = FALSE, sep = ";")
+  avdpath <- as.data.frame(lapply(avdpath, as.character), stringsAsFactors=FALSE)
+  avdpath <- avdpath$V1
+  avd <- read.csv(file = avdpath, header = TRUE, sep = ";", encoding = "UTF-8")
+  #Endrer navn til å matche rapporteket
+  avd <- avd %>% rename(DEPARTMENT_ID = AvdID, DEPARTMENT_NAME = AvdNavn, DEPARTMENT_SHORTNAME = AvdNavnKort)
+
+  #Samler datasettene vha InnlAvd i allevarnum og departmentID i avdelingsoversikt
+  dat <- merge(x = dat, y = avd, by.x = c("InnlAvd"), by.y = c("DEPARTMENT_ID"))
+
+  #Må kunne laste inn data for de ulike årene
+  aar <- params$year
+  dat = dat %>% filter(year(date(StartdatoTO)) == aar) #year
+}
+
+
+```
+
+```{r makeStandardTableFunction, eval=TRUE}
+mst <- function(tab, colnames = colnames(tab), type, cap, digs, align = NULL, fs = 8, lsd = FALSE) {
+  if (type == "latex") {
+    if (lsd) {
+      lo <- c("hold_position", "scale_down")
+    } else {
+      lo <- c("hold_position")
+    }
+    k <- kable(tab, col.names = colnames, caption = cap, digits = digs, align = align,
+               booktabs = TRUE) %>% 
+      kable_styling(latex_options = lo, font_size = fs)
+  }
+  
+  if (type == "html") {
+    k <- kable(tab, col.names = colnames, caption = cap, digits = digs, align = align) %>% 
+      kable_styling(bootstrap_options = c("striped", "hover", "condensed"),
+                    full_width = F)
+  }
+  print(k)
+}
+```
+
+## Dekningsgrad
+
+Dekningsgraden beregnes lokalt for hvert sykehus. Den viser andelen pasienter som har samtykket til å være med i registeret av alle som oppfyller inklusjonskriteriene. 
+```{r inkludert, warning = FALSE, message=FALSE, results='asis'}
+###Her klargjøres data for oversikt over dekningsgraden
+
+#NB: er det SkrSamtykke eller SkriftligSamtyk som skal brukes? De viser forskjellige verdier.
+dekning <- NA # Setter tom først for å kunne sjekke etter tilstrekkelig antall pasienter
+if(nrow(dat) >= 1){
+  dekning <- sum(dat$SkrSamtykke == 1) / sum(dat$InklKritOppf == 1)
+}
+
+
+```
+Dekningsgraden i den valgte tidsperioden er `r dekning`.
