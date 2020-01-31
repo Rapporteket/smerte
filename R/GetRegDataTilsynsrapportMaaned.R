@@ -41,7 +41,7 @@ ON
 WHERE
   var.AvdRESH = "
 
-  query <- paste0(query, reshId, " AND (DATE(var.RegDato11) BETWEEN '",
+  query <- paste0(query, reshId, " AND (DATE(var.StartdatoTO) BETWEEN '",
                   startDate, "' AND '", endDate, "');")
 
   regData <- rapbase::LoadRegData(registryName, query, dbType)
