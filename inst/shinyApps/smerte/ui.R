@@ -42,7 +42,23 @@ ui <- tagList(
         )
       )
     ),
-
+    tabPanel("Dekningsgrad",
+             sidebarLayout(
+               sidebarPanel(
+                 uiOutput("years"),
+                 radioButtons('formatTilsyn',
+                              'Format for nedlasting',
+                              c('PDF', 'HTML'),
+                              inline = FALSE),
+                 downloadButton('downloadReportTilsyn', 'Last ned')
+               ),
+               mainPanel(
+                 htmlOutput("tilsynsrapport", inline = TRUE) #%>%
+                 # withSpinner(color = "#18bc9c",color.background = "#ffffff",
+                 #             type = 2)
+               )
+             )
+    ),
     tabPanel("Abonnement"
       ,
       sidebarLayout(
