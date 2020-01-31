@@ -103,7 +103,6 @@ Dekningsgraden beregnes lokalt for hvert sykehus. Den viser andelen pasienter so
 ```{r inkludert, warning = FALSE, message=FALSE, results='asis'}
 ###Her klargjøres data for oversikt over dekningsgraden
 
-#NB: er det SkrSamtykke eller SkriftligSamtyk som skal brukes? De viser forskjellige verdier.
 dekning <- NA # Setter tom først for å kunne sjekke etter tilstrekkelig antall pasienter
 if(nrow(dat) >= 1){
   dekning <- sum(dat$SkrSamtykke == 1) / sum(dat$InklKritOppf == 1)

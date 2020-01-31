@@ -25,7 +25,6 @@ SELECT
   var.ForlopsID,
   var.InklKritOppf,
   var.SkrSamtykke,
-  var.SkriftligSamtyk,
   avd.DEPARTMENT_ID,
   avd.DEPARTMENT_NAME,
   avd.DEPARTMENT_SHORTNAME
