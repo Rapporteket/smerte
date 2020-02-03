@@ -3,7 +3,7 @@
 export(getHospitalName)
 export(getLocalYears)
 export(getRegDataLokalTilsynsrapportMaaned)
-export(getRegDataTilsynsrapportMaaned)
+export(getRegDataRapportDekningsgrad)
 export(isNationalReg)
 export(makeHist)
 export(makeRegistryName)
