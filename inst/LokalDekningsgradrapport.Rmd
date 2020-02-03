@@ -49,7 +49,9 @@ library(kableExtra)
 
 if (rapbase::isRapContext()) {
   dat <- getRegDataRapportDekningsgrad(registryName = params$registryName,
-                                             year = params$year)
+                                       reshId = params$reshId,
+                                       startDate = params$startDate,
+                                       endDate = params$endDate)
 } else {
   #Dataimport: skal hente lokale data for hvert sykehus (tar vekk sti, og erstatter med lokal filB)
   path <- read.csv(file = "H:/path.csv", header = FALSE, sep = ";")
