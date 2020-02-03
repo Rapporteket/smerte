@@ -46,7 +46,7 @@ ui <- tagList(
              sidebarLayout(
                sidebarPanel(
                  dateRangeInput('dateRangeDekningsgrad',
-                                label = "Velg periode:", start = NULL,
+                                label = "Velg periode:", start = "2017-01-01",
                                 end = Sys.Date(), separator = "-"),
                  radioButtons('formatDekningsgrad',
                               'Format for nedlasting',
