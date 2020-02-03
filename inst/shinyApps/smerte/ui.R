@@ -45,15 +45,17 @@ ui <- tagList(
     tabPanel("Dekningsgrad",
              sidebarLayout(
                sidebarPanel(
-                 uiOutput("years"),
-                 radioButtons('formatTilsyn',
+                 dateRangeInput('dateRangeDekningsgrad',
+                                label = "Velg periode:", start = NULL,
+                                end = Sys.Date(), separator = "-"),
+                 radioButtons('formatDekningsgrad',
                               'Format for nedlasting',
                               c('PDF', 'HTML'),
                               inline = FALSE),
-                 downloadButton('downloadReportTilsyn', 'Last ned')
+                 downloadButton('downloadReportDekningsgrad', 'Last ned')
                ),
                mainPanel(
-                 htmlOutput("tilsynsrapport", inline = TRUE) #%>%
+                 htmlOutput("dekningsgrad", inline = TRUE) #%>%
                  # withSpinner(color = "#18bc9c",color.background = "#ffffff",
                  #             type = 2)
                )
