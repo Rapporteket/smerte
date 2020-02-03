@@ -86,6 +86,8 @@ server <- function(input, output, session) {
       hospitalName=hospitalName,
       reshId=reshId,
       year=input$yearSet,
+      startDate=input$dateRangeDekningsgrad[1],
+      endDate=input$dateRangeDekningsgrad[2],
       registryName=makeRegistryName(baseName = "smerte", reshID = reshId),
       author=author
     ), output_dir = tempdir())
@@ -151,6 +153,34 @@ server <- function(input, output, session) {
       contentFile(file, "LokalTilsynsrapportMaaned.Rmd",
                   "tmpLokalTilsynsrapportMaaned.Rmd",
                   input$formatTilsyn)
+    }
+  )
+
+
+  # Dekningsgrad
+  output$dekningsgrad <- renderUI({
+    reshId <- rapbase::getUserReshId(session)
+    registryName <- makeRegistryName(baseName = "smerte", reshID = reshId)
+    htmlRenderRmd(srcFile = "LokalDekningsgradrapport.Rmd",
+                  params = list(hospitalName=hospitalName,
+                                reshId=reshId,
+                                startDate=input$dateRangeDekningsgrad[1],
+                                endDate=input$dateRangeDekningsgrad[2],
+                                tableFormat='html',
+                                registryName=registryName)
+    )
+  })
+
+  output$downloadReportDekningsgrad <- downloadHandler(
+    filename = function() {
+      downloadFilename("LokalDekningsgradrapport",
+                       input$formatDekningsgrad)
+    },
+
+    content = function(file) {
+      contentFile(file, "LokalDekningsgradrapport.Rmd",
+                  "tmpLokalDekningsgradrapport.Rmd",
+                  input$formatDekningsgrad)
     }
   )
 
