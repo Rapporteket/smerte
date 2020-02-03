@@ -1,6 +1,6 @@
 ---
 params:
-  title: 'Rapport for lokal dekningsgrad ved'
+  title: 'Dekningsgrad ved'
   author: 'Rapporteket'
   hospitalName: 'Ukjent sukehus'
   reshId: 'locallyDefined'
@@ -39,9 +39,6 @@ library(lubridate)
 library(smerte)
 library(knitr)
 library(kableExtra)
-
-#FIX: Må det legges inn noe som avjgør lokasjon
-#FIX3: bytte fra RegDato11 til StartdatoTO? (spør LJ/Stefanie)
 
 ```
 
@@ -105,10 +102,16 @@ Dekningsgraden beregnes lokalt for hvert sykehus. Den viser andelen pasienter so
 ```{r inkludert, warning = FALSE, message=FALSE, results='asis'}
 ###Her klargjøres data for oversikt over dekningsgraden
 
-dekning <- NA # Setter tom først for å kunne sjekke etter tilstrekkelig antall pasienter
-if(nrow(dat) >= 1){
+# Setter tom først for å kunne sjekke etter tilstrekkelig antall pasienter
+dekning <- NA 
+
+#Hvor mange er inkluderbar (må være minst 1, ellers deler vi på 0 senere)
+antInkl <- sum(dat$InklKritOppf == 1)
+
+#Dersom minst 1 oppfyller kriteriene setter v idekning fra NA til samtykke/inkluderbar. Ellers skriver vi setningen under.
+if(antInkl >= 1){
   dekning <- sum(dat$SkrSamtykke == 1) / sum(dat$InklKritOppf == 1)
-}
+}else{dekning <- as.character("Ikke tilgjengelig: ingen pasienter oppfylte inklusjonskriteriene i den valgte tidsperioden.")}
 
 
 ```
