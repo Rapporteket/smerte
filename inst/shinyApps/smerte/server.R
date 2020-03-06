@@ -85,6 +85,7 @@ server <- function(input, output, session) {
       REVEAL = "html"),
       hospitalName=hospitalName,
       reshId=reshId,
+      userRole=userRole,
       year=input$yearSet,
       registryName=makeRegistryName(baseName = "smerte", reshID = reshId),
       author=author
@@ -136,7 +137,9 @@ server <- function(input, output, session) {
                     params = list(hospitalName=hospitalName,
                                   year=input$yearSet,
                                   tableFormat='html',
-                                  registryName=registryName)
+                                  registryName=registryName,
+                                  reshId=reshId,
+                                  userRole=userRole)
       )
     }
   })

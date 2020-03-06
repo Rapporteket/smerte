@@ -13,13 +13,23 @@ NULL
 
 #' @rdname getRegData
 #' @export
-getRegDataLokalTilsynsrapportMaaned <- function(registryName, year, ...) {
+getRegDataLokalTilsynsrapportMaaned <- function(registryName, reshId, userRole,
+                                                year, ...) {
 
   dbType <- "mysql"
 
   if ("session" %in% names(list(...))) {
     raplog::repLogger(session = list(...)[["session"]],
                       msg = paste("Load data from", registryName))
+  }
+
+  # special case at OUS
+  conf <- rapbase::getConfig(fileName = "rapbaseConfig.yml")
+  if (reshId %in% conf$reg$smerte$ousAccess$reshId &&
+      userRole %in% conf$reg$smerte$ousAccess$userRole) {
+    deps <- paste0(conf$reg$smerte$ousAccess$reshId, collapse = ", ")
+  } else {
+    deps <- reshId
   }
 
   query <- "
@@ -48,7 +58,9 @@ ON
 WHERE
   YEAR(var.RegDato11) = "
 
-  query <- paste0(query, year, ";")
+  query <- paste0(query, year, " AND var.AvdRESH IN (", deps, ");")
+
+  print(query)
 
   rapbase::LoadRegData(registryName, query, dbType)
 }
