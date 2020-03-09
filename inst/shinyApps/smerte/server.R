@@ -12,6 +12,7 @@ server <- function(input, output, session) {
   ## setting values that do depend on a Rapporteket context
   if (rapbase::isRapContext()) {
     reshId <- rapbase::getUserReshId(session)
+    registryName <- makeRegistryName("smerte", reshId)
     hospitalName <- getHospitalName(reshId)
     userFullName <- rapbase::getUserFullName(session)
     userRole <- rapbase::getUserRole(session)
@@ -118,8 +119,7 @@ server <- function(input, output, session) {
   output$years <- renderUI({
     ## years available, hardcoded if outside known context
     if (rapbase::isRapContext()) {
-      years <- getLocalYears(registryName = "smerte",
-                             reshId = rapbase::getUserReshId(session))
+      years <- getLocalYears(registryName, reshId, userRole)
       # remove NAs if they exists (bad registry)
       years <- years[!is.na(years)]
     } else {

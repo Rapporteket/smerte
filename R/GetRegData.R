@@ -11,6 +11,17 @@
 NULL
 
 
+.getDeps <- function(reshId, userRole) {
+
+  conf <- rapbase::getConfig(fileName = "rapbaseConfig.yml")
+  if (reshId %in% conf$reg$smerte$ousAccess$reshId &&
+      userRole %in% conf$reg$smerte$ousAccess$userRole) {
+    return(paste0(conf$reg$smerte$ousAccess$reshId, collapse = ", "))
+  } else {
+    return(reshId)
+  }
+}
+
 #' @rdname getRegData
 #' @export
 getRegDataLokalTilsynsrapportMaaned <- function(registryName, reshId, userRole,
@@ -24,13 +35,7 @@ getRegDataLokalTilsynsrapportMaaned <- function(registryName, reshId, userRole,
   }
 
   # special case at OUS
-  conf <- rapbase::getConfig(fileName = "rapbaseConfig.yml")
-  if (reshId %in% conf$reg$smerte$ousAccess$reshId &&
-      userRole %in% conf$reg$smerte$ousAccess$userRole) {
-    deps <- paste0(conf$reg$smerte$ousAccess$reshId, collapse = ", ")
-  } else {
-    deps <- reshId
-  }
+  deps <- .getDeps(reshId, userRole)
 
   query <- "
 SELECT
@@ -68,18 +73,22 @@ WHERE
 
 #' @rdname getRegData
 #' @export
-getLocalYears <- function(registryName, reshId) {
+getLocalYears <- function(registryName, reshId, userRole) {
 
   dbType <- "mysql"
-  registryName <- paste0(registryName, reshId)
 
-  query <- "
+  deps <- .getDeps(reshId, userRole)
+
+  query <- paste0("
 SELECT
   YEAR(RegDato11) as year
 FROM
   AlleVarNum
+WHERE
+  AvdRESH IN (", deps, ")
 GROUP BY
   YEAR(RegDato11);
-"
+")
+
   rapbase::LoadRegData(registryName, query, dbType)
 }

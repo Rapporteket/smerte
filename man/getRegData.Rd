@@ -8,7 +8,7 @@
 \usage{
 getRegDataLokalTilsynsrapportMaaned(registryName, reshId, userRole, year, ...)
 
-getLocalYears(registryName, reshId)
+getLocalYears(registryName, reshId, userRole)
 }
 \arguments{
 \item{registryName}{String providing the current registryName}
