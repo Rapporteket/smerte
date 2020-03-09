@@ -11,11 +11,13 @@
 
 makeRegistryName <- function(baseName, reshID) {
 
+  conf <- rapbase::getConfig(fileName = "rapbaseConfig.yml")
+
   if (isNationalReg(reshID)) {
-    conf <- rapbase::getConfig(fileName = "rapbaseConfig.yml")
     return(paste0(baseName, conf$reg$smerte$nationalAccess$nameKey))
+  } else if (isOUSReg(reshID)) {
+    return(paste0(baseName, conf$reg$smerte$ousAccess$nameKey))
   } else {
     return(paste0(baseName, reshID))
   }
-
 }
