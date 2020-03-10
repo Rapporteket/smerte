@@ -92,3 +92,28 @@ GROUP BY
 
   rapbase::LoadRegData(registryName, query, dbType)
 }
+
+
+#' @rdname getHosptialname
+#' @export
+getHospitalName <- function(reshId, userRole) {
+
+  dbType <- "mysql"
+
+  deps <- .getDeps(reshId, userRole)
+
+  query <- paste0("
+SELECT
+  LOCATIONNAME AS ln
+FROM
+  avdelingsoversikt
+WHERE
+  DEPARTMENT_CENTREID IN (", deps, ")
+GROUP BY
+  DEPARTMENT_CENTREID
+                  ")
+
+  df <- rapbase::LoadRegData(regName, dbType = dbType, query = query)
+  paste(df$ln, collapse = ", ")
+
+}
