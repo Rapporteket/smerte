@@ -7,7 +7,7 @@
 #' @param reshId String providing organization Id
 #' @param ... Optional arguments to be passed to the function
 #' @name getRegData
-#' @aliases getRegDataLokalTilsynsrapportMaaned getLocalYears
+#' @aliases getRegDataLokalTilsynsrapportMaaned getLocalYears getHospitalName
 NULL
 
 
@@ -94,9 +94,9 @@ GROUP BY
 }
 
 
-#' @rdname getHosptialname
+#' @rdname getRegData
 #' @export
-getHospitalName <- function(reshId, userRole) {
+getHospitalName <- function(registryName, reshId, userRole) {
 
   dbType <- "mysql"
 
@@ -110,10 +110,10 @@ FROM
 WHERE
   DEPARTMENT_CENTREID IN (", deps, ")
 GROUP BY
-  DEPARTMENT_CENTREID
+  LOCATIONNAME;
                   ")
 
-  df <- rapbase::LoadRegData(regName, dbType = dbType, query = query)
+  df <- rapbase::LoadRegData(registryName, dbType = dbType, query = query)
   paste(df$ln, collapse = ", ")
 
 }

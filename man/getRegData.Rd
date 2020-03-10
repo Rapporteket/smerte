@@ -4,11 +4,14 @@
 \alias{getRegData}
 \alias{getRegDataLokalTilsynsrapportMaaned}
 \alias{getLocalYears}
+\alias{getHospitalName}
 \title{Provide dataframe of registry data}
 \usage{
 getRegDataLokalTilsynsrapportMaaned(registryName, reshId, userRole, year, ...)
 
 getLocalYears(registryName, reshId, userRole)
+
+getHospitalName(reshId, userRole)
 }
 \arguments{
 \item{registryName}{String providing the current registryName}
