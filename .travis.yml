@@ -1,7 +1,12 @@
 # R for travis: see documentation at https://docs.travis-ci.com/user/languages/r
 
-language: R
+language: r
 cache: packages
+
+r:
+  - oldrel
+  - release
+  - devel
 
 before_cache: Rscript -e 'remotes::install_cran("pkgdown")'
 deploy:
@@ -10,6 +15,7 @@ deploy:
   skip_cleanup: true
   on:
     branch: rel
+    condition: $TRAVIS_R_VERSION_STRING == "release"
 
 after_success:
   - Rscript -e 'covr::codecov()'
