@@ -106,7 +106,8 @@ SELECT
 FROM
   avdelingsoversikt
 WHERE
-  DEPARTMENT_CENTREID IN (", deps, ")
+  DEPARTMENT_CENTREID IN (", deps, ") AND
+  DEPARTMENT_ACTIVE = 1
 GROUP BY
   LOCATIONNAME;
                   ")
