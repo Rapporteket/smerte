@@ -13,9 +13,9 @@ server <- function(input, output, session) {
   if (rapbase::isRapContext()) {
     reshId <- rapbase::getUserReshId(session)
     registryName <- makeRegistryName("smerte", reshId)
-    hospitalName <- getHospitalName(reshId)
     userFullName <- rapbase::getUserFullName(session)
     userRole <- rapbase::getUserRole(session)
+    hospitalName <- getHospitalName(registryName, reshId, userRole)
     author <- paste0(userFullName, "/", "Rapporteket")
   } else {
     ### if need be, define your (local) values here
@@ -98,7 +98,8 @@ server <- function(input, output, session) {
 
   # widget
   output$appUserName <- renderText(getUserFullName(session))
-  output$appOrgName <- renderText(getUserReshId(session))
+  output$appOrgName <- renderText(paste(getUserReshId(session),
+                                  getUserRole(session), sep = ", "))
 
   # Brukerinformasjon
   userInfo <- rapbase::howWeDealWithPersonalData(session)
