@@ -11,12 +11,14 @@ getRegDataLokalTilsynsrapportMaaned(registryName, reshId, userRole, year, ...)
 
 getLocalYears(registryName, reshId, userRole)
 
-getHospitalName(reshId, userRole)
+getHospitalName(registryName, reshId, userRole)
 }
 \arguments{
 \item{registryName}{String providing the current registryName}
 
 \item{reshId}{String providing organization Id}
+
+\item{userRole}{String providing user role}
 
 \item{year}{Integer four digit year to be reported from}
 
