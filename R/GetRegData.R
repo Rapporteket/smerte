@@ -65,8 +65,6 @@ WHERE
 
   query <- paste0(query, year, " AND var.AvdRESH IN (", deps, ");")
 
-  print(query)
-
   rapbase::LoadRegData(registryName, query, dbType)
 }
 
@@ -114,6 +112,15 @@ GROUP BY
                   ")
 
   df <- rapbase::LoadRegData(registryName, dbType = dbType, query = query)
-  paste(df$ln, collapse = ", ")
+  n <- dim(df)[1]
+  hVec <- df[1:n, 1]
+  if (n > 1) {
+    hStr <- paste(hVec[1:n-1], sep = ", ")
+    hStr <- paste(hStr, hVec[n], sep = " og ")
+  } else {
+    hStr <- paste(hVec)
+  }
+
+  hStr
 
 }
