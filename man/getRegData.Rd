@@ -4,20 +4,25 @@
 \alias{getRegData}
 \alias{getRegDataLokalTilsynsrapportMaaned}
 \alias{getLocalYears}
+\alias{getHospitalName}
 \title{Provide dataframe of registry data}
 \usage{
-getRegDataLokalTilsynsrapportMaaned(registryName, year, ...)
+getRegDataLokalTilsynsrapportMaaned(registryName, reshId, userRole, year, ...)
 
-getLocalYears(registryName, reshId)
+getLocalYears(registryName, reshId, userRole)
+
+getHospitalName(registryName, reshId, userRole)
 }
 \arguments{
 \item{registryName}{String providing the current registryName}
 
+\item{reshId}{String providing organization Id}
+
+\item{userRole}{String providing user role}
+
 \item{year}{Integer four digit year to be reported from}
 
 \item{...}{Optional arguments to be passed to the function}
-
-\item{reshId}{String providing organization Id}
 }
 \description{
 Provides a dataframe containing data from a registry
