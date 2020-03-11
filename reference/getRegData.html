@@ -69,7 +69,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">smerte</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.0.9000</span>
       </span>
     </div>
 
@@ -109,9 +109,11 @@
     <p>Provides a dataframe containing data from a registry</p>
     </div>
 
-    <pre class="usage"><span class='fu'>getRegDataLokalTilsynsrapportMaaned</span>(<span class='no'>registryName</span>, <span class='no'>year</span>, <span class='no'>...</span>)
+    <pre class="usage"><span class='fu'>getRegDataLokalTilsynsrapportMaaned</span>(<span class='no'>registryName</span>, <span class='no'>reshId</span>, <span class='no'>userRole</span>, <span class='no'>year</span>, <span class='no'>...</span>)
 
-<span class='fu'>getLocalYears</span>(<span class='no'>registryName</span>, <span class='no'>reshId</span>)</pre>
+<span class='fu'>getLocalYears</span>(<span class='no'>registryName</span>, <span class='no'>reshId</span>, <span class='no'>userRole</span>)
+
+<span class='fu'>getHospitalName</span>(<span class='no'>registryName</span>, <span class='no'>reshId</span>, <span class='no'>userRole</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -121,16 +123,20 @@
       <td><p>String providing the current registryName</p></td>
     </tr>
     <tr>
+      <th>reshId</th>
+      <td><p>String providing organization Id</p></td>
+    </tr>
+    <tr>
+      <th>userRole</th>
+      <td><p>String providing user role</p></td>
+    </tr>
+    <tr>
       <th>year</th>
       <td><p>Integer four digit year to be reported from</p></td>
     </tr>
     <tr>
       <th>...</th>
       <td><p>Optional arguments to be passed to the function</p></td>
-    </tr>
-    <tr>
-      <th>reshId</th>
-      <td><p>String providing organization Id</p></td>
     </tr>
     </table>
 
