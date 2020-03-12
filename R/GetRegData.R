@@ -30,11 +30,6 @@ getRegDataLokalTilsynsrapportMaaned <- function(registryName, reshId, userRole,
 
   dbType <- "mysql"
 
-  if ("session" %in% names(list(...))) {
-    raplog::repLogger(session = list(...)[["session"]],
-                      msg = paste("Load data from", registryName))
-  }
-
   # special case at OUS
   deps <- .getDeps(reshId, userRole)
 
@@ -65,6 +60,12 @@ WHERE
   YEAR(var.RegDato11) = "
 
   query <- paste0(query, year, " AND var.AvdRESH IN (", deps, ");")
+
+  if ("session" %in% names(list(...))) {
+    raplog::repLogger(session = list(...)[["session"]],
+                      msg = paste("Load tilsynsrapport data from",
+                                  registryName, ": ", query))
+  }
 
   rapbase::LoadRegData(registryName, query, dbType)
 }

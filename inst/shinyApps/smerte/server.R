@@ -88,8 +88,9 @@ server <- function(input, output, session) {
       reshId=reshId,
       userRole=userRole,
       year=input$yearSet,
-      registryName=makeRegistryName(baseName = "smerte", reshID = reshId),
-      author=author
+      registryName=registryName,
+      author=author,
+      shinySession=session
     ), output_dir = tempdir())
     file.rename(out, file)
   }
@@ -140,7 +141,8 @@ server <- function(input, output, session) {
                                   tableFormat='html',
                                   registryName=registryName,
                                   reshId=reshId,
-                                  userRole=userRole)
+                                  userRole=userRole,
+                                  shinySession=session)
       )
     }
   })
