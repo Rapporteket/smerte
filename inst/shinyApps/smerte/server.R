@@ -163,15 +163,14 @@ server <- function(input, output, session) {
 
   # Dekningsgrad
   output$dekningsgrad <- renderUI({
-    reshId <- rapbase::getUserReshId(session)
-    registryName <- makeRegistryName(baseName = "smerte", reshID = reshId)
     htmlRenderRmd(srcFile = "LokalDekningsgradrapport.Rmd",
                   params = list(hospitalName=hospitalName,
                                 reshId=reshId,
                                 startDate=input$dateRangeDekningsgrad[1],
                                 endDate=input$dateRangeDekningsgrad[2],
                                 tableFormat='html',
-                                registryName=registryName)
+                                registryName=registryName,
+                                userRole=userRole)
     )
   })
 

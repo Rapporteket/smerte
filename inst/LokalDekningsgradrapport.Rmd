@@ -4,12 +4,13 @@ params:
   author: 'Rapporteket'
   hospitalName: 'Ukjent sukehus'
   reshId: 'locallyDefined'
+  userRole: 'MyRole'
   startDate: '2017-01-01'
   endDate: '2017-12-31'
   year: '2016'
   tableFormat: 'html'
   registryName: 'rapbase'
-title: '`r paste(params$title, params$hospitalName, "for", params$year)`'
+title: '`r paste(params$title, params$hospitalName, " i perioden fra ", params$startDate, " til ", params$endDate)`'
 author: '`r params$author`'
 date: '`r format(Sys.time(), "%d\\. %B, %Y")`'
 header-includes:
@@ -47,6 +48,7 @@ library(kableExtra)
 if (rapbase::isRapContext()) {
   dat <- getRegDataRapportDekningsgrad(registryName = params$registryName,
                                        reshId = params$reshId,
+                                       userRole = params$userRole,
                                        startDate = params$startDate,
                                        endDate = params$endDate)
 } else {
@@ -115,4 +117,4 @@ if(antInkl >= 1){
 
 
 ```
-Dekningsgraden i den valgte tidsperioden er `r dekning`.
+Dekningsgraden for `r params$hospitalName` i den valgte tidsperioden er `r dekning`.
