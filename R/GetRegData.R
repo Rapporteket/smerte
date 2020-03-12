@@ -4,11 +4,14 @@
 #'
 #' @param registryName String providing the current registryName
 #' @param year Integer four digit year to be reported from
+#' @param startDate String defing start of date range as YYYY-MM-DD
+#' @param endDate String defing end of date range as YYYY-MM-DD
 #' @param reshId String providing organization Id
 #' @param userRole String providing user role
 #' @param ... Optional arguments to be passed to the function
 #' @name getRegData
-#' @aliases getRegDataLokalTilsynsrapportMaaned getLocalYears getHospitalName
+#' @aliases getRegDataLokalTilsynsrapportMaaned
+#' getRegDataRapportDekningsgrad getLocalYears getHospitalName
 NULL
 
 
@@ -68,6 +71,50 @@ WHERE
   }
 
   rapbase::LoadRegData(registryName, query, dbType)
+}
+
+
+#' @rdname getRegData
+#' @export
+getRegDataRapportDekningsgrad <- function(registryName, reshId, userRole,
+                                          startDate, endDate, ...) {
+  if ("session" %in% names(list(...))) {
+    raplog::repLogger(session = list(...)[["session"]],
+                      msg = paste("Load data from", registryName))
+  }
+
+  dbType <- "mysql"
+
+  deps <- .getDeps(reshId, userRole)
+
+  query <- "
+SELECT
+  var.Tilsett,
+  var.RegDato11,
+  var.StartdatoTO,
+  var.InnlAvd,
+  var.PasientID,
+  var.ForlopsID,
+  var.InklKritOppf,
+  var.SkrSamtykke,
+  avd.DEPARTMENT_ID,
+  avd.DEPARTMENT_NAME,
+  avd.DEPARTMENT_SHORTNAME
+FROM
+  AlleVarNum var
+LEFT JOIN
+  avdelingsoversikt avd
+ON
+  avd.DEPARTMENT_ID = var.InnlAvd
+WHERE
+  var.AvdRESH IN ("
+
+  query <- paste0(query, deps, ") AND (DATE(var.StartdatoTO) BETWEEN '",
+                  startDate, "' AND '", endDate, "');")
+
+  regData <- rapbase::LoadRegData(registryName, query, dbType)
+
+  return(regData)
 }
 
 

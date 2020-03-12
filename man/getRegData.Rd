@@ -3,11 +3,21 @@
 \name{getRegData}
 \alias{getRegData}
 \alias{getRegDataLokalTilsynsrapportMaaned}
+\alias{getRegDataRapportDekningsgrad}
 \alias{getLocalYears}
 \alias{getHospitalName}
 \title{Provide dataframe of registry data}
 \usage{
 getRegDataLokalTilsynsrapportMaaned(registryName, reshId, userRole, year, ...)
+
+getRegDataRapportDekningsgrad(
+  registryName,
+  reshId,
+  userRole,
+  startDate,
+  endDate,
+  ...
+)
 
 getLocalYears(registryName, reshId, userRole)
 
@@ -23,6 +33,10 @@ getHospitalName(registryName, reshId, userRole)
 \item{year}{Integer four digit year to be reported from}
 
 \item{...}{Optional arguments to be passed to the function}
+
+\item{startDate}{String defing start of date range as YYYY-MM-DD}
+
+\item{endDate}{String defing end of date range as YYYY-MM-DD}
 }
 \description{
 Provides a dataframe containing data from a registry

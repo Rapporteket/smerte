@@ -27,6 +27,7 @@ server <- function(input, output, session) {
   ## do now show local reports in national context
   if (isNationalReg(reshId)) {
     hideTab(inputId = "tabs", target = "Tilsynsrapport")
+    hideTab(inputId = "tabs", target = "Dekningsgrad")
   }
 
 
@@ -88,6 +89,8 @@ server <- function(input, output, session) {
       reshId=reshId,
       userRole=userRole,
       year=input$yearSet,
+      startDate=input$dateRangeDekningsgrad[1],
+      endDate=input$dateRangeDekningsgrad[2],
       registryName=registryName,
       author=author,
       shinySession=session
@@ -157,6 +160,33 @@ server <- function(input, output, session) {
       contentFile(file, "LokalTilsynsrapportMaaned.Rmd",
                   "tmpLokalTilsynsrapportMaaned.Rmd",
                   input$formatTilsyn)
+    }
+  )
+
+
+  # Dekningsgrad
+  output$dekningsgrad <- renderUI({
+    htmlRenderRmd(srcFile = "LokalDekningsgradrapport.Rmd",
+                  params = list(hospitalName=hospitalName,
+                                reshId=reshId,
+                                startDate=input$dateRangeDekningsgrad[1],
+                                endDate=input$dateRangeDekningsgrad[2],
+                                tableFormat='html',
+                                registryName=registryName,
+                                userRole=userRole)
+    )
+  })
+
+  output$downloadReportDekningsgrad <- downloadHandler(
+    filename = function() {
+      downloadFilename("LokalDekningsgradrapport",
+                       input$formatDekningsgrad)
+    },
+
+    content = function(file) {
+      contentFile(file, "LokalDekningsgradrapport.Rmd",
+                  "tmpLokalDekningsgradrapport.Rmd",
+                  input$formatDekningsgrad)
     }
   )
 
