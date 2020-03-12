@@ -124,6 +124,11 @@ GROUP BY
     hStr <- paste(hVec)
   }
 
-  hStr
-
+  # no hospital name for national registry
+  conf <- rapbase::getConfig(fileName = "rapbaseConfig.yml")
+  if (reshId %in% conf$reg$smerte$nationalAccess$reshId) {
+    return("Nasjonal")
+  } else {
+    hStr
+  }
 }

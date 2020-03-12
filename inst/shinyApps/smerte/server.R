@@ -99,7 +99,7 @@ server <- function(input, output, session) {
 
   # widget
   output$appUserName <- renderText(getUserFullName(session))
-  output$appOrgName <- renderText(paste(getUserReshId(session),
+  output$appOrgName <- renderText(paste(hospitalName,
                                   getUserRole(session), sep = ", "))
 
   # Brukerinformasjon
