@@ -4,6 +4,7 @@ params:
   author: 'Rapporteket'
   hospitalName: 'Ukjent sukehus'
   reshId: 'locallyDefined'
+  userRole: 'MyRole'
   startDate: '2017-01-01'
   endDate: '2017-12-31'
   year: '2016'
@@ -49,6 +50,8 @@ library(kableExtra)
 
 if (rapbase::isRapContext()) {
   dat <- getRegDataLokalTilsynsrapportMaaned(registryName = params$registryName,
+                                             reshId = params$reshId,
+                                             userRole=params$userRole,
                                              year = params$year)
 } else {
   #Dataimport: skal hente lokale data for hvert sykehus (tar vekk sti, og erstatter med lokal filB)

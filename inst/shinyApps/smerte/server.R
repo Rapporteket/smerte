@@ -12,9 +12,10 @@ server <- function(input, output, session) {
   ## setting values that do depend on a Rapporteket context
   if (rapbase::isRapContext()) {
     reshId <- rapbase::getUserReshId(session)
-    hospitalName <- getHospitalName(reshId)
+    registryName <- makeRegistryName("smerte", reshId)
     userFullName <- rapbase::getUserFullName(session)
     userRole <- rapbase::getUserRole(session)
+    hospitalName <- getHospitalName(registryName, reshId, userRole)
     author <- paste0(userFullName, "/", "Rapporteket")
   } else {
     ### if need be, define your (local) values here
@@ -85,6 +86,7 @@ server <- function(input, output, session) {
       REVEAL = "html"),
       hospitalName=hospitalName,
       reshId=reshId,
+      userRole=userRole,
       year=input$yearSet,
       startDate=input$dateRangeDekningsgrad[1],
       endDate=input$dateRangeDekningsgrad[2],
@@ -98,7 +100,8 @@ server <- function(input, output, session) {
 
   # widget
   output$appUserName <- renderText(getUserFullName(session))
-  output$appOrgName <- renderText(getUserReshId(session))
+  output$appOrgName <- renderText(paste(getUserReshId(session),
+                                  getUserRole(session), sep = ", "))
 
   # Brukerinformasjon
   userInfo <- rapbase::howWeDealWithPersonalData(session)
@@ -119,8 +122,7 @@ server <- function(input, output, session) {
   output$years <- renderUI({
     ## years available, hardcoded if outside known context
     if (rapbase::isRapContext()) {
-      years <- getLocalYears(registryName = "smerte",
-                             reshId = rapbase::getUserReshId(session))
+      years <- getLocalYears(registryName, reshId, userRole)
       # remove NAs if they exists (bad registry)
       years <- years[!is.na(years)]
     } else {
@@ -138,7 +140,9 @@ server <- function(input, output, session) {
                     params = list(hospitalName=hospitalName,
                                   year=input$yearSet,
                                   tableFormat='html',
-                                  registryName=registryName)
+                                  registryName=registryName,
+                                  reshId=reshId,
+                                  userRole=userRole)
       )
     }
   })

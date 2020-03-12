@@ -4,8 +4,15 @@
 \alias{subscriptionLocalTilsyn}
 \title{Provide reports according to subscription}
 \usage{
-subscriptionLocalTilsyn(baseName, reshId, registryName, author,
-  hospitalName, year, type)
+subscriptionLocalTilsyn(
+  baseName,
+  reshId,
+  registryName,
+  author,
+  hospitalName,
+  year,
+  type
+)
 }
 \arguments{
 \item{baseName}{Single element list with value of Rmd template for the report.
