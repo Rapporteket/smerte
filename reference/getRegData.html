@@ -111,6 +111,15 @@
 
     <pre class="usage"><span class='fu'>getRegDataLokalTilsynsrapportMaaned</span>(<span class='no'>registryName</span>, <span class='no'>reshId</span>, <span class='no'>userRole</span>, <span class='no'>year</span>, <span class='no'>...</span>)
 
+<span class='fu'>getRegDataRapportDekningsgrad</span>(
+  <span class='no'>registryName</span>,
+  <span class='no'>reshId</span>,
+  <span class='no'>userRole</span>,
+  <span class='no'>startDate</span>,
+  <span class='no'>endDate</span>,
+  <span class='no'>...</span>
+)
+
 <span class='fu'>getLocalYears</span>(<span class='no'>registryName</span>, <span class='no'>reshId</span>, <span class='no'>userRole</span>)
 
 <span class='fu'>getHospitalName</span>(<span class='no'>registryName</span>, <span class='no'>reshId</span>, <span class='no'>userRole</span>)</pre>
@@ -137,6 +146,14 @@
     <tr>
       <th>...</th>
       <td><p>Optional arguments to be passed to the function</p></td>
+    </tr>
+    <tr>
+      <th>startDate</th>
+      <td><p>String defing start of date range as YYYY-MM-DD</p></td>
+    </tr>
+    <tr>
+      <th>endDate</th>
+      <td><p>String defing end of date range as YYYY-MM-DD</p></td>
     </tr>
     </table>
 
