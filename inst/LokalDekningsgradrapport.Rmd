@@ -105,16 +105,16 @@ Dekningsgraden beregnes lokalt for hvert sykehus. Den viser andelen pasienter so
 ###Her klargjøres data for oversikt over dekningsgraden
 
 # Setter tom først for å kunne sjekke etter tilstrekkelig antall pasienter
-dekning <- NA 
+dekning <- NA
 
 #Hvor mange er inkluderbar (må være minst 1, ellers deler vi på 0 senere)
 antInkl <- sum(dat$InklKritOppf == 1)
 
 #Dersom minst 1 oppfyller kriteriene setter v idekning fra NA til samtykke/inkluderbar. Ellers skriver vi setningen under.
 if(antInkl >= 1){
-  dekning <- sum(dat$SkrSamtykke == 1) / sum(dat$InklKritOppf == 1)
+  dekning <- sum(dat$SkrSamtykke == 1, na.rm = TRUE) / sum(dat$InklKritOppf == 1)
 }else{dekning <- as.character("Ikke tilgjengelig: ingen pasienter oppfylte inklusjonskriteriene i den valgte tidsperioden.")}
 
 
 ```
-Dekningsgraden for `r params$hospitalName` i den valgte tidsperioden er `r dekning`.
+Dekningsgraden for `r params$hospitalName` i den valgte tidsperioden er `r round(dekning, digits = 2)`.

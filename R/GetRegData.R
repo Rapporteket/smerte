@@ -89,32 +89,18 @@ getRegDataRapportDekningsgrad <- function(registryName, reshId, userRole,
 
   query <- "
 SELECT
-  var.Tilsett,
-  var.RegDato11,
-  var.StartdatoTO,
-  var.InnlAvd,
-  var.PasientID,
-  var.ForlopsID,
   var.InklKritOppf,
-  var.SkrSamtykke,
-  avd.DEPARTMENT_ID,
-  avd.DEPARTMENT_NAME,
-  avd.DEPARTMENT_SHORTNAME
+  var.SkrSamtykke
 FROM
   AlleVarNum var
-LEFT JOIN
-  avdelingsoversikt avd
-ON
-  avd.DEPARTMENT_ID = var.InnlAvd
 WHERE
-  var.AvdRESH IN ("
+  AvdRESH IN (
+  "
 
   query <- paste0(query, deps, ") AND (DATE(var.StartdatoTO) BETWEEN '",
                   startDate, "' AND '", endDate, "');")
 
-  regData <- rapbase::LoadRegData(registryName, query, dbType)
-
-  return(regData)
+  rapbase::LoadRegData(registryName, query, dbType)
 }
 
 
@@ -161,21 +147,22 @@ GROUP BY
   LOCATIONNAME;
                   ")
 
-  df <- rapbase::LoadRegData(registryName, dbType = dbType, query = query)
-  n <- dim(df)[1]
-  hVec <- df[1:n, 1]
-  if (n > 1) {
-    hStr <- paste(hVec[1:n-1], sep = ", ")
-    hStr <- paste(hStr, hVec[n], sep = " og ")
-  } else {
-    hStr <- paste(hVec)
-  }
+
 
   # no hospital name for national registry
   conf <- rapbase::getConfig(fileName = "rapbaseConfig.yml")
   if (reshId %in% conf$reg$smerte$nationalAccess$reshId) {
     return("Nasjonal")
   } else {
-    hStr
+    df <- rapbase::LoadRegData(registryName, dbType = dbType, query = query)
+    n <- dim(df)[1]
+    hVec <- df[1:n, 1]
+    if (n > 1) {
+      hStr <- paste(hVec[1:n-1], sep = ", ")
+      hStr <- paste(hStr, hVec[n], sep = " og ")
+    } else {
+      hStr <- paste(hVec)
+    }
+    return(hStr)
   }
 }
