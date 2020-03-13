@@ -25,10 +25,13 @@ test_that("the registry name can be provided based on config", {
   expect_equal(makeRegistryName("smerte", 3), "smerteRealm")
 })
 
-test_that("an arbitary registry name can be provided", {
+test_that("an arbitrary registry name can be provided", {
   expect_equal(makeRegistryName("smerte", 10), "smerte10")
 })
 
+test_that("a national hospital name is provided", {
+  expect_equal(class(getHospitalName("smerte", 1, "LC")), "character")
+})
 
 
 # Restore instance
