@@ -10,6 +10,7 @@ params:
   year: '2016'
   tableFormat: 'html'
   registryName: 'rapbase'
+  shinySession: list()
 title: '`r paste(params$title, params$hospitalName, " i perioden fra ", params$startDate, " til ", params$endDate)`'
 author: '`r params$author`'
 date: '`r format(Sys.time(), "%d\\. %B, %Y")`'
