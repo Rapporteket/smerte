@@ -17,3 +17,6 @@ En forespørsel om ny rapport kan sendes til janne.mannseth@helse-bergen.no. Bes
  
 ## Tilsynsrapport (lokal)
 Tilsynsrapporten er en rapport for lokale data for ditt sykehus. Den gir ut informasjon om henvisninger, tilsyn (fordelt på lege, sykepleier etc.) og en avdelingsoversikt.
+
+## Dekningsgrad (lokal)
+Til utregning av dekningsgrad for ditt sykehus over valgfri tidsperiode.
