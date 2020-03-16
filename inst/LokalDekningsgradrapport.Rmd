@@ -71,23 +71,29 @@ if (rapbase::isRapContext()) {
 ## Dekningsgrad
 
 Dekningsgraden beregnes lokalt for hvert sykehus. Den viser andelen pasienter som har samtykket til å være med i registeret av alle som oppfyller inklusjonskriteriene. 
-```{r inkludert, warning = FALSE, message=FALSE, include = FALSE, results='asis'}
-###Her klargjøres data for oversikt over dekningsgraden
 
-# Setter tom først for å kunne sjekke etter tilstrekkelig antall pasienter
-dekning <- NA 
+```{r inkludert, warning = FALSE, message=FALSE, results='asis'}
 
-#Skrsamtykke er 0 (nei), 1 (ja) eller null. Finner ikke at null er de som ikke er inkluderbar => må endre disse. Endrer til 0, da det ikke gjør en forskjell i utregningen vår (er kun interessert i å summere 1-ere. Nevner er basert på annen variabel).
-dat$SkrSamtykke <- as.numeric(levels(dat$SkrSamtykke)[dat$SkrSamtykke])
+if (dim(dat)[1] < 1) {
+  message <- "I den valgte tidsperioden er det ikke nok data til å angi dekningsgrad."
+} else {
+  antInk <- sum(dat$InklKritOppf == 1)
+  sam <- dat$SkrSamtykke
+  # NA/NULL to be counted as none-consent
+  sam[is.na(sam)] <- 0
+  antSam <- sum(sam == 1)
+  if (antInk < 1) {
+    message <- "I den valgte tidsperioden er det ikke nok data til å angi dekningsgrad."
+  } else {
+    dekning <- antSam / antInk
+    message <- paste0("Dekningsgraden for ", params$hospitalName,
+                      " i den valgte tidsperioden er ",
+                      round(dekning, digits = 2), ". Totalt antall er ",
+                      antInk, " hvorav ", antSam, " samtykker er gitt.")
+  }
+  
+}
 
-#Hvor mange er inkluderbar (må være minst 1, ellers deler vi på 0 senere)
-antInkl <- sum(dat$InklKritOppf == 1)
-
-#Dersom minst 1 oppfyller kriteriene setter vi dekning fra NA til samtykke/inkluderbar. Ellers skriver vi setningen under.
-if(antInkl >= 1){
-  dekning <- sum(dat$SkrSamtykke == 1, na.rm = TRUE) / sum(dat$InklKritOppf == 1)
-}else{dekning <- as.character("ikke tilgjengelig, ettersom ingen pasienter oppfylte inklusjonskriteriene i den valgte tidsperioden.")}
-
+cat(paste("\n", message))
 
 ```
-Dekningsgraden for `r params$hospitalName` i den valgte tidsperioden er `r round(dekning, digits = 2)`.
