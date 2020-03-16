@@ -2,7 +2,7 @@
 params:
   title: 'Månedlig tilsynsrapport for lokalt smerteregister ved'
   author: 'Rapporteket'
-  hospitalName: 'Ukjent sukehus'
+  hospitalName: 'Ukjent sykehus'
   reshId: 'locallyDefined'
   userRole: 'MyRole'
   startDate: '2017-01-01'
