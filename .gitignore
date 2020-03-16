@@ -3,5 +3,5 @@
 .RData
 .Ruserdata
 *.html
-*.md
+inst/shinyApps/smerte/*.md
 docs/
