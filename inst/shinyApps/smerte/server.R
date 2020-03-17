@@ -12,9 +12,10 @@ server <- function(input, output, session) {
   ## setting values that do depend on a Rapporteket context
   if (rapbase::isRapContext()) {
     reshId <- rapbase::getUserReshId(session)
-    hospitalName <- getHospitalName(reshId)
+    registryName <- makeRegistryName("smerte", reshId)
     userFullName <- rapbase::getUserFullName(session)
     userRole <- rapbase::getUserRole(session)
+    hospitalName <- getHospitalName(registryName, reshId, userRole)
     author <- paste0(userFullName, "/", "Rapporteket")
   } else {
     ### if need be, define your (local) values here
@@ -26,6 +27,7 @@ server <- function(input, output, session) {
   ## do now show local reports in national context
   if (isNationalReg(reshId)) {
     hideTab(inputId = "tabs", target = "Tilsynsrapport")
+    hideTab(inputId = "tabs", target = "Dekningsgrad")
   }
 
 
@@ -85,9 +87,13 @@ server <- function(input, output, session) {
       REVEAL = "html"),
       hospitalName=hospitalName,
       reshId=reshId,
+      userRole=userRole,
       year=input$yearSet,
-      registryName=makeRegistryName(baseName = "smerte", reshID = reshId),
-      author=author
+      startDate=input$dateRangeDekningsgrad[1],
+      endDate=input$dateRangeDekningsgrad[2],
+      registryName=registryName,
+      author=author,
+      shinySession=session
     ), output_dir = tempdir())
     file.rename(out, file)
   }
@@ -96,7 +102,8 @@ server <- function(input, output, session) {
 
   # widget
   output$appUserName <- renderText(getUserFullName(session))
-  output$appOrgName <- renderText(getUserReshId(session))
+  output$appOrgName <- renderText(paste(hospitalName,
+                                  getUserRole(session), sep = ", "))
 
   # Brukerinformasjon
   userInfo <- rapbase::howWeDealWithPersonalData(session)
@@ -117,8 +124,7 @@ server <- function(input, output, session) {
   output$years <- renderUI({
     ## years available, hardcoded if outside known context
     if (rapbase::isRapContext()) {
-      years <- getLocalYears(registryName = "smerte",
-                             reshId = rapbase::getUserReshId(session))
+      years <- getLocalYears(registryName, reshId, userRole)
       # remove NAs if they exists (bad registry)
       years <- years[!is.na(years)]
     } else {
@@ -136,7 +142,10 @@ server <- function(input, output, session) {
                     params = list(hospitalName=hospitalName,
                                   year=input$yearSet,
                                   tableFormat='html',
-                                  registryName=registryName)
+                                  registryName=registryName,
+                                  reshId=reshId,
+                                  userRole=userRole,
+                                  shinySession=session)
       )
     }
   })
@@ -151,6 +160,33 @@ server <- function(input, output, session) {
       contentFile(file, "LokalTilsynsrapportMaaned.Rmd",
                   "tmpLokalTilsynsrapportMaaned.Rmd",
                   input$formatTilsyn)
+    }
+  )
+
+
+  # Dekningsgrad
+  output$dekningsgrad <- renderUI({
+    htmlRenderRmd(srcFile = "LokalDekningsgradrapport.Rmd",
+                  params = list(hospitalName=hospitalName,
+                                reshId=reshId,
+                                startDate=input$dateRangeDekningsgrad[1],
+                                endDate=input$dateRangeDekningsgrad[2],
+                                tableFormat='html',
+                                registryName=registryName,
+                                userRole=userRole)
+    )
+  })
+
+  output$downloadReportDekningsgrad <- downloadHandler(
+    filename = function() {
+      downloadFilename("LokalDekningsgradrapport",
+                       input$formatDekningsgrad)
+    },
+
+    content = function(file) {
+      contentFile(file, "LokalDekningsgradrapport.Rmd",
+                  "tmpLokalDekningsgradrapport.Rmd",
+                  input$formatDekningsgrad)
     }
   )
 

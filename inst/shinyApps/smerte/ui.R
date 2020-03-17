@@ -42,7 +42,25 @@ ui <- tagList(
         )
       )
     ),
-
+    tabPanel("Dekningsgrad",
+             sidebarLayout(
+               sidebarPanel(
+                 dateRangeInput('dateRangeDekningsgrad',
+                                label = "Velg periode:", start = "2017-01-01",
+                                end = Sys.Date(), separator = "-"),
+                 radioButtons('formatDekningsgrad',
+                              'Format for nedlasting',
+                              c('PDF', 'HTML'),
+                              inline = FALSE),
+                 downloadButton('downloadReportDekningsgrad', 'Last ned')
+               ),
+               mainPanel(
+                 htmlOutput("dekningsgrad", inline = TRUE) #%>%
+                 # withSpinner(color = "#18bc9c",color.background = "#ffffff",
+                 #             type = 2)
+               )
+             )
+    ),
     tabPanel("Abonnement"
       ,
       sidebarLayout(

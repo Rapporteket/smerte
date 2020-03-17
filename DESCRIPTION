@@ -1,7 +1,7 @@
 Package: smerte
 Type: Package
 Title: R-pakke for smerteregisteret
-Version: 0.1.0
+Version: 0.2.0
 Authors@R: c(
     person(given = "Janne",
            family = "Mannseth",
@@ -34,7 +34,8 @@ Remotes:
   Rapporteket/raplog
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 6.1.1
+RoxygenNote: 7.0.2
 Suggests: 
     covr,
-    testthat (>= 2.1.0)
+    testthat (>= 2.1.0),
+    yaml
