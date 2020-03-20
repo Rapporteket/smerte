@@ -81,6 +81,13 @@ ui <- tagList(
           uiOutput("subscriptionContent")
         )
       )
+    ),
+    tabPanel("Metadata"
+      ,
+      sidebarLayout(
+        sidebarPanel(uiOutput("metaControl")),
+        mainPanel(htmlOutput("metaData"))
+      )
     )
 
   ) # navbarPage

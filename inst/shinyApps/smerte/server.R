@@ -272,4 +272,23 @@ server <- function(input, output, session) {
     rapbase::deleteAutoReport(selectedRepId)
     rv$subscriptionTab <- rapbase::makeUserSubscriptionTab(session)
   })
+
+  # Metadata
+  meta <- reactive({
+    smerte::describeRegistryDb(registryName)
+  })
+
+  output$metaControl <- renderUI({
+    tabs <- names(meta())
+    selectInput("metaTab", "Velg tabell:", tabs)
+  })
+
+  output$metaDataTable <- DT::renderDataTable(
+    meta()[[input$metaTab]], rownames = FALSE,
+    options = list(lengthMenu=c(25, 50, 100, 200, 400))
+  )
+
+  output$metaData <- renderUI({
+    DT::dataTableOutput("metaDataTable")
+  })
 }
