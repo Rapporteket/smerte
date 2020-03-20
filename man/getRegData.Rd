@@ -6,6 +6,7 @@
 \alias{getRegDataRapportDekningsgrad}
 \alias{getLocalYears}
 \alias{getHospitalName}
+\alias{getDataDump}
 \title{Provide dataframe of registry data}
 \usage{
 getRegDataLokalTilsynsrapportMaaned(registryName, reshId, userRole, year, ...)
@@ -22,6 +23,8 @@ getRegDataRapportDekningsgrad(
 getLocalYears(registryName, reshId, userRole)
 
 getHospitalName(registryName, reshId, userRole)
+
+getDataDump(registryName, tableName, fromDate, toDate, ...)
 }
 \arguments{
 \item{registryName}{String providing the current registryName}
@@ -37,6 +40,12 @@ getHospitalName(registryName, reshId, userRole)
 \item{startDate}{String defing start of date range as YYYY-MM-DD}
 
 \item{endDate}{String defing end of date range as YYYY-MM-DD}
+
+\item{tableName}{String providing a table name}
+
+\item{fromDate}{String providing start date}
+
+\item{toDate}{String provideing end date}
 }
 \description{
 Provides a dataframe containing data from a registry

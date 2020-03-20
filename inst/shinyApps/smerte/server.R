@@ -98,7 +98,17 @@ server <- function(input, output, session) {
     file.rename(out, file)
   }
 
-
+  contentDump <- function(file, type) {
+    d <- smerte::getDataDump(registryName,input$dumpDataSet,
+                            fromDate = input$dumpDateRange[1],
+                            toDate = input$dumpDateRange[2],
+                            session = session)
+    if (type == "xlsx-csv") {
+      readr::write_excel_csv2(d, file)
+    } else {
+      readr::write_csv2(d, file)
+    }
+  }
 
   # widget
   output$appUserName <- renderText(getUserFullName(session))
@@ -291,4 +301,23 @@ server <- function(input, output, session) {
   output$metaData <- renderUI({
     DT::dataTableOutput("metaDataTable")
   })
+
+  # Datadump
+  output$dumpTabControl <- renderUI({
+    selectInput("dumpDataSet", "Velg datasett:", names(meta()))
+  })
+
+  output$dumpDataInfo <- renderUI({
+    p(paste("Valgt for nedlasting:", input$dumpDataSet))
+  })
+
+  output$dumpDownload <- downloadHandler(
+    filename = function() {
+      basename(tempfile(pattern = input$dumpDataSet,
+                        fileext = ".csv"))
+    },
+    content = function(file) {
+      contentDump(file, input$dumpFormat)
+    }
+  )
 }
