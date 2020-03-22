@@ -42,7 +42,8 @@ if (rapbase::isRapContext()) {
                                        reshId = params$reshId,
                                        userRole = params$userRole,
                                        startDate = params$startDate,
-                                       endDate = params$endDate)
+                                       endDate = params$endDate,
+                                       session = params$shinySession)
 } else {
   #Dataimport: skal hente lokale data for hvert sykehus (tar vekk sti, og erstatter med lokal filB)
   path <- read.csv(file = "H:/path.csv", header = FALSE, sep = ";")
@@ -87,9 +88,9 @@ if (dim(dat)[1] < 1) {
   } else {
     dekning <- antSam / antInk
     message <- paste0("Dekningsgraden for ", params$hospitalName,
-                      " i den valgte tidsperioden er ",
-                      round(dekning, digits = 2), ". Totalt antall er ",
-                      antInk, " hvorav ", antSam, " samtykker er gitt.")
+                      " i den valgte tidsperioden er __",
+                      round(dekning, digits = 2), "__. Totalt antall er __",
+                      antInk, "__ hvorav __", antSam, "__ samtykker er gitt.")
   }
   
 }
@@ -97,3 +98,28 @@ if (dim(dat)[1] < 1) {
 cat(paste("\n", message))
 
 ```
+
+### Tallgrunnlag og utvalg
+
+```{r caveat, warning=FALSE, message=FALSE, results='asis'}
+
+changedConsentInd <- dat$SkrSamtykke > 0 & dat$SkrSamtykke < 1
+changedInclInd <- dat$InklKritOppf > 0 & dat$InklKritOppf < 1
+
+message <- paste0("I perioden er det registrert totalt __",
+                  sum(dat$AntForlop), "__ forløp fordelt på __",
+                  length(dat$SkrSamtykke), "__ personer. Av disse er det __",
+                  length(dat$SkrSamtykke[changedConsentInd]),
+                  "__ personer som i løpet av samme periode har endret sitt samtykke. ",
+                  "Disse er ikke talt med i beregningen over.")
+
+cat(paste("\n", message))
+
+message <- paste0("I perioden finnes det __",
+                  length(dat$InklKritOppf[changedInclInd]),
+                  "__ personer som har endret status for inklusjon.",
+                  " Disse er heller ikke tatt med i beregningen over.")
+
+cat(paste("\n", message))
+
+
