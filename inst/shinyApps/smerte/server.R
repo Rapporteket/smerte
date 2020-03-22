@@ -188,7 +188,8 @@ server <- function(input, output, session) {
                                 endDate=input$dateRangeDekningsgrad[2],
                                 tableFormat='html',
                                 registryName=registryName,
-                                userRole=userRole)
+                                userRole=userRole,
+                                shinySession=session)
     )
   })
 
