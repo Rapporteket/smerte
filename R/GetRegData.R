@@ -82,27 +82,27 @@ WHERE
 #' @export
 getRegDataRapportDekningsgrad <- function(registryName, reshId, userRole,
                                           startDate, endDate, ...) {
-  if ("session" %in% names(list(...))) {
-    raplog::repLogger(session = list(...)[["session"]],
-                      msg = paste("Load data from", registryName))
-  }
-
   dbType <- "mysql"
 
   deps <- .getDeps(reshId, userRole)
 
   query <- "
 SELECT
-  var.InklKritOppf,
-  var.SkrSamtykke
+  count(*) AS AntForlop,
+  sum(var.InklKritOppf)/count(*) AS InklKritOppf,
+  sum(var.SkrSamtykke)/count(*) AS SkrSamtykke
 FROM
   AlleVarNum var
 WHERE
-  AvdRESH IN (
-  "
+  var.AvdRESH IN ("
 
   query <- paste0(query, deps, ") AND (DATE(var.StartdatoTO) BETWEEN '",
-                  startDate, "' AND '", endDate, "');")
+                  startDate, "' AND '", endDate, "')\nGROUP BY\n  var.PasientID;")
+
+  if ("session" %in% names(list(...))) {
+    raplog::repLogger(session = list(...)[["session"]],
+                      msg = paste0("Load data from ", registryName, ":", query))
+  }
 
   rapbase::LoadRegData(registryName, query, dbType)
 }
