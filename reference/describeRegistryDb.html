@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Function reference • smerte</title>
+<title>Provide registry database metadata — describeRegistryDb • smerte</title>
 
 
 <!-- jquery -->
@@ -35,7 +35,9 @@
 
 
 
-<meta property="og:title" content="Function reference" />
+<meta property="og:title" content="Provide registry database metadata — describeRegistryDb" />
+<meta property="og:description" content="List all tables and fields with attributes such as type and degault values" />
+<meta name="twitter:card" content="summary" />
 
 
 
@@ -54,7 +56,7 @@
   </head>
 
   <body>
-    <div class="container template-reference-index">
+    <div class="container template-reference-topic">
       <header>
       <div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -99,66 +101,51 @@
       </header>
 
 <div class="row">
-  <div class="contents col-md-9">
+  <div class="col-md-9 contents">
     <div class="page-header">
-      <h1>Reference</h1>
+    <h1>Provide registry database metadata</h1>
+    
+    <div class="hidden name"><code>describeRegistryDb.Rd</code></div>
     </div>
 
-    <table class="ref-index">
+    <div class="ref-description">
+    <p>List all tables and fields with attributes such as type and degault values</p>
+    </div>
 
-    <colgroup>
-      
-      <col class="alias" />
-      <col class="title" />
-    </colgroup>
+    <pre class="usage"><span class='fu'>describeRegistryDb</span>(<span class='no'>registryName</span>, <span class='kw'>tabs</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>())</pre>
 
-    <tbody>
-      <tr>
-        <th colspan="2">
-          <h2 id="section-all-functions" class="hasAnchor"><a href="#section-all-functions" class="anchor"></a>All functions</h2>
-          <p class="section-desc"></p>
-        </th>
-      </tr>
-      <tr>
-        
-        <td>
-          <p><code><a href="describeRegistryDb.html">describeRegistryDb()</a></code> </p>
-        </td>
-        <td><p>Provide registry database metadata</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="getRegData.html">getRegDataLokalTilsynsrapportMaaned()</a></code> <code><a href="getRegData.html">getRegDataRapportDekningsgrad()</a></code> <code><a href="getRegData.html">getLocalYears()</a></code> <code><a href="getRegData.html">getHospitalName()</a></code> <code><a href="getRegData.html">getDataDump()</a></code> </p>
-        </td>
-        <td><p>Provide dataframe of registry data</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="isTenant.html">isNationalReg()</a></code> <code><a href="isTenant.html">isOUSReg()</a></code> </p>
-        </td>
-        <td><p>Do the current id belong to a given organization?</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="makeRegistryName.html">makeRegistryName()</a></code> </p>
-        </td>
-        <td><p>Provide registry name corresponding to db config entry</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="subscriptionLocalTilsyn.html">subscriptionLocalTilsyn()</a></code> </p>
-        </td>
-        <td><p>Provide reports according to subscription</p></td>
-      </tr>
-    </tbody>
+    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
+    <table class="ref-arguments">
+    <colgroup><col class="name" /><col class="desc" /></colgroup>
+    <tr>
+      <th>registryName</th>
+      <td><p>String providing the registry name key</p></td>
+    </tr>
+    <tr>
+      <th>tabs</th>
+      <td><p>Character vector for optional definition of tables to describe.
+Defaults to an empty vector in which case all tables are used</p></td>
+    </tr>
     </table>
-  </div>
 
+    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
+
+    <p>A list with table names and corresponding fields with attributes</p>
+
+    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
+    <pre class="examples"><div class='input'><span class='co'># \donttest{</span>
+<span class='co'># Requires a running database in an appropriate Rapporteket environment</span>
+<span class='fu'>describeRegistryDb</span>(<span class='st'>"rapbase"</span>)</div><div class='output co'>#&gt; <span class='error'>Error: Failed to connect: Can't connect to MySQL server on '127.0.0.1' (111)</span></div><div class='input'># }
+</div></pre>
+  </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
-      <li><a href="#section-all-functions">All functions</a></li>
+      <li><a href="#arguments">Arguments</a></li>
+      <li><a href="#value">Value</a></li>
+      <li><a href="#examples">Examples</a></li>
     </ul>
+
   </div>
 </div>
 
