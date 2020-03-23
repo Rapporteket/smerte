@@ -88,16 +88,17 @@ getRegDataRapportDekningsgrad <- function(registryName, reshId, userRole,
 
   query <- "
 SELECT
-  count(*) AS AntForlop,
-  sum(var.InklKritOppf)/count(*) AS InklKritOppf,
-  sum(var.SkrSamtykke)/count(*) AS SkrSamtykke
+  PasientID,
+  ForlopsID,
+  InklKritOppf,
+  SkrSamtykke
 FROM
-  AlleVarNum var
+  AlleVarNum
 WHERE
-  var.AvdRESH IN ("
+  AvdRESH IN ("
 
-  query <- paste0(query, deps, ") AND (DATE(var.StartdatoTO) BETWEEN '",
-                  startDate, "' AND '", endDate, "')\nGROUP BY\n  var.PasientID;")
+  query <- paste0(query, deps, ") AND (DATE(StartdatoTO) BETWEEN '",
+                  startDate, "' AND '", endDate, "');")
 
   if ("session" %in% names(list(...))) {
     raplog::repLogger(session = list(...)[["session"]],
