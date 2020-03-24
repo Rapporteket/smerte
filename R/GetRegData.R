@@ -8,10 +8,14 @@
 #' @param endDate String defing end of date range as YYYY-MM-DD
 #' @param reshId String providing organization Id
 #' @param userRole String providing user role
+#' @param tableName String providing a table name
+#' @param fromDate String providing start date
+#' @param toDate String provideing end date
 #' @param ... Optional arguments to be passed to the function
 #' @name getRegData
 #' @aliases getRegDataLokalTilsynsrapportMaaned
 #' getRegDataRapportDekningsgrad getLocalYears getHospitalName
+#' getDataDump
 NULL
 
 
@@ -78,27 +82,28 @@ WHERE
 #' @export
 getRegDataRapportDekningsgrad <- function(registryName, reshId, userRole,
                                           startDate, endDate, ...) {
-  if ("session" %in% names(list(...))) {
-    raplog::repLogger(session = list(...)[["session"]],
-                      msg = paste("Load data from", registryName))
-  }
-
   dbType <- "mysql"
 
   deps <- .getDeps(reshId, userRole)
 
   query <- "
 SELECT
-  var.InklKritOppf,
-  var.SkrSamtykke
+  PasientID,
+  ForlopsID,
+  InklKritOppf,
+  SkrSamtykke
 FROM
-  AlleVarNum var
+  AlleVarNum
 WHERE
-  AvdRESH IN (
-  "
+  AvdRESH IN ("
 
-  query <- paste0(query, deps, ") AND (DATE(var.StartdatoTO) BETWEEN '",
+  query <- paste0(query, deps, ") AND (DATE(StartdatoTO) BETWEEN '",
                   startDate, "' AND '", endDate, "');")
+
+  if ("session" %in% names(list(...))) {
+    raplog::repLogger(session = list(...)[["session"]],
+                      msg = paste0("Load data from ", registryName, ":", query))
+  }
 
   rapbase::LoadRegData(registryName, query, dbType)
 }
@@ -165,4 +170,45 @@ GROUP BY
     }
     return(hStr)
   }
+}
+
+#' @rdname getRegData
+#' @export
+getDataDump <- function(registryName, tableName, fromDate, toDate, ...) {
+
+  # dummy query returning empty data set
+  query <- "SELECT * FROM friendlynamestable WHERE 1=0;"
+
+  if (tableName %in% c("friendlynamestable", "change_log_variables",
+                       "avdelingsoversikt", "Brukerliste")) {
+    query <- paste0("
+SELECT
+  *
+FROM
+  ", tableName, ";
+  ")
+  }
+
+  if (tableName %in% c("SkjemaOversikt", "SmerteDiagnoser",
+                       "SmerteDiagnoserNum", "AlleVar", "AlleVarNum")) {
+    query <- paste0("
+SELECT
+  fo.HovedDato,
+  d.*
+FROM
+  ", tableName, " AS d
+LEFT JOIN
+  ForlopsOversikt fo
+ON
+  d.ForlopsID = fo.ForlopsID
+WHERE
+  fo.HovedDato BETWEEN ", fromDate, " AND ", toDate, ";
+")
+  }
+
+  if ("session" %in% names(list(...))) {
+    raplog::repLogger(session = list(...)[["session"]],
+                      msg = paste("Smerte data dump:\n", query))
+  }
+  rapbase::LoadRegData(registryName, query)
 }

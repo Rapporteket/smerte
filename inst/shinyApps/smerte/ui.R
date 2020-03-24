@@ -3,6 +3,7 @@ library(shiny)
 library(shinyalert)
 library(shinycssloaders)
 library(rapbase)
+library(lubridate)
 
 addResourcePath('rap', system.file('www', package='rapbase'))
 regTitle = "Smerteregisteret"
@@ -79,6 +80,31 @@ ui <- tagList(
         ),
         mainPanel(
           uiOutput("subscriptionContent")
+        )
+      )
+    ),
+    tabPanel("Metadata"
+      ,
+      sidebarLayout(
+        sidebarPanel(uiOutput("metaControl")),
+        mainPanel(htmlOutput("metaData"))
+      )
+    ),
+    tabPanel("Datadump"
+      ,
+      sidebarLayout(
+        sidebarPanel(width = 4,
+          uiOutput("dumpTabControl"),
+          dateRangeInput("dumpDateRange", "Velg periode:",
+                         start = lubridate::ymd(Sys.Date())- years(1),
+                         end = Sys.Date(), separator = "-",
+                         weekstart = 1),
+          radioButtons("dumpFormat", "Velg filformat:",
+                       choices = c("csv", "xlsx-csv")),
+          downloadButton("dumpDownload", "Hent!")
+        ),
+        mainPanel(
+          htmlOutput("dumpDataInfo")
         )
       )
     )

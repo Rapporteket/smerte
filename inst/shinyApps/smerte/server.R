@@ -24,10 +24,15 @@ server <- function(input, output, session) {
   }
 
   # Hide tabs depending on context
-  ## do now show local reports in national context
+  ## do not show local reports in national context
   if (isNationalReg(reshId)) {
     hideTab(inputId = "tabs", target = "Tilsynsrapport")
     hideTab(inputId = "tabs", target = "Dekningsgrad")
+  }
+  ## metadata and dump only for SC
+  if (!userRole %in% "SC") {
+    hideTab(inputId = "tabs", target = "Metadata")
+    hideTab(inputId = "tabs", target = "Datadump")
   }
 
 
@@ -98,7 +103,17 @@ server <- function(input, output, session) {
     file.rename(out, file)
   }
 
-
+  contentDump <- function(file, type) {
+    d <- smerte::getDataDump(registryName,input$dumpDataSet,
+                            fromDate = input$dumpDateRange[1],
+                            toDate = input$dumpDateRange[2],
+                            session = session)
+    if (type == "xlsx-csv") {
+      readr::write_excel_csv2(d, file)
+    } else {
+      readr::write_csv2(d, file)
+    }
+  }
 
   # widget
   output$appUserName <- renderText(getUserFullName(session))
@@ -173,7 +188,8 @@ server <- function(input, output, session) {
                                 endDate=input$dateRangeDekningsgrad[2],
                                 tableFormat='html',
                                 registryName=registryName,
-                                userRole=userRole)
+                                userRole=userRole,
+                                shinySession=session)
     )
   })
 
@@ -272,4 +288,42 @@ server <- function(input, output, session) {
     rapbase::deleteAutoReport(selectedRepId)
     rv$subscriptionTab <- rapbase::makeUserSubscriptionTab(session)
   })
+
+  # Metadata
+  meta <- reactive({
+    smerte::describeRegistryDb(registryName)
+  })
+
+  output$metaControl <- renderUI({
+    tabs <- names(meta())
+    selectInput("metaTab", "Velg tabell:", tabs)
+  })
+
+  output$metaDataTable <- DT::renderDataTable(
+    meta()[[input$metaTab]], rownames = FALSE,
+    options = list(lengthMenu=c(25, 50, 100, 200, 400))
+  )
+
+  output$metaData <- renderUI({
+    DT::dataTableOutput("metaDataTable")
+  })
+
+  # Datadump
+  output$dumpTabControl <- renderUI({
+    selectInput("dumpDataSet", "Velg datasett:", names(meta()))
+  })
+
+  output$dumpDataInfo <- renderUI({
+    p(paste("Valgt for nedlasting:", input$dumpDataSet))
+  })
+
+  output$dumpDownload <- downloadHandler(
+    filename = function() {
+      basename(tempfile(pattern = input$dumpDataSet,
+                        fileext = ".csv"))
+    },
+    content = function(file) {
+      contentDump(file, input$dumpFormat)
+    }
+  )
 }

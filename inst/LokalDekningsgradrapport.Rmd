@@ -35,14 +35,15 @@ library(smerte)
 library(knitr)
 ```
 
-```{r get data, warning = FALSE, message=TRUE}
+```{r get data, include=FALSE}
 
 if (rapbase::isRapContext()) {
   dat <- getRegDataRapportDekningsgrad(registryName = params$registryName,
                                        reshId = params$reshId,
                                        userRole = params$userRole,
                                        startDate = params$startDate,
-                                       endDate = params$endDate)
+                                       endDate = params$endDate,
+                                       session = params$shinySession)
 } else {
   #Dataimport: skal hente lokale data for hvert sykehus (tar vekk sti, og erstatter med lokal filB)
   path <- read.csv(file = "H:/path.csv", header = FALSE, sep = ";")
@@ -70,9 +71,9 @@ if (rapbase::isRapContext()) {
 
 ## Dekningsgrad
 
-Dekningsgraden beregnes lokalt for hvert sykehus. Den viser andelen pasienter som har samtykket til å være med i registeret av alle som oppfyller inklusjonskriteriene. 
+Dekningsgraden beregnes lokalt for hvert sykehus. Den viser andelen __forløp__ som oppfyller inklusjonskriteriene der pasienter har samtykket til å være med i registeret. 
 
-```{r inkludert, warning = FALSE, message=FALSE, results='asis'}
+```{r inkludert, results='asis'}
 
 if (dim(dat)[1] < 1) {
   message <- "I den valgte tidsperioden er det ikke nok data til å angi dekningsgrad."
@@ -81,15 +82,34 @@ if (dim(dat)[1] < 1) {
   sam <- dat$SkrSamtykke
   # NA/NULL to be counted as none-consent
   sam[is.na(sam)] <- 0
-  antSam <- sum(sam == 1)
+  antSam <- sum(sam[sam == 1])
   if (antInk < 1) {
     message <- "I den valgte tidsperioden er det ikke nok data til å angi dekningsgrad."
   } else {
     dekning <- antSam / antInk
+    nPatient <- length(unique(dat$PasientID))
+    nEvent <- length(unique(dat$ForlopsID))
+    nNoConsent <- length(sam[sam == 0])
+    nNoIncl <- length(dat$InklKritOppf[dat$InklKritOppf == 0])
+    
+    patientTxt <- "."
+    if (nPatient > 1) {
+      patientTxt <- paste(" fordelt på", nPatient, "pasienter.")
+    }
+    
+    if (nPatient == 1) {
+      patientTxt <- " for én pasient"
+    }
     message <- paste0("Dekningsgraden for ", params$hospitalName,
-                      " i den valgte tidsperioden er ",
-                      round(dekning, digits = 2), ". Totalt antall er ",
+                      " i den valgte tidsperioden er __",
+                      round(dekning, digits = 2), "__. Totalt antall er ",
                       antInk, " hvorav ", antSam, " samtykker er gitt.")
+    
+    message <- paste0(message, "\n### Tallgrunnlag og utvalg\n",
+                      "I utvalget er det ", nEvent, " forløp", patientTxt,
+                      " Totalt ", nNoConsent,
+                      " forløp mangler samtykke og totalt ", nNoIncl,
+                      " forløp oppfyller ikke inklusjonskriteriene.")
   }
   
 }
