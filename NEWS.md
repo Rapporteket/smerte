@@ -2,6 +2,8 @@
 
 * Added new report Dekningsgrad
 * Data access among hospitals at OUS based on user roles
+* Added report for downloading table data
+* Added metadata report
 * More unit tests added, still great potential ;-)
 * Added a `NEWS.md` file to track changes to the package.
 
