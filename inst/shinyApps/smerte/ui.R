@@ -62,6 +62,23 @@ ui <- tagList(
                )
              )
     ),
+    tabPanel("Indikatorrapport",
+             sidebarLayout(
+               sidebarPanel(
+                 uiOutput("years"),
+                 radioButtons('formatIndikator',
+                              'Format for nedlasting',
+                              c('PDF', 'HTML'),
+                              inline = FALSE),
+                 downloadButton('downloadReportIndikator', 'Last ned')
+               ),
+               mainPanel(
+                 htmlOutput("indikatorrapport", inline = TRUE) #%>%
+                 # withSpinner(color = "#18bc9c",color.background = "#ffffff",
+                 #             type = 2)
+               )
+             )
+    ),
     tabPanel("Abonnement"
       ,
       sidebarLayout(
