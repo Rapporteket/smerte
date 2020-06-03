@@ -108,6 +108,62 @@ WHERE
   rapbase::LoadRegData(registryName, query, dbType)
 }
 
+#' @rdname getRegData
+#' @export
+getRegDataLokalTilsynsrapportMaaned <- function(registryName, reshId, userRole,
+                                                year, ...) {
+
+  dbType <- "mysql"
+
+  # special case at OUS
+  deps <- .getDeps(reshId, userRole)
+
+  query <- "
+SELECT
+  var.AntTilsLege,
+  var.AntTilsSykPleier,
+  var.AntTilsFysioT,
+  var.AntTilsPsyk,
+  var.AntTilsSosio,
+  var.AntPasTils,
+  var.Tilsett,
+  var.RegDato11,
+  var.StartdatoTO,
+  var.HenvistDato,
+  var.PasRegSpm3,
+  var.SvSmRo12,
+  var.SvSmRo21,
+  var.StSmRo12,
+  var.StSmRo21,
+  var.SvSmBev12,
+  var.SvSmBev21,
+  var.StSmBev12,
+  var.StSmBev21,
+  var.PasientID,
+  var.ForlopsID,
+  var.InnlAvd,
+  avd.DEPARTMENT_ID,
+  avd.DEPARTMENT_NAME,
+  avd.DEPARTMENT_SHORTNAME
+FROM
+  AlleVarNum var
+LEFT JOIN
+  avdelingsoversikt avd
+ON
+  avd.DEPARTMENT_ID = var.InnlAvd
+WHERE
+  YEAR(var.RegDato11) = "
+
+  query <- paste0(query, year, " AND var.AvdRESH IN (", deps, ");")
+
+  if ("session" %in% names(list(...))) {
+    raplog::repLogger(session = list(...)[["session"]],
+                      msg = paste("Load indikatorrapport data from",
+                                  registryName, ": ", query))
+  }
+
+  rapbase::LoadRegData(registryName, query, dbType)
+}
 
 #' @rdname getRegData
 #' @export
