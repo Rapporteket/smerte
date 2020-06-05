@@ -376,7 +376,7 @@ mst(tab = tabnrs,
 ```
 
 Figuren under viser hvordan andelene har fordelt seg i løpet av året for de fire NRS-målene.
-```{r nrsfig, warning = FALSE, message=FALSE, results='asis', fig.width=18, fig.height=9}
+```{r nrsfig, warning = FALSE, message=FALSE, results='asis', fig.width=18.5, fig.height=9}
 
 if (dim(dat)[1] < 1) {
   message <- "I den valgte tidsperioden er det ikke nok data til å vise figur for denne kvalitetsindikatoren."
@@ -395,39 +395,17 @@ p3 <- dat %>% filter(!is.na(stro)) %>% mutate(stro1 = stro > 0) %>% group_by(mon
 #For SvRo
 p4 <- dat %>% filter(!is.na(svro)) %>% mutate(svro1 = svro > 0) %>% group_by(month = monthname, svro1) %>% summarise(n = n()) %>% mutate(freq4 = n/sum(n)) %>% filter(svro1 == 1)
 
-#Plotting plotdat
-# p11 <- ggplot(p1, aes(month, freq)) + 
-#   geom_line(aes(group = 1)) + geom_point() + 
-#   labs(x = "Måned", y = "Andel", subtitle = "Nedgang sterkeste smerte i bevegelse") + theme_classic() +
-#   theme(axis.text.x = element_text(size = 4), plot.margin = unit(c(1, 1, 2, 1), "cm")) +
-#   geom_line(aes(y = ))
-# 
-# p21 <- ggplot(p2, aes(month, freq)) + 
-#   geom_line(aes(group = 1)) + geom_point() + 
-#   labs(x = "Måned", y = "Andel", subtitle = "Nedgang svakeste smerte i bevegelse") + theme_classic() +
-#   theme(axis.text.x = element_text(size = 4), plot.margin = unit(c(1, 1, 2, 1), "cm"))
-# 
-# p31 <- ggplot(p3, aes(month, freq)) + 
-#   geom_line(aes(group = 1)) + geom_point() + 
-#   labs(x = "Måned", y = "Andel", subtitle = "Nedgang sterkeste smerte i ro") + theme_classic() +
-#   theme(axis.text.x = element_text(size = 4), plot.margin = unit(c(1, 1, 2, 1), "cm"))
-# 
-# p41 <- ggplot(p4, aes(month, freq)) + 
-#   geom_line(aes(group = 1)) + geom_point() + 
-#   labs(x = "Måned", y = "Andel", subtitle = "Nedgang svakeste smerte i ro") + theme_classic() +
-#   theme(axis.text.x = element_text(size = 4), plot.margin = unit(c(1, 1, 2, 1), "cm"))
-
 colorsplot <- c("stbe" = "magenta3", "svbe" = "hotpink1", "stro" = "darkcyan", "svro" = "cyan2")
 labelsplot <- c("Sterkeste smerte i bevegelse", "Svakeste smerte i bevegelse", "Sterkeste smerte i ro", "Svakeste smerte i ro")
 
 p = ggplot() + 
-  geom_line(data = p1, aes(month, freq1, group = 1, color = "stbe")) + geom_point(data = p1, aes(month, freq1, group = 1, color = "stbe"), shape = 16) +
-  geom_line(data = p2, aes(month, freq2, group = 1, color = "svbe")) + geom_point(data = p2, aes(month, freq2, group = 1, color = "svbe"), shape = 16) +
-  geom_line(data = p3, aes(month, freq3, group = 1, color = "stro")) + geom_point(data = p3, aes(month, freq3, group = 1, color = "stro"), shape = 16) +
-  geom_line(data = p4, aes(month, freq4, group = 1, color = "svro")) + geom_point(data = p4, aes(month, freq4, group = 1, color = "svro"), shape = 16) +
+  geom_line(data = p1, aes(month, freq1, group = 1, color = "stbe"), size = 1.5) + geom_point(data = p1, aes(month, freq1, group = 1, color = "stbe"), shape = 16, size = 3.5) +
+  geom_line(data = p2, aes(month, freq2, group = 1, color = "svbe"), size = 1.5) + geom_point(data = p2, aes(month, freq2, group = 1, color = "svbe"), shape = 16, size = 3.5) +
+  geom_line(data = p3, aes(month, freq3, group = 1, color = "stro"), size = 1.5) + geom_point(data = p3, aes(month, freq3, group = 1, color = "stro"), shape = 16, size = 3.5) +
+  geom_line(data = p4, aes(month, freq4, group = 1, color = "svro"), size = 1.5) + geom_point(data = p4, aes(month, freq4, group = 1, color = "svro"), shape = 16, size = 3.5) +
   labs(x = 'Måned', y = "Andel", title = "Andel med nedgang i smerte") + 
   theme_classic() +
-  theme(axis.text.x = element_text(size = 15.3), axis.text.y = element_text(size = 17), axis.title = element_text(size = 18), plot.margin = unit(c(1, 1, 2, 1), "cm"), legend.text = element_text(size = 20), axis.title.y = element_text(margin = margin(t = 0, r = 10, b = 0, l = 0)), axis.title.x = element_text(margin = margin(t = 10, r = 0, b = 0, l = 0))) +
+  theme(axis.text.x = element_text(size = 15), axis.text.y = element_text(size = 17), axis.title = element_text(size = 18), plot.margin = unit(c(1, 1, 2, 1), "cm"), legend.title = element_text(size = 22), plot.title = element_text(size=19), legend.text = element_text(size = 22), axis.title.y = element_text(margin = margin(t = 0, r = 10, b = 0, l = 0)), axis.title.x = element_text(margin = margin(t = 10, r = 0, b = 0, l = 0))) +
   scale_color_manual(name = "NRS", values = c("magenta3", "hotpink1", "darkcyan", "cyan2"), labels = labelsplot) +
   guides(color = guide_legend(override.aes = list(size=0.8)))
 
