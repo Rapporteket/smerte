@@ -1,0 +1,449 @@
+---
+params:
+  title: 'Kvalitetsindikatorer for'
+  author: 'Rapporteket'
+  hospitalName: 'Smerteregisteret nasjonalt'
+  reshId: 'locallyDefined'
+  userRole: 'MyRole'
+  startDate: '2017-01-01'
+  endDate: '2017-12-31'
+  year: '2016'
+  tableFormat: 'html'
+  registryName: 'rapbase'
+  shinySession: list()
+title: '`r paste(params$title, params$hospitalName, "i", params$year)`'
+author: '`r params$author`'
+date: '`r format(Sys.time(), "%d\\. %B, %Y")`'
+header-includes:
+  - \usepackage[english, norsk]{babel}
+  - \usepackage{booktabs}
+  - \usepackage{rotating}
+#output:
+#  html_document:
+#    theme: flatly
+#    toc: yes
+#  pdf_document: default
+#  word_document: default
+---
+```{r set options and load packages, include = FALSE}
+knitr::opts_chunk$set(echo=FALSE)
+options(knitr.table.format = params$tableFormat)
+options(tinytex.verbose = TRUE)
+
+# Pakker
+library(xtable)
+library(tidyverse)
+library(stringr)
+library(zoo)
+library(dplyr)
+library(magrittr)
+library(lubridate)
+library(smerte)
+library(knitr)
+library(kableExtra)
+library(gridExtra)
+
+```
+
+```{r get data, warning = FALSE, message=TRUE}
+
+if (rapbase::isRapContext()) {
+  dat <- getRegDataLokalTilsynsrapportMaaned(registryName = params$registryName,
+                                             reshId = params$reshId,
+                                             userRole=params$userRole,
+                                             year = params$year,
+                                             session = params$shinySession)
+} else {
+  #Dataimport: skal hente lokale data for hvert sykehus (tar vekk sti, og erstatter med lokal fil)
+  path <- read.csv(file = "H:/pathnasjonal.csv", header = FALSE, sep = ";")
+  path <- as.data.frame(lapply(path, as.character), stringsAsFactors=FALSE)
+  path <- path$V1
+  dat <- read.csv(file = path, header = TRUE, sep = ";")
+
+  #Må kunne laste inn data for de ulike årene
+ # aar <- params$year
+  #dat = dat %>% filter(year(date(StartdatoTO)) == aar) #year
+}
+
+#Legger inn månedene i riktig rekkefølge
+#NB: vil at bruker skal velge mellom år, dvs. enten 2016, 2017 osv.
+manednamn = months(as.Date(paste0("2019-",1:12,"-01")))
+dat = dat  %>% mutate(monthname = factor(months(as.Date(StartdatoTO)), levels = manednamn))
+
+```
+
+```{r makeStandardTableFunction, eval=TRUE}
+#Oppsett for tabell mst
+
+mst <- function(tab, colnames = colnames(tab), type, cap, digs, align = NULL, fs = 8, lsd = FALSE) {
+  if (type == "latex") {
+    if (lsd) {
+      lo <- c("hold_position", "scale_down")
+    } else {
+      lo <- c("hold_position")
+    }
+    k <- kable(tab, col.names = colnames, caption = cap, digits = digs, align = align,
+               booktabs = TRUE) %>% 
+      kable_styling(latex_options = lo, font_size = fs)
+  }
+  
+  if (type == "html") {
+    k <- kable(tab, col.names = colnames, caption = cap, digits = digs, align = align) %>% 
+      kable_styling(bootstrap_options = c("striped", "hover", "condensed"),
+                    full_width = F)
+  }
+  print(k)
+}
+```
+
+Smerteregisteret har fire kvalitetsindikatorer som skal være til hjelp i utviklingen av god smertebehandling. Merk at det her skilles mellom forløp og pasienter, siden samme pasient kan ha flere forløp. I denne rapporten vises _nasjonale_ tall, det vil si at alle forløp som er inkluderbare og har samtykke er med.
+
+# Tilsett av to eller flere faggrupper
+Andel forløp hvor pasientene tilses av to eller flere faggrupper. Det er ønskelig med høyest mulig andel. De ulike faggruppene er lege, sykepleier, sosionom, psykolog og fysioterapeut. Med "totalt antall" menes her alle forløp som har minimum ett tilsyn. 
+
+```{r behandlertilsyn, warning = FALSE, message=FALSE, results='asis'}
+# Klargjøre variabler for behandlertilsyn her
+if (dim(dat)[1] < 1) {
+  message <- "I den valgte tidsperioden er det ikke nok data til å angi denne kvalitetsindikatoren."
+  } else {
+if (!rapbase::isRapContext()) {
+  #Må gjøre variablene numerisk for bruk i tabell
+  dat$AntTilsLege <- as.numeric(levels(dat$AntTilsLege))[dat$AntTilsLege]
+  dat$AntTilsSykPleier <- as.numeric(levels(dat$AntTilsSykPleier))[dat$AntTilsSykPleier]
+  dat$AntTilsFysioT <- as.numeric(levels(dat$AntTilsFysioT))[dat$AntTilsFysioT]
+  dat$AntTilsPsyk <- as.numeric(levels(dat$AntTilsPsyk))[dat$AntTilsPsyk]
+  dat$AntTilsSosio <- as.numeric(levels(dat$AntTilsSosio))[dat$AntTilsSosio]
+  #dat$AntPasTils <- as.numeric(levels(dat$AntPasTils))[dat$AntPasTils] er tydeligvis numerisk i min datadump
+}
+
+#I nasjonal har alle fått tilsyn => trenger ikke å da vekk 0 tilsyn eller NA.
+
+#Lager tom variabel for antall behandlertilsyn som skal fylles inn
+dat$behtils <- NA
+
+#Sjekk om to eller flere behandlergrupper ikke er NA
+#Trenger bare ta bort NA, pga "null" fra factor blir til NA her. Dvs ingen har 0. NB: gjelder dette for tall direkte også?
+for(i in 1:dim(dat)[1]){
+  j = 0 #summerer antall behandlere
+  if(!(is.na(dat$AntTilsLege[i]))){
+      j <- j+1}
+  if(!(is.na(dat$AntTilsSykPleier[i]))){
+      j <- j+1}
+  if(!(is.na(dat$AntTilsPsyk[i]))){
+      j <- j+1}
+  if(!(is.na(dat$AntTilsFysioT[i]))){
+      j <- j+1}
+  if(!(is.na(dat$AntTilsSosio[i]))){
+      j <- j+1}
+  if(j >= 2){dat$behtils[i] <- 1} else{dat$behtils[i] <- 0} # Setter til 1 dersom to eller flere behandlere, 0 ellers.
+  j = 0 #setter til 0 før sum for neste pasient telles opp
+}
+
+#Til tabell
+kvalind1 <- dat %>% group_by(SykehusNavn, behtils) %>% summarise(n = n()) %>% mutate( ant = sum(n), freq = n/sum(n)) %>% filter(behtils == 1)
+#Tar bort kolonne for behtils oppfylt
+kvalind1 <- kvalind1 %>% select(SykehusNavn, n, ant, freq)
+
+#Tabell
+mst(tab = kvalind1,
+    colnames = c("Sykehus", "Antall", "Totalt antall", "Andel"),
+    type = params$tableFormat,
+    cap = paste0("Oversikt over andel pasienter som har hatt tilsyn av to eller flere behandlergrupper."),
+    digs = 2,
+    align = c("l", "r", "r", "r"))
+  }
+```
+
+Figuren under viser hvordan andelen har fordelt seg i løpet av året.
+```{r behandlertilsynfig, warning = FALSE, message=FALSE, results='asis', fig.width=11.6, fig.height=6}
+if (dim(dat)[1] < 1) {
+  message <- "I den valgte tidsperioden er det ikke nok data til å vise figur for denne kvalitetsindikatoren."
+  } else {
+#Aggregate by month for plot
+
+ind1plot <- dat %>% group_by(SykehusNavn, monthname, behtils) %>% summarise(n = n()) %>% mutate( ant = sum(n), freq = n/sum(n)) %>% filter(behtils == 1)
+
+#Plotting plotdat
+ggplot(ind1plot, aes(monthname, freq)) + 
+  geom_line(aes(group = factor(SykehusNavn), colour=factor(SykehusNavn)), size = 0.8) + geom_point(aes(group = factor(SykehusNavn), colour=factor(SykehusNavn)), size = 2) + 
+  labs(x = "Måned", y = "Andel", subtitle = "Andel tilsett av to eller flere faggrupper (månedlig)", color = "Sykehus") + theme_classic() + theme(axis.text.x = element_text(size = 8.5), axis.text.y = element_text(size = 10), axis.title = element_text(size = 12), plot.margin = unit(c(1, 1, 2, 1), "cm"), legend.text = element_text(size = 13), axis.title.y = element_text(margin = margin(t = 0, r = 10, b = 0, l = 0)), axis.title.x = element_text(margin = margin(t = 10, r = 0, b = 0, l = 0)))
+  
+}
+
+```
+
+
+# Tilsett samme dag pasienten var henvist
+Andel forløp hvor pasientene får tilsyn samme dag som de ble henvist. Det er ønskelig med høyest mulig andel. Med "totalt antall" menes her alle forløp som har minimum ett tilsyn. 
+
+```{r tidhenvisttiltilsyn, warning = FALSE, message=FALSE, results='asis'}
+# Klargjøre variabler for tid fra henvsining til tilsyn her.
+if (dim(dat)[1] < 1) {
+  message <- "I den valgte tidsperioden er det ikke nok data til å angi denne kvalitetsindikatoren."
+} else {
+
+  dat$henvtils <- NA
+  for(i in 1:dim(dat)[1]){
+    if(dat$HenvistDato[i] == dat$StartdatoTO[i]){dat$henvtils[i] <- 1}  #1 betyr at man er henvist og tilsett samme dag
+  else{dat$henvtils[i] <- 0} #0 betyr at man ikke er tilsett samme dag som man ble henvist
+  }
+  
+#Til tabell
+kvalind2 <- dat %>% group_by(SykehusNavn, henvtils) %>% summarise(n = n()) %>% mutate( ant = sum(n), freq = n/sum(n)) %>% filter(henvtils == 1)
+
+#Tar bort kolonne for behtils oppfylt
+kvalind2 <- kvalind2 %>% select(SykehusNavn, n, ant, freq)
+
+#Tabell
+mst(tab = kvalind2,
+    colnames = c("Sykehus", "Antall", "Totalt antall", "Andel"),
+    type = params$tableFormat,
+    cap = paste0("Oversikt over andel pasienter som ble tilsett samme dag som de ble henvist."),
+    digs = 2,
+    align = c("l", "r", "r", "r"))
+  }
+
+
+```
+
+Figuren under viser hvordan andelen har fordelt seg i løpet av året.
+```{r tilsetthenvistfig, warning = FALSE, message=FALSE, results='asis', fig.width=11.6, fig.height=6}
+if (dim(dat)[1] < 1) {
+  message <- "I den valgte tidsperioden er det ikke nok data til å vise figur for denne kvalitetsindikatoren."
+  } else {
+
+ind2plot <- dat %>% group_by(SykehusNavn, monthname, henvtils) %>% summarise(n = n()) %>% mutate(ant = sum(n), freq = n/sum(n)) %>% filter(henvtils == 1)
+
+#Plotting plotdat
+ggplot(ind2plot, aes(monthname, freq)) + 
+  geom_line(aes(group = factor(SykehusNavn), colour=factor(SykehusNavn)), size = 0.8) + geom_point(aes(group = factor(SykehusNavn), colour=factor(SykehusNavn)), size = 2) + 
+  labs(x = "Måned", y = "Andel", subtitle = "Andel tilsett samme dag som de ble henvist (månedlig)", color = "Sykehus") + theme_classic() + theme(axis.text.x = element_text(size = 8.5), axis.text.y = element_text(size = 10), axis.title = element_text(size = 12), plot.margin = unit(c(1, 1, 2, 1), "cm"), legend.text = element_text(size = 13), axis.title.y = element_text(margin = margin(t = 0, r = 10, b = 0, l = 0)), axis.title.x = element_text(margin = margin(t = 10, r = 0, b = 0, l = 0)))
+  
+}
+```
+
+# Fornøyd med ivaretakelsen fra smerteteam
+Andel forløp hvor pasientene er "i stor grad" eller "i svært stor grad" fornøyd med ivaretakelsen fra smerteteamet. Det er ønskelig med høyest mulig andel. Det er kun de forløpene der spørsmålet er besvart som inkluderes.
+
+```{r pasienttilfredshet, warning = FALSE, message=FALSE, results='asis'}
+# Klargjøre variabler for tid fra henvsining til tilsyn her.
+if (dim(dat)[1] < 1) {
+  message <- "I den valgte tidsperioden er det ikke nok data til å angi denne kvalitetsindikatoren."
+} else {
+  
+  if (!rapbase::isRapContext()) {
+    #Må gjøre variablene numerisk for bruk i tabell
+    dat$PasRegSpm3 <- as.numeric(levels(dat$PasRegSpm3))[dat$PasRegSpm3]
+    }
+
+  dat$fornoyd <- NA
+  # Mulige verdier: 1-5,9. 4 og 5 gir ja, resten gir nei. De som er NA forblir NA.
+  for(i in 1:dim(dat)[1]){
+    if(!(is.na(dat$PasRegSpm3[i]))){
+      if(dat$PasRegSpm3[i] == 4 | dat$PasRegSpm3[i] == 5){dat$fornoyd[i] <- 1} #1 hvis tilfreds
+      else{dat$fornoyd[i] <- 0} #0 dersom ikke tilfreds
+    }
+  }
+  
+#Til tabell
+kvalind3 <- dat %>% filter(!is.na(fornoyd)) %>% group_by(SykehusNavn, fornoyd) %>% summarise(n = n()) %>% mutate( ant = sum(n), freq = n/sum(n)) %>% filter(fornoyd == 1)
+
+#Tar bort kolonne for behtils oppfylt
+kvalind3 <- kvalind3 %>% select(SykehusNavn, n, ant, freq)
+
+#Tabell
+mst(tab = kvalind3,
+    colnames = c("Sykehus", "Antall", "Totalt antall", "Andel"),
+    type = params$tableFormat,
+    cap = paste0("Oversikt over andel pasienter som var fornøyd med ivaretakelsen fra smerteteamet."),
+    digs = 2,
+    align = c("l", "r", "r", "r"))
+}
+
+
+```
+
+Figuren under viser hvordan andelen har fordelt seg i løpet av året.
+```{r fornoydfig, warning = FALSE, message=FALSE, results='asis', fig.width=11.6, fig.height=6}
+if (dim(dat)[1] < 1) {
+  message <- "I den valgte tidsperioden er det ikke nok data til å vise figur for denne kvalitetsindikatoren."
+  } else {
+
+#Aggregate by month for plot
+#Grouping by month and finding frequency (remove NA here), then filtering on the "correct" frequency (if not, we get the inverse too)
+ind3plot <- dat %>% filter(!is.na(fornoyd)) %>% group_by(SykehusNavn, monthname, fornoyd) %>% summarise(n = n()) %>% mutate(ant = sum(n), freq = n/sum(n)) %>% filter(fornoyd == 1)
+
+#Plotting plotdat
+ggplot(ind3plot, aes(monthname, freq)) + 
+  geom_line(aes(group = factor(SykehusNavn), colour=factor(SykehusNavn)), size = 0.8) + geom_point(aes(group = factor(SykehusNavn), colour=factor(SykehusNavn)), size = 2) + 
+  labs(x = "Måned", y = "Andel", subtitle = "Andel fornøyd med ivaretakelsen fra smerteteam (månedlig)", color = "Sykehus") + theme_classic() + theme(axis.text.x = element_text(size = 8.5), axis.text.y = element_text(size = 10), axis.title = element_text(size = 12), plot.margin = unit(c(1, 1, 2, 1), "cm"), legend.text = element_text(size = 13), axis.title.y = element_text(margin = margin(t = 0, r = 10, b = 0, l = 0)), axis.title.x = element_text(margin = margin(t = 10, r = 0, b = 0, l = 0))) 
+
+}
+```
+
+# Nedgang i smerte
+Andel forløp hvor pasienten har nedgang i smertescore Numeric Rating Scale (NRS) fra første til siste tilsyn. Totalt måles endring for følgende fire smertetilstander: _sterkeste_ og _svakeste_ smerte i _ro_ og i _bevegelse_. Det er ønskelig med høyest mulig andel. Det er kun de forløpene der spørsmålet er besvart både ved første og siste tilsyn som inkluderes ("vet ikke" telles heller ikke med).
+
+```{r smertenivå, warning = FALSE, message=FALSE, results='asis'}
+# Klargjøre variabler for tid fra henvsining til tilsyn her.
+
+if (dim(dat)[1] < 1) {
+  message <- "I den valgte tidsperioden er det ikke nok data til å angi denne kvalitetsindikatoren."
+} else {
+  
+if (!rapbase::isRapContext()) {
+  #Må gjøre variablene numerisk for bruk i tabell
+dat$SvSmRo12 <- as.numeric(levels(dat$SvSmRo12))[dat$SvSmRo12]
+dat$SvSmRo21 <- as.numeric(levels(dat$SvSmRo21))[dat$SvSmRo21]
+dat$StSmRo12 <- as.numeric(levels(dat$StSmRo12))[dat$StSmRo12]
+dat$StSmRo21 <- as.numeric(levels(dat$StSmRo21))[dat$StSmRo21]
+dat$SvSmBev12 <- as.numeric(levels(dat$SvSmBev12))[dat$SvSmBev12]
+dat$SvSmBev21 <- as.numeric(levels(dat$SvSmBev21))[dat$SvSmBev21]
+dat$StSmBev12 <- as.numeric(levels(dat$StSmBev12))[dat$StSmBev12]
+dat$StSmBev21 <- as.numeric(levels(dat$StSmBev21))[dat$StSmBev21]
+}
+  
+  #Lager nye variabler som skal inneholde endring i NRS, settes initielt til NA
+  dat$stro <- dat$svro <- dat$stbe <- dat$svbe <-  NA
+  #For de som har svart begge ganger finner vi endring i NRS. Positiv endring = nedgang i smerte, negativ endring = oppgang i smerte. 99 er vet ikke og må også fjernes
+  for(i in 1:dim(dat)[1]){
+    if(!is.na(dat$StSmBev12[i]) & !is.na(dat$StSmBev21[i]) & dat$StSmBev12[i] != 99 & dat$StSmBev21[i] != 99)
+      {dat$stbe[i] <- dat$StSmBev12[i] - dat$StSmBev21[i]}
+    if(!is.na(dat$SvSmBev12[i]) & !is.na(dat$SvSmBev21[i]) & dat$SvSmBev12[i] != 99 & dat$SvSmBev21[i] != 99)
+      {dat$svbe[i] <- dat$SvSmBev12[i] - dat$SvSmBev21[i]}
+    if(!is.na(dat$StSmRo12[i]) & !is.na(dat$StSmRo21[i]) & dat$StSmRo12[i] != 99 & dat$StSmRo21[i] != 99)
+      {dat$stro[i] <- dat$StSmRo12[i] - dat$StSmRo21[i]}
+    if(!is.na(dat$SvSmRo12[i]) & !is.na(dat$SvSmRo21[i]) & dat$SvSmRo12[i] != 99 & dat$SvSmRo21[i] != 99)
+      {dat$svro[i] <- dat$SvSmRo12[i] - dat$SvSmRo21[i]}
+  }
+  
+#Sterkeste bevegelse
+kvalind41 <- dat %>% filter(!is.na(stbe))%>% mutate(stbe1 = stbe > 0) %>% group_by(SykehusNavn, stbe1) %>% summarise(n = n()) %>% mutate(ant = sum(n), freq = n/sum(n)) %>% filter(stbe1 > 0)
+kvalind41 <- kvalind41 %>% select(SykehusNavn, n, ant, freq)
+
+#Svakeste bevegelse
+kvalind42 <- dat %>% filter(!is.na(svbe))%>% mutate(svbe1 = svbe > 0) %>% group_by(SykehusNavn, svbe1) %>% summarise(n = n()) %>% mutate(ant = sum(n), freq = n/sum(n)) %>% filter(svbe1 > 0)
+kvalind42 <- kvalind42 %>% select(SykehusNavn, n, ant, freq)
+
+#Sterkeste ro
+kvalind43 <- dat %>% filter(!is.na(stro))%>% mutate(stro1 = stro > 0) %>% group_by(SykehusNavn, stro1) %>% summarise(n = n()) %>% mutate(ant = sum(n), freq = n/sum(n)) %>% filter(stro1 > 0)
+kvalind43 <- kvalind43 %>% select(SykehusNavn, n, ant, freq)
+
+#Svakeste ro
+kvalind44 <- dat %>% filter(!is.na(svro))%>% mutate(svro1 = svro > 0) %>% group_by(SykehusNavn, svro1) %>% summarise(n = n()) %>% mutate(ant = sum(n), freq = n/sum(n)) %>% filter(svro1 > 0)
+kvalind44 <- kvalind44 %>% select(SykehusNavn, n, ant, freq)
+
+#Sterkeste bevegelse
+mst(tab = kvalind41,
+    colnames = c("Sykehus", "Antall", "Totalt antall", "Andel"),
+    type = params$tableFormat,
+    cap = paste0("Oversikt over andel pasienter som hadde nedang i NRS fra første til siste måling for sterkeste smerte i bevegelse."),
+    digs = 2,
+    align = c("l", "r", "r", "r"))
+
+#Svakeste bevegelse
+mst(tab = kvalind42,
+    colnames = c("Sykehus", "Antall", "Totalt antall", "Andel"),
+    type = params$tableFormat,
+    cap = paste0("Oversikt over andel pasienter som hadde nedang i NRS fra første til siste måling for svakeste smerte i bevegelse."),
+    digs = 2,
+    align = c("l", "r", "r", "r"))
+
+#Sterkeste ro
+mst(tab = kvalind43,
+    colnames = c("Sykehus", "Antall", "Totalt antall", "Andel"),
+    type = params$tableFormat,
+    cap = paste0("Oversikt over andel pasienter som hadde nedang i NRS fra første til siste måling for sterkeste smerte i ro."),
+    digs = 2,
+    align = c("l", "r", "r", "r"))
+
+#Svakeste ro
+mst(tab = kvalind44,
+    colnames = c("Sykehus", "Antall", "Totalt antall", "Andel"),
+    type = params$tableFormat,
+    cap = paste0("Oversikt over andel pasienter som hadde nedang i NRS fra første til siste måling for svakeste smerte i ro."),
+    digs = 2,
+    align = c("l", "r", "r", "r"))
+
+
+}
+
+
+```
+
+Figuren under viser hvordan andelene har fordelt seg i løpet av året for de fire NRS-målene.
+```{r nrsfig, warning = FALSE, message=FALSE, results='asis'}
+
+if (dim(dat)[1] < 1) {
+  message <- "I den valgte tidsperioden er det ikke nok data til å vise figur for denne kvalitetsindikatoren."
+  } else {
+    
+#Aggregate by month for plot
+#Common plot details
+plotdetails = list(geom_line(aes(group = factor(SykehusNavn), colour=factor(SykehusNavn)), size = 1.5), geom_point(aes(group = factor(SykehusNavn), colour=factor(SykehusNavn)), size = 3.5), theme_classic(), theme(axis.text.x = element_text(size = 15.5), axis.text.y = element_text(size = 17), axis.title = element_text(size = 21), plot.margin = unit(c(1, 1, 2, 1), "cm"), legend.text = element_text(size = 22), plot.title = element_text(size=19), legend.title = element_text(size = 20), axis.title.y = element_text(margin = margin(t = 0, r = 10, b = 0, l = 0)), axis.title.x = element_text(margin = margin(t = 10, r = 0, b = 0, l = 0))))
+
+####
+#Sterkeste smerte i bevegelse
+ind41plot = dat %>% filter(!is.na(stbe)) %>% mutate(stbe1 = stbe > 0) %>% group_by(SykehusNavn, monthname, stbe1) %>% summarise(n = n()) %>% mutate(ant = sum(n), freq = n/sum(n)) %>% filter(stbe1 == 1)
+p1 = ggplot(ind41plot, aes(monthname, freq)) + 
+  plotdetails + labs(x = "Måned", y = "Andel", title = "Andel med nedgang i NRS for sterkeste smerte i bevegelse (månedlig)", color = "Sykehus") 
+
+####
+#Svakeste smerte i bevegelse
+ind42plot <- dat %>% filter(!is.na(svbe)) %>% mutate(svbe1 = svbe > 0) %>% group_by(SykehusNavn, monthname, svbe1) %>% summarise(n = n()) %>% mutate(ant = sum(n), freq = n/sum(n)) %>% filter(svbe1 == 1)
+#Plotting plotdat
+p2 = ggplot(ind42plot, aes(monthname, freq)) + 
+  plotdetails + labs(x = "Måned", y = "Andel", title = "Andel med nedgang i NRS for svakeste smerte i bevegelse (månedlig)", color = "Sykehus")
+
+####
+#Sterkeste smerte i ro
+ind43plot <- dat %>% filter(!is.na(stro)) %>% mutate(stro1 = stro > 0) %>% group_by(SykehusNavn, monthname, stro1) %>% summarise(n = n()) %>% mutate(ant = sum(n), freq = n/sum(n)) %>% filter(stro1 == 1)
+#Plotting plotdat
+p3 = ggplot(ind43plot, aes(monthname, freq)) + 
+  plotdetails + labs(x = "Måned", y = "Andel", title = "Andel med nedgang i NRS for sterkeste smerte i ro (månedlig)", color = "Sykehus")
+
+####
+#Svakeste smerte i ro
+ind44plot <- dat %>% filter(!is.na(svro)) %>% mutate(svro1 = svro > 0) %>% group_by(SykehusNavn, monthname, svro1) %>% summarise(n = n()) %>% mutate(ant = sum(n), freq = n/sum(n)) %>% filter(svro1 == 1)
+#Plotting plotdat
+p4 = ggplot(ind44plot, aes(monthname, freq)) + 
+  plotdetails + labs(x = "Måned", y = "Andel", title = "Andel med nedgang i NRS for svakeste smerte i ro (månedlig)", color = "Sykehus")
+
+}
+```
+
+```{r nrsfig1, warning = FALSE, message=FALSE, results='asis', fig.width=22, fig.height=9}
+
+if (dim(dat)[1] < 1) {
+  message <- "I den valgte tidsperioden er det ikke nok data til å vise figur for denne kvalitetsindikatoren."
+  } else {
+    print(p1)
+}
+```
+
+```{r nrsfig2, warning = FALSE, message=FALSE, results='asis', fig.width=22, fig.height=9}
+
+if (dim(dat)[1] < 1) {
+  message <- "I den valgte tidsperioden er det ikke nok data til å vise figur for denne kvalitetsindikatoren."
+  } else {
+    print(p2)
+}
+```
+
+```{r nrsfig3, warning = FALSE, message=FALSE, results='asis', fig.width=22, fig.height=9}
+
+if (dim(dat)[1] < 1) {
+  message <- "I den valgte tidsperioden er det ikke nok data til å vise figur for denne kvalitetsindikatoren."
+  } else {
+    print(p3)
+}
+```
+
+```{r nrsfig4, warning = FALSE, message=FALSE, results='asis', fig.width=22, fig.height=9}
+
+if (dim(dat)[1] < 1) {
+  message <- "I den valgte tidsperioden er det ikke nok data til å vise figur for denne kvalitetsindikatoren."
+  } else {
+    print(p4)
+}
+```
