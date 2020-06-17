@@ -65,7 +65,7 @@ ui <- tagList(
     tabPanel("Indikatorrapport",
              sidebarLayout(
                sidebarPanel(
-                 uiOutput("years"),
+                 uiOutput("indYears"),
                  radioButtons('formatIndikator',
                               'Format for nedlasting',
                               c('PDF', 'HTML'),

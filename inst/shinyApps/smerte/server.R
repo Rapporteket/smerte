@@ -208,7 +208,7 @@ server <- function(input, output, session) {
 
 
   # Indikatorrapport
-  output$years <- renderUI({
+  output$indYears <- renderUI({
     ## years available, hardcoded if outside known context
     if (rapbase::isRapContext()) {
       years <- getLocalYears(registryName, reshId, userRole)
