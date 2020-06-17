@@ -20,6 +20,8 @@ getRegDataRapportDekningsgrad(
   ...
 )
 
+getRegDataLokalTilsynsrapportMaaned(registryName, reshId, userRole, year, ...)
+
 getLocalYears(registryName, reshId, userRole)
 
 getHospitalName(registryName, reshId, userRole)
