@@ -211,23 +211,27 @@ server <- function(input, output, session) {
   output$indYears <- renderUI({
     ## years available, hardcoded if outside known context
     if (rapbase::isRapContext()) {
-      years <- getLocalYears(registryName, reshId, userRole)
+      years <- getAllYears(registryName, reshId, userRole)
       # remove NAs if they exists (bad registry)
       years <- years[!is.na(years)]
     } else {
       years <- c("2016", "2017", "2018", "2019", "2020")
     }
-    selectInput("yearSet", "Velg år:", years)
+    selectInput("indYearSet", "Velg år:", years)
   })
   output$indikatorrapport <- renderUI({
     reshId <- rapbase::getUserReshId(session)
     registryName <- makeRegistryName(baseName = "smerte", reshID = reshId)
-    if (is.null(input$yearSet)) {
+    reportTemplate <- "LokalIndikatorMaaned.Rmd"
+    if (isNationalReg(reshId)) {
+      reportTemplate <- "NasjonalIndikatorMaaned.Rmd"
+    }
+    if (is.null(input$indYearSet)) {
       NULL
     } else {
-      htmlRenderRmd(srcFile = "LokalIndikatorMaaned.Rmd",
+      htmlRenderRmd(srcFile = reportTemplate,
                     params = list(hospitalName=hospitalName,
-                                  year=input$yearSet,
+                                  year=input$indYearSet,
                                   tableFormat='html',
                                   registryName=registryName,
                                   reshId=reshId,
