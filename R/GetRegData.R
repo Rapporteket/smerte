@@ -14,7 +14,7 @@
 #' @param ... Optional arguments to be passed to the function
 #' @name getRegData
 #' @aliases getRegDataLokalTilsynsrapportMaaned
-#' getRegDataRapportDekningsgrad getLocalYears getHospitalName
+#' getRegDataRapportDekningsgrad getLocalYears getAllYears getHospitalName
 #' getDataDump
 NULL
 
@@ -110,7 +110,7 @@ WHERE
 
 #' @rdname getRegData
 #' @export
-getRegDataLokalTilsynsrapportMaaned <- function(registryName, reshId, userRole,
+getRegDataIndikator <- function(registryName, reshId, userRole,
                                                 year, ...) {
 
   dbType <- "mysql"
@@ -137,24 +137,22 @@ SELECT
   var.StSmRo21,
   var.SvSmBev12,
   var.SvSmBev21,
+  var.SykehusNavn,
   var.StSmBev12,
   var.StSmBev21,
   var.PasientID,
   var.ForlopsID,
-  var.InnlAvd,
-  avd.DEPARTMENT_ID,
-  avd.DEPARTMENT_NAME,
-  avd.DEPARTMENT_SHORTNAME
+  var.InnlAvd
 FROM
   AlleVarNum var
-LEFT JOIN
-  avdelingsoversikt avd
-ON
-  avd.DEPARTMENT_ID = var.InnlAvd
 WHERE
   YEAR(var.RegDato11) = "
 
-  query <- paste0(query, year, " AND var.AvdRESH IN (", deps, ");")
+  if (isNationalReg(reshId)) {
+    query <- paste0(query, year, ";")
+  } else {
+    query <- paste0(query, year, " AND var.AvdRESH IN (", deps, ");")
+  }
 
   if ("session" %in% names(list(...))) {
     raplog::repLogger(session = list(...)[["session"]],
@@ -162,6 +160,7 @@ WHERE
                                   registryName, ": ", query))
   }
 
+  print(query)
   rapbase::LoadRegData(registryName, query, dbType)
 }
 
@@ -180,6 +179,24 @@ FROM
   AlleVarNum
 WHERE
   AvdRESH IN (", deps, ")
+GROUP BY
+  YEAR(RegDato11);
+")
+
+  rapbase::LoadRegData(registryName, query, dbType)
+}
+
+#' @rdname getRegData
+#' @export
+getAllYears <- function(registryName, reshId, userRole) {
+
+  dbType <- "mysql"
+
+  query <- paste0("
+SELECT
+  YEAR(RegDato11) as year
+FROM
+  AlleVarNum
 GROUP BY
   YEAR(RegDato11);
 ")
