@@ -233,7 +233,7 @@ server <- function(input, output, session) {
       reportTemplate <- "NasjonalIndikatorMaaned.Rmd"
     }
     if (is.null(input$indYearSet)) {
-      NULL
+      p("Velg fra menyen til venstre hvilket år indikatorene skal vises for.")
     } else {
       htmlRenderRmd(srcFile = reportTemplate,
                     params = list(hospitalName=hospitalName,
