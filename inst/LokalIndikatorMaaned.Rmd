@@ -96,7 +96,7 @@ mst <- function(tab, colnames = colnames(tab), type, cap, digs, align = NULL, fs
 }
 ```
 
-Smerteregisteret har fire kvalitetsindikatorer som skal være til hjelp i utviklingen av god smertebehandling. Merk at det her skilles mellom forløp og pasienter, siden samme pasient kan ha flere forløp.
+Smerteregisteret har fire kvalitetsindikatorer som skal være til hjelp i utviklingen av god smertebehandling. Merk at det her skilles mellom forløp og pasienter, siden samme pasient kan ha flere forløp. Denne rapporten viser resultater for `r params$hospitalName` i `r params$year`.
 
 # Tilsett av to eller flere faggrupper
 Andel forløp hvor pasientene tilses av to eller flere faggrupper. Det er ønskelig med høyest mulig andel. De ulike faggruppene er lege, sykepleier, sosionom, psykolog og fysioterapeut. Med "totalt antall" menes her alle forløp som har minimum ett tilsyn. 
