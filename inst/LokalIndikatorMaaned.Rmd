@@ -1,29 +1,24 @@
 ---
+title: "`r paste(params$title, params$hospitalName, "for", params$year)`"
+author: "`r params$author`"
+date: "`r format(Sys.time(), "%d\\. %B, %Y")`"
+output: pdf_document
 params:
-  title: 'Kvalitetsindikatorer ved'
-  author: 'Rapporteket'
-  hospitalName: 'Ukjent sykehus'
-  reshId: 'locallyDefined'
-  userRole: 'MyRole'
-  startDate: '2017-01-01'
+  author: Rapporteket
   endDate: '2017-12-31'
-  year: '2016'
-  tableFormat: 'html'
-  registryName: 'rapbase'
+  hospitalName: Ukjent sykehus
+  registryName: rapbase
+  reshId: locallyDefined
   shinySession: list()
-title: '`r paste(params$title, params$hospitalName, "for", params$year)`'
-author: '`r params$author`'
-date: '`r format(Sys.time(), "%d\\. %B, %Y")`'
+  startDate: '2017-01-01'
+  tableFormat: html
+  title: Kvalitetsindikatorer ved
+  userRole: MyRole
+  year: '2016'
 header-includes:
-  - \usepackage[english, norsk]{babel}
-  - \usepackage{booktabs}
-  - \usepackage{rotating}
-#output:
-#  html_document:
-#    theme: flatly
-#    toc: yes
-#  pdf_document: default
-#  word_document: default
+- \usepackage[english, norsk]{babel}
+- \usepackage{booktabs}
+- \usepackage{rotating}
 ---
 ```{r set options and load packages, include = FALSE}
 knitr::opts_chunk$set(echo=FALSE)
