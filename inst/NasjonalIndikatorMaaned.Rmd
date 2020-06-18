@@ -1,6 +1,6 @@
 ---
 params:
-  title: 'Kvalitetsindikatorer for'
+  title: 'Kvalitetsindikatorer for Smerteregisteret nasjonalt'
   author: 'Rapporteket'
   hospitalName: 'Smerteregisteret nasjonalt'
   reshId: 'locallyDefined'
@@ -11,7 +11,7 @@ params:
   tableFormat: 'html'
   registryName: 'rapbase'
   shinySession: list()
-title: '`r paste(params$title, params$hospitalName, "i", params$year)`'
+title: '`r paste(params$title, params$year)`'
 author: '`r params$author`'
 date: '`r format(Sys.time(), "%d\\. %B, %Y")`'
 header-includes:
