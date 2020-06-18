@@ -37,6 +37,7 @@ server <- function(input, output, session) {
 
 
 
+
   # Gjenbrukbar funksjon for å bearbeide Rmd til html
   htmlRenderRmd <- function(srcFile, params = list()) {
     # set param needed for report meta processing
@@ -69,7 +70,7 @@ server <- function(input, output, session) {
   }
 
   # render file function for re-use
-  contentFile <- function(file, srcFile, tmpFile, type) {
+  contentFile <- function(file, srcFile, tmpFile, type, addParam = list()) {
     src <- normalizePath(system.file(srcFile, package="smerte"))
     # temporarily switch to the temp dir, in case we do not have write
     # permission to the current working directory
@@ -78,28 +79,30 @@ server <- function(input, output, session) {
     file.copy(src, tmpFile, overwrite = TRUE)
 
     library(rmarkdown)
-    out <- render(tmpFile, output_format = switch(
-      type,
-      PDF = pdf_document(),
-      HTML = html_document(),
-      BEAMER = beamer_presentation(theme = "Hannover"),
-      REVEAL = revealjs::revealjs_presentation(theme = "sky")
-    ), params = list(tableFormat=switch(
-      type,
-      PDF = "latex",
-      HTML = "html",
-      BEAMER = "latex",
-      REVEAL = "html"),
-      hospitalName=hospitalName,
-      reshId=reshId,
-      userRole=userRole,
-      year=input$yearSet,
-      startDate=input$dateRangeDekningsgrad[1],
-      endDate=input$dateRangeDekningsgrad[2],
-      registryName=registryName,
-      author=author,
-      shinySession=session
-    ), output_dir = tempdir())
+    out <- render(tmpFile,
+                  output_format =
+                    switch(
+                      type,
+                      PDF = pdf_document(),
+                      HTML = html_document(),
+                      BEAMER = beamer_presentation(theme = "Hannover"),
+                      REVEAL = revealjs::revealjs_presentation(theme = "sky")
+                    ),
+                  params = c(
+                    list(tableFormat =
+                           switch(
+                             type,
+                             PDF = "latex",
+                             HTML = "html",
+                             BEAMER = "latex",
+                             REVEAL = "html"),
+                    hospitalName=hospitalName,
+                    reshId=reshId,
+                    userRole=userRole,
+                    registryName=registryName,
+                    author=author,
+                    shinySession=session), addParam),
+                  output_dir = tempdir())
     file.rename(out, file)
   }
 
@@ -174,7 +177,8 @@ server <- function(input, output, session) {
     content = function(file) {
       contentFile(file, "LokalTilsynsrapportMaaned.Rmd",
                   "tmpLokalTilsynsrapportMaaned.Rmd",
-                  input$formatTilsyn)
+                  input$formatTilsyn,
+                  addParam = list(year = input$yearSet))
     }
   )
 
@@ -202,7 +206,9 @@ server <- function(input, output, session) {
     content = function(file) {
       contentFile(file, "LokalDekningsgradrapport.Rmd",
                   "tmpLokalDekningsgradrapport.Rmd",
-                  input$formatDekningsgrad)
+                  input$formatDekningsgrad,
+                  addParam = list(startDate=input$dateRangeDekningsgrad[1],
+                                  endDate=input$dateRangeDekningsgrad[2]))
     }
   )
 
@@ -250,7 +256,8 @@ server <- function(input, output, session) {
     content = function(file) {
       contentFile(file, "LokalIndikatorMaaned.Rmd",
                   "tmpLokalIndikatorMaaned.Rmd",
-                  input$formatIndikator)
+                  input$formatIndikator,
+                  addParam = list(year=input$indYearSet))
     }
   )
 

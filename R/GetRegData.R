@@ -160,7 +160,6 @@ WHERE
                                   registryName, ": ", query))
   }
 
-  print(query)
   rapbase::LoadRegData(registryName, query, dbType)
 }
 
