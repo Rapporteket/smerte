@@ -18,9 +18,3 @@ A list with table names and corresponding fields with attributes
 \description{
 List all tables and fields with attributes such as type and degault values
 }
-\examples{
-\donttest{
-# Requires a running database in an appropriate Rapporteket environment
-describeRegistryDb("rapbase")
-}
-}

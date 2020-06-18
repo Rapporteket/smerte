@@ -8,12 +8,6 @@
 #'
 #' @return A list with table names and corresponding fields with attributes
 #' @export
-#'
-#' @examples
-#' \donttest{
-#' # Requires a running database in an appropriate Rapporteket environment
-#' describeRegistryDb("rapbase")
-#' }
 
 describeRegistryDb <- function(registryName, tabs = c()) {
 
