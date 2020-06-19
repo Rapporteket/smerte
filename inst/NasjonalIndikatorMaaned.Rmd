@@ -1,19 +1,19 @@
 ---
-title: "`r paste(params$title, params$year)`"
-author: "`r params$author`"
-date: '`r format(Sys.time(), "%d\\. %B, %Y")`'
 params:
-  author: Rapporteket
-  endDate: '2017-12-31'
-  hospitalName: Smerteregisteret nasjonalt
-  registryName: rapbase
-  reshId: locallyDefined
-  shinySession: list()
+  title: 'Kvalitetsindikatorer for Rapporteket nasjonalt i  '
+  author: 'Rapporteket'
+  hospitalName: 'Ukjent sykehus'
+  reshId: 'locallyDefined'
+  userRole: 'MyRole'
   startDate: '2017-01-01'
-  tableFormat: html
-  title: Kvalitetsindikatorer for Smerteregisteret nasjonalt
-  userRole: MyRole
+  endDate: '2017-12-31'
   year: '2016'
+  tableFormat: 'html'
+  registryName: 'rapbase'
+  shinySession: list()
+title: '`r paste(params$title, params$year)`'
+author: '`r params$author`'
+date: '`r format(Sys.time(), "%d\\. %B, %Y")`'
 header-includes:
 - \usepackage[english, norsk]{babel}
 - \usepackage{booktabs}
