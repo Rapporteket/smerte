@@ -28,11 +28,13 @@ server <- function(input, output, session) {
   if (isNationalReg(reshId)) {
     hideTab(inputId = "tabs", target = "Tilsynsrapport")
     hideTab(inputId = "tabs", target = "Dekningsgrad")
+    if (!userRole %in% "SC") {
+      hideTab(inputId = "tabs", target = "Datadump")
+    }
   }
   ## metadata and dump only for SC
   if (!userRole %in% "SC") {
     hideTab(inputId = "tabs", target = "Metadata")
-    hideTab(inputId = "tabs", target = "Datadump")
   }
 
 
