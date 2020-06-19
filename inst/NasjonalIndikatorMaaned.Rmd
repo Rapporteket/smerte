@@ -1,29 +1,23 @@
 ---
-params:
-  title: 'Kvalitetsindikatorer for Smerteregisteret nasjonalt'
-  author: 'Rapporteket'
-  hospitalName: 'Smerteregisteret nasjonalt'
-  reshId: 'locallyDefined'
-  userRole: 'MyRole'
-  startDate: '2017-01-01'
-  endDate: '2017-12-31'
-  year: '2016'
-  tableFormat: 'html'
-  registryName: 'rapbase'
-  shinySession: list()
-title: '`r paste(params$title, params$year)`'
-author: '`r params$author`'
+title: "`r paste(params$title, params$year)`"
+author: "`r params$author`"
 date: '`r format(Sys.time(), "%d\\. %B, %Y")`'
+params:
+  author: Rapporteket
+  endDate: '2017-12-31'
+  hospitalName: Smerteregisteret nasjonalt
+  registryName: rapbase
+  reshId: locallyDefined
+  shinySession: list()
+  startDate: '2017-01-01'
+  tableFormat: html
+  title: Kvalitetsindikatorer for Smerteregisteret nasjonalt
+  userRole: MyRole
+  year: '2016'
 header-includes:
-  - \usepackage[english, norsk]{babel}
-  - \usepackage{booktabs}
-  - \usepackage{rotating}
-#output:
-#  html_document:
-#    theme: flatly
-#    toc: yes
-#  pdf_document: default
-#  word_document: default
+- \usepackage[english, norsk]{babel}
+- \usepackage{booktabs}
+- \usepackage{rotating}
 ---
 ```{r set options and load packages, include = FALSE}
 knitr::opts_chunk$set(echo=FALSE)
@@ -155,7 +149,7 @@ mst(tab = kvalind1,
 ```
 
 Figuren under viser hvordan andelen har fordelt seg i løpet av året.
-```{r behandlertilsynfig, warning = FALSE, message=FALSE, results='asis', fig.width=11.6, fig.height=6}
+```{r behandlertilsynfig, warning = FALSE, message=FALSE, results='asis', fig.width=13, fig.height=6, fig.pos= "H", out.extra = ''}
 if (dim(dat)[1] < 1) {
   message <- "I den valgte tidsperioden er det ikke nok data til å vise figur for denne kvalitetsindikatoren."
   } else {
@@ -207,7 +201,7 @@ mst(tab = kvalind2,
 ```
 
 Figuren under viser hvordan andelen har fordelt seg i løpet av året.
-```{r tilsetthenvistfig, warning = FALSE, message=FALSE, results='asis', fig.width=11.6, fig.height=6}
+```{r tilsetthenvistfig, warning = FALSE, message=FALSE, results='asis', fig.width=13, fig.height=6, fig.pos= "H", out.extra = ''}
 if (dim(dat)[1] < 1) {
   message <- "I den valgte tidsperioden er det ikke nok data til å vise figur for denne kvalitetsindikatoren."
   } else {
@@ -264,7 +258,7 @@ mst(tab = kvalind3,
 ```
 
 Figuren under viser hvordan andelen har fordelt seg i løpet av året.
-```{r fornoydfig, warning = FALSE, message=FALSE, results='asis', fig.width=11.6, fig.height=6}
+```{r fornoydfig, warning = FALSE, message=FALSE, results='asis', fig.width=13, fig.height=6, fig.pos= "H", out.extra = ''}
 if (dim(dat)[1] < 1) {
   message <- "I den valgte tidsperioden er det ikke nok data til å vise figur for denne kvalitetsindikatoren."
   } else {
