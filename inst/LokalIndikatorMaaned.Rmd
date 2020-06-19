@@ -1,6 +1,6 @@
 ---
 params:
-  title: 'Kvalitetsindikatorer ved'
+  title: 'Kvalitetsindikatorer for'
   author: 'Rapporteket'
   hospitalName: 'Ukjent sykehus'
   reshId: 'locallyDefined'
@@ -11,13 +11,13 @@ params:
   tableFormat: 'html'
   registryName: 'rapbase'
   shinySession: list()
-title: '`r paste(params$title, params$hospitalName, "for", params$year)`'
+title: '`r paste(params$title, params$hospitalName, "i", params$year)`'
 author: '`r params$author`'
 date: '`r format(Sys.time(), "%d\\. %B, %Y")`'
 header-includes:
-  - \usepackage[english, norsk]{babel}
-  - \usepackage{booktabs}
-  - \usepackage{rotating}
+- \usepackage[english, norsk]{babel}
+- \usepackage{booktabs}
+- \usepackage{rotating}
 #output:
 #  html_document:
 #    theme: flatly
@@ -96,7 +96,7 @@ mst <- function(tab, colnames = colnames(tab), type, cap, digs, align = NULL, fs
 }
 ```
 
-Smerteregisteret har fire kvalitetsindikatorer som skal være til hjelp i utviklingen av god smertebehandling. Merk at det her skilles mellom forløp og pasienter, siden samme pasient kan ha flere forløp.
+Smerteregisteret har fire kvalitetsindikatorer som skal være til hjelp i utviklingen av god smertebehandling. Merk at det her skilles mellom forløp og pasienter, siden samme pasient kan ha flere forløp. Denne rapporten viser resultater for `r params$hospitalName` i `r params$year`.
 
 # Tilsett av to eller flere faggrupper
 Andel forløp hvor pasientene tilses av to eller flere faggrupper. Det er ønskelig med høyest mulig andel. De ulike faggruppene er lege, sykepleier, sosionom, psykolog og fysioterapeut. Med "totalt antall" menes her alle forløp som har minimum ett tilsyn. 
@@ -161,7 +161,7 @@ mst(tab = tabto,
 ```
 
 Figuren under viser hvordan andelen har fordelt seg i løpet av året.
-```{r behandlertilsynfig, warning = FALSE, message=FALSE, results='asis'}
+```{r behandlertilsynfig, warning = FALSE, message=FALSE, results='asis', fig.pos= "H", out.extra = '', fig.width=7.5}
 if (dim(behdat)[1] < 1) {
   message <- "I den valgte tidsperioden er det ikke nok data til å vise figur for denne kvalitetsindikatoren."
   } else {
@@ -173,7 +173,7 @@ plotdat <- behdat %>% group_by(month = monthname, behtils) %>% summarise(n = n()
 ggplot(plotdat, aes(month, freq)) + 
   geom_line(aes(group = 1)) + geom_point() + 
   labs(x = "Måned", y = "Andel", subtitle = "Andel tilsett av to eller flere faggrupper per måned") + theme_classic() +
-  theme(axis.text.x = element_text(size = 7.3), plot.margin = unit(c(1, 1, 2, 1), "cm"), axis.title.y = element_text(margin = margin(t = 0, r = 10, b = 0, l = 0)), axis.title.x = element_text(margin = margin(t = 10, r = 0, b = 0, l = 0))) 
+  theme(axis.text.x = element_text(size = 7.3), plot.margin = unit(c(1, 1, 2, 0), "cm"), axis.title.y = element_text(margin = margin(t = 0, r = 10, b = 0, l = 0)), axis.title.x = element_text(margin = margin(t = 10, r = 0, b = 0, l = 0))) 
   
 }
 
@@ -220,7 +220,7 @@ mst(tab = tabtils,
 ```
 
 Figuren under viser hvordan andelen har fordelt seg i løpet av året.
-```{r tilsetthenvistfig, warning = FALSE, message=FALSE, results='asis'}
+```{r tilsetthenvistfig, warning = FALSE, message=FALSE, results='asis', fig.pos= "H", out.extra = '', fig.width=7.5}
 if (dim(dat)[1] < 1) {
   message <- "I den valgte tidsperioden er det ikke nok data til å vise figur for denne kvalitetsindikatoren."
   } else {
@@ -232,7 +232,7 @@ plot2 <- henvdat %>% group_by(month = monthname, henvtils) %>% summarise(n = n()
 ggplot(plot2, aes(month, freq)) + 
   geom_line(aes(group = 1)) + geom_point() + 
   labs(x = "Måned", y = "Andel", subtitle = "Andel tilsett samme dag pasienten var henvist per måned") + theme_classic() +
-  theme(axis.text.x = element_text(size = 7.3), plot.margin = unit(c(1, 1, 2, 1), "cm"), axis.title.y = element_text(margin = margin(t = 0, r = 10, b = 0, l = 0)), axis.title.x = element_text(margin = margin(t = 10, r = 0, b = 0, l = 0))) 
+  theme(axis.text.x = element_text(size = 7.3), plot.margin = unit(c(1, 1, 2, 0), "cm"), axis.title.y = element_text(margin = margin(t = 0, r = 10, b = 0, l = 0)), axis.title.x = element_text(margin = margin(t = 10, r = 0, b = 0, l = 0))) 
 
 }
 ```
@@ -281,7 +281,7 @@ mst(tab = tabforn,
 ```
 
 Figuren under viser hvordan andelen har fordelt seg i løpet av året.
-```{r fornoydfig, warning = FALSE, message=FALSE, results='asis'}
+```{r fornoydfig, warning = FALSE, message=FALSE, results='asis', fig.pos= "H", out.extra = '', fig.width=7.5}
 if (dim(dat)[1] < 1) {
   message <- "I den valgte tidsperioden er det ikke nok data til å vise figur for denne kvalitetsindikatoren."
   } else {
@@ -294,7 +294,7 @@ plot3 <- dat %>% filter(!is.na(fornoyd)) %>% group_by(month = monthname, fornoyd
 ggplot(plot3, aes(month, freq)) + 
   geom_line(aes(group = 1)) + geom_point() + 
   labs(x = "Måned", y = "Andel", subtitle = "Andel fornøyd med ivaretakelsen fra smerteteam per måned") + theme_classic() +
-  theme(axis.text.x = element_text(size = 7.3), plot.margin = unit(c(1, 1, 2, 1), "cm"), axis.title.y = element_text(margin = margin(t = 0, r = 10, b = 0, l = 0)), axis.title.x = element_text(margin = margin(t = 10, r = 0, b = 0, l = 0)))
+  theme(axis.text.x = element_text(size = 7.3), plot.margin = unit(c(1, 1, 2, 0), "cm"), axis.title.y = element_text(margin = margin(t = 0, r = 10, b = 0, l = 0)), axis.title.x = element_text(margin = margin(t = 10, r = 0, b = 0, l = 0)))
 
 }
 ```
