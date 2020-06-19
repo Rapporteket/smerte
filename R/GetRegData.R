@@ -274,7 +274,22 @@ LEFT JOIN
 ON
   d.ForlopsID = fo.ForlopsID
 WHERE
-  fo.HovedDato BETWEEN ", fromDate, " AND ", toDate, ";
+  fo.HovedDato BETWEEN
+    CAST('", fromDate, "' AS DATE) AND
+    CAST('", toDate, "' AS DATE);
+")
+  }
+
+  if (tableName %in% c("ForlopsOversikt")) {
+    query <- paste0("
+SELECT
+  *
+FROM
+  ", tableName, "
+WHERE
+  HovedDato BETWEEN
+    CAST('", fromDate, "' AS DATE) AND
+    CAST('", toDate, "' AS DATE);
 ")
   }
 
