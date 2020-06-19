@@ -361,7 +361,19 @@ server <- function(input, output, session) {
     selectInput("dumpDataSet", "Velg datasett:", names(meta()))
   })
 
-  output$dumpDataInfo <- renderUI({
+  contentDump <- function(file, type) {
+    d <- smerte::getDataDump(registryName,input$dumpDataSet,
+                            fromDate = input$dumpDateRange[1],
+                            toDate = input$dumpDateRange[2],
+                            session = session)
+    if (type == "xlsx-csv") {
+      readr::write_excel_csv2(d, file)
+    } else {
+      readr::write_csv2(d, file)
+    }
+  }
+
+  output$dataDumpInfo <- renderUI({
     p(paste("Valgt for nedlasting:", input$dumpDataSet))
   })
 
@@ -374,4 +386,5 @@ server <- function(input, output, session) {
       contentDump(file, input$dumpFormat)
     }
   )
+
 }
