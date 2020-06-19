@@ -107,24 +107,31 @@ ui <- tagList(
         mainPanel(htmlOutput("metaData"))
       )
     ),
-    tabPanel("Datadump"
-      ,
-      sidebarLayout(
-        sidebarPanel(width = 4,
-          uiOutput("dumpTabControl"),
-          dateRangeInput("dumpDateRange", "Velg periode:",
-                         start = lubridate::ymd(Sys.Date())- years(1),
-                         end = Sys.Date(), separator = "-",
-                         weekstart = 1),
-          radioButtons("dumpFormat", "Velg filformat:",
-                       choices = c("csv", "xlsx-csv")),
-          downloadButton("dumpDownload", "Hent!")
-        ),
-        mainPanel(
-          htmlOutput("dumpDataInfo")
-        )
-      )
-    )
+    tabPanel("Datadump",
+             sidebarLayout(
+               sidebarPanel(width = 4,
+                            selectInput("dumpDataSet", "Velg datasett:",
+                                        c("AlleVar",
+                                          "AlleVarNum",
+                                          "avdelingsoversikt",
+                                          "ForlopsOversikt",
+                                          "SmerteDiagnoser",
+                                          "SmerteDiagnoserNum")),
+                            dateRangeInput("dumpDateRange", "Velg periode:",
+                                           start = ymd(Sys.Date())- years(1),
+                                           end = Sys.Date(), separator = "-",
+                                           weekstart = 1),
+                            radioButtons("dumpFormat", "Velg filformat:",
+                                         choices = c("csv", "xlsx-csv")),
+                            downloadButton("dumpDownload", "Hent!")
+               ),
+               mainPanel(
+                 htmlOutput("dataDumpInfo") #%>%
+                 # shinycssloaders::withSpinner(color = "#18bc9c",color.background = "#ffffff",
+                 #             type = 2)
+               )
+             )
+    ),
 
   ) # navbarPage
 ) # tagList
