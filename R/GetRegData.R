@@ -130,7 +130,7 @@ SELECT
   var.RegDato11,
   var.StartdatoTO,
   var.HenvistDato,
-  var.PasRegSpm3,
+  var.PRSpm3,
   var.SvSmRo12,
   var.SvSmRo21,
   var.StSmRo12,
