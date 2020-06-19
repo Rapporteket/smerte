@@ -5,8 +5,10 @@
 \alias{getRegDataLokalTilsynsrapportMaaned}
 \alias{getRegDataRapportDekningsgrad}
 \alias{getLocalYears}
+\alias{getAllYears}
 \alias{getHospitalName}
 \alias{getDataDump}
+\alias{getRegDataIndikator}
 \title{Provide dataframe of registry data}
 \usage{
 getRegDataLokalTilsynsrapportMaaned(registryName, reshId, userRole, year, ...)
@@ -20,7 +22,11 @@ getRegDataRapportDekningsgrad(
   ...
 )
 
+getRegDataIndikator(registryName, reshId, userRole, year, ...)
+
 getLocalYears(registryName, reshId, userRole)
+
+getAllYears(registryName, reshId, userRole)
 
 getHospitalName(registryName, reshId, userRole)
 

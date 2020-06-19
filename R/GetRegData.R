@@ -14,7 +14,7 @@
 #' @param ... Optional arguments to be passed to the function
 #' @name getRegData
 #' @aliases getRegDataLokalTilsynsrapportMaaned
-#' getRegDataRapportDekningsgrad getLocalYears getHospitalName
+#' getRegDataRapportDekningsgrad getLocalYears getAllYears getHospitalName
 #' getDataDump
 NULL
 
@@ -108,6 +108,60 @@ WHERE
   rapbase::LoadRegData(registryName, query, dbType)
 }
 
+#' @rdname getRegData
+#' @export
+getRegDataIndikator <- function(registryName, reshId, userRole,
+                                                year, ...) {
+
+  dbType <- "mysql"
+
+  # special case at OUS
+  deps <- .getDeps(reshId, userRole)
+
+  query <- "
+SELECT
+  var.AntTilsLege,
+  var.AntTilsSykPleier,
+  var.AntTilsFysioT,
+  var.AntTilsPsyk,
+  var.AntTilsSosio,
+  var.AntPasTils,
+  var.Tilsett,
+  var.RegDato11,
+  var.StartdatoTO,
+  var.HenvistDato,
+  var.PasRegSpm3,
+  var.SvSmRo12,
+  var.SvSmRo21,
+  var.StSmRo12,
+  var.StSmRo21,
+  var.SvSmBev12,
+  var.SvSmBev21,
+  var.SykehusNavn,
+  var.StSmBev12,
+  var.StSmBev21,
+  var.PasientID,
+  var.ForlopsID,
+  var.InnlAvd
+FROM
+  AlleVarNum var
+WHERE
+  YEAR(var.RegDato11) = "
+
+  if (isNationalReg(reshId)) {
+    query <- paste0(query, year, ";")
+  } else {
+    query <- paste0(query, year, " AND var.AvdRESH IN (", deps, ");")
+  }
+
+  if ("session" %in% names(list(...))) {
+    raplog::repLogger(session = list(...)[["session"]],
+                      msg = paste("Load indikatorrapport data from",
+                                  registryName, ": ", query))
+  }
+
+  rapbase::LoadRegData(registryName, query, dbType)
+}
 
 #' @rdname getRegData
 #' @export
@@ -124,6 +178,24 @@ FROM
   AlleVarNum
 WHERE
   AvdRESH IN (", deps, ")
+GROUP BY
+  YEAR(RegDato11);
+")
+
+  rapbase::LoadRegData(registryName, query, dbType)
+}
+
+#' @rdname getRegData
+#' @export
+getAllYears <- function(registryName, reshId, userRole) {
+
+  dbType <- "mysql"
+
+  query <- paste0("
+SELECT
+  YEAR(RegDato11) as year
+FROM
+  AlleVarNum
 GROUP BY
   YEAR(RegDato11);
 ")
@@ -202,7 +274,22 @@ LEFT JOIN
 ON
   d.ForlopsID = fo.ForlopsID
 WHERE
-  fo.HovedDato BETWEEN ", fromDate, " AND ", toDate, ";
+  fo.HovedDato BETWEEN
+    CAST('", fromDate, "' AS DATE) AND
+    CAST('", toDate, "' AS DATE);
+")
+  }
+
+  if (tableName %in% c("ForlopsOversikt")) {
+    query <- paste0("
+SELECT
+  *
+FROM
+  ", tableName, "
+WHERE
+  HovedDato BETWEEN
+    CAST('", fromDate, "' AS DATE) AND
+    CAST('", toDate, "' AS DATE);
 ")
   }
 

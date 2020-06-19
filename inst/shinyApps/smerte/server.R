@@ -28,12 +28,15 @@ server <- function(input, output, session) {
   if (isNationalReg(reshId)) {
     hideTab(inputId = "tabs", target = "Tilsynsrapport")
     hideTab(inputId = "tabs", target = "Dekningsgrad")
+    if (!userRole %in% "SC") {
+      hideTab(inputId = "tabs", target = "Datadump")
+    }
   }
   ## metadata and dump only for SC
   if (!userRole %in% "SC") {
     hideTab(inputId = "tabs", target = "Metadata")
-    hideTab(inputId = "tabs", target = "Datadump")
   }
+
 
 
 
@@ -69,7 +72,7 @@ server <- function(input, output, session) {
   }
 
   # render file function for re-use
-  contentFile <- function(file, srcFile, tmpFile, type) {
+  contentFile <- function(file, srcFile, tmpFile, type, addParam = list()) {
     src <- normalizePath(system.file(srcFile, package="smerte"))
     # temporarily switch to the temp dir, in case we do not have write
     # permission to the current working directory
@@ -78,28 +81,30 @@ server <- function(input, output, session) {
     file.copy(src, tmpFile, overwrite = TRUE)
 
     library(rmarkdown)
-    out <- render(tmpFile, output_format = switch(
-      type,
-      PDF = pdf_document(),
-      HTML = html_document(),
-      BEAMER = beamer_presentation(theme = "Hannover"),
-      REVEAL = revealjs::revealjs_presentation(theme = "sky")
-    ), params = list(tableFormat=switch(
-      type,
-      PDF = "latex",
-      HTML = "html",
-      BEAMER = "latex",
-      REVEAL = "html"),
-      hospitalName=hospitalName,
-      reshId=reshId,
-      userRole=userRole,
-      year=input$yearSet,
-      startDate=input$dateRangeDekningsgrad[1],
-      endDate=input$dateRangeDekningsgrad[2],
-      registryName=registryName,
-      author=author,
-      shinySession=session
-    ), output_dir = tempdir())
+    out <- render(tmpFile,
+                  output_format =
+                    switch(
+                      type,
+                      PDF = pdf_document(),
+                      HTML = html_document(),
+                      BEAMER = beamer_presentation(theme = "Hannover"),
+                      REVEAL = revealjs::revealjs_presentation(theme = "sky")
+                    ),
+                  params = c(
+                    list(tableFormat =
+                           switch(
+                             type,
+                             PDF = "latex",
+                             HTML = "html",
+                             BEAMER = "latex",
+                             REVEAL = "html"),
+                    hospitalName=hospitalName,
+                    reshId=reshId,
+                    userRole=userRole,
+                    registryName=registryName,
+                    author=author,
+                    shinySession=session), addParam),
+                  output_dir = tempdir())
     file.rename(out, file)
   }
 
@@ -143,7 +148,7 @@ server <- function(input, output, session) {
       # remove NAs if they exists (bad registry)
       years <- years[!is.na(years)]
     } else {
-      years <- c("2016", "2017", "2018", "2019")
+      years <- c("2016", "2017", "2018", "2019", "2020")
     }
     selectInput("yearSet", "Velg år:", years)
   })
@@ -174,7 +179,8 @@ server <- function(input, output, session) {
     content = function(file) {
       contentFile(file, "LokalTilsynsrapportMaaned.Rmd",
                   "tmpLokalTilsynsrapportMaaned.Rmd",
-                  input$formatTilsyn)
+                  input$formatTilsyn,
+                  addParam = list(year = input$yearSet))
     }
   )
 
@@ -202,7 +208,58 @@ server <- function(input, output, session) {
     content = function(file) {
       contentFile(file, "LokalDekningsgradrapport.Rmd",
                   "tmpLokalDekningsgradrapport.Rmd",
-                  input$formatDekningsgrad)
+                  input$formatDekningsgrad,
+                  addParam = list(startDate=input$dateRangeDekningsgrad[1],
+                                  endDate=input$dateRangeDekningsgrad[2]))
+    }
+  )
+
+
+  # Indikatorrapport
+  output$indYears <- renderUI({
+    ## years available, hardcoded if outside known context
+    if (rapbase::isRapContext()) {
+      years <- getAllYears(registryName, reshId, userRole)
+      # remove NAs if they exists (bad registry)
+      years <- years[!is.na(years)]
+    } else {
+      years <- c("2016", "2017", "2018", "2019", "2020")
+    }
+    selectInput("indYearSet", "Velg år:", years)
+  })
+  output$indikatorrapport <- renderUI({
+    reshId <- rapbase::getUserReshId(session)
+    registryName <- makeRegistryName(baseName = "smerte", reshID = reshId)
+    reportTemplate <- "LokalIndikatorMaaned.Rmd"
+    if (isNationalReg(reshId)) {
+      reportTemplate <- "NasjonalIndikatorMaaned.Rmd"
+    }
+    if (is.null(input$indYearSet)) {
+      p("Velg fra menyen til venstre hvilket år indikatorene skal vises for.")
+    } else {
+      htmlRenderRmd(srcFile = reportTemplate,
+                    params = list(hospitalName=hospitalName,
+                                  year=input$indYearSet,
+                                  tableFormat='html',
+                                  registryName=registryName,
+                                  reshId=reshId,
+                                  userRole=userRole,
+                                  shinySession=session)
+      )
+    }
+  })
+
+  output$downloadReportIndikator <- downloadHandler(
+    filename = function() {
+      downloadFilename("LokalIndikatorMaaned",
+                       input$formatIndikator)
+    },
+
+    content = function(file) {
+      contentFile(file, "LokalIndikatorMaaned.Rmd",
+                  "tmpLokalIndikatorMaaned.Rmd",
+                  input$formatIndikator,
+                  addParam = list(year=input$indYearSet))
     }
   )
 

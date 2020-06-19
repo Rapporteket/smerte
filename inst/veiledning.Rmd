@@ -20,3 +20,6 @@ Tilsynsrapporten er en rapport for lokale data for ditt sykehus. Den gir ut info
 
 ## Dekningsgrad (lokal)
 Til utregning av dekningsgrad for ditt sykehus over valgfri tidsperiode.
+
+## Indikatorrapport (lokal)
+Denne rapporten viser Smerteregisterets fire indikatorer for lokale data. 

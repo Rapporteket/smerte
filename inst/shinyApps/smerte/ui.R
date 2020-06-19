@@ -62,6 +62,23 @@ ui <- tagList(
                )
              )
     ),
+    tabPanel("Indikatorrapport",
+             sidebarLayout(
+               sidebarPanel(
+                 uiOutput("indYears"),
+                 radioButtons('formatIndikator',
+                              'Format for nedlasting',
+                              c('PDF', 'HTML'),
+                              inline = FALSE),
+                 downloadButton('downloadReportIndikator', 'Last ned')
+               ),
+               mainPanel(
+                 htmlOutput("indikatorrapport", inline = TRUE) #%>%
+                 # withSpinner(color = "#18bc9c",color.background = "#ffffff",
+                 #             type = 2)
+               )
+             )
+    ),
     tabPanel("Abonnement"
       ,
       sidebarLayout(
@@ -100,7 +117,10 @@ ui <- tagList(
                          end = Sys.Date(), separator = "-",
                          weekstart = 1),
           radioButtons("dumpFormat", "Velg filformat:",
-                       choices = c("csv", "xlsx-csv")),
+            choices = list(csv = "csv",
+                           `csv2 (nordisk format)` = "csv2",
+                           `xlsx-csv` = "xlsx-csv",
+                           `xlsx-csv2 (nordisk format)` = "xlsx-csv2")),
           downloadButton("dumpDownload", "Hent!")
         ),
         mainPanel(
