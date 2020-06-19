@@ -1,3 +1,8 @@
+# smerte 0.4.0
+
+* New report Indikator
+* Fix data dump
+
 # smerte 0.3.0
 
 * Fix Dekningsgrad
