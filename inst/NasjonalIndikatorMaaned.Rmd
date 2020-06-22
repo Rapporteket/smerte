@@ -227,14 +227,14 @@ if (dim(dat)[1] < 1) {
   
   if (!rapbase::isRapContext()) {
     #Må gjøre variablene numerisk for bruk i tabell
-    dat$PasRegSpm3 <- as.numeric(levels(dat$PasRegSpm3))[dat$PasRegSpm3]
+    dat$PRSpm3 <- as.numeric(levels(dat$PRSpm3))[dat$PRSpm3]
     }
 
   dat$fornoyd <- NA
   # Mulige verdier: 1-5,9. 4 og 5 gir ja, resten gir nei. De som er NA forblir NA.
   for(i in 1:dim(dat)[1]){
-    if(!(is.na(dat$PasRegSpm3[i]))){
-      if(dat$PasRegSpm3[i] == 4 | dat$PasRegSpm3[i] == 5){dat$fornoyd[i] <- 1} #1 hvis tilfreds
+    if(!(is.na(dat$PRSpm3[i]))){
+      if(dat$PRSpm3[i] == 4 | dat$PRSpm3[i] == 5){dat$fornoyd[i] <- 1} #1 hvis tilfreds
       else{dat$fornoyd[i] <- 0} #0 dersom ikke tilfreds
     }
   }
