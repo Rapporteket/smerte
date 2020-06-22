@@ -161,6 +161,7 @@ mst(tab = tabto,
 ```
 
 Figuren under viser hvordan andelen har fordelt seg i løpet av året.
+
 ```{r behandlertilsynfig, warning = FALSE, message=FALSE, results='asis', fig.pos= "H", out.extra = '', fig.width=7.5}
 if (dim(behdat)[1] < 1) {
   message <- "I den valgte tidsperioden er det ikke nok data til å vise figur for denne kvalitetsindikatoren."
@@ -220,6 +221,7 @@ mst(tab = tabtils,
 ```
 
 Figuren under viser hvordan andelen har fordelt seg i løpet av året.
+
 ```{r tilsetthenvistfig, warning = FALSE, message=FALSE, results='asis', fig.pos= "H", out.extra = '', fig.width=7.5}
 if (dim(dat)[1] < 1) {
   message <- "I den valgte tidsperioden er det ikke nok data til å vise figur for denne kvalitetsindikatoren."
@@ -281,6 +283,7 @@ mst(tab = tabforn,
 ```
 
 Figuren under viser hvordan andelen har fordelt seg i løpet av året.
+
 ```{r fornoydfig, warning = FALSE, message=FALSE, results='asis', fig.pos= "H", out.extra = '', fig.width=7.5}
 if (dim(dat)[1] < 1) {
   message <- "I den valgte tidsperioden er det ikke nok data til å vise figur for denne kvalitetsindikatoren."
@@ -369,13 +372,14 @@ mst(tab = tabnrs,
     cap = paste0("Oversikt over andel pasienter som hadde nedang i NRS fra første til siste måling for de som har besvart spørsmålene begge ganger."),
     digs = 2,
     align = c("r", "r", "r"))
-  #Det var totalt ", antiknrs, " av pasientene som ikke besvarte både første og siste spørsmål (for minst én smertetilstand)"  tatt bort pga mange ulike tall må med i så fall
+  #Det var totalt ", antiknrs, " av pasientene som ikke besvarte både første og siste spørsmål (for minst én smertetilstand)"  tatt bort pga mange ulike tall må med i så fall.
 }
 
 
 ```
 
 Figuren under viser hvordan andelene har fordelt seg i løpet av året for de fire NRS-målene.
+
 ```{r nrsfig, warning = FALSE, message=FALSE, results='asis', fig.width=18.5, fig.height=9}
 
 if (dim(dat)[1] < 1) {
