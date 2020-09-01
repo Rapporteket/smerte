@@ -1,3 +1,7 @@
+# smerte 0.4.1
+
+* missing description of changes
+
 # smerte 0.4.0
 
 * New report Indikator
