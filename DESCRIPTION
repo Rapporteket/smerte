@@ -19,6 +19,7 @@ Depends:
   R (>= 3.5.0)
 Imports:
     DT,
+    dplyr,
     kableExtra,
     lubridate,
     magrittr,
@@ -28,6 +29,8 @@ Imports:
     shiny,
     shinyalert,
     shinycssloaders,
+    stringr,
+    tidyr,
     zoo,
     revealjs
 Remotes:
