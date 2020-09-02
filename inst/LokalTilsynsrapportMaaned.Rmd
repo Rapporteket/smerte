@@ -7,7 +7,7 @@ params:
   userRole: 'MyRole'
   startDate: '2017-01-01'
   endDate: '2017-12-31'
-  year: '2016'
+  year: '2017'
   tableFormat: 'html'
   registryName: 'rapbase'
   shinySession: list()
@@ -18,12 +18,7 @@ header-includes:
   - \usepackage[english, norsk]{babel}
   - \usepackage{booktabs}
   - \usepackage{rotating}
-#output:
-#  html_document:
-#    theme: flatly
-#    toc: yes
-#  pdf_document: default
-#  word_document: default
+
 ---
 ```{r set options and load packages, include = FALSE}
 knitr::opts_chunk$set(echo=FALSE)
@@ -216,7 +211,8 @@ antall_pas_maned <- tilsyn_full %>%
 antall_henv_maned <- tilsyn_full %>%
   dplyr::distinct(ForlopsID, .keep_all = TRUE) %>%
   dplyr::count(monthname) 
-sum_tilsyn_maned = bind_cols(sum_tilsyn_maned, antall_pas_maned[ , 2], antall_henv_maned[ , 2])
+sum_tilsyn_maned <- sum_tilsyn_maned %>%
+  dplyr::bind_cols(antall_pas_maned[ , 2], antall_henv_maned[ , 2])
 
 # Finne summen av hver tilsynstype
 #total_tilsyn_maned = summarise_all(sum_tilsyn_maned[,-1], funs(sum)) #må "ungroup" hvis denne skal brukes
@@ -259,13 +255,11 @@ sum_tilsyn_avdeling <- tilsyn_full %>%
   dplyr::mutate(behandlertilsyn = sum(Fysioterapeut, Lege, Psykolog, Sosionom,
                                       Sykepleier))
 
-#antall_pas_avdeling = tilsyn %>% distinct(pasientid, .keep_all = TRUE) %>% count(avdeling_navn) 
 antall_pas_avdeling <- tilsyn_full %>%
   dplyr::distinct(ForlopsID, .keep_all = TRUE) %>%
-  dplyr::count(DEPARTMENT_SHORTNAME) 
+  dplyr::count(DEPARTMENT_SHORTNAME, name = "n") 
 
-sum_tilsyn_avdeling <- sum_tilsyn_avdeling %>%
-  dplyr::bind_cols(antall_pas_avdeling[,2])
+sum_tilsyn_avdeling <- cbind(sum_tilsyn_avdeling, n = antall_pas_avdeling$n) 
 
 # Finne summen av hver tilsynstype
 total_tilsyn_avdeling <- colSums(sum_tilsyn_avdeling[, -1])
