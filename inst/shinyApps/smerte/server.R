@@ -50,7 +50,13 @@ server <- function(input, output, session) {
                      year=input$yearSet,
                      tableFormat="html")
     }
-    system.file(srcFile, package="smerte") %>%
+    # do all kniting and rendering from temporary directory/file
+    sourceFile <- tempfile(fileext = ".Rmd")
+    file.copy(system.file(srcFile, package="smerte"), sourceFile,
+              overwrite = TRUE)
+    owd <- setwd(dirname(sourceFile))
+    on.exit(setwd(owd))
+    sourceFile %>%
       knitr::knit() %>%
       markdown::markdownToHTML(.,
                                options = c('fragment_only',

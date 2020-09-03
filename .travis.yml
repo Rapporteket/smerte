@@ -8,6 +8,11 @@ r:
   - release
   - devel
 
+sudo: required
+
+apt_packages:
+ - r-cran-rjava
+
 before_cache: Rscript -e 'remotes::install_cran("pkgdown")'
 deploy:
   provider: script
