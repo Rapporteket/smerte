@@ -20,6 +20,7 @@ Depends:
 Imports:
     DT,
     dplyr,
+    gridExtra,
     kableExtra,
     lubridate,
     magrittr,

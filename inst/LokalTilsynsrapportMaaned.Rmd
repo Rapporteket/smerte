@@ -42,7 +42,7 @@ library(kableExtra)
 
 ```
 
-```{r get data, warning = FALSE, message=TRUE}
+```{r get data, warning = TRUE, message=TRUE}
 
 if (rapbase::isRapContext()) {
   dat <-
@@ -105,15 +105,17 @@ mst <- function(tab, colnames = colnames(tab), type, cap, digs, align = NULL,
                                                       "condensed"),
                                 full_width = F)
   }
-  print(k)
+  cat(k)
 }
 ```
 
 ## Antall tilsyn og årsak til ikke tilsyn
 
-Denne tabellen viser hvor mange som har fått tilsyn av smerteteamet totalt i tidsperioden. I tilegg viser den hvor mange som ble henvist, men som ikke fikk tilsyn og grunnen for at det ikke ble gitt tilsyn i disse tilfellene.
+Denne tabellen viser hvor mange som har fått tilsyn av smerteteamet totalt i
+tidsperioden. I tilegg viser den hvor mange som ble henvist, men som ikke
+fikk tilsyn og grunnen for at det ikke ble gitt tilsyn i disse tilfellene.
 
-```{r tilsynstabell, warning = FALSE, message=FALSE, results='asis'}
+```{r tilsynstabell, warning=TRUE, message=TRUE, results='asis'}
 ###Her klargjøres data for tilsynstabell
 
 # Data for tabell over tilsyn
@@ -144,9 +146,14 @@ mst(tab = tilsynsdata, colnames = c("Har pasienten fått tilsyn?", "Antall ",
 
 ## Behandlertilsyn og pasienttilsyn per måned
 
-Denne tabellen viser hvor mange som har fått tilsyn av de ulike behandlergruppene per måned. I tillegg vises antall pasienttilsyn og totalt antall behandlertilsyn. Antall pasienter er antall unike pasienter som er tilsett minst én gang. Antall henvisninger viser antall forløp som er registert (altså uavhenging av om samme pasient er henvist flere ganger i løpet av perioden).
+Denne tabellen viser hvor mange som har fått tilsyn av de ulike
+behandlergruppene per måned. I tillegg vises antall pasienttilsyn og totalt
+antall behandlertilsyn. Antall pasienter er antall unike pasienter som er
+tilsett minst én gang. Antall henvisninger viser antall forløp som er registert
+(altså uavhenging av om samme pasient er henvist flere ganger i løpet av
+perioden).
 
-```{r behandlertabell, warning = FALSE, message=FALSE, results='asis'}
+```{r behandlertabell, warning=TRUE, message=TRUE, results='asis'}
 ### Her klargjøres data for behandlertabell
 
 if (!rapbase::isRapContext()) {
@@ -198,7 +205,7 @@ tilsyn_full <- tilsyn_full %>%
 
 sum_tilsyn_maned = tilsyn_full %>%
   dplyr::group_by(tilsynstype, monthname) %>% 
-  dplyr::summarise(antall = sum(antall)) %>% 
+  dplyr::summarise(antall = sum(antall), .groups = "drop_last") %>% 
   tidyr::spread(tilsynstype, antall) %>%
   dplyr::rowwise() %>% 
   dplyr::mutate(Behandlertilsyn = sum(Fysioterapeut, Lege, Psykolog, Sosionom, 
@@ -207,13 +214,14 @@ sum_tilsyn_maned = tilsyn_full %>%
 antall_pas_maned <- tilsyn_full %>%
   dplyr::filter(Tilsett == 1) %>%
   dplyr::distinct(PasientID, .keep_all = TRUE) %>%
-  dplyr::count(monthname) 
+  dplyr::count(monthname, name = "n_pas") 
 antall_henv_maned <- tilsyn_full %>%
   dplyr::distinct(ForlopsID, .keep_all = TRUE) %>%
-  dplyr::count(monthname) 
-sum_tilsyn_maned <- sum_tilsyn_maned %>%
-  dplyr::bind_cols(antall_pas_maned[ , 2], antall_henv_maned[ , 2])
-
+  dplyr::count(monthname, name = "n_henv") 
+#sum_tilsyn_maned <- sum_tilsyn_maned %>%
+#  dplyr::bind_cols(antall_pas_maned$n_pas, antall_henv_maned$n_henv)
+sum_tilsyn_maned$n_pas <- antall_pas_maned$n_pas
+sum_tilsyn_maned$n_henv <- antall_henv_maned$n_henv
 # Finne summen av hver tilsynstype
 #total_tilsyn_maned = summarise_all(sum_tilsyn_maned[,-1], funs(sum)) #må "ungroup" hvis denne skal brukes
 total_tilsyn_maned <- colSums(sum_tilsyn_maned[, -1])
@@ -242,14 +250,15 @@ mst(tab = sum_tilsyn_maned,
 
 ## Avdelingsoversikt
 
-Denne tabellen viser en oversikt over hvordan pasientene er fordelt mellom avdelingene på sykehuset i løpet av hele tidsperioden.
+Denne tabellen viser en oversikt over hvordan pasientene er fordelt mellom
+avdelingene på sykehuset i løpet av hele tidsperioden.
 
-```{r avdelingstabell, warning = FALSE, message=FALSE, results='asis'}
+```{r avdelingstabell, warning = TRUE, message=TRUE, results='asis'}
 ###Her klargjøres data for avdelingsoversikt
 #Antall/n er pas tils
 sum_tilsyn_avdeling <- tilsyn_full %>%
   dplyr::group_by(tilsynstype, DEPARTMENT_SHORTNAME) %>% 
-  dplyr::summarise(antall = sum(antall)) %>% 
+  dplyr::summarise(antall = sum(antall), .groups = "drop_last") %>% 
   tidyr::spread(tilsynstype, antall) %>%
   dplyr::rowwise() %>% 
   dplyr::mutate(behandlertilsyn = sum(Fysioterapeut, Lege, Psykolog, Sosionom,
