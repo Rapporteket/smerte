@@ -1,6 +1,11 @@
+# smerte 0.4.2
+
+* fixed tilsyn
+* fixed indikator
+
 # smerte 0.4.1
 
-* missing description of changes
+* change in field name
 
 # smerte 0.4.0
 

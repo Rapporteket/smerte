@@ -105,8 +105,8 @@ if (dim(dat)[1] < 1) {
                       round(dekning, digits = 2), "__. Totalt antall er ",
                       antInk, " hvorav ", antSam, " samtykker er gitt.")
     
-    message <- paste0(message, "\n### Tallgrunnlag og utvalg\n",
-                      "I utvalget er det ", nEvent, " forløp", patientTxt,
+    message <- paste0(message, "\n\n### Tallgrunnlag og utvalg  \n",
+                      " I utvalget er det ", nEvent, " forløp", patientTxt,
                       " Totalt ", nNoConsent,
                       " forløp mangler samtykke og totalt ", nNoIncl,
                       " forløp oppfyller ikke inklusjonskriteriene.")
@@ -114,6 +114,6 @@ if (dim(dat)[1] < 1) {
   
 }
 
-cat(paste("\n", message))
+cat(paste("  \n", message))
 
 ```
