@@ -269,6 +269,35 @@ server <- function(input, output, session) {
     }
   )
 
+  # eProm
+  output$Eprom <- renderUI({
+    htmlRenderRmd(srcFile = "LokalEprom.Rmd",
+                  params = list(hospitalName=hospitalName,
+                                reshId=reshId,
+                                startDate=input$dateRangEprom[1],
+                                endDate=input$dateRangEprom[2],
+                                tableFormat='html',
+                                registryName=registryName,
+                                userRole=userRole,
+                                shinySession=session)
+    )
+  })
+
+  output$downloadReportEprom <- downloadHandler(
+    filename = function() {
+      downloadFilename("LokalEprom",
+                       input$formatEprom)
+    },
+
+    content = function(file) {
+      contentFile(file, "LokalEprom.Rmd",
+                  "tmpLokalEprom.Rmd",
+                  input$formatEprom,
+                  addParam = list(startDate=input$dateRangeEprom[1],
+                                  endDate=input$dateRangeEprom[2]))
+    }
+  )
+
 
   # Abonnement
   ## rekative verdier for å holde rede på endringer som skjer mens
