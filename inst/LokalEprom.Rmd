@@ -1,0 +1,1148 @@
+---
+params:
+  title: 'Oversikt over PROM-skjema for '
+  author: 'Rapporteket'
+  hospitalName: 'Ukjent sykehus'
+  reshId: 'locallyDefined'
+  userRole: 'MyRole'
+  startDate: '2017-01-01'
+  endDate: '2017-12-31'
+  year: '2016'
+  tableFormat: 'html'
+  registryName: 'rapbase'
+  shinySession: list()
+title: '`r paste(params$title, params$hospitalName, " i perioden fra ", params$startDate, " til ", params$endDate)`'
+author: '`r params$author`'
+date: '`r format(Sys.time(), "%d\\. %B, %Y")`'
+header-includes:
+- \usepackage[english, norsk]{babel}
+- \usepackage{booktabs}
+- \usepackage{rotating}
+---
+```{r set options and load packages, include = FALSE}
+knitr::opts_chunk$set(echo=FALSE)
+options(knitr.table.format = params$tableFormat)
+options(tinytex.verbose = TRUE)
+
+# Pakker
+ library(dplyr)
+ library(magrittr)
+#library(smerte)
+ library(knitr)
+ library(kableExtra)
+ library(ggplot2)
+ library(gridExtra)
+ library(tidyverse)
+```
+
+```{r get data, include=FALSE}
+
+if (rapbase::isRapContext()) {
+  dat <- getRegDataRapportDekningsgrad(registryName = params$registryName,
+                                       reshId = params$reshId,
+                                       userRole = params$userRole,
+                                       startDate = params$startDate,
+                                       endDate = params$endDate,
+                                       session = params$shinySession)
+} else {
+  #Dataimport: skal hente lokale data for hvert sykehus (tar vekk sti, og erstatter med lokal filB)
+  path <- read.csv(file = "H:/path.csv", header = FALSE, sep = ";")
+  path <- as.data.frame(lapply(path, as.character), stringsAsFactors=FALSE)
+  path <- path$V1
+  dat <- read.csv(file = path, header = TRUE, sep = ";")
+ }
+
+
+```
+
+```{r makeStandardTableFunction, eval=TRUE}
+mst <- function(tab, colnames = colnames(tab), type, cap, digs, align = NULL, fs = 8, lsd = FALSE) {
+  if (type == "latex") {
+    if (lsd) {
+      lo <- c("hold_position", "scale_down")
+    } else {
+      lo <- c("hold_position")
+    }
+    k <- kable(tab, col.names = colnames, caption = cap, digits = digs, align = align,
+               booktabs = TRUE) %>% 
+      kable_styling(latex_options = lo, font_size = fs)
+  }
+  
+  if (type == "html") {
+    k <- kable(tab, col.names = colnames, caption = cap, digits = digs, align = align) %>% 
+      kable_styling(bootstrap_options = c("striped", "hover", "condensed"),
+                    full_width = F)
+  }
+  #print(k)
+}
+```
+
+I denne rapporten finner vi en oversikt over besvarelsene som er gitt via PROM, både andelen som besvarer og grunnene som er oppgitt til at besvarelse mangler. I tillegg vises det hvordan svarene fordeler seg på de ulike spørsmålene for hvert skjema. Det er for tiden fire PROM-skjema som vises her. Disse er: pasreg, evaluering, HADS og opioid. 
+
+Mange av resultatene presenteres i tabeller. Her vises også andelen som har gitt de ulike svarene. I de tilfellene der andelen ikke summeres til 100 $\%$ er dette fordi den "manglende" prosenten er fjernet fra oversikten (pga manglende besvarelse og lignende).
+
+En periode kunne man dele ut pasientregistreringsskjema til pasienter selv om de ikke hadde samtykket fra før. Dersom man valgte å ikke dele ut pasientregistreringsskjemaene ved manglende samtykke, krysset man av for «Annet» under «Årsak til manglende utfylling». Derfor vil en del av annet-kategoriene som vises være store.
+
+# ePROM: pasreg
+
+```{r pasreg, warning = FALSE, message=FALSE, results='asis'}
+###Dette er oversikten for pasregskjemaet
+if(dim(dat)[1] < 1) {
+  message <- "I den valgte tidsperioden er det ikke nok data til å gi ut resultater."
+} else{
+  
+#Antall som har fått tilsendt skjema
+antUtsendt <- sum(!is.na(dat$PasDelUfylPR))
+#Antall som ikke har fått tilsendt skjema
+antIkkeUtsendt <- sum(is.na(dat$PasDelUfylPR))
+#Antall som svarte
+antsvar <- sum(dat$PasDelUfylPR == 1, na.rm =TRUE)
+antiksvar <- sum(dat$PasDelUfylPR == 0, na.rm =TRUE)
+
+#Finner svarandel, men tar høyde for at vi ikke kan dele på 0 (aka ingen skjema sendt ut)
+andsvar <- NA
+if(antUtsendt != 0){
+  andsvar <- antsvar/antUtsendt
+}else{andsvar <- paste0("ikke mulig å angi andel grunnet ingen utsendte skjema.")}
+
+#Tekst som tar for seg antall utsendte av totalt antall, antall svar og andelen det gir.
+message <- paste0("I den valgte tidsperioden fikk tilsammen ", antUtsendt,
+                      " pasienter av totalt ",
+                      dim(dat)[1], " tilsendt ePROM-skjema for pasreg. Av de som fikk tilsendt skjema var det ", antsvar, " pasienter som sendte inn en besvarelse. Dette gir en svarandel på ", round(andsvar, digits = 2), ". Under følger en oversikt over registrerte årsaker til manglende besvarelse for de ", antiksvar, " som ikke har svart: ")
+
+#Fjerner først de som ikke har fått tilsendt (null) 3 = null
+datpr <- dat[!is.na(dat$PasDelUfylPR), ]
+#Bruker her pakkene dplyr og magrittr
+pasreg <- datpr %>% count(GrunnManglUtfyl) %>% mutate(prosent = round(100*(n/sum(n))))
+#Gi navn i stedet for tall til alternativene for tilsyn/ikke tilsyn
+pasreg = pasreg %>% mutate(grunnPR = case_when(GrunnManglUtfyl == 1 ~ "Tidsmangel behandler",
+                                                              GrunnManglUtfyl == 2 ~ "Tidlig utskrivning",
+                                                              GrunnManglUtfyl == 3 ~ "Kritisk syk/død",
+                                                              GrunnManglUtfyl == 4 ~ "Pasient klarer ikke",
+                                                              GrunnManglUtfyl == 5 ~ "Manglende samtykke",
+                                                              GrunnManglUtfyl == 7 ~ "Ikke besvart ePPROMS",
+                                                              GrunnManglUtfyl == 9 ~ "Annet"))
+#Endrer rekkefølge og tar i tilleg ved NA-raden (siste)
+pasreg <- pasreg[1:(dim(pasreg)[1]-1), c(4,2,3)]
+
+#Tilsynstabell
+#Bruker pakke kableextra
+tabPR <- mst(tab = pasreg, colnames = c("Grunn manglende utfylling pasreg", "Antall ",
+                                    "Prosent"),
+    cap = paste0(""),
+    type = params$tableFormat,
+    digs = 0,
+    align = c("l", "r", "r", "r"))
+
+
+###PRSPM1
+#Fjerner først de som ikke har fått tilsendt (null) 3 = null
+ispr1 <- sum(!is.na(dat$PRSpm1))
+datpr1 <- dat[!is.na(dat$PRSpm1), ]
+#Bruker her pakkene dplyr og magrittr
+pr1 <- datpr1 %>% count(PRSpm1) %>% mutate(prosent = round(100*(n/sum(n))))
+#Gi navn i stedet for tall til alternativene for tilsyn/ikke tilsyn
+pr1 = pr1 %>% mutate(sovnfor = case_when(PRSpm1 == 1 ~ "Ikke i det hele tatt",
+                                                              PRSpm1 == 2 ~ "I liten grad",
+                                                              PRSpm1 == 3 ~ "I noen grad",
+                                                              PRSpm1 == 4 ~ "I stor grad",
+                                                              PRSpm1 == 5 ~ "I svært stor grad",
+                                                              PRSpm1 == 9 ~ "Vet ikke"))
+#Endrer rekkefølge og tar i tilleg ved NA-raden (siste)
+pr1 <- pr1[ , c(4,2,3)]
+
+#Bruker pakke kableextra
+tabPR1 <- mst(tab = pr1, colnames = c("Søvnproblemer før innleggelse", "Antall ",
+                                    "Prosent"),
+    cap = paste0(""),
+    type = params$tableFormat,
+    digs = 0,
+    align = c("l", "r", "r", "r"))
+messagepr1 <- paste0("Tabellen viser oversikten over søvnproblemer før innleggelse for de ", dim(datpr1)[1],
+                      " pasientene som besvarte spørsmålet: ")
+
+###PRSPM2
+#Fjerner først de som ikke har fått tilsendt 
+ispr2 <- sum(!is.na(dat$PRSpm2))
+datpr2 <- dat[!is.na(dat$PRSpm2), ]
+#Bruker her pakkene dplyr og magrittr
+pr2 <- datpr2 %>% count(PRSpm2) %>% mutate(prosent = round(100*(n/sum(n))))
+#Gi navn i stedet for tall til alternativene for tilsyn/ikke tilsyn
+pr2 = pr2 %>% mutate(sovnfor = case_when(PRSpm2 == 1 ~ "Ikke i det hele tatt",
+                                                              PRSpm2 == 2 ~ "I liten grad",
+                                                              PRSpm2 == 3 ~ "I noen grad",
+                                                              PRSpm2 == 4 ~ "I stor grad",
+                                                              PRSpm2 == 5 ~ "I svært stor grad",
+                                                              PRSpm2 == 9 ~ "Vet ikke"))
+#Endrer rekkefølge og tar i tilleg ved NA-raden (siste)
+pr2 <- pr2[ , c(4,2,3)]
+
+#Tilsynstabell
+#Bruker pakke kableextra
+tabPR2 <- mst(tab = pr2, colnames = c("Søvnproblemer etter innleggelse", "Antall ",
+                                    "Prosent"),
+    cap = paste0(""),
+    type = params$tableFormat,
+    digs = 0,
+    align = c("l", "r", "r", "r"))
+messagepr2 <- paste0("Tabellen viser oversikten over søvnproblemer etter innleggelse for de ", dim(datpr2)[1],
+                      " pasientene som besvarte spørsmålet: ")
+
+
+###PRSPM3
+#Fjerner først de som ikke har fått tilsendt (null) 3 = null
+ispr3 <- sum(!is.na(dat$PRSpm3))
+datpr3 <- dat[!is.na(dat$PRSpm3), ]
+#Bruker her pakkene dplyr og magrittr og ggplot
+p3 <- ggplot(datpr3, aes(x=PRSpm3)) +
+  geom_histogram(binwidth=10, boundary=0, fill = "darkgrey", closed="left") +
+    scale_x_continuous(minor_breaks = 2) +
+  xlab("Antall ganger i kontakt med primær- og spesialisthelsetjenesten på grunn av smerter siste år") + ylab("Antall\npasienter")
+
+messagepr3 <- paste0("Figuren viser oversikten over hvor mange ganger pasientene har vært i kontakt med primær- og spesialisthelsetjenesten på grunn av smerter siste år. Det var ", dim(datpr3)[1],
+                      " pasienter som besvarte spørsmålet: ")
+
+###PRSPM4
+#Fjerner først de som ikke har fått tilsendt (null) 3 = null
+ispr4 <- sum(!is.na(dat$PRSpm4))
+datpr4 <- dat[!is.na(dat$PRSpm4), ]
+#Bruker her pakkene dplyr og magrittr
+pr4 <- datpr4 %>% count(PRSpm4) %>% mutate(prosent = round(100*(n/sum(n))))
+#Gi navn i stedet for tall til alternativene for tilsyn/ikke tilsyn
+pr4 = pr4 %>% mutate(psyk = case_when(PRSpm4 == 0 ~ "Nei",
+                                                              PRSpm4 == 1 ~ "Ja",
+                                                              PRSpm4 == 9 ~ "Vet ikke"))
+#Endrer rekkefølge og tar i tilleg ved NA-raden (siste)
+pr4 <- pr4[ , c(4,2,3)]
+
+#Tilsynstabell
+#Bruker pakke kableextra
+tabPR4 <- mst(tab = pr4, colnames = c("Har tidligere opplevd belastninger som har krevd behandling av psykolog/psykiater", "Antall ",
+                                    "Prosent"),
+    cap = paste0(""),
+    type = params$tableFormat,
+    digs = 0,
+    align = c("l", "r", "r", "r"))
+messagepr4 <- paste0("Tabellen under viser oversikten over hvor mange av som pasientene tidligere har opplevd belastninger som har krevd behandling av psykolog/psykiater eller liknende. Spørsmålet ble besvart av ", dim(datpr4)[1], " pasienter. ")
+
+###PRSpm5
+#Fjerner først de som ikke har fått tilsendt (null) 3 = null
+ispr5 <- sum(!is.na(dat$PRSpm5))
+datpr5 <- dat[!is.na(dat$PRSpm5), ]
+#Bruker her pakkene dplyr og magrittr
+pr5 <- datpr5 %>% count(PRSpm5) %>% mutate(prosent = round(100*(n/sum(n))))
+#Gi navn i stedet for tall til alternativene for tilsyn/ikke tilsyn
+pr5 = pr5 %>% mutate(forferd = case_when(PRSpm5 == 0 ~ "Aldri",
+                                                              PRSpm5 == 1 ~ "Nesten aldri",
+                                                              PRSpm5 == 2 ~ "Sjelden",
+                                                              PRSpm5 == 3 ~ "Av og til",
+                                                              PRSpm5 == 4 ~ "Ofte",
+                                                              PRSpm5 == 5 ~ "Nesten alltid", 
+                                                              PRSpm5 == 6 ~ "Alltid",
+                                                              PRSpm5 == 9 ~ "Vet ikke"))
+#Endrer rekkefølge og tar i tilleg ved NA-raden (siste)
+pr5 <- pr5[ , c(4,2,3)]
+
+#Tilsynstabell
+#Bruker pakke kableextra
+tabPR5 <- mst(tab = pr5, colnames = c("Svar på spørsmålet: ... er det forferdelig, og jeg føler at det aldri kommer til å bli bedre", "Antall ",
+                                    "Prosent"),
+    cap = paste0(""),
+    type = params$tableFormat,
+    digs = 0,
+    align = c("l", "r", "r", "r"))
+messagepr5 <- paste0("Tabellen under viser oversikten over hvor ofte pasientene føler '...det er forferdelig, og jeg at det aldri kommer til å bli bedre'. Spørsmålet ble besvart av ", dim(datpr5)[1], " pasienter. ")
+
+###PRSpm6
+#Fjerner først de som ikke har fått tilsendt (null) 3 = null
+ispr6 <- sum(!is.na(dat$PRSpm6))
+datpr6 <- dat[!is.na(dat$PRSpm6), ]
+#Bruker her pakkene dplyr og magrittr
+pr6 <- datpr6 %>% count(PRSpm6) %>% mutate(prosent = round(100*(n/sum(n))))
+#Gi navn i stedet for tall til alternativene for tilsyn/ikke tilsyn
+pr6 = pr6 %>% mutate(holdut = case_when(PRSpm6 == 0 ~ "Aldri",
+                                                              PRSpm6 == 1 ~ "Nesten aldri",
+                                                              PRSpm6 == 2 ~ "Sjelden",
+                                                              PRSpm6 == 3 ~ "Av og til",
+                                                              PRSpm6 == 4 ~ "Ofte",
+                                                              PRSpm6 == 5 ~ "Nesten alltid",
+                                                              PRSpm6 == 6 ~ "Alltid",
+                                                              PRSpm6 == 9 ~ "Vet ikke"))
+#Endrer rekkefølge og tar i tilleg ved NA-raden (siste)
+pr6 <- pr6[ , c(4,2,3)]
+
+#Tilsynstabell
+#Bruker pakke kableextra
+tabPR6 <- mst(tab = pr6, colnames = c("Svar på spørsmålet: ... føles det som om jeg ikke holder ut", "Antall ",
+                                    "Prosent"),
+    cap = paste0(""),
+    type = params$tableFormat,
+    digs = 0,
+    align = c("l", "r", "r", "r"))
+messagepr6 <- paste0("Tabellen under viser oversikten over hvor ofte pasientene føler '... det som om jeg ikke holder ut'. Spørsmålet ble besvart av ", dim(datpr6)[1], " pasienter. ")
+} #øverste if
+
+#Først tekst
+cat(paste("\n", message))
+#Deretter tabell
+tabPR
+#PR1tekst
+cat(paste("\n", messagepr1))
+#PR1tabell
+tabPR1
+#PR2tekst
+cat(paste("\n", messagepr2))
+#PR2tabell
+tabPR2
+#PR3tekst
+cat(paste("\n", messagepr3))
+#PR3Figur
+p3
+#tom melding pga plass
+cat(paste("\n", "                                  "))
+#PR4tekst
+cat(paste("\n", messagepr4))
+#PR4tabell
+tabPR4
+#PR5tekst
+cat(paste("\n", messagepr5))
+#PR5tabell
+tabPR5
+#PR6tekst
+cat(paste("\n", messagepr6))
+#PR6tabell
+tabPR6
+```
+
+
+# ePROM: HADS
+
+```{r hads, warning = FALSE, message=FALSE, results='asis'}
+###Dette er oversikten for pasregskjemaet
+if(dim(dat)[1] < 1) {
+  message <- "I den valgte tidsperioden er det ikke nok data til å gi ut resultater."
+} else{
+  
+#Antall som har fått tilsendt skjema
+antUtsendt <- sum(dat$PasDelUtf == 1, na.rm = TRUE) + sum(dat$PasDelUtf == 0, na.rm = TRUE)
+#Antall som ikke har fått tilsendt skjema
+antIkkeUtsendt <- sum(is.na(dat$PasDelUtf))
+#Antall som svarte
+antsvar <- sum(dat$PasDelUtf == 1, na.rm =TRUE)
+antiksvar <- sum(dat$PasDelUtf == 0, na.rm =TRUE)
+
+#Finner svarandel, men tar høyde for at vi ikke kan dele på 0 (aka ingen skjema sendt ut)
+andsvar <- NA
+if(antUtsendt != 0){
+  andsvar <- antsvar/antUtsendt
+}else{andsvar <- paste0("ikke mulig å angi andel grunnet ingen utsendte skjema.")}
+
+#Tekst som tar for seg antall utsendte av totalt antall, antall svar og andelen det gir.
+message <- paste0("I den valgte tidsperioden fikk tilsammen ", antUtsendt,
+                      " pasienter av totalt ",
+                      dim(dat)[1], " tilsendt ePROM-skjema for HADS. Av de som fikk tilsendt skjema var det ", antsvar, " pasienter som sendte inn en besvarelse. Dette gir en svarandel på ", round(andsvar, digits = 2), ". Under følger en oversikt over registrerte årsaker til manglende besvarelse for de ", antiksvar, " som ikke har svart: ")
+
+#Fjerner først de som ikke har fått tilsendt (null) 3 = null
+datH <- dat[!is.na(dat$PasDelUtf), ]
+#Bruker her pakkene dplyr og magrittr
+hads <- datH %>% count(GrManglUtfylHADS) %>% mutate(prosent = round(100*(n/sum(n))))
+#Gi navn i stedet for tall til alternativene for tilsyn/ikke tilsyn
+hads = hads %>% mutate(grunnHADS = case_when(GrManglUtfylHADS == 1 ~ "Tidsmangel behandler",
+                                                              GrManglUtfylHADS == 2 ~ "Tidlig utskrivning",
+                                                              GrManglUtfylHADS == 3 ~ "Kritisk syk/død",
+                                                              GrManglUtfylHADS == 4 ~ "Pasient klarer ikke",
+                                                              GrManglUtfylHADS == 5 ~ "Manglende samtykke",
+                                                              GrManglUtfylHADS == 7 ~ "Ikke besvart ePPROMS",
+                                                              GrManglUtfylHADS == 9 ~ "Annet"))
+#Endrer rekkefølge og tar i tilleg ved NA-raden (siste)
+hads <- hads[1:(dim(hads)[1]-1), c(4,2,3)]
+
+#Tilsynstabell
+#Bruker pakke kableextra
+tabH <- mst(tab = hads, colnames = c("Grunn manglende utfylling HADS", "Antall ",
+                                    "Prosent"),
+    cap = paste0(""),
+    type = params$tableFormat,
+    digs = 0,
+    align = c("l", "r", "r", "r"))
+
+#Figur for depresjonscore
+dep = dat %>% select(HADSScoreDepresjon) %>% filter(!is.na(HADSScoreDepresjon))
+depplot = depplot = ggplot(dep, aes(x=HADSScoreDepresjon)) +
+  geom_histogram(binwidth=5, boundary=0, fill = "darkgrey", closed="left") +
+  scale_x_continuous(minor_breaks = 2) +
+  xlab("HADS: Depresjonsscore")+ylab("Antall\nforløp") +
+  geom_vline(xintercept = 11, linetype="dotted", 
+                color = "darkgreen", size=1) + 
+  geom_vline(xintercept = 14, linetype="dotted", 
+                color = "orange", size=1) + 
+  geom_vline(xintercept = 17, linetype="dotted", 
+                color = "red", size=1)
+#Figur for angstscore
+angst = dat %>% select(HADSScoreAngst) %>% filter(!is.na(HADSScoreAngst))
+angstplot = ggplot(angst, aes(x=HADSScoreAngst)) +
+  geom_histogram(binwidth=5, boundary=0, fill="darkgrey", closed="left") +
+  scale_x_continuous(minor_breaks = 2) +
+  xlab("HADS: Angstscore")+ylab("Antall\nforløp") +
+  geom_vline(xintercept = 11, linetype="dotted", 
+                color = "darkgreen", size=1) + 
+  geom_vline(xintercept = 14, linetype="dotted", 
+                color = "orange", size=1) + 
+  geom_vline(xintercept = 17, linetype="dotted", 
+                color = "red", size=1) 
+
+
+messagehads <- paste0("Figuren under viser hvordan de ", antsvar, " aktuelle forløpene fordeles på depresjonsscore og angstscore i HADS. Poengscorene vurderes som følger: lavere enn den grønne linjen viser ingen tegn til symptomer, mellom den grønne og den gule linjen viser milde symptomer, mellom den gule og den røde linjen er moderate symptomer, mens over den røde er alvorlig symptomer.")
+} #øverste if
+
+#Først tekst
+cat(paste("\n", message))
+#Deretter tabell
+tabH
+#Figurtekst
+cat(paste("\n", messagehads))
+#Så figur
+grid.arrange(depplot, angstplot, ncol=2)
+```
+
+## ePROM: Eval
+
+```{r evalu, warning = FALSE, message=FALSE, results='asis'}
+###Dette er oversikten for pasregskjemaet
+if(dim(dat)[1] < 1) {
+  message <- "I den valgte tidsperioden er det ikke nok data til å gi ut resultater."
+} else{
+  
+#Antall som har fått tilsendt skjema
+antUtsendt <- sum(dat$PasdelUtfylEval == 1, na.rm = TRUE) + sum(dat$PasdelUtfylEval == 0, na.rm = TRUE)
+#Antall som ikke har fått tilsendt skjema
+antIkkeUtsendt <- sum(is.na(dat$PasdelUtfylEval))
+#Antall som svarte
+antsvar <- sum(dat$PasdelUtfylEval == 1, na.rm =TRUE)
+antiksvar <- sum(dat$PasdelUtfylEval == 0, na.rm =TRUE)
+
+#Finner svarandel, men tar høyde for at vi ikke kan dele på 0 (aka ingen skjema sendt ut)
+andsvar <- NA
+if(antUtsendt != 0){
+  andsvar <- antsvar/antUtsendt
+}else{andsvar <- paste0("ikke mulig å angi andel grunnet ingen utsendte skjema.")}
+
+#Tekst som tar for seg antall utsendte av totalt antall, antall svar og andelen det gir.
+message <- paste0("I den valgte tidsperioden fikk tilsammen ", antUtsendt,
+                      " pasienter av totalt ",
+                      dim(dat)[1], " tilsendt ePROM-skjema for Eval. Av de som fikk tilsendt skjema var det ", antsvar, " pasienter som sendte inn en besvarelse. Dette gir en svarandel på ", round(andsvar, digits = 2), ". Under følger en oversikt over registrerte årsaker til manglende besvarelse for de ", antiksvar, " som ikke har svart: ")
+
+#Fjerner først de som ikke har fått tilsendt (null) 3 = null
+datE <- dat[!is.na(dat$PasdelUtfylEval), ]
+#Bruker her pakkene dplyr og magrittr
+evalu <- datE %>% count(AarsakmanglUfylEval) %>% mutate(prosent = round(100*(n/sum(n))))
+#Gi navn i stedet for tall til alternativene for tilsyn/ikke tilsyn
+evalu = evalu %>% mutate(grunnEval = case_when(AarsakmanglUfylEval == 1 ~ "Tidsmangel behandler",
+                                                              AarsakmanglUfylEval == 2 ~ "Tidlig utskrivning",
+                                                              AarsakmanglUfylEval == 3 ~ "Kritisk syk/død",
+                                                              AarsakmanglUfylEval == 4 ~ "Pasient klarer ikke",
+                                                              AarsakmanglUfylEval == 5 ~ "Manglende samtykke",
+                                                              AarsakmanglUfylEval == 6 ~ "Ikke tilstrekkelig antall tilsyn",
+                                                              AarsakmanglUfylEval == 7 ~ "Ikke besvart ePPROMS",
+                                                              AarsakmanglUfylEval == 9 ~ "Annet"))
+#Endrer rekkefølge og tar i tilleg ved NA-raden (siste)
+evalu <- evalu[1:(dim(evalu)[1]-1), c(4,2,3)]
+
+#Tilsynstabell
+#Bruker pakke kableextra
+tabE <- mst(tab = evalu, colnames = c("Grunn manglende utfylling Eval", "Antall ",
+                                    "Prosent"),
+    cap = paste0(""),
+    type = params$tableFormat,
+    digs = 0,
+    align = c("l", "r", "r", "r"))
+
+
+#Huskersmerteteam
+husk <- sum(datE$HuskerSmerteteam == 1, na.rm = TRUE)
+huskik <- sum(datE$HuskerSmerteteam == 2, na.rm = TRUE)
+huskna <- sum(is.na(datE$HuskerSmerteteam))
+messagehusk <- paste0("Gjeldende spørsmålet 'Husker du at du nylig har vært i kontakt med og fått behandling av sykehusets smerteteam?' var det ", husk, " pasienter som svarte ja ", huskik, " pasienter som svarte nei og ", huskna, " pasienter som var registerert med NA/manglende svar.")
+
+#Evalspm1
+eval1 <- datE %>% count(EvalSpm1) %>% mutate(prosent = round(100*(n/sum(n))))
+#Gi navn i stedet for tall til alternativene for tilsyn/ikke tilsyn
+eval1 = eval1 %>% mutate(spm1 = case_when(EvalSpm1 == 1 ~ "Mye bedre",
+                                                              EvalSpm1 == 2 ~ "Bedre",
+                                                              EvalSpm1 == 3 ~ "Litt bedre",
+                                                              EvalSpm1 == 4 ~ "Uendret",
+                                                              EvalSpm1 == 5 ~ "Litt verre",
+                                                              EvalSpm1 == 6 ~ "Verre",
+                                                              EvalSpm1 == 7 ~ "Mye verre",
+                                                              EvalSpm1 == 9 ~ "Vet ikke"))
+#Endrer rekkefølge og tar i tilleg ved NA-raden (siste)
+eval1 <- eval1[1:(dim(eval1)[1]-1), c(4,2,3)]
+
+#Tilsynstabell
+#Bruker pakke kableextra
+tabE1 <- mst(tab = eval1, colnames = c("Siden oppstart av behandling fra Smerteteamet, er min smertetilstand blitt", "Antall ",
+                                    "Prosent"),
+    cap = paste0(""),
+    type = params$tableFormat,
+    digs = 0,
+    align = c("l", "r", "r", "r"))
+
+messagee1 <- paste0("For det første spørsmålet i Eval: 'Siden oppstart av behandling fra Smerteteamet, er min smertetilstand blitt ...' finner vi svarene i tabellen under.")
+
+#Evalspm2
+eval2 <- datE %>% count(EvalSpm2) %>% mutate(prosent = round(100*(n/sum(n))))
+#Gi navn i stedet for tall til alternativene for tilsyn/ikke tilsyn
+eval2 = eval2 %>% mutate(spm2 = case_when(EvalSpm2 == 1 ~ "Mye bedre",
+                                                              EvalSpm2 == 2 ~ "Bedre",
+                                                              EvalSpm2 == 3 ~ "Litt bedre",
+                                                              EvalSpm2 == 4 ~ "Uendret",
+                                                              EvalSpm2 == 5 ~ "Litt verre",
+                                                              EvalSpm2 == 6 ~ "Verre",
+                                                              EvalSpm2 == 7 ~ "Mye verre",
+                                                              EvalSpm2 == 9 ~ "Vet ikke"))
+#Endrer rekkefølge og tar i tilleg ved NA-raden (siste)
+eval2 <- eval2[1:(dim(eval2)[1]-1), c(4,2,3)]
+
+#Tilsynstabell
+#Bruker pakke kableextra
+tabE2 <- mst(tab = eval2, colnames = c("Siden oppstart av behandling fra Smerteteamet, er min generelle tilstand blitt", "Antall ",
+                                    "Prosent"),
+    cap = paste0(""),
+    type = params$tableFormat,
+    digs = 0,
+    align = c("l", "r", "r", "r"))
+
+messagee2 <- paste0("For det andre spørsmålet i Eval: 'Siden oppstart av behandling fra Smerteteamet, er min generelle tilstand blitt ...' finner vi svarene i tabellen under.")
+
+#Evalspm3
+eval3 <- datE %>% count(EvalSpm3) %>% mutate(prosent = round(100*(n/sum(n))))
+#Gi navn i stedet for tall til alternativene for tilsyn/ikke tilsyn
+eval3 = eval3 %>% mutate(spm3 = case_when(EvalSpm3 == 1 ~ "Ikke i det hele tatt",
+                                                              EvalSpm3 == 2 ~ "I liten grad",
+                                                              EvalSpm3 == 3 ~ "I noen grad",
+                                                              EvalSpm3 == 4 ~ "I stor grad",
+                                                              EvalSpm3 == 5 ~ "I svært stor grad",
+                                                              EvalSpm3 == 9 ~ "Vet ikke"))
+#Endrer rekkefølge og tar i tilleg ved NA-raden (siste)
+eval3 <- eval3[1:(dim(eval3)[1]-1), c(4,2,3)]
+
+#Tilsynstabell
+#Bruker pakke kableextra
+tabE3 <- mst(tab = eval3, colnames = c("Hvor fornøyd er du med ivaretakelsen fra Smerteteamet", "Antall ",
+                                    "Prosent"),
+    cap = paste0(""),
+    type = params$tableFormat,
+    digs = 0,
+    align = c("l", "r", "r", "r"))
+
+messagee3 <- paste0("For det tredje spørsmålet i Eval: 'Hvor fornøyd er du med ivaretakelsen fra Smerteteamet?' finner vi svarene i tabellen under.")
+
+
+#Evalspm4
+eval4 <- datE %>% count(EvalSpm4) %>% mutate(prosent = round(100*(n/sum(n))))
+#Gi navn i stedet for tall til alternativene for tilsyn/ikke tilsyn
+eval4 = eval4 %>% mutate(spm4 = case_when(EvalSpm4 == 1 ~ "Ikke i det hele tatt",
+                                                              EvalSpm4 == 2 ~ "I liten grad",
+                                                              EvalSpm4 == 3 ~ "I noen grad",
+                                                              EvalSpm4 == 4 ~ "I stor grad",
+                                                              EvalSpm4 == 5 ~ "I svært stor grad",
+                                                              EvalSpm4 == 9 ~ "Vet ikke"))
+#Endrer rekkefølge og tar i tilleg ved NA-raden (siste)
+eval4 <- eval4[1:(dim(eval4)[1]-1), c(4,2,3)]
+
+#Tilsynstabell
+#Bruker pakke kableextra
+tabE4 <- mst(tab = eval4, colnames = c("Snakket behandlerne i smerteteamet til deg slik at du forsto dem", "Antall ",
+                                    "Prosent"),
+    cap = paste0(""),
+    type = params$tableFormat,
+    digs = 0,
+    align = c("l", "r", "r", "r"))
+
+messagee4 <- paste0("For det fjerde spørsmålet i Eval: 'Snakket behandlerne i smerteteamet til deg slik at du forsto dem?' finner vi svarene i tabellen under.")
+
+#Evalspm5
+eval5 <- datE %>% count(EvalSpm5) %>% mutate(prosent = round(100*(n/sum(n))))
+#Gi navn i stedet for tall til alternativene for tilsyn/ikke tilsyn
+eval5 = eval5 %>% mutate(spm5 = case_when(EvalSpm5 == 1 ~ "Ikke i det hele tatt",
+                                                              EvalSpm5 == 2 ~ "I liten grad",
+                                                              EvalSpm5 == 3 ~ "I noen grad",
+                                                              EvalSpm5 == 4 ~ "I stor grad",
+                                                              EvalSpm5 == 5 ~ "I svært stor grad",
+                                                              EvalSpm5 == 9 ~ "Vet ikke"))
+#Endrer rekkefølge og tar i tilleg ved NA-raden (siste)
+eval5 <- eval5[1:(dim(eval5)[1]-1), c(4,2,3)]
+
+#Tilsynstabell
+#Bruker pakke kableextra
+tabE5 <- mst(tab = eval5, colnames = c("Har du tillit til smerteteamets faglige dyktighet", "Antall ",
+                                    "Prosent"),
+    cap = paste0(""),
+    type = params$tableFormat,
+    digs = 0,
+    align = c("l", "r", "r", "r"))
+
+messagee5 <- paste0("For det femte spørsmålet i Eval: 'Har du tillit til smerteteamets faglige dyktighet?' finner vi svarene i tabellen under.")
+
+#Evalspm6
+eval6 <- datE %>% count(EvalSpm6) %>% mutate(prosent = round(100*(n/sum(n))))
+#Gi navn i stedet for tall til alternativene for tilsyn/ikke tilsyn
+eval6 = eval6 %>% mutate(spm6 = case_when(EvalSpm6 == 1 ~ "Ikke i det hele tatt",
+                                                              EvalSpm6 == 2 ~ "I liten grad",
+                                                              EvalSpm6 == 3 ~ "I noen grad",
+                                                              EvalSpm6 == 4 ~ "I stor grad",
+                                                              EvalSpm6 == 5 ~ "I svært stor grad",
+                                                              EvalSpm6 == 9 ~ "Vet ikke"))
+#Endrer rekkefølge og tar i tilleg ved NA-raden (siste)
+eval6 <- eval6[1:(dim(eval6)[1]-1), c(4,2,3)]
+
+#Tilsynstabell
+#Bruker pakke kableextra
+tabE6 <- mst(tab = eval6, colnames = c("Fikk du tilstrekkelig informasjon og forklaring om din smertetilstand", "Antall ",
+                                    "Prosent"),
+    cap = paste0(""),
+    type = params$tableFormat,
+    digs = 0,
+    align = c("l", "r", "r", "r"))
+
+messagee6 <- paste0("For det sjette spørsmålet i Eval: 'Fikk du tilstrekkelig informasjon og forklaring om din smertetilstand?' finner vi svarene i tabellen under.")
+
+#Evalspm7
+eval7 <- datE %>% count(EvalSpm7) %>% mutate(prosent = round(100*(n/sum(n))))
+#Gi navn i stedet for tall til alternativene for tilsyn/ikke tilsyn
+eval7 = eval7 %>% mutate(spm7 = case_when(EvalSpm7 == 1 ~ "Ikke i det hele tatt",
+                                                              EvalSpm7 == 2 ~ "I liten grad",
+                                                              EvalSpm7 == 3 ~ "I noen grad",
+                                                              EvalSpm7 == 4 ~ "I stor grad",
+                                                              EvalSpm7 == 5 ~ "I svært stor grad",
+                                                              EvalSpm7 == 9 ~ "Vet ikke"))
+#Endrer rekkefølge og tar i tilleg ved NA-raden (siste)
+eval7 <- eval7[1:(dim(eval7)[1]-1), c(4,2,3)]
+
+#Tilsynstabell
+#Bruker pakke kableextra
+tabE7 <- mst(tab = eval7, colnames = c("Opplevde du at smertebehandlingen var tilpasset din situasjon", "Antall ",
+                                    "Prosent"),
+    cap = paste0(""),
+    type = params$tableFormat,
+    digs = 0,
+    align = c("l", "r", "r", "r"))
+
+messagee7 <- paste0("For det syvende spørsmålet i Eval: 'Opplevde du at smertebehandlingen var tilpasset din situasjon?' finner vi svarene i tabellen under.")
+
+#Evalspm8
+eval8 <- datE %>% count(EvalSpm8) %>% mutate(prosent = round(100*(n/sum(n))))
+#Gi navn i stedet for tall til alternativene for tilsyn/ikke tilsyn
+eval8 = eval8 %>% mutate(spm8 = case_when(EvalSpm8 == 1 ~ "Ikke i det hele tatt",
+                                                              EvalSpm8 == 2 ~ "I liten grad",
+                                                              EvalSpm8 == 3 ~ "I noen grad",
+                                                              EvalSpm8 == 4 ~ "I stor grad",
+                                                              EvalSpm8 == 5 ~ "I svært stor grad",
+                                                              EvalSpm8 == 9 ~ "Vet ikke"))
+#Endrer rekkefølge og tar i tilleg ved NA-raden (siste)
+eval8 <- eval8[1:(dim(eval8)[1]-1), c(4,2,3)]
+
+#Tilsynstabell
+#Bruker pakke kableextra
+tabE8 <- mst(tab = eval8, colnames = c("Var du involvert i avgjørelser som angikk din smertebehandling", "Antall ",
+                                    "Prosent"),
+    cap = paste0(""),
+    type = params$tableFormat,
+    digs = 0,
+    align = c("l", "r", "r", "r"))
+
+messagee8 <- paste0("For det åttende spørsmålet i Eval: 'Var du involvert i avgjørelser som angikk din smertebehandling?' finner vi svarene i tabellen under.")
+
+#Evalspm9
+eval9 <- datE %>% count(EvalSpm9) %>% mutate(prosent = round(100*(n/sum(n))))
+#Gi navn i stedet for tall til alternativene for tilsyn/ikke tilsyn
+eval9 = eval9 %>% mutate(spm9 = case_when(EvalSpm9 == 1 ~ "Ikke i det hele tatt",
+                                                              EvalSpm9 == 2 ~ "I liten grad",
+                                                              EvalSpm9 == 3 ~ "I noen grad",
+                                                              EvalSpm9 == 4 ~ "I stor grad",
+                                                              EvalSpm9 == 5 ~ "I svært stor grad",
+                                                              EvalSpm9 == 9 ~ "Vet ikke"))
+#Endrer rekkefølge og tar i tilleg ved NA-raden (siste)
+eval9 <- eval9[1:(dim(eval9)[1]-1), c(4,2,3)]
+
+#Tilsynstabell
+#Bruker pakke kableextra
+tabE9 <- mst(tab = eval9, colnames = c("Opplevde du at smerteteamets arbeid var godt organisert", "Antall ",
+                                    "Prosent"),
+    cap = paste0(""),
+    type = params$tableFormat,
+    digs = 0,
+    align = c("l", "r", "r", "r"))
+
+messagee9 <- paste0("For det niende spørsmålet i Eval: 'Opplevde du at smerteteamets arbeid var godt organisert?' finner vi svarene i tabellen under.")
+
+#Evalspm10
+eval10 <- datE %>% count(EvalSpm10) %>% mutate(prosent = round(100*(n/sum(n))))
+#Gi navn i stedet for tall til alternativene for tilsyn/ikke tilsyn
+eval10 = eval10 %>% mutate(spm10 = case_when(EvalSpm10 == 1 ~ "Ikke i det hele tatt",
+                                                              EvalSpm10 == 2 ~ "I liten grad",
+                                                              EvalSpm10 == 3 ~ "I noen grad",
+                                                              EvalSpm10 == 4 ~ "I stor grad",
+                                                              EvalSpm10 == 5 ~ "I svært stor grad",
+                                                              EvalSpm10 == 9 ~ "Vet ikke"))
+#Endrer rekkefølge og tar i tilleg ved NA-raden (siste)
+eval10 <- eval10[1:(dim(eval10)[1]-1), c(4,2,3)]
+
+#Tilsynstabell
+#Bruker pakke kableextra
+tabE10 <- mst(tab = eval10, colnames = c("Var hjelpen og behandlingen du fikk av smerteteamet, alt i alt, tilfredsstillende", "Antall ",
+                                    "Prosent"),
+    cap = paste0(""),
+    type = params$tableFormat,
+    digs = 0,
+    align = c("l", "r", "r", "r"))
+
+messagee10 <- paste0("For det tiende spørsmålet i Eval: 'Var hjelpen og behandlingen du fikk av smerteteamet, alt i alt, tilfredsstillende?' finner vi svarene i tabellen under.")
+
+#Evalspm11
+eval11 <- datE %>% count(EvalSpm11) %>% mutate(prosent = round(100*(n/sum(n))))
+#Gi navn i stedet for tall til alternativene for tilsyn/ikke tilsyn
+eval11 = eval11 %>% mutate(spm11 = case_when(EvalSpm11 == 1 ~ "Ikke i det hele tatt",
+                                                              EvalSpm11 == 2 ~ "I liten grad",
+                                                              EvalSpm11 == 3 ~ "I noen grad",
+                                                              EvalSpm11 == 4 ~ "I stor grad",
+                                                              EvalSpm11 == 5 ~ "I svært stor grad",
+                                                              EvalSpm11 == 9 ~ "Vet ikke"))
+#Endrer rekkefølge og tar i tilleg ved NA-raden (siste)
+eval11 <- eval11[1:(dim(eval11)[1]-1), c(4,2,3)]
+
+#Tilsynstabell
+#Bruker pakke kableextra
+tabE11 <- mst(tab = eval11, colnames = c("Mener du at du på noen måte ble feilbehandlet av smerteteamet?", "Antall ",
+                                    "Prosent"),
+    cap = paste0(""),
+    type = params$tableFormat,
+    digs = 0,
+    align = c("l", "r", "r", "r"))
+
+messagee11 <- paste0("For det ellevte spørsmålet i Eval: 'Mener du at du på noen måte ble feilbehandlet av smerteteamet (etter det du selv kan bedømme)?' finner vi svarene i tabellen under.")
+
+} #øverste if
+
+#Først tekst
+cat(paste("\n", message))
+#Deretter tabell
+tabE
+#Huskspm
+cat(paste("\n", messagehusk))
+#mellomrom
+cat(paste("\n", "        "))
+#Eval1tekst
+cat(paste("\n", messagee1))
+#Deretter tabell
+tabE1
+#Evaltekst2
+cat(paste("\n", messagee2))
+#Deretter tabell
+tabE2
+#Evaltekst3
+cat(paste("\n", messagee3))
+#Deretter tabell
+tabE3
+#Evaltekst4
+cat(paste("\n", messagee4))
+#Deretter tabell
+tabE4
+#Evaltekst5
+cat(paste("\n", messagee5))
+#Deretter tabell
+tabE5
+#Evaltekst6
+cat(paste("\n", messagee6))
+#Deretter tabell
+tabE6
+#Evaltekst7
+cat(paste("\n", messagee7))
+#Deretter tabell
+tabE7
+#Evaltekst8
+cat(paste("\n", messagee8))
+#Deretter tabell
+tabE8
+#Evaltekst9
+cat(paste("\n", messagee9))
+#Deretter tabell
+tabE9
+#Evaltekst10
+cat(paste("\n", messagee10))
+#Deretter tabell
+tabE10
+#Evaltekst11
+cat(paste("\n", messagee11))
+#Deretter tabell
+tabE11
+```
+
+## ePROM: Opioid
+
+```{r opi, warning = FALSE, message=FALSE, results='asis'}
+###Dette er oversikten for pasregskjemaet
+if(dim(dat)[1] < 1) {
+  message <- "I den valgte tidsperioden er det ikke nok data til å gi ut resultater."
+} else{
+  
+#Antall som har fått tilsendt skjema
+antUtsendt <- sum(dat$PasdelUtfylOpioid == 1, na.rm = TRUE) + sum(dat$PasdelUtfylOpioid == 0, na.rm = TRUE)
+#Antall som ikke har fått tilsendt skjema
+antIkkeUtsendt <- sum(is.na(dat$PasdelUtfylOpioid))
+#Antall som svarte
+antsvar <- sum(dat$PasdelUtfylOpioid == 1, na.rm =TRUE)
+antiksvar <- sum(dat$PasdelUtfylOpioid == 0, na.rm =TRUE)
+
+#Finner svarandel, men tar høyde for at vi ikke kan dele på 0 (aka ingen skjema sendt ut)
+andsvar <- NA
+if(antUtsendt != 0){
+  andsvar <- antsvar/antUtsendt
+}else{andsvar <- paste0("ikke mulig å angi andel grunnet ingen utsendte skjema.")}
+
+#Tekst som tar for seg antall utsendte av totalt antall, antall svar og andelen det gir.
+message <- paste0("I den valgte tidsperioden fikk tilsammen ", antUtsendt,
+                      " pasienter av totalt ",
+                      dim(dat)[1], " tilsendt ePROM-skjema for Opioid. Av de som fikk tilsendt skjema var det ", antsvar, " pasienter som sendte inn en besvarelse. Dette gir en svarandel på ", round(andsvar, digits = 2), ". Under følger en oversikt over registrerte årsaker til manglende besvarelse for de ", antiksvar, " som ikke har svart: ")
+
+#Fjerner først de som ikke har fått tilsendt (null) 3 = null
+datO <- dat[!is.na(dat$PasdelUtfylOpioid), ]
+#Bruker her pakkene dplyr og magrittr
+opio <- datO %>% count(AarsakmanglUtfylOpioid) %>% mutate(prosent = round(100*(n/sum(n))))
+#Gi navn i stedet for tall til alternativene for tilsyn/ikke tilsyn
+opio = opio %>% mutate(grunnOpi = case_when(AarsakmanglUtfylOpioid == 1 ~ "Tidsmangel behandler",
+                                                              AarsakmanglUtfylOpioid == 2 ~ "Tidlig utskrivning",
+                                                              AarsakmanglUtfylOpioid == 3 ~ "Kritisk syk/død",
+                                                              AarsakmanglUtfylOpioid == 4 ~ "Pasient klarer ikke",
+                                                              AarsakmanglUtfylOpioid == 5 ~ "Manglende samtykke",
+                                                              AarsakmanglUtfylOpioid == 7 ~ "Ikke besvart ePPROMS",
+                                                              AarsakmanglUtfylOpioid == 9 ~ "Annet"))
+#Endrer rekkefølge og tar i tilleg ved NA-raden (siste)
+opio <- opio[1:(dim(opio)[1]-1), c(4,2,3)]
+
+#Tilsynstabell
+#Bruker pakke kableextra
+tabO <- mst(tab = opio, colnames = c("Grunn manglende utfylling Opioid", "Antall ",
+                                    "Prosent"),
+    cap = paste0(""),
+    type = params$tableFormat,
+    digs = 0,
+    align = c("l", "r", "r", "r"))
+
+
+#Utskrevet sykehus + medikamenter etterpå
+utskr <- sum(datO$Utskrevetsykehus == 1, na.rm = TRUE)
+ikutskr <- sum(datO$Utskrevetsykehus == 0, na.rm = TRUE)
+
+smet <- sum(datO$Smstilletterutskrivelse == 1, na.rm = TRUE)
+iksmet <- sum(datO$Smstilletterutskrivelse == 0, na.rm = TRUE)
+messageutme <- paste0("Det er ", utskr, " pasienter som svarte ja på at de er utskrevet av sykehus, mens ", ikutskr, " pasienter svarte nei. Samtidig svarer ", smet, " av de som svarte ja at de har brukt sterke smertestillende medikamenter etter at de ble skrevet ut fra sykehuset.")
+
+#Bruker tidyverse
+#Medikamenter
+DolcontinMalfin = datO %>% select(DolcontinMalfin) %>%  summarise(antja = sum(DolcontinMalfin == 1, na.rm=TRUE),antnei = sum(DolcontinMalfin == 0, na.rm = TRUE)) 
+FentanylplDurogesicpl = datO %>% select(FentanylplDurogesicpl) %>% summarise(antja = sum(FentanylplDurogesicpl== 1, na.rm=TRUE),antnei = sum(FentanylplDurogesicpl== 0, na.rm = TRUE)) 
+Metadon= datO %>% select(Metadon) %>% summarise(antja = sum(Metadon== 1, na.rm=TRUE),antnei = sum(Metadon== 0, na.rm = TRUE)) 
+Morfin= datO %>% select(Morfin) %>% summarise(antja = sum(Morfin== 1, na.rm=TRUE),antnei = sum(Morfin== 0, na.rm = TRUE)) 
+Norspanplaster= datO %>% select(Norspanplaster) %>% summarise(antja = sum(Norspanplaster== 1, na.rm=TRUE),antnei = sum(Norspanplaster== 0, na.rm = TRUE)) 
+OxynormOxykodon= datO %>% select(OxynormOxykodon) %>% summarise(antja = sum(OxynormOxykodon== 1, na.rm=TRUE),antnei = sum(OxynormOxykodon== 0, na.rm = TRUE)) 
+OxyxontinReltebon= datO %>% select(OxyxontinReltebon) %>% summarise(antja = sum(OxyxontinReltebon== 1, na.rm=TRUE),antnei = sum(OxyxontinReltebon== 0, na.rm = TRUE)) 
+Palexia= datO %>% select(Palexia) %>% summarise(antja = sum(Palexia== 1, na.rm=TRUE),antnei = sum(Palexia== 0, na.rm = TRUE)) 
+PalladonHydromorfon= datO %>% select(PalladonHydromorfon) %>% summarise(antja = sum(PalladonHydromorfon== 1, na.rm=TRUE),antnei = sum(PalladonHydromorfon== 0, na.rm = TRUE)) 
+Paralginforte= datO %>% select(Paralginforte) %>% summarise(antja = sum(Paralginforte== 1, na.rm=TRUE),antnei = sum(Paralginforte== 0, na.rm = TRUE)) 
+Buprenorfin= datO %>% select(Buprenorfin) %>% summarise(antja = sum(Buprenorfin== 1, na.rm=TRUE),antnei = sum(Buprenorfin== 0, na.rm = TRUE)) 
+Targiniq= datO %>% select(Targiniq) %>% summarise(antja = sum(Targiniq== 1, na.rm=TRUE),antnei = sum(Targiniq== 0, na.rm = TRUE)) 
+Tramadolvarianter= datO %>% select(Tramadolvarianter) %>% summarise(antja = sum(Tramadolvarianter== 1, na.rm=TRUE),antnei = sum(Tramadolvarianter== 0, na.rm = TRUE)) 
+Andre= datO %>% select(Andre) %>% summarise(antja = sum(Andre== 1, na.rm=TRUE),antnei = sum(Andre== 0, na.rm = TRUE)) 
+Usikker= datO %>% select(Usikker) %>% summarise(antja = sum(Usikker== 1, na.rm=TRUE),antnei = sum(Usikker== 0, na.rm = TRUE)) 
+#Binder data sammen
+datmed = bind_rows(DolcontinMalfin, FentanylplDurogesicpl, Metadon, Morfin, Norspanplaster, OxynormOxykodon, OxyxontinReltebon, Palexia, PalladonHydromorfon, Paralginforte, Buprenorfin, Targiniq, Tramadolvarianter, Andre, Usikker) %>% set_rownames(c("DolcontinMalfin", "FentanylplDurogesicpl", "Metadon", "Morfin", "Norspanplaster", "OxynormOxykodon", "OxyxontinReltebon", "Palexia", "PalladonHydromorfon", "Paralginforte", "Buprenorfin", "Targiniq", "Tramadolvarianter", "Andre", "Usikker")) %>% set_colnames(c("Antall ja", "Antall nei"))
+#Tilsynstabell
+#Bruker pakke kableextra
+tabmed <- mst(tab = datmed, colnames = c("Antall ja", "Antall nei"),
+    cap = paste0(""),
+    type = params$tableFormat,
+    digs = 0,
+    align = c("r", "r"))
+
+messagemed <- paste0("I tabellen under vises en oversikt over hvilke medikamenter som har blitt brukt av pasientene etter utskrivelse.")
+
+#Bruker fortsatt noe
+#Bruker her pakkene dplyr og magrittr
+bruk <- datO %>% count(Fortsattbruk) %>% mutate(prosent = round(100*(n/sum(n))))
+#Gi navn i stedet for tall til alternativene for tilsyn/ikke tilsyn
+bruk = bruk %>% mutate(brukna = case_when(Fortsattbruk == 0 ~ "Nei",
+                                                              Fortsattbruk == 1 ~ "Ja, i samme dosering",
+                                                              Fortsattbruk == 2 ~ "Ja, i høyere dosering",
+                                                              Fortsattbruk == 3 ~ "Ja, i lavere dosering"))
+#Endrer rekkefølge og tar i tilleg ved NA-raden (siste)
+bruk <- bruk[1:(dim(bruk)[1]-1), c(4,2,3)]
+
+#Tilsynstabell
+#Bruker pakke kableextra
+tabbruk <- mst(tab = bruk, colnames = c("Bruker du fortsatt noen av disse medikamentene?", "Antall ",
+                                    "Prosent"),
+    cap = paste0(""),
+    type = params$tableFormat,
+    digs = 0,
+    align = c("l", "r", "r", "r"))
+
+#Info nedtrapping
+#nedtrer her pakkene dplyr og magrittr
+nedtr <- datO %>% count(InfoNedtrapping) %>% mutate(prosent = round(100*(n/sum(n))))
+#Gi navn i stedet for tall til alternativene for tilsyn/ikke tilsyn
+nedtr = nedtr %>% mutate(infned = case_when(InfoNedtrapping == 0 ~ "Nei",
+                                                              InfoNedtrapping == 1 ~ "Ja"))
+#Endrer rekkefølge og tar i tilleg ved NA-raden (siste)
+nedtr <- nedtr[1:(dim(nedtr)[1]-1), c(4,2,3)]
+
+#Tilsynstabell
+#nedtrer pakke kableextra
+tabnedtr <- mst(tab = nedtr, colnames = c("Fikk du informasjon om nedtrapping av sterke smertestillende medikamenter?", "Antall ",
+                                    "Prosent"),
+    cap = paste0(""),
+    type = params$tableFormat,
+    digs = 0,
+    align = c("l", "r", "r", "r"))
+
+#Info hvem
+#hvemer her pakkene dplyr og magrittr
+hvem <- datO %>% count(HvemInfoNedtrapping) %>% mutate(prosent = round(100*(n/sum(n))))
+#Gi navn i stedet for tall til alternativene for tilsyn/ikke tilsyn
+hvem = hvem %>% mutate(infhvem = case_when(HvemInfoNedtrapping == 1 ~ "Smerteteam",
+                                                              HvemInfoNedtrapping == 2 ~ "Annet helsepersonell",
+                                                              HvemInfoNedtrapping == 3 ~ "Begge",
+                                                              HvemInfoNedtrapping == 9 ~ "Vet ikke"))
+#Endrer rekkefølge og tar i tilleg ved NA-raden (siste)
+hvem <- hvem[1:(dim(hvem)[1]-1), c(4,2,3)]
+
+#Tilsynstabell
+#hvemer pakke kableextra
+tabhvem <- mst(tab = hvem, colnames = c("Av hvem fikk du informasjon om nedtrapping av sterke smertestillende medikamenter?", "Antall ",
+                                    "Prosent"),
+    cap = paste0(""),
+    type = params$tableFormat,
+    digs = 0,
+    align = c("l", "r", "r", "r"))
+
+
+#Skriftlig og muntlig beskjed
+munt <- sum(datO$MuntligInfoNedtrapp == 1, na.rm = TRUE)
+ikmunt <- sum(datO$MuntligInfoNedtrapp == 0, na.rm = TRUE)
+
+skri <- sum(datO$SkriftligNedtrappingsplan == 1, na.rm = TRUE)
+ikskri <- sum(datO$SkriftligNedtrappingsplan == 0, na.rm = TRUE)
+
+brosj <- sum(datO$InfoBrosjyreNedtrapp == 1, na.rm = TRUE)
+ikbrosj <- sum(datO$InfoBrosjyreNedtrapp == 0, na.rm = TRUE)
+
+messagenedtr <- paste0("Det er ", munt, " pasienter som fikk muntlig info om nedtrapping, mens ", ikmunt, " pasienter svarte at de ikke fikk det. Samtidig svarer ", skri, " pasienter at de fikk skriftlig nedtrappingsplan, mens " ,ikskri, " svarer at de ikke fikk det. I tillegg svarer " , brosj, " pasienter at de fikk utdelt infobrosjyre om nedtrapping, mens " , ikbrosj, " svarer at de ikke fikk den utdelt.")
+
+
+#Info fulgt nedtraping
+#fulgter her pakkene dplyr og magrittr
+fulgt <- datO %>% count(FolgeAnbefalingNedtrapp) %>% mutate(prosent = round(100*(n/sum(n))))
+#Gi navn i stedet for tall til alternativene for tilsyn/ikke tilsyn
+fulgt = fulgt %>% mutate(inffulgt = case_when(FolgeAnbefalingNedtrapp == 1 ~ "Ja",
+                                                              FolgeAnbefalingNedtrapp == 2 ~ "Nei, lenger enn anbefalt",
+                                                              FolgeAnbefalingNedtrapp == 3 ~ "Nei, har ikke kunnet trappe ned",
+                                                              FolgeAnbefalingNedtrapp == 4 ~ "Ja, raskere"))
+#Endrer rekkefølge og tar i tilleg ved NA-raden (siste)
+fulgt <- fulgt[1:(dim(fulgt)[1]-1), c(4,2,3)]
+
+#Tilsynstabell
+#fulgter pakke kableextra
+tabfulgt <- mst(tab = fulgt, colnames = c("Klarte du å følge anbefalingene for bruk og nedtrapping av medikamentene?", "Antall ",
+                                    "Prosent"),
+    cap = paste0(""),
+    type = params$tableFormat,
+    digs = 0,
+    align = c("l", "r", "r", "r"))
+
+#Info plagsomme abstinenser
+#abstier her pakkene dplyr og magrittr
+absti <- datO %>% count(OpplevdAbstinenssympt) %>% mutate(prosent = round(100*(n/sum(n))))
+#Gi navn i stedet for tall til alternativene for tilsyn/ikke tilsyn
+absti = absti %>% mutate(infabsti = case_when(OpplevdAbstinenssympt == 0 ~ "Nei",
+                                                              OpplevdAbstinenssympt == 1 ~ "Ja",
+                                                              OpplevdAbstinenssympt == 9 ~ "Usikker"))
+#Endrer rekkefølge og tar i tilleg ved NA-raden (siste)
+absti <- absti[1:(dim(absti)[1]-1), c(4,2,3)]
+
+#Tilsynstabell
+#abstier pakke kableextra
+tababsti <- mst(tab = absti, colnames = c("Opplevde du plagsomme abstinenssymptomer (svetting/frysing, uro, smerter, diaré, rennende nese) etter at du ble skrevet ut fra sykehuset?", "Antall ",
+                                    "Prosent"),
+    cap = paste0(""),
+    type = params$tableFormat,
+    digs = 0,
+    align = c("l", "r", "r", "r"))
+
+#Info forstod forstoabstinenser
+#forstoabstier her pakkene dplyr og magrittr
+forstoabsti <- datO %>% count(ForstodAbstinenssympt) %>% mutate(prosent = round(100*(n/sum(n))))
+#Gi navn i stedet for tall til alternativene for tilsyn/ikke tilsyn
+forstoabsti = forstoabsti %>% mutate(infforstoabsti = case_when(ForstodAbstinenssympt == 0 ~ "Nei",
+                                                                ForstodAbstinenssympt == 1 ~ "Ja",
+                                                                ForstodAbstinenssympt == 9 ~ "Usikker"))
+#Endrer rekkefølge og tar i tilleg ved NA-raden (siste)
+forstoabsti <- forstoabsti[1:(dim(forstoabsti)[1]-1), c(4,2,3)]
+
+#Tilsynstabell
+#forstoabstier pakke kableextra
+tabforstoabsti <- mst(tab = forstoabsti, colnames = c("Forstod du at det var abstinenssymptomer?", "Antall ",
+                                    "Prosent"),
+    cap = paste0(""),
+    type = params$tableFormat,
+    digs = 0,
+    align = c("l", "r", "r", "r"))
+
+#Info løsning
+losn <- datO %>% count(LosningProblemAbstinens) %>% mutate(prosent = round(100*(n/sum(n))))
+#Gi navn i stedet for tall til alternativene for tilsyn/ikke tilsyn
+losn = losn %>% mutate(inflosn = case_when(LosningProblemAbstinens == 0 ~ "Nei",
+                                                                LosningProblemAbstinens == 1 ~ "Ja",
+                                                                LosningProblemAbstinens == 9 ~ "Usikker"))
+#Endrer rekkefølge og tar i tilleg ved NA-raden (siste)
+losn <- losn[1:(dim(losn)[1]-1), c(4,2,3)]
+
+#losner pakke kablextra
+tablosn <- mst(tab = losn, colnames = c("Visste du hva du kunne gjøre med problemet?", "Antall ",
+                                    "Prosent"),
+    cap = paste0(""),
+    type = params$tableFormat,
+    digs = 0,
+    align = c("l", "r", "r", "r"))
+
+#Info tretthet
+trett <- datO %>% count(OpplevdPlagsomTretthet) %>% mutate(prosent = round(100*(n/sum(n))))
+#Gi navn i stedet for tall til alternativene for tilsyn/ikke tilsyn
+trett = trett %>% mutate(inftrett = case_when(OpplevdPlagsomTretthet == 0 ~ "Nei",
+                                                                OpplevdPlagsomTretthet == 1 ~ "Ja"))
+#Endrer rekkefølge og tar i tilleg ved NA-raden (siste)
+trett <- trett[1:(dim(trett)[1]-1), c(4,2,3)]
+
+#tretter pakke kablextra
+tabtrett <- mst(tab = trett, colnames = c("Opplevde du plagsom tretthet eller følelse av å være medikamentpåvirket etter at du ble skrevet ut fra sykehuset?", "Antall ",
+                                    "Prosent"),
+    cap = paste0(""),
+    type = params$tableFormat,
+    digs = 0,
+    align = c("l", "r", "r", "r"))
+
+#Info trettloshet
+trettlos <- datO %>% count(LosningProblemTretthet) %>% mutate(prosent = round(100*(n/sum(n))))
+#Gi navn i stedet for tall til alternativene for tilsyn/ikke tilsyn
+trettlos = trettlos %>% mutate(inftrettlos = case_when(LosningProblemTretthet == 0 ~ "Nei",
+                                                                LosningProblemTretthet == 1 ~ "Ja",
+                                                       LosningProblemTretthet == 9 ~ "Vet ikke"))
+#Endrer rekkefølge og tar i tilleg ved NA-raden (siste)
+trettlos <- trettlos[1:(dim(trettlos)[1]-1), c(4,2,3)]
+
+#trettloser pakke kablextra
+tabtrettlos <- mst(tab = trettlos, colnames = c("Visste du hva du kunne gjøre med problemet?", "Antall ",
+                                    "Prosent"),
+    cap = paste0(""),
+    type = params$tableFormat,
+    digs = 0,
+    align = c("l", "r", "r", "r"))
+
+#Bilkjøring
+#Info bilhet
+bil <- datO %>% count(InfoSmertestillBilkjoring) %>% mutate(prosent = round(100*(n/sum(n))))
+#Gi navn i stedet for tall til alternativene for tilsyn/ikke tilsyn
+bil = bil %>% mutate(infbil = case_when(InfoSmertestillBilkjoring == 0 ~ "Nei",
+                                                       InfoSmertestillBilkjoring == 1 ~ "Ja",
+                                                       InfoSmertestillBilkjoring == 9 ~ "Ikke aktuelt"))
+#Endrer rekkefølge og tar i tilleg ved NA-raden (siste)
+bil <- bil[1:(dim(bil)[1]-1), c(4,2,3)]
+
+#biler pakke kablextra
+tabbil <- mst(tab = bil, colnames = c("Fikk du informasjon om sterke smertestillende medikamenter og bilkjøring?", "Antall ",
+                                    "Prosent"),
+    cap = paste0(""),
+    type = params$tableFormat,
+    digs = 0,
+    align = c("l", "r", "r", "r"))
+
+#Info hvembil
+hvembil <- datO %>% count(HvemInfoSmertestillBilkjoring) %>% mutate(prosent = round(100*(n/sum(n))))
+#Gi navn i stedet for tall til alternativene for tilsyn/ikke tilsyn
+hvembil = hvembil %>% mutate(infhvembil = case_when(HvemInfoSmertestillBilkjoring == 1 ~ "Smerteteam",
+                                                              HvemInfoSmertestillBilkjoring == 2 ~ "Annet helsepersonell",
+                                                              HvemInfoSmertestillBilkjoring == 3 ~ "Begge",
+                                                              HvemInfoSmertestillBilkjoring == 9 ~ "Vet ikke"))
+#Endrer rekkefølge og tar i tilleg ved NA-raden (siste)
+hvembil <- hvembil[1:(dim(hvembil)[1]-1), c(4,2,3)]
+
+#Tilsynstabell
+#hvembiler pakke kableextra
+tabhvembil <- mst(tab = hvembil, colnames = c("Av hvem fikk du informasjon om sterke smertestillende medikamenter og bilkjøring?", "Antall ",
+                                    "Prosent"),
+    cap = paste0(""),
+    type = params$tableFormat,
+    digs = 0,
+    align = c("l", "r", "r", "r"))
+
+#Beskjedbil
+#Skriftlig og muntlig beskjed
+muntbil <- sum(datO$MuntligInfoBilkjoring == 1, na.rm = TRUE)
+ikmuntbil <- sum(datO$MuntligInfoBilkjoring == 0, na.rm = TRUE)
+
+skribil <- sum(datO$SkriftigInfoBilkjoring == 1, na.rm = TRUE)
+ikskribil <- sum(datO$SkriftigInfoBilkjoring == 0, na.rm = TRUE)
+
+brosjbil <- sum(datO$InfoBrosyjreBilkjoring == 1, na.rm = TRUE)
+ikbrosjbil <- sum(datO$InfoBrosyjreBilkjoring == 0, na.rm = TRUE)
+
+messagebil <- paste0("Det er ", muntbil, " pasienter som fikk muntlig info om medikamenter og bilkjøring, mens ", ikmuntbil, " pasienter svarte at de ikke fikk det. Samtidig svarer ", skribil, " pasienter at de fikk skriftlig info om medikamenter og bilkjøring, mens " , ikskribil, " svarer at de ikke fikk det. I tillegg svarer " , brosjbil, " pasienter at de fikk utdelt infobrosjyre «Sterke smertestillende – informasjon om kortvarig bruk og nedtrapping», mens " , ikbrosjbil, " svarer at de ikke fikk den utdelt.")
+
+#Info spørsmål
+hvorinfo <- datO %>% count(HenvendelseAngSmertestill) %>% mutate(prosent = round(100*(n/sum(n))))
+#Gi navn i stedet for tall til alternativene for tilsyn/ikke tilsyn
+hvorinfo = hvorinfo %>% mutate(infhvorinfo = case_when(HenvendelseAngSmertestill == 0 ~ "Nei",
+                                                                HenvendelseAngSmertestill == 1 ~ "Ja",
+                                                       HenvendelseAngSmertestill == 9 ~ "Usikker"))
+#Endrer rekkefølge og tar i tilleg ved NA-raden (siste)
+hvorinfo <- hvorinfo[1:(dim(hvorinfo)[1]-1), c(4,2,3)]
+
+#hvorinfoer pakke kablextra
+tabhvorinfo <- mst(tab = hvorinfo, colnames = c("Visste du hvor du kunne henvende deg ved spørsmål om bruk av de smertestillende medikamentene?", "Antall ",
+                                    "Prosent"),
+    cap = paste0(""),
+    type = params$tableFormat,
+    digs = 0,
+    align = c("l", "r", "r", "r"))
+
+} #øverste if
+
+#Først tekst
+cat(paste("\n", message))
+#Deretter tabell
+tabO
+#Utksrevet tekst
+cat(paste("\n", messageutme))
+#Blankt mellomrom
+cat(paste("\n", "    "))
+#Medikamenttekst
+cat(paste("\n", messagemed))
+#Deretter tabell
+tabmed
+#Generell tekst
+cat(paste("\n", "Videre følger en oversikt over ulike spørsmål tilknyttet bruk og nedtrapping av medikamentene."))
+#Deretter tabell
+tabbruk
+tabnedtr
+tabhvem
+cat(paste("\n", messagenedtr))
+tabfulgt
+tababsti
+tabforstoabsti
+tablosn
+tabtrett
+tabtrettlos
+tabbil
+tabhvembil
+cat(paste("\n", messagebil))
+tabhvorinfo
+```
