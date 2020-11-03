@@ -74,7 +74,7 @@ mst <- function(tab, colnames = colnames(tab), type, cap, digs, align = NULL,
       kableExtra::kable_styling(
         bootstrap_options = c("striped", "hover", "condensed"), full_width = F)
   }
-  cat(k)
+  k
 }
 ```
 
@@ -286,15 +286,15 @@ messagepr6 <- paste0("Tabellen under viser oversikten over hvor ofte pasientene 
 #Først tekst
 cat(paste("\n", message))
 #Deretter tabell
-tabPR
+cat(tabPR)
 #PR1tekst
 cat(paste("\n", messagepr1))
 #PR1tabell
-tabPR1
+cat(tabPR1)
 #PR2tekst
 cat(paste("\n", messagepr2))
 #PR2tabell
-tabPR2
+cat(tabPR2)
 #PR3tekst
 cat(paste("\n", messagepr3))
 #PR3Figur
@@ -304,15 +304,15 @@ cat(paste("\n", "                                  "))
 #PR4tekst
 cat(paste("\n", messagepr4))
 #PR4tabell
-tabPR4
+cat(tabPR4)
 #PR5tekst
 cat(paste("\n", messagepr5))
 #PR5tabell
-tabPR5
+cat(tabPR5)
 #PR6tekst
 cat(paste("\n", messagepr6))
 #PR6tabell
-tabPR6
+cat(tabPR6)
 ```
 
 
@@ -399,7 +399,7 @@ messagehads <- paste0("Figuren under viser hvordan de ", antsvar, " aktuelle for
 #Først tekst
 cat(paste("\n", message))
 #Deretter tabell
-tabH
+cat(tabH)
 #Figurtekst
 cat(paste("\n", messagehads))
 #Så figur
@@ -728,7 +728,7 @@ messagee11 <- paste0("For det ellevte spørsmålet i Eval: 'Mener du at du på n
 #Først tekst
 cat(paste("\n", message))
 #Deretter tabell
-tabE
+cat(tabE)
 #Huskspm
 cat(paste("\n", messagehusk))
 #mellomrom
@@ -736,47 +736,47 @@ cat(paste("\n", "        "))
 #Eval1tekst
 cat(paste("\n", messagee1))
 #Deretter tabell
-tabE1
+cat(tabE1)
 #Evaltekst2
 cat(paste("\n", messagee2))
 #Deretter tabell
-tabE2
+cat(tabE2)
 #Evaltekst3
 cat(paste("\n", messagee3))
 #Deretter tabell
-tabE3
+cat(tabE3)
 #Evaltekst4
 cat(paste("\n", messagee4))
 #Deretter tabell
-tabE4
+cat(tabE4)
 #Evaltekst5
 cat(paste("\n", messagee5))
 #Deretter tabell
-tabE5
+cat(tabE5)
 #Evaltekst6
 cat(paste("\n", messagee6))
 #Deretter tabell
-tabE6
+cat(tabE6)
 #Evaltekst7
 cat(paste("\n", messagee7))
 #Deretter tabell
-tabE7
+cat(tabE7)
 #Evaltekst8
 cat(paste("\n", messagee8))
 #Deretter tabell
-tabE8
+cat(tabE8)
 #Evaltekst9
 cat(paste("\n", messagee9))
 #Deretter tabell
-tabE9
+cat(tabE9)
 #Evaltekst10
 cat(paste("\n", messagee10))
 #Deretter tabell
-tabE10
+cat(tabE10)
 #Evaltekst11
 cat(paste("\n", messagee11))
 #Deretter tabell
-tabE11
+cat(tabE11)
 ```
 
 ## ePROM: Opioid
