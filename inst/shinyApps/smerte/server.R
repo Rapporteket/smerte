@@ -276,7 +276,7 @@ server <- function(input, output, session) {
                                 reshId=reshId,
                                 startDate=input$dateRangEprom[1],
                                 endDate=input$dateRangEprom[2],
-                                tableFormat='html',
+                                tableFormat = "html",
                                 registryName=registryName,
                                 userRole=userRole,
                                 shinySession=session)

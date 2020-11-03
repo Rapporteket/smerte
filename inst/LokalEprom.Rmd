@@ -55,24 +55,26 @@ if (rapbase::isRapContext()) {
 ```
 
 ```{r makeStandardTableFunction, eval=TRUE}
-mst <- function(tab, colnames = colnames(tab), type, cap, digs, align = NULL, fs = 8, lsd = FALSE) {
+mst <- function(tab, colnames = colnames(tab), type, cap, digs, align = NULL,
+                fs = 8, lsd = FALSE) {
   if (type == "latex") {
     if (lsd) {
       lo <- c("hold_position", "scale_down")
     } else {
       lo <- c("hold_position")
     }
-    k <- kable(tab, col.names = colnames, caption = cap, digits = digs, align = align,
-               booktabs = TRUE) %>% 
-      kable_styling(latex_options = lo, font_size = fs)
+    k <- knitr::kable(tab, col.names = colnames, caption = cap, digits = digs,
+                      align = align, booktabs = TRUE) %>% 
+      kableExtra::kable_styling(latex_options = lo, font_size = fs)
   }
   
   if (type == "html") {
-    k <- kable(tab, col.names = colnames, caption = cap, digits = digs, align = align) %>% 
-      kable_styling(bootstrap_options = c("striped", "hover", "condensed"),
-                    full_width = F)
+    k <- knitr::kable(tab, col.names = colnames, caption = cap, digits = digs,
+                      align = align) %>% 
+      kableExtra::kable_styling(
+        bootstrap_options = c("striped", "hover", "condensed"), full_width = F)
   }
-  #print(k)
+  cat(k)
 }
 ```
 
