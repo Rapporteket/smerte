@@ -78,7 +78,7 @@ mst <- function(tab, colnames = colnames(tab), type, cap, digs, align = NULL,
 }
 ```
 
-I denne rapporten finner vi en oversikt over besvarelsene som er gitt via PROM, både andelen som besvarer og grunnene som er oppgitt til at besvarelse mangler. I tillegg vises det hvordan svarene fordeler seg på de ulike spørsmålene for hvert skjema. Det er for tiden fire PROM-skjema som vises her. Disse er: pasreg, evaluering, HADS og opioid. 
+I denne rapporten finner vi en oversikt over besvarelsene som er gitt via PROM, både andelen som besvarer og grunnene som er oppgitt til at besvarelse mangler. I tillegg vises det hvordan svarene fordeler seg på de ulike spørsmålene for hvert skjema. Det er for tiden fire PROM-skjema som vises her. Disse er: _pasreg_, _evaluering_, _HADS_ og _opioid_. 
 
 Mange av resultatene presenteres i tabeller. Her vises også andelen som har gitt de ulike svarene. I de tilfellene der andelen ikke summeres til 100 $\%$ er dette fordi den "manglende" prosenten er fjernet fra oversikten (pga manglende besvarelse og lignende).
 
@@ -109,7 +109,7 @@ if(antUtsendt != 0){
 #Tekst som tar for seg antall utsendte av totalt antall, antall svar og andelen det gir.
 message <- paste0("I den valgte tidsperioden fikk tilsammen ", antUtsendt,
                       " pasienter av totalt ",
-                      dim(dat)[1], " tilsendt ePROM-skjema for pasreg. Av de som fikk tilsendt skjema var det ", antsvar, " pasienter som sendte inn en besvarelse. Dette gir en svarandel på ", round(andsvar, digits = 2), ". Under følger en oversikt over registrerte årsaker til manglende besvarelse for de ", antiksvar, " som ikke har svart: ")
+                      dim(dat)[1], " tilsendt ePROM-skjema for pasreg. Av de som fikk tilsendt skjema var det ", antsvar, " pasienter som sendte inn en besvarelse. Dette gir en svarandel på ", round(andsvar, digits = 2), ". I \\@ref{tab:tabPR} gis en oversikt over registrerte årsaker til manglende besvarelse for de ", antiksvar, " som ikke har svart: ")
 
 #Fjerner først de som ikke har fått tilsendt (null) 3 = null
 datpr <- dat[!is.na(dat$PasDelUfylPR), ]
@@ -128,9 +128,9 @@ pasreg <- pasreg[1:(dim(pasreg)[1]-1), c(4,2,3)]
 
 #Tilsynstabell
 #Bruker pakke kableextra
-tabPR <- mst(tab = pasreg, colnames = c("Grunn manglende utfylling pasreg", "Antall ",
+tabPR <- mst(tab = pasreg, colnames = c("", "Antall ",
                                     "Prosent"),
-    cap = paste0(""),
+    cap = paste0("Årsak til manglende utfylling\\label{tab:tabPR}"),
     type = params$tableFormat,
     digs = 0,
     align = c("l", "r", "r", "r"))
@@ -282,11 +282,16 @@ tabPR6 <- mst(tab = pr6, colnames = c("Svar på spørsmålet: ... føles det som
     align = c("l", "r", "r", "r"))
 messagepr6 <- paste0("Tabellen under viser oversikten over hvor ofte pasientene føler '... det som om jeg ikke holder ut'. Spørsmålet ble besvart av ", dim(datpr6)[1], " pasienter. ")
 } #øverste if
+```
 
-#Først tekst
-cat(paste("\n", message))
-#Deretter tabell
-cat(tabPR)
+
+I den valgte tidsperioden fikk tilsammen `r antUtsendt` pasienter av totalt `r dim(dat)[1]` tilsendt ePROM-skjema for pasreg. Av de som fikk tilsendt skjema var det `r antsvar` pasienter som sendte inn en besvarelse. Dette gir en svarandel på `r round(andsvar, digits = 2)`. Tabell \ref{tab:tabPR} gir en oversikt over registrerte årsaker til manglende besvarelse for de `r antiksvar` som ikke har svart. 
+
+```{r tabPR, results='asis'}
+tabPR
+```
+
+```{r rest}
 #PR1tekst
 cat(paste("\n", messagepr1))
 #PR1tabell
