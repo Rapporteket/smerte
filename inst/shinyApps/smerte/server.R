@@ -91,8 +91,8 @@ server <- function(input, output, session) {
                   output_format =
                     switch(
                       type,
-                      PDF = pdf_document(),
-                      HTML = html_document(),
+                      PDF = bookdown::pdf_document2(),
+                      HTML = bookdown::html_document2(),
                       BEAMER = beamer_presentation(theme = "Hannover"),
                       REVEAL = revealjs::revealjs_presentation(theme = "sky")
                     ),
