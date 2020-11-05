@@ -54,16 +54,16 @@ server <- function(input, output, session) {
     sourceFile <- tempfile(fileext = ".Rmd")
     file.copy(system.file(srcFile, package="smerte"), sourceFile,
               overwrite = TRUE)
+
     owd <- setwd(dirname(sourceFile))
     on.exit(setwd(owd))
-    sourceFile %>%
-      knitr::knit() %>%
-      markdown::markdownToHTML(.,
-                               options = c('fragment_only',
-                                           'base64_images',
-                                           'highlight_code'),
-                                            encoding = "utf-8") %>%
-      shiny::HTML()
+    file.copy(system.file("_bookdown.yml", package="smerte"), ".")
+    html_file <-
+      rmarkdown::render(sourceFile,
+                        output_format = bookdown::html_fragment2(),
+                        params = params,
+                        envir = new.env())
+    shiny::HTML(readLines(html_file))
   }
 
 
@@ -85,32 +85,32 @@ server <- function(input, output, session) {
     owd <- setwd(tempdir())
     on.exit(setwd(owd))
     file.copy(src, tmpFile, overwrite = TRUE)
-
-    library(rmarkdown)
-    out <- render(tmpFile,
-                  output_format =
-                    switch(
-                      type,
-                      PDF = bookdown::pdf_document2(),
-                      HTML = bookdown::html_document2(),
-                      BEAMER = beamer_presentation(theme = "Hannover"),
-                      REVEAL = revealjs::revealjs_presentation(theme = "sky")
-                    ),
-                  params = c(
-                    list(tableFormat =
-                           switch(
-                             type,
-                             PDF = "latex",
-                             HTML = "html",
-                             BEAMER = "latex",
-                             REVEAL = "html"),
-                    hospitalName=hospitalName,
-                    reshId=reshId,
-                    userRole=userRole,
-                    registryName=registryName,
-                    author=author,
-                    shinySession=session), addParam),
-                  output_dir = tempdir())
+    file.copy(system.file("_bookdown.yml", package="smerte"), ".")
+    out <- rmarkdown::render(
+      tmpFile,
+      output_format =
+        switch(
+          type,
+          PDF = bookdown::pdf_document2(),
+          HTML = bookdown::html_document2(),
+          BEAMER = rmarkdown::beamer_presentation(theme = "Hannover"),
+          REVEAL = revealjs::revealjs_presentation(theme = "sky")
+        ),
+      params = c(
+        list(tableFormat =
+               switch(
+                 type,
+                 PDF = "latex",
+                 HTML = "html",
+                 BEAMER = "latex",
+                 REVEAL = "html"),
+             hospitalName=hospitalName,
+             reshId=reshId,
+             userRole=userRole,
+             registryName=registryName,
+             author=author,
+             shinySession=session), addParam),
+      output_dir = tempdir())
     file.rename(out, file)
   }
 
@@ -270,12 +270,12 @@ server <- function(input, output, session) {
   )
 
   # eProm
-  output$Eprom <- renderUI({
+  output$eprom <- renderUI({
     htmlRenderRmd(srcFile = "LokalEprom.Rmd",
                   params = list(hospitalName=hospitalName,
                                 reshId=reshId,
-                                startDate=input$dateRangEprom[1],
-                                endDate=input$dateRangEprom[2],
+                                startDate=input$dateRangeEprom[1],
+                                endDate=input$dateRangeEprom[2],
                                 tableFormat = "html",
                                 registryName=registryName,
                                 userRole=userRole,
