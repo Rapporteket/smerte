@@ -53,6 +53,10 @@ if (rapbase::isRapContext()) {
   dat <- read.csv(file = path, header = TRUE, sep = ";")
  }
 
+dataPresent <- TRUE
+if(dim(dat)[1] < 1) {
+  dataPresent <- FALSE
+}
 
 ```
 
@@ -90,14 +94,15 @@ Mange av resultatene presenteres i tabeller. Her vises også andelen som har git
 
 En periode kunne man dele ut pasientregistreringsskjema til pasienter selv om de ikke hadde samtykket fra før. Dersom man valgte å ikke dele ut pasientregistreringsskjemaene ved manglende samtykke, krysset man av for «Annet» under «Årsak til manglende utfylling». Derfor vil en del av annet-kategoriene som vises være store.
 
+```{r noData, eval=!dataPresent, results='asis'}
+cat('# Upps...\nI den valgte tidsperioden er det ikke nok data til å gi ut resultater.')
+knitr::knit_exit()
+```
+
 # ePROM: pasreg
 
-```{r pasreg, warning = TRUE, message=TRUE, results='asis', eval=TRUE}
+```{r pasreg, warning = TRUE, message=TRUE, results='asis', eval=dataPresent}
 ###Dette er oversikten for pasregskjemaet
-if(dim(dat)[1] < 1) {
-  message <- "I den valgte tidsperioden er det ikke nok data til å gi ut resultater."
-  print(message)
-} else {
   
 #Antall som har fått tilsendt skjema
 antUtsendt <- sum(!is.na(dat$PasDelUfylPR))
@@ -112,37 +117,40 @@ andsvar <- NA
 if(antUtsendt != 0){
   andsvar <- antsvar/antUtsendt
 }else{andsvar <- paste0("ikke mulig å angi andel grunnet ingen utsendte skjema.")}
+```
 
-#Tekst som tar for seg antall utsendte av totalt antall, antall svar og andelen det gir.
-message <- paste0("I den valgte tidsperioden fikk tilsammen ", antUtsendt,
-                      " pasienter av totalt ",
-                      dim(dat)[1], " tilsendt ePROM-skjema for pasreg. Av de som fikk tilsendt skjema var det ", antsvar, " pasienter som sendte inn en besvarelse. Dette gir en svarandel på ", round(andsvar, digits = 2), ". I \\@ref{tab:tabPR} gis en oversikt over registrerte årsaker til manglende besvarelse for de ", antiksvar, " som ikke har svart: ")
+I den valgte tidsperioden fikk tilsammen `r antUtsendt` pasienter av totalt `r dim(dat)[1]` tilsendt ePROM-skjema for pasreg. Av de som fikk tilsendt skjema var det `r antsvar` pasienter som sendte inn en besvarelse. Dette gir en svarandel på `r round(andsvar, digits = 2)`. Tabell \@ref(tab:tabPR) gir en oversikt over registrerte årsaker til manglende besvarelse for de `r antiksvar` som ikke har svart.
 
+```{r tabPR, eval=dataPresent, results='asis'}
 #Fjerner først de som ikke har fått tilsendt (null) 3 = null
 datpr <- dat[!is.na(dat$PasDelUfylPR), ]
 #Bruker her pakkene dplyr og magrittr
 pasreg <- datpr %>% count(GrunnManglUtfyl) %>% mutate(prosent = round(100*(n/sum(n))))
 #Gi navn i stedet for tall til alternativene for tilsyn/ikke tilsyn
-pasreg = pasreg %>% mutate(grunnPR = case_when(GrunnManglUtfyl == 1 ~ "Tidsmangel behandler",
-                                                              GrunnManglUtfyl == 2 ~ "Tidlig utskrivning",
-                                                              GrunnManglUtfyl == 3 ~ "Kritisk syk/død",
-                                                              GrunnManglUtfyl == 4 ~ "Pasient klarer ikke",
-                                                              GrunnManglUtfyl == 5 ~ "Manglende samtykke",
-                                                              GrunnManglUtfyl == 7 ~ "Ikke besvart ePPROMS",
-                                                              GrunnManglUtfyl == 9 ~ "Annet"))
+pasreg = pasreg %>%
+  mutate(grunnPR = case_when(GrunnManglUtfyl == 1 ~ "Tidsmangel behandler",
+                             GrunnManglUtfyl == 2 ~ "Tidlig utskrivning",
+                             GrunnManglUtfyl == 3 ~ "Kritisk syk/død",
+                             GrunnManglUtfyl == 4 ~ "Pasient klarer ikke",
+                             GrunnManglUtfyl == 5 ~ "Manglende samtykke",
+                             GrunnManglUtfyl == 7 ~ "Ikke besvart ePPROMS",
+                             GrunnManglUtfyl == 9 ~ "Annet"))
 #Endrer rekkefølge og tar i tilleg ved NA-raden (siste)
 pasreg <- pasreg[1:(dim(pasreg)[1]-1), c(4,2,3)]
 
 #Tilsynstabell
 #Bruker pakke kableextra
-tabPR <- mstt(tab = pasreg, colnames = c("", "Antall ",
-                                    "Prosent"),
+mst(tab = pasreg, 
+    col_names = c("", "Antall ", "Prosent"),
     cap = "Årsak til manglende utfylling",
     label = "tabPR",
     type = params$tableFormat,
     digs = 0,
     align = c("l", "r", "r", "r"))
+```
 
+
+```{r prspm1, eval=dataPresent, results='asis'}
 
 ###PRSPM1
 #Fjerner først de som ikke har fått tilsendt (null) 3 = null
@@ -161,15 +169,18 @@ pr1 = pr1 %>% mutate(sovnfor = case_when(PRSpm1 == 1 ~ "Ikke i det hele tatt",
 pr1 <- pr1[ , c(4,2,3)]
 
 #Bruker pakke kableextra
-tabPR1 <- mstt(tab = pr1, colnames = c("Søvnproblemer før innleggelse", "Antall ",
-                                    "Prosent"),
-    cap = paste0(""),
+mst(tab = pr1,
+    col_names = c("", "Antall ", "Prosent"),
+    cap = paste0("Søvnproblemer før innleggelse"),
+    label = "prspm1",
     type = params$tableFormat,
     digs = 0,
     align = c("l", "r", "r", "r"))
-messagepr1 <- paste0("Tabellen viser oversikten over søvnproblemer før innleggelse for de ", dim(datpr1)[1],
-                      " pasientene som besvarte spørsmålet: ")
+```
 
+Tabell \@ref(tab:prspm1) viser oversikten over søvnproblemer før innleggelse for de `r dim(datpr1)[1]` pasientene som besvarte spørsmålet.
+
+```{r rest, eval=dataPresent, results='asis'}
 ###PRSPM2
 #Fjerner først de som ikke har fått tilsendt 
 ispr2 <- sum(!is.na(dat$PRSpm2))
@@ -289,27 +300,10 @@ tabPR6 <- mstt(tab = pr6, colnames = c("Svar på spørsmålet: ... føles det so
     digs = 0,
     align = c("l", "r", "r", "r"))
 messagepr6 <- paste0("Tabellen under viser oversikten over hvor ofte pasientene føler '... det som om jeg ikke holder ut'. Spørsmålet ble besvart av ", dim(datpr6)[1], " pasienter. ")
-} #øverste if
 ```
 
 
-I den valgte tidsperioden fikk tilsammen `r antUtsendt` pasienter av totalt `r dim(dat)[1]` tilsendt ePROM-skjema for pasreg. Av de som fikk tilsendt skjema var det `r antsvar` pasienter som sendte inn en besvarelse. Dette gir en svarandel på `r round(andsvar, digits = 2)`. Tabell \@ref(tab:tabPR) gir en oversikt over registrerte årsaker til manglende besvarelse for de `r antiksvar` som ikke har svart.
-
-```{r tabPR, results='asis'}
-mst(tab = pasreg, 
-    col_names = c("", "Antall ", "Prosent"),
-    cap = "Årsak til manglende utfylling",
-    label = "tabPR",
-    type = params$tableFormat,
-    digs = 0,
-    align = c("l", "r", "r", "r"))
-```
-
-```{r rest, results='asis'}
-#PR1tekst
-cat(paste("\n", messagepr1))
-#PR1tabell
-cat(tabPR1)
+```{r rest2, results='asis'}
 #PR2tekst
 cat(paste("\n", messagepr2))
 #PR2tabell
