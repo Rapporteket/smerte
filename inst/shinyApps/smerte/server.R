@@ -271,7 +271,7 @@ server <- function(input, output, session) {
 
   # eProm
   output$eprom <- renderUI({
-    htmlRenderRmd(srcFile = "LokalEprom.Rmd",
+    htmlRenderRmd(srcFile = "lokalEpromNy.Rmd",
                   params = list(hospitalName=hospitalName,
                                 reshId=reshId,
                                 startDate=input$dateRangeEprom[1],
