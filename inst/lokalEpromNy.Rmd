@@ -16,10 +16,10 @@ author: '`r params$author`'
 abstract: 'Testing av et sammendrag som også inneholder "anførselstegn"'
 keywords: 'test, av, nøkkelord'
 date: '`r format(Sys.time(), "%d\\. %B, %Y")`'
-header-includes:
-- \usepackage[english, norsk]{babel}
-- \usepackage{booktabs}
-- \usepackage{rotating}
+# header-includes:
+# - \usepackage[english, norsk]{babel}
+# - \usepackage{booktabs}
+# - \usepackage{rotating}
 ---
 ```{r set options and load packages, include = FALSE}
 knitr::opts_chunk$set(echo=FALSE)

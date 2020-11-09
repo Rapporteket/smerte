@@ -84,8 +84,13 @@ server <- function(input, output, session) {
     # permission to the current working directory
     owd <- setwd(tempdir())
     on.exit(setwd(owd))
+    print(getwd())
     file.copy(src, tmpFile, overwrite = TRUE)
     file.copy(system.file("_bookdown.yml", package="smerte"), ".")
+    file.copy(system.file("_output.yml", package="smerte"), ".")
+    file.copy(system.file("rapporteket.cls", package="smerte"), ".")
+    file.copy(system.file("preamble.tex", package="smerte"), ".")
+    file.copy(system.file("www/logo.svg", package="rapbase"), ".")
     out <- rmarkdown::render(
       tmpFile,
       output_format =
@@ -285,13 +290,13 @@ server <- function(input, output, session) {
 
   output$downloadReportEprom <- downloadHandler(
     filename = function() {
-      downloadFilename("LokalEprom",
+      downloadFilename("lokalEpromNy",
                        input$formatEprom)
     },
 
     content = function(file) {
-      contentFile(file, "LokalEprom.Rmd",
-                  "tmpLokalEprom.Rmd",
+      contentFile(file, "lokalEpromNy.Rmd",
+                  "tmpLokalEpromNy.Rmd",
                   input$formatEprom,
                   addParam = list(startDate=input$dateRangeEprom[1],
                                   endDate=input$dateRangeEprom[2]))
