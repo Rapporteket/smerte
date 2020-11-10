@@ -1,10 +1,10 @@
-bookdown::pdf_document2:
+pdf_document:
   includes:
     in_header: preamble.tex
   dev: "cairo_pdf"
   latex_engine: xelatex
   keep_tex: true
   toc: false
-bookdown::html_document2:
+html_document:
   dev: svglite
   stylesheet: css/style.css

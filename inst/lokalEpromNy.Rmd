@@ -1,6 +1,6 @@
 ---
 params:
-  title: 'Oversikt over PROM-skjema for '
+  title: 'Oversikt over PROM-skjema'
   author: 'Rapporteket'
   hospitalName: 'Ukjent sykehus'
   reshId: 'locallyDefined'
@@ -11,15 +11,25 @@ params:
   tableFormat: 'html'
   registryName: 'rapbase'
   shinySession: list()
-title: '`r paste(params$title, params$hospitalName, " i perioden fra ", params$startDate, " til ", params$endDate)`'
+title: '`r paste(params$title)`'
+subtitle: '`r paste(params$hospitalName, " i perioden fra ", params$startDate, " til ", params$endDate)`'
 author: '`r params$author`'
 abstract: 'Testing av et sammendrag som også inneholder "anførselstegn"'
 keywords: 'test, av, nøkkelord'
 date: '`r format(Sys.time(), "%d\\. %B, %Y")`'
+geometry:
 # header-includes:
 # - \usepackage[english, norsk]{babel}
 # - \usepackage{booktabs}
 # - \usepackage{rotating}
+# output:
+#   pdf_book:
+#   includes:
+#     in_header: preamble.tex
+#   dev: "cairo_pdf"
+#   latex_engine: xelatex
+#   keep_tex: true
+#   toc: false
 ---
 ```{r set options and load packages, include = FALSE}
 knitr::opts_chunk$set(echo=FALSE)

@@ -16,7 +16,7 @@ server <- function(input, output, session) {
     userFullName <- rapbase::getUserFullName(session)
     userRole <- rapbase::getUserRole(session)
     hospitalName <- getHospitalName(registryName, reshId, userRole)
-    author <- paste0(userFullName, "/", "Rapporteket")
+    author <- userFullName
   } else {
     ### if need be, define your (local) values here
     hospitalName <- "Helse Bergen HF"
@@ -90,13 +90,14 @@ server <- function(input, output, session) {
     file.copy(system.file("_output.yml", package="smerte"), ".")
     file.copy(system.file("rapporteket.cls", package="smerte"), ".")
     file.copy(system.file("preamble.tex", package="smerte"), ".")
-    file.copy(system.file("www/logo.svg", package="rapbase"), ".")
+    file.copy(system.file("www/logo.pdf", package="smerte"), ".")
     out <- rmarkdown::render(
       tmpFile,
       output_format =
         switch(
           type,
-          PDF = bookdown::pdf_document2(),
+          PDF = bookdown::pdf_document2(pandoc_args = c("--include-in-header=preamble.tex")),
+          #PDF = bookdown::pdf_document2(pandoc_args = c("--template=preamble.tex")),
           HTML = bookdown::html_document2(),
           BEAMER = rmarkdown::beamer_presentation(theme = "Hannover"),
           REVEAL = revealjs::revealjs_presentation(theme = "sky")
