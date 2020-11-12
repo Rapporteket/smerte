@@ -23,21 +23,28 @@ Imports:
     dplyr,
     gridExtra,
     kableExtra,
+    knitr,
     lubridate,
     magrittr,
     rapbase,
     raplog,
+    revealjs,
+    rlang,
     rmarkdown,
     shiny,
     shinyalert,
     shinycssloaders,
     stringr,
     tidyr,
-    zoo,
-    revealjs
+    yaml,
+    zoo
 Remotes:
-  Rapporteket/rapbase,
-  Rapporteket/raplog
+    Rapporteket/rapbase@*release,
+    Rapporteket/raplog@*release
+Suggests: 
+    covr,
+    lintr,
+    testthat (>= 2.1.0)
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.1.1

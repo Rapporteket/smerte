@@ -39,14 +39,14 @@ mst <- function(tab, col_names = colnames(tab), type = "latex", cap = "",
     } else {
       lo <- c("hold_position")
     }
-    k <- knitr::kable(tab, col.names = col_names, caption = cap,
+    k <- knitr::kable(tab, format = type, col.names = col_names, caption = cap,
                       label = label, digits = digs,
                       align = align, booktabs = TRUE) %>%
       kableExtra::kable_styling(latex_options = lo, font_size = fs)
   }
 
   if (type == "html") {
-    k <- knitr::kable(tab, col.names = col_names, caption = cap,
+    k <- knitr::kable(tab, format = type, col.names = col_names, caption = cap,
                       label = label, digits = digs,
                       align = align) %>%
       kableExtra::kable_styling(
