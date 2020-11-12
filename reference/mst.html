@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Provide dataframe of registry data — getRegData • smerte</title>
+<title>Make standard table for rmarkdown reports — mst • smerte</title>
 
 
 <!-- jquery -->
@@ -39,8 +39,8 @@
 
 
 
-<meta property="og:title" content="Provide dataframe of registry data — getRegData" />
-<meta property="og:description" content="Provides a dataframe containing data from a registry" />
+<meta property="og:title" content="Make standard table for rmarkdown reports — mst" />
+<meta property="og:description" content="This function will return RMarkdown code for creating standard tables" />
 
 
 
@@ -106,82 +106,109 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Provide dataframe of registry data</h1>
+    <h1>Make standard table for rmarkdown reports</h1>
     
-    <div class="hidden name"><code>getRegData.Rd</code></div>
+    <div class="hidden name"><code>mst.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Provides a dataframe containing data from a registry</p>
+    <p>This function will return RMarkdown code for creating standard tables</p>
     </div>
 
-    <pre class="usage"><span class='fu'>getRegDataLokalTilsynsrapportMaaned</span><span class='op'>(</span><span class='va'>registryName</span>, <span class='va'>reshId</span>, <span class='va'>userRole</span>, <span class='va'>year</span>, <span class='va'>...</span><span class='op'>)</span>
-
-<span class='fu'>getRegDataRapportDekningsgrad</span><span class='op'>(</span>
-  <span class='va'>registryName</span>,
-  <span class='va'>reshId</span>,
-  <span class='va'>userRole</span>,
-  <span class='va'>startDate</span>,
-  <span class='va'>endDate</span>,
-  <span class='va'>...</span>
-<span class='op'>)</span>
-
-<span class='fu'>getRegDataIndikator</span><span class='op'>(</span><span class='va'>registryName</span>, <span class='va'>reshId</span>, <span class='va'>userRole</span>, <span class='va'>year</span>, <span class='va'>...</span><span class='op'>)</span>
-
-<span class='fu'>getLocalYears</span><span class='op'>(</span><span class='va'>registryName</span>, <span class='va'>reshId</span>, <span class='va'>userRole</span><span class='op'>)</span>
-
-<span class='fu'>getAllYears</span><span class='op'>(</span><span class='va'>registryName</span>, <span class='va'>reshId</span>, <span class='va'>userRole</span><span class='op'>)</span>
-
-<span class='fu'>getHospitalName</span><span class='op'>(</span><span class='va'>registryName</span>, <span class='va'>reshId</span>, <span class='va'>userRole</span><span class='op'>)</span>
-
-<span class='fu'>getDataDump</span><span class='op'>(</span><span class='va'>registryName</span>, <span class='va'>tableName</span>, <span class='va'>fromDate</span>, <span class='va'>toDate</span>, <span class='va'>...</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>mst</span><span class='op'>(</span>
+  <span class='va'>tab</span>,
+  col_names <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/colnames.html'>colnames</a></span><span class='op'>(</span><span class='va'>tab</span><span class='op'>)</span>,
+  type <span class='op'>=</span> <span class='st'>"latex"</span>,
+  cap <span class='op'>=</span> <span class='st'>""</span>,
+  label <span class='op'>=</span> <span class='st'>""</span>,
+  digs <span class='op'>=</span> <span class='fl'>0</span>,
+  align <span class='op'>=</span> <span class='cn'>NULL</span>,
+  fs <span class='op'>=</span> <span class='fl'>8</span>,
+  lsd <span class='op'>=</span> <span class='cn'>FALSE</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>registryName</th>
-      <td><p>String providing the current registryName</p></td>
+      <th>tab</th>
+      <td><p>Data frame or matrix represetnting the table</p></td>
     </tr>
     <tr>
-      <th>reshId</th>
-      <td><p>String providing organization Id</p></td>
+      <th>col_names</th>
+      <td><p>Character vector with column names. Defaults
+<code><a href='https://rdrr.io/r/base/colnames.html'>colnames(tab)</a></code></p></td>
     </tr>
     <tr>
-      <th>userRole</th>
-      <td><p>String providing user role</p></td>
+      <th>type</th>
+      <td><p>Character string defining output, either 'html' or 'latex'.
+Default is 'latex'</p></td>
     </tr>
     <tr>
-      <th>year</th>
-      <td><p>Integer four digit year to be reported from</p></td>
+      <th>cap</th>
+      <td><p>Character string with table caption. Empty string by default</p></td>
     </tr>
     <tr>
-      <th>...</th>
-      <td><p>Optional arguments to be passed to the function</p></td>
+      <th>label</th>
+      <td><p>Character string defining the label in case the table needs to
+be referenced elsewhere in the overall document. For instance, setting this
+to 'my_table' the corresponding inline rmarkdown reference to use is
+<code>\@ref(tab:my_table)</code>. Please note that for this to work for both
+LaTex and HTML the bookdown document processing functions must be used,
+<em>i.e.</em> bookdown:pdf_document2() and bookdown::html_document2(),
+respectively. Default value is <code>knitr::opts_current$get("label")</code>.</p></td>
     </tr>
     <tr>
-      <th>startDate</th>
-      <td><p>String defing start of date range as YYYY-MM-DD</p></td>
+      <th>digs</th>
+      <td><p>Numeric number of digits to use. = by default</p></td>
     </tr>
     <tr>
-      <th>endDate</th>
-      <td><p>String defing end of date range as YYYY-MM-DD</p></td>
+      <th>align</th>
+      <td><p>Character vector specifying column alignment in the LaTeX way,
+<em>e.g.</em> <code><a href='https://rdrr.io/r/base/c.html'>c("l", "c", "r")</a></code> will align the first column to the left,
+center the second and right-aling the last one. Default is NULL in which case</p></td>
     </tr>
     <tr>
-      <th>tableName</th>
-      <td><p>String providing a table name</p></td>
+      <th>fs</th>
+      <td><p>Numeric providing the font size. Only apply for LaTeX output.
+Default value is 8</p></td>
     </tr>
     <tr>
-      <th>fromDate</th>
-      <td><p>String providing start date</p></td>
-    </tr>
-    <tr>
-      <th>toDate</th>
-      <td><p>String provideing end date</p></td>
+      <th>lsd</th>
+      <td><p>Logical if table is to be scaled down. Only apply for LaTeX
+output. FALSE by default</p></td>
     </tr>
     </table>
 
+    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
+    <p>Character string containing RMarkdown table code</p>
+
+    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
+    <pre class="examples"><div class='input'><span class='fu'>mst</span><span class='op'>(</span>tab <span class='op'>=</span> <span class='va'>mtcars</span><span class='op'>[</span><span class='fl'>1</span><span class='op'>:</span><span class='fl'>10</span>, <span class='op'>]</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; \begin{table}[!h]
+#&gt; 
+#&gt; \caption{\label{tab:}}
+#&gt; \centering
+#&gt; \fontsize{8}{10}\selectfont
+#&gt; \begin{tabular}[t]{lrrrrrrrrrrr}
+#&gt; \toprule
+#&gt;   &amp; mpg &amp; cyl &amp; disp &amp; hp &amp; drat &amp; wt &amp; qsec &amp; vs &amp; am &amp; gear &amp; carb\\
+#&gt; \midrule
+#&gt; Mazda RX4 &amp; 21 &amp; 6 &amp; 160 &amp; 110 &amp; 4 &amp; 3 &amp; 16 &amp; 0 &amp; 1 &amp; 4 &amp; 4\\
+#&gt; Mazda RX4 Wag &amp; 21 &amp; 6 &amp; 160 &amp; 110 &amp; 4 &amp; 3 &amp; 17 &amp; 0 &amp; 1 &amp; 4 &amp; 4\\
+#&gt; Datsun 710 &amp; 23 &amp; 4 &amp; 108 &amp; 93 &amp; 4 &amp; 2 &amp; 19 &amp; 1 &amp; 1 &amp; 4 &amp; 1\\
+#&gt; Hornet 4 Drive &amp; 21 &amp; 6 &amp; 258 &amp; 110 &amp; 3 &amp; 3 &amp; 19 &amp; 1 &amp; 0 &amp; 3 &amp; 1\\
+#&gt; Hornet Sportabout &amp; 19 &amp; 8 &amp; 360 &amp; 175 &amp; 3 &amp; 3 &amp; 17 &amp; 0 &amp; 0 &amp; 3 &amp; 2\\
+#&gt; \addlinespace
+#&gt; Valiant &amp; 18 &amp; 6 &amp; 225 &amp; 105 &amp; 3 &amp; 3 &amp; 20 &amp; 1 &amp; 0 &amp; 3 &amp; 1\\
+#&gt; Duster 360 &amp; 14 &amp; 8 &amp; 360 &amp; 245 &amp; 3 &amp; 4 &amp; 16 &amp; 0 &amp; 0 &amp; 3 &amp; 4\\
+#&gt; Merc 240D &amp; 24 &amp; 4 &amp; 147 &amp; 62 &amp; 4 &amp; 3 &amp; 20 &amp; 1 &amp; 0 &amp; 4 &amp; 2\\
+#&gt; Merc 230 &amp; 23 &amp; 4 &amp; 141 &amp; 95 &amp; 4 &amp; 3 &amp; 23 &amp; 1 &amp; 0 &amp; 4 &amp; 2\\
+#&gt; Merc 280 &amp; 19 &amp; 6 &amp; 168 &amp; 123 &amp; 4 &amp; 3 &amp; 18 &amp; 1 &amp; 0 &amp; 4 &amp; 4\\
+#&gt; \bottomrule
+#&gt; \end{tabular}
+#&gt; \end{table}</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
