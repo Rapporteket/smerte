@@ -1,4 +1,5 @@
 ---
+geometry:
 params:
   title: 'Oversikt over PROM-skjema'
   author: 'Rapporteket'
@@ -17,19 +18,7 @@ author: '`r params$author`'
 abstract: 'Testing av et sammendrag som også inneholder "anførselstegn"'
 keywords: 'test, av, nøkkelord'
 date: '`r format(Sys.time(), "%d\\. %B, %Y")`'
-geometry:
-# header-includes:
-# - \usepackage[english, norsk]{babel}
-# - \usepackage{booktabs}
-# - \usepackage{rotating}
-# output:
-#   pdf_book:
-#   includes:
-#     in_header: preamble.tex
-#   dev: "cairo_pdf"
-#   latex_engine: xelatex
-#   keep_tex: true
-#   toc: false
+
 ---
 ```{r set options and load packages, include = FALSE}
 knitr::opts_chunk$set(echo=FALSE)

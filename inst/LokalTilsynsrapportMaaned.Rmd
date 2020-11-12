@@ -1,4 +1,5 @@
 ---
+geometry:
 params:
   title: 'Månedlig tilsynsrapport for lokalt smerteregister ved'
   author: 'Rapporteket'
@@ -14,10 +15,6 @@ params:
 title: '`r paste(params$title, params$hospitalName, "for", params$year)`'
 author: '`r params$author`'
 date: '`r format(Sys.time(), "%d\\. %B, %Y")`'
-header-includes:
-  - \usepackage[english, norsk]{babel}
-  - \usepackage{booktabs}
-  - \usepackage{rotating}
 
 ---
 ```{r set options and load packages, include = FALSE}
