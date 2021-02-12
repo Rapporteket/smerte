@@ -197,13 +197,13 @@ pr2 <- pr2[ , c(4,2,3)]
 
 #Tilsynstabell
 #Bruker pakke kableextra
-mstt(tab = pr2, colnames = c("Søvnproblemer etter innleggelse", "Antall ",
-                                    "Prosent"),
-    cap = paste0(""),
-    label = "prspm2",
-    type = params$tableFormat,
-    digs = 0,
-    align = c("l", "r", "r", "r"))
+mstt(tab = pr2,
+     colnames = c("", "Antall ", "Prosent"),
+     cap = paste0("Søvnproblemer etter innleggelse"),
+     label = "prspm2",
+     type = params$tableFormat,
+     digs = 0,
+     align = c("l", "r", "r", "r"))
 ```
 Tabell \@ref(tab:prspm2) viser oversikten over søvnproblemer etter innleggelse for de `r dim(datpr2)[1]` pasientene som besvarte spørsmålet.
 
@@ -240,13 +240,14 @@ pr4 <- pr4[ , c(4,2,3)]
 
 #Tilsynstabell
 #Bruker pakke kableextra
-mstt(tab = pr4, colnames = c("Har tidligere opplevd belastninger som har krevd behandling av psykolog/psykiater", "Antall ",
-                                    "Prosent"),
-    cap = paste0(""),
-    label = "prsmp4",
-    type = params$tableFormat,
-    digs = 0,
-    align = c("l", "r", "r", "r"))
+mstt(tab = pr4,
+     colnames = c("", "Antall ", "Prosent"),
+     cap = paste0("Har tidligere opplevd belastninger som har krevd ",
+                  "behandling av psykolog/psykiater"),
+     label = "prsmp4",
+     type = params$tableFormat,
+     digs = 0,
+     align = c("l", "r", "r", "r"))
 ```
 Tabell \@ref(tab:prsmp4) viser oversikten over hvor mange av pasientene som tidligere har opplevd belastninger som har krevd behandling av psykolog/psykiater eller liknende for de `r dim(datpr4)[1]` pasientene som besvarte spørsmålet.
 
@@ -259,26 +260,28 @@ datpr5 <- dat[!is.na(dat$PRSpm5), ]
 #Bruker her pakkene dplyr og magrittr
 pr5 <- datpr5 %>% count(PRSpm5) %>% mutate(prosent = round(100*(n/sum(n))))
 #Gi navn i stedet for tall til alternativene for tilsyn/ikke tilsyn
-pr5 = pr5 %>% mutate(forferd = case_when(PRSpm5 == 0 ~ "Aldri",
-                                                              PRSpm5 == 1 ~ "Nesten aldri",
-                                                              PRSpm5 == 2 ~ "Sjelden",
-                                                              PRSpm5 == 3 ~ "Av og til",
-                                                              PRSpm5 == 4 ~ "Ofte",
-                                                              PRSpm5 == 5 ~ "Nesten alltid", 
-                                                              PRSpm5 == 6 ~ "Alltid",
-                                                              PRSpm5 == 9 ~ "Vet ikke"))
+pr5 = pr5 %>%
+  mutate(forferd = case_when(PRSpm5 == 0 ~ "Aldri",
+                             PRSpm5 == 1 ~ "Nesten aldri",
+                             PRSpm5 == 2 ~ "Sjelden",
+                             PRSpm5 == 3 ~ "Av og til",
+                             PRSpm5 == 4 ~ "Ofte",
+                             PRSpm5 == 5 ~ "Nesten alltid", 
+                             PRSpm5 == 6 ~ "Alltid",
+                             PRSpm5 == 9 ~ "Vet ikke"))
 #Endrer rekkefølge og tar i tilleg ved NA-raden (siste)
 pr5 <- pr5[ , c(4,2,3)]
 
 #Tilsynstabell
 #Bruker pakke kableextra
-mstt(tab = pr5, colnames = c("Svar på spørsmålet: ... er det forferdelig, og jeg føler at det aldri kommer til å bli bedre", "Antall ",
-                                    "Prosent"),
-    cap = paste0(""),
-    label = "prspm5",
-    type = params$tableFormat,
-    digs = 0,
-    align = c("l", "r", "r", "r"))
+mstt(tab = pr5,
+     colnames = c("", "Antall ", "Prosent"),
+     cap = paste0("Svar på spørsmålet: ... er det forferdelig, og jeg føler ",
+                  "at det aldri kommer til å bli bedre"),
+     label = "prspm5",
+     type = params$tableFormat,
+     digs = 0,
+     align = c("l", "r", "r", "r"))
 ```
 Tabell \@ref(tab:prspm5) viser oversikten over hvor ofte pasientene føler '... det er forferdelig, og jeg at det aldri kommer til å bli bedre'. `r dim(datpr5)[1]` pasienter besvarte spørsmålet.
 
@@ -289,28 +292,30 @@ Tabell \@ref(tab:prspm5) viser oversikten over hvor ofte pasientene føler '... 
 ispr6 <- sum(!is.na(dat$PRSpm6))
 datpr6 <- dat[!is.na(dat$PRSpm6), ]
 #Bruker her pakkene dplyr og magrittr
-pr6 <- datpr6 %>% count(PRSpm6) %>% mutate(prosent = round(100*(n/sum(n))))
+pr6 <- datpr6 %>%
+  count(PRSpm6) %>% mutate(prosent = round(100 * (n / sum(n))))
 #Gi navn i stedet for tall til alternativene for tilsyn/ikke tilsyn
-pr6 = pr6 %>% mutate(holdut = case_when(PRSpm6 == 0 ~ "Aldri",
-                                                              PRSpm6 == 1 ~ "Nesten aldri",
-                                                              PRSpm6 == 2 ~ "Sjelden",
-                                                              PRSpm6 == 3 ~ "Av og til",
-                                                              PRSpm6 == 4 ~ "Ofte",
-                                                              PRSpm6 == 5 ~ "Nesten alltid",
-                                                              PRSpm6 == 6 ~ "Alltid",
-                                                              PRSpm6 == 9 ~ "Vet ikke"))
+pr6 = pr6 %>%
+  mutate(holdut = case_when(PRSpm6 == 0 ~ "Aldri",
+                            PRSpm6 == 1 ~ "Nesten aldri",
+                            PRSpm6 == 2 ~ "Sjelden",
+                            PRSpm6 == 3 ~ "Av og til",
+                            PRSpm6 == 4 ~ "Ofte",
+                            PRSpm6 == 5 ~ "Nesten alltid",
+                            PRSpm6 == 6 ~ "Alltid",
+                            PRSpm6 == 9 ~ "Vet ikke"))
 #Endrer rekkefølge og tar i tilleg ved NA-raden (siste)
 pr6 <- pr6[ , c(4,2,3)]
 
 #Tilsynstabell
 #Bruker pakke kableextra
-mstt(tab = pr6, colnames = c("Svar på spørsmålet: ... føles det som om jeg ikke holder ut", "Antall ",
-                                    "Prosent"),
-    cap = paste0(""),
-    label = "prspm6",
-    type = params$tableFormat,
-    digs = 0,
-    align = c("l", "r", "r", "r"))
+mstt(tab = pr6, colnames = c("", "Antall ", "Prosent"),
+     cap = paste0("Svar på spørsmålet: ... føles det som om jeg ikke holder ",
+                  "ut"),
+     label = "prspm6",
+     type = params$tableFormat,
+     digs = 0,
+     align = c("l", "r", "r", "r"))
 ```
 Tabell \@ref(tab:prspm6) viser oversikten over hvor ofte pasientene føler '... det er som om jeg ikke holder ut'. `r dim(datpr6)[1]` pasienter besvarte spørsmålet.
 
@@ -339,25 +344,25 @@ datH <- dat[!is.na(dat$PasDelUtf), ]
 #Bruker her pakkene dplyr og magrittr
 hads <- datH %>% count(GrManglUtfylHADS) %>% mutate(prosent = round(100*(n/sum(n))))
 #Gi navn i stedet for tall til alternativene for tilsyn/ikke tilsyn
-hads = hads %>% mutate(grunnHADS = case_when(GrManglUtfylHADS == 1 ~ "Tidsmangel behandler",
-                                                              GrManglUtfylHADS == 2 ~ "Tidlig utskrivning",
-                                                              GrManglUtfylHADS == 3 ~ "Kritisk syk/død",
-                                                              GrManglUtfylHADS == 4 ~ "Pasient klarer ikke",
-                                                              GrManglUtfylHADS == 5 ~ "Manglende samtykke",
-                                                              GrManglUtfylHADS == 7 ~ "Ikke besvart ePPROMS",
-                                                              GrManglUtfylHADS == 9 ~ "Annet"))
+hads = hads %>%
+  mutate(grunnHADS = case_when(GrManglUtfylHADS == 1 ~ "Tidsmangel behandler",
+                               GrManglUtfylHADS == 2 ~ "Tidlig utskrivning",
+                               GrManglUtfylHADS == 3 ~ "Kritisk syk/død",
+                               GrManglUtfylHADS == 4 ~ "Pasient klarer ikke",
+                               GrManglUtfylHADS == 5 ~ "Manglende samtykke",
+                               GrManglUtfylHADS == 7 ~ "Ikke besvart ePPROMS",
+                               GrManglUtfylHADS == 9 ~ "Annet"))
 #Endrer rekkefølge og tar i tilleg ved NA-raden (siste)
 hads <- hads[1:(dim(hads)[1]-1), c(4,2,3)]
 
 #Tilsynstabell
 #Bruker pakke kableextra
-mstt(tab = hads, colnames = c("Grunn manglende utfylling HADS", "Antall ",
-                                    "Prosent"),
-    cap = paste0(""),
-    label = "hadsspm",
-    type = params$tableFormat,
-    digs = 0,
-    align = c("l", "r", "r", "r"))
+mstt(tab = hads, colnames = c("", "Antall ", "Prosent"),
+     cap = paste0("Grunn manglende utfylling HADS"),
+     label = "hadsspm",
+     type = params$tableFormat,
+     digs = 0,
+     align = c("l", "r", "r", "r"))
 ```
 I den valgte tidsperioden fikk tilsammen `r antUtsendt` pasienter av totalt `r dim(dat)[1]` tilsendt ePROM-skjema for HADS. Av de som fikk tilsendt skjema var det `r antsvar` pasienter som sendte inn en besvarelse. Dette gir en svarandel på `r round(andsvar, digits = 2)`. Tabell \@ref(tab:hadsspm) gir en oversikt over registrerte årsaker til manglende besvarelse for de `r antiksvar` som ikke har svart.
 
@@ -418,26 +423,26 @@ datE <- dat[!is.na(dat$PasdelUtfylEval), ]
 #Bruker her pakkene dplyr og magrittr
 evalu <- datE %>% count(AarsakmanglUfylEval) %>% mutate(prosent = round(100*(n/sum(n))))
 #Gi navn i stedet for tall til alternativene for tilsyn/ikke tilsyn
-evalu = evalu %>% mutate(grunnEval = case_when(AarsakmanglUfylEval == 1 ~ "Tidsmangel behandler",
-                                                              AarsakmanglUfylEval == 2 ~ "Tidlig utskrivning",
-                                                              AarsakmanglUfylEval == 3 ~ "Kritisk syk/død",
-                                                              AarsakmanglUfylEval == 4 ~ "Pasient klarer ikke",
-                                                              AarsakmanglUfylEval == 5 ~ "Manglende samtykke",
-                                                              AarsakmanglUfylEval == 6 ~ "Ikke tilstrekkelig antall tilsyn",
-                                                              AarsakmanglUfylEval == 7 ~ "Ikke besvart ePPROMS",
-                                                              AarsakmanglUfylEval == 9 ~ "Annet"))
+evalu = evalu %>%
+  mutate(grunnEval = case_when(AarsakmanglUfylEval == 1 ~ "Tidsmangel behandler",
+                               AarsakmanglUfylEval == 2 ~ "Tidlig utskrivning",
+                               AarsakmanglUfylEval == 3 ~ "Kritisk syk/død",
+                               AarsakmanglUfylEval == 4 ~ "Pasient klarer ikke",
+                               AarsakmanglUfylEval == 5 ~ "Manglende samtykke",
+                               AarsakmanglUfylEval == 6 ~ "Ikke tilstrekkelig antall tilsyn",
+                               AarsakmanglUfylEval == 7 ~ "Ikke besvart ePPROMS",
+                               AarsakmanglUfylEval == 9 ~ "Annet"))
 #Endrer rekkefølge og tar i tilleg ved NA-raden (siste)
 evalu <- evalu[1:(dim(evalu)[1]-1), c(4,2,3)]
 
 #Tilsynstabell
 #Bruker pakke kableextra
-mstt(tab = evalu, colnames = c("Grunn manglende utfylling Eval", "Antall ",
-                                    "Prosent"),
-    cap = paste0(""),
-    label = "evalspmtab",
-    type = params$tableFormat,
-    digs = 0,
-    align = c("l", "r", "r", "r"))
+mstt(tab = evalu, colnames = c("", "Antall ", "Prosent"),
+     cap = paste0("Grunn manglende utfylling Eval"),
+     label = "evalspmtab",
+     type = params$tableFormat,
+     digs = 0,
+     align = c("l", "r", "r", "r"))
 
 #Huskersmerteteam
 husk <- sum(datE$HuskerSmerteteam == 1, na.rm = TRUE)
@@ -454,26 +459,27 @@ På spørsmålet 'Husker du at du nylig har vært i kontakt med og fått behandl
 #Evalspm1
 eval1 <- datE %>% count(EvalSpm1) %>% mutate(prosent = round(100*(n/sum(n))))
 #Gi navn i stedet for tall til alternativene for tilsyn/ikke tilsyn
-eval1 = eval1 %>% mutate(spm1 = case_when(EvalSpm1 == 1 ~ "Mye bedre",
-                                                              EvalSpm1 == 2 ~ "Bedre",
-                                                              EvalSpm1 == 3 ~ "Litt bedre",
-                                                              EvalSpm1 == 4 ~ "Uendret",
-                                                              EvalSpm1 == 5 ~ "Litt verre",
-                                                              EvalSpm1 == 6 ~ "Verre",
-                                                              EvalSpm1 == 7 ~ "Mye verre",
-                                                              EvalSpm1 == 9 ~ "Vet ikke"))
+eval1 = eval1 %>%
+  mutate(spm1 = case_when(EvalSpm1 == 1 ~ "Mye bedre",
+                          EvalSpm1 == 2 ~ "Bedre",
+                          EvalSpm1 == 3 ~ "Litt bedre",
+                          EvalSpm1 == 4 ~ "Uendret",
+                          EvalSpm1 == 5 ~ "Litt verre",
+                          EvalSpm1 == 6 ~ "Verre",
+                          EvalSpm1 == 7 ~ "Mye verre",
+                          EvalSpm1 == 9 ~ "Vet ikke"))
 #Endrer rekkefølge og tar i tilleg ved NA-raden (siste)
 eval1 <- eval1[1:(dim(eval1)[1]-1), c(4,2,3)]
 
 #Tilsynstabell
 #Bruker pakke kableextra
-mstt(tab = eval1, colnames = c("Siden oppstart av behandling fra Smerteteamet, er min smertetilstand blitt", "Antall ",
-                                    "Prosent"),
-    cap = paste0(""),
-    label = "evalspm1",
-    type = params$tableFormat,
-    digs = 0,
-    align = c("l", "r", "r", "r"))
+mstt(tab = eval1, colnames = c("", "Antall ", "Prosent"),
+     cap = paste0("Siden oppstart av behandling fra Smerteteamet, er min ",
+                  "smertetilstand blitt"),
+     label = "evalspm1",
+     type = params$tableFormat,
+     digs = 0,
+     align = c("l", "r", "r", "r"))
 
 
 ```
@@ -484,26 +490,28 @@ Tabell \@ref(tab:evalspm1) viser oversikten over det første spørsmålet i Eval
 #Evalspm2
 eval2 <- datE %>% count(EvalSpm2) %>% mutate(prosent = round(100*(n/sum(n))))
 #Gi navn i stedet for tall til alternativene for tilsyn/ikke tilsyn
-eval2 = eval2 %>% mutate(spm2 = case_when(EvalSpm2 == 1 ~ "Mye bedre",
-                                                              EvalSpm2 == 2 ~ "Bedre",
-                                                              EvalSpm2 == 3 ~ "Litt bedre",
-                                                              EvalSpm2 == 4 ~ "Uendret",
-                                                              EvalSpm2 == 5 ~ "Litt verre",
-                                                              EvalSpm2 == 6 ~ "Verre",
-                                                              EvalSpm2 == 7 ~ "Mye verre",
-                                                              EvalSpm2 == 9 ~ "Vet ikke"))
+eval2 = eval2 %>%
+  mutate(spm2 = case_when(EvalSpm2 == 1 ~ "Mye bedre",
+                          EvalSpm2 == 2 ~ "Bedre",
+                          EvalSpm2 == 3 ~ "Litt bedre",
+                          EvalSpm2 == 4 ~ "Uendret",
+                          EvalSpm2 == 5 ~ "Litt verre",
+                          EvalSpm2 == 6 ~ "Verre",
+                          EvalSpm2 == 7 ~ "Mye verre",
+                          EvalSpm2 == 9 ~ "Vet ikke"))
 #Endrer rekkefølge og tar i tilleg ved NA-raden (siste)
 eval2 <- eval2[1:(dim(eval2)[1]-1), c(4,2,3)]
 
 #Tilsynstabell
 #Bruker pakke kableextra
-mstt(tab = eval2, colnames = c("Siden oppstart av behandling fra Smerteteamet, er min generelle tilstand blitt", "Antall ",
-                                    "Prosent"),
-    cap = paste0(""),
-    label = "evalspm2",
-    type = params$tableFormat,
-    digs = 0,
-    align = c("l", "r", "r", "r"))
+mstt(tab = eval2,
+     colnames = c("", "Antall ", "Prosent"),
+     cap = paste0("Siden oppstart av behandling fra Smerteteamet, er min ",
+                  "generelle tilstand blitt"),
+     label = "evalspm2",
+     type = params$tableFormat,
+     digs = 0,
+     align = c("l", "r", "r", "r"))
 ```
 Tabell \@ref(tab:evalspm2) viser oversikten over det andre spørsmålet i Eval: 'Siden oppstart av behandling fra Smerteteamet, er min generelle tilstand blitt ...'.
 
@@ -512,24 +520,25 @@ Tabell \@ref(tab:evalspm2) viser oversikten over det andre spørsmålet i Eval: 
 #Evalspm3
 eval3 <- datE %>% count(EvalSpm3) %>% mutate(prosent = round(100*(n/sum(n))))
 #Gi navn i stedet for tall til alternativene for tilsyn/ikke tilsyn
-eval3 = eval3 %>% mutate(spm3 = case_when(EvalSpm3 == 1 ~ "Ikke i det hele tatt",
-                                                              EvalSpm3 == 2 ~ "I liten grad",
-                                                              EvalSpm3 == 3 ~ "I noen grad",
-                                                              EvalSpm3 == 4 ~ "I stor grad",
-                                                              EvalSpm3 == 5 ~ "I svært stor grad",
-                                                              EvalSpm3 == 9 ~ "Vet ikke"))
+eval3 = eval3 %>%
+  mutate(spm3 = case_when(EvalSpm3 == 1 ~ "Ikke i det hele tatt",
+                          EvalSpm3 == 2 ~ "I liten grad",
+                          EvalSpm3 == 3 ~ "I noen grad",
+                          EvalSpm3 == 4 ~ "I stor grad",
+                          EvalSpm3 == 5 ~ "I svært stor grad",
+                          EvalSpm3 == 9 ~ "Vet ikke"))
 #Endrer rekkefølge og tar i tilleg ved NA-raden (siste)
 eval3 <- eval3[1:(dim(eval3)[1]-1), c(4,2,3)]
 
 #Tilsynstabell
 #Bruker pakke kableextra
-mstt(tab = eval3, colnames = c("Hvor fornøyd er du med ivaretakelsen fra Smerteteamet", "Antall ",
-                                    "Prosent"),
-    cap = paste0(""),
-    label = "evalspm3",
-    type = params$tableFormat,
-    digs = 0,
-    align = c("l", "r", "r", "r"))
+mstt(tab = eval3,
+     colnames = c("", "Antall ", "Prosent"),
+     cap = paste0("Hvor fornøyd er du med ivaretakelsen fra Smerteteamet?"),
+     label = "evalspm3",
+     type = params$tableFormat,
+     digs = 0,
+     align = c("l", "r", "r", "r"))
 ```
 Tabell \@ref(tab:evalspm3) viser oversikten over det tredje spørsmålet i Eval: 'Hvor fornøyd er du med ivaretakelsen fra Smerteteamet?'.
 
@@ -538,24 +547,25 @@ Tabell \@ref(tab:evalspm3) viser oversikten over det tredje spørsmålet i Eval:
 #Evalspm4
 eval4 <- datE %>% count(EvalSpm4) %>% mutate(prosent = round(100*(n/sum(n))))
 #Gi navn i stedet for tall til alternativene for tilsyn/ikke tilsyn
-eval4 = eval4 %>% mutate(spm4 = case_when(EvalSpm4 == 1 ~ "Ikke i det hele tatt",
-                                                              EvalSpm4 == 2 ~ "I liten grad",
-                                                              EvalSpm4 == 3 ~ "I noen grad",
-                                                              EvalSpm4 == 4 ~ "I stor grad",
-                                                              EvalSpm4 == 5 ~ "I svært stor grad",
-                                                              EvalSpm4 == 9 ~ "Vet ikke"))
+eval4 = eval4 %>%
+  mutate(spm4 = case_when(EvalSpm4 == 1 ~ "Ikke i det hele tatt",
+                          EvalSpm4 == 2 ~ "I liten grad",
+                          EvalSpm4 == 3 ~ "I noen grad",
+                          EvalSpm4 == 4 ~ "I stor grad",
+                          EvalSpm4 == 5 ~ "I svært stor grad",
+                          EvalSpm4 == 9 ~ "Vet ikke"))
 #Endrer rekkefølge og tar i tilleg ved NA-raden (siste)
 eval4 <- eval4[1:(dim(eval4)[1]-1), c(4,2,3)]
 
 #Tilsynstabell
 #Bruker pakke kableextra
-mstt(tab = eval4, colnames = c("Snakket behandlerne i smerteteamet til deg slik at du forsto dem", "Antall ",
-                                    "Prosent"),
-    cap = paste0(""),
-    label = "evalspm4",
-    type = params$tableFormat,
-    digs = 0,
-    align = c("l", "r", "r", "r"))
+mstt(tab = eval4,
+     colnames = c("", "Antall ", "Prosent"),
+     cap = paste0("Snakket behandlerne i smerteteamet til deg slik at du forsto dem?"),
+     label = "evalspm4",
+     type = params$tableFormat,
+     digs = 0,
+     align = c("l", "r", "r", "r"))
 ```
 Tabell \@ref(tab:evalspm4) viser oversikten over det fjerde spørsmålet i Eval: 'Snakket behandlerne i smerteteamet til deg slik at du forsto dem?'.
 
@@ -564,24 +574,25 @@ Tabell \@ref(tab:evalspm4) viser oversikten over det fjerde spørsmålet i Eval:
 #Evalspm5
 eval5 <- datE %>% count(EvalSpm5) %>% mutate(prosent = round(100*(n/sum(n))))
 #Gi navn i stedet for tall til alternativene for tilsyn/ikke tilsyn
-eval5 = eval5 %>% mutate(spm5 = case_when(EvalSpm5 == 1 ~ "Ikke i det hele tatt",
-                                                              EvalSpm5 == 2 ~ "I liten grad",
-                                                              EvalSpm5 == 3 ~ "I noen grad",
-                                                              EvalSpm5 == 4 ~ "I stor grad",
-                                                              EvalSpm5 == 5 ~ "I svært stor grad",
-                                                              EvalSpm5 == 9 ~ "Vet ikke"))
+eval5 <- eval5 %>%
+  mutate(spm5 = case_when(EvalSpm5 == 1 ~ "Ikke i det hele tatt",
+                          EvalSpm5 == 2 ~ "I liten grad",
+                          EvalSpm5 == 3 ~ "I noen grad",
+                          EvalSpm5 == 4 ~ "I stor grad",
+                          EvalSpm5 == 5 ~ "I svært stor grad",
+                          EvalSpm5 == 9 ~ "Vet ikke"))
 #Endrer rekkefølge og tar i tilleg ved NA-raden (siste)
 eval5 <- eval5[1:(dim(eval5)[1]-1), c(4,2,3)]
 
 #Tilsynstabell
 #Bruker pakke kableextra
-mstt(tab = eval5, colnames = c("Har du tillit til smerteteamets faglige dyktighet", "Antall ",
-                                    "Prosent"),
-    cap = paste0(""),
-    label = "evalspm5",
-    type = params$tableFormat,
-    digs = 0,
-    align = c("l", "r", "r", "r"))
+mstt(tab = eval5,
+     colnames = c("", "Antall ", "Prosent"),
+     cap = paste0("Har du tillit til smerteteamets faglige dyktighet?"),
+     label = "evalspm5",
+     type = params$tableFormat,
+     digs = 0,
+     align = c("l", "r", "r", "r"))
 ```
 Tabell \@ref(tab:evalspm5) viser oversikten over det femte spørsmålet i Eval: 'Har du tillit til smerteteamets faglige dyktighet?'.
 
@@ -590,24 +601,26 @@ Tabell \@ref(tab:evalspm5) viser oversikten over det femte spørsmålet i Eval: 
 #Evalspm6
 eval6 <- datE %>% count(EvalSpm6) %>% mutate(prosent = round(100*(n/sum(n))))
 #Gi navn i stedet for tall til alternativene for tilsyn/ikke tilsyn
-eval6 = eval6 %>% mutate(spm6 = case_when(EvalSpm6 == 1 ~ "Ikke i det hele tatt",
-                                                              EvalSpm6 == 2 ~ "I liten grad",
-                                                              EvalSpm6 == 3 ~ "I noen grad",
-                                                              EvalSpm6 == 4 ~ "I stor grad",
-                                                              EvalSpm6 == 5 ~ "I svært stor grad",
-                                                              EvalSpm6 == 9 ~ "Vet ikke"))
+eval6 = eval6 %>%
+  mutate(spm6 = case_when(EvalSpm6 == 1 ~ "Ikke i det hele tatt",
+                          EvalSpm6 == 2 ~ "I liten grad",
+                          EvalSpm6 == 3 ~ "I noen grad",
+                          EvalSpm6 == 4 ~ "I stor grad",
+                          EvalSpm6 == 5 ~ "I svært stor grad",
+                          EvalSpm6 == 9 ~ "Vet ikke"))
 #Endrer rekkefølge og tar i tilleg ved NA-raden (siste)
 eval6 <- eval6[1:(dim(eval6)[1]-1), c(4,2,3)]
 
 #Tilsynstabell
 #Bruker pakke kableextra
-mstt(tab = eval6, colnames = c("Fikk du tilstrekkelig informasjon og forklaring om din smertetilstand", "Antall ",
-                                    "Prosent"),
-    cap = paste0(""),
-    label = "evalspm6",
-    type = params$tableFormat,
-    digs = 0,
-    align = c("l", "r", "r", "r"))
+mstt(tab = eval6,
+     colnames = c("", "Antall ", "Prosent"),
+     cap = paste0("Fikk du tilstrekkelig informasjon og forklaring om din ",
+                  "smertetilstand?"),
+     label = "evalspm6",
+     type = params$tableFormat,
+     digs = 0,
+     align = c("l", "r", "r", "r"))
 ```
 Tabell \@ref(tab:evalspm6) viser oversikten over det sjette spørsmålet i Eval: 'Fikk du tilstrekkelig informasjon og forklaring om din smertetilstand?'.
 
@@ -616,24 +629,26 @@ Tabell \@ref(tab:evalspm6) viser oversikten over det sjette spørsmålet i Eval:
 #Evalspm7
 eval7 <- datE %>% count(EvalSpm7) %>% mutate(prosent = round(100*(n/sum(n))))
 #Gi navn i stedet for tall til alternativene for tilsyn/ikke tilsyn
-eval7 = eval7 %>% mutate(spm7 = case_when(EvalSpm7 == 1 ~ "Ikke i det hele tatt",
-                                                              EvalSpm7 == 2 ~ "I liten grad",
-                                                              EvalSpm7 == 3 ~ "I noen grad",
-                                                              EvalSpm7 == 4 ~ "I stor grad",
-                                                              EvalSpm7 == 5 ~ "I svært stor grad",
-                                                              EvalSpm7 == 9 ~ "Vet ikke"))
+eval7 = eval7 %>%
+  mutate(spm7 = case_when(EvalSpm7 == 1 ~ "Ikke i det hele tatt",
+                          EvalSpm7 == 2 ~ "I liten grad",
+                          EvalSpm7 == 3 ~ "I noen grad",
+                          EvalSpm7 == 4 ~ "I stor grad",
+                          EvalSpm7 == 5 ~ "I svært stor grad",
+                          EvalSpm7 == 9 ~ "Vet ikke"))
 #Endrer rekkefølge og tar i tilleg ved NA-raden (siste)
 eval7 <- eval7[1:(dim(eval7)[1]-1), c(4,2,3)]
 
 #Tilsynstabell
 #Bruker pakke kableextra
-mstt(tab = eval7, colnames = c("Opplevde du at smertebehandlingen var tilpasset din situasjon", "Antall ",
-                                    "Prosent"),
-    cap = paste0(""),
-    label = "evalspm7",
-    type = params$tableFormat,
-    digs = 0,
-    align = c("l", "r", "r", "r"))
+mstt(tab = eval7,
+     colnames = c("", "Antall ", "Prosent"),
+     cap = paste0("Opplevde du at smertebehandlingen var tilpasset din ",
+                  "situasjon?"),
+     label = "evalspm7",
+     type = params$tableFormat,
+     digs = 0,
+     align = c("l", "r", "r", "r"))
 ```
 Tabell \@ref(tab:evalspm7) viser oversikten over det syvende spørsmålet i Eval: 'Opplevde du at smertebehandlingen var tilpasset din situasjon?'.
 
@@ -642,24 +657,26 @@ Tabell \@ref(tab:evalspm7) viser oversikten over det syvende spørsmålet i Eval
 #Evalspm8
 eval8 <- datE %>% count(EvalSpm8) %>% mutate(prosent = round(100*(n/sum(n))))
 #Gi navn i stedet for tall til alternativene for tilsyn/ikke tilsyn
-eval8 = eval8 %>% mutate(spm8 = case_when(EvalSpm8 == 1 ~ "Ikke i det hele tatt",
-                                                              EvalSpm8 == 2 ~ "I liten grad",
-                                                              EvalSpm8 == 3 ~ "I noen grad",
-                                                              EvalSpm8 == 4 ~ "I stor grad",
-                                                              EvalSpm8 == 5 ~ "I svært stor grad",
-                                                              EvalSpm8 == 9 ~ "Vet ikke"))
+eval8 = eval8 %>%
+  mutate(spm8 = case_when(EvalSpm8 == 1 ~ "Ikke i det hele tatt",
+                          EvalSpm8 == 2 ~ "I liten grad",
+                          EvalSpm8 == 3 ~ "I noen grad",
+                          EvalSpm8 == 4 ~ "I stor grad",
+                          EvalSpm8 == 5 ~ "I svært stor grad",
+                          EvalSpm8 == 9 ~ "Vet ikke"))
 #Endrer rekkefølge og tar i tilleg ved NA-raden (siste)
 eval8 <- eval8[1:(dim(eval8)[1]-1), c(4,2,3)]
 
 #Tilsynstabell
 #Bruker pakke kableextra
-mstt(tab = eval8, colnames = c("Var du involvert i avgjørelser som angikk din smertebehandling", "Antall ",
-                                    "Prosent"),
-    cap = paste0(""),
-    label = "evalspm8",
-    type = params$tableFormat,
-    digs = 0,
-    align = c("l", "r", "r", "r"))
+mstt(tab = eval8,
+     colnames = c("", "Antall ", "Prosent"),
+     cap = paste0("Var du involvert i avgjørelser som angikk din ",
+                  "smertebehandling?"),
+     label = "evalspm8",
+     type = params$tableFormat,
+     digs = 0,
+     align = c("l", "r", "r", "r"))
 ```
 Tabell \@ref(tab:evalspm8) viser oversikten over det åttende spørsmålet i Eval: 'Var du involvert i avgjørelser som angikk din smertebehandling?'.
 
@@ -668,24 +685,25 @@ Tabell \@ref(tab:evalspm8) viser oversikten over det åttende spørsmålet i Eva
 #Evalspm9
 eval9 <- datE %>% count(EvalSpm9) %>% mutate(prosent = round(100*(n/sum(n))))
 #Gi navn i stedet for tall til alternativene for tilsyn/ikke tilsyn
-eval9 = eval9 %>% mutate(spm9 = case_when(EvalSpm9 == 1 ~ "Ikke i det hele tatt",
-                                                              EvalSpm9 == 2 ~ "I liten grad",
-                                                              EvalSpm9 == 3 ~ "I noen grad",
-                                                              EvalSpm9 == 4 ~ "I stor grad",
-                                                              EvalSpm9 == 5 ~ "I svært stor grad",
-                                                              EvalSpm9 == 9 ~ "Vet ikke"))
+eval9 = eval9 %>%
+  mutate(spm9 = case_when(EvalSpm9 == 1 ~ "Ikke i det hele tatt",
+                          EvalSpm9 == 2 ~ "I liten grad",
+                          EvalSpm9 == 3 ~ "I noen grad",
+                          EvalSpm9 == 4 ~ "I stor grad",
+                          EvalSpm9 == 5 ~ "I svært stor grad",
+                          EvalSpm9 == 9 ~ "Vet ikke"))
 #Endrer rekkefølge og tar i tilleg ved NA-raden (siste)
 eval9 <- eval9[1:(dim(eval9)[1]-1), c(4,2,3)]
 
 #Tilsynstabell
 #Bruker pakke kableextra
-mstt(tab = eval9, colnames = c("Opplevde du at smerteteamets arbeid var godt organisert", "Antall ",
-                                    "Prosent"),
-    cap = paste0(""),
-    label = "evalspm9",
-    type = params$tableFormat,
-    digs = 0,
-    align = c("l", "r", "r", "r"))
+mstt(tab = eval9,
+     colnames = c("", "Antall ", "Prosent"),
+     cap = paste0("Opplevde du at smerteteamets arbeid var godt organisert?"),
+     label = "evalspm9",
+     type = params$tableFormat,
+     digs = 0,
+     align = c("l", "r", "r", "r"))
 
 messagee9 <- paste0("For det niende spørsmålet i Eval: 'Opplevde du at smerteteamets arbeid var godt organisert?' finner vi svarene i tabellen under.")
 ```
@@ -696,24 +714,26 @@ Tabell \@ref(tab:evalspm9) viser oversikten over det niende spørsmålet i Eval:
 #Evalspm10
 eval10 <- datE %>% count(EvalSpm10) %>% mutate(prosent = round(100*(n/sum(n))))
 #Gi navn i stedet for tall til alternativene for tilsyn/ikke tilsyn
-eval10 = eval10 %>% mutate(spm10 = case_when(EvalSpm10 == 1 ~ "Ikke i det hele tatt",
-                                                              EvalSpm10 == 2 ~ "I liten grad",
-                                                              EvalSpm10 == 3 ~ "I noen grad",
-                                                              EvalSpm10 == 4 ~ "I stor grad",
-                                                              EvalSpm10 == 5 ~ "I svært stor grad",
-                                                              EvalSpm10 == 9 ~ "Vet ikke"))
+eval10 = eval10 %>%
+  mutate(spm10 = case_when(EvalSpm10 == 1 ~ "Ikke i det hele tatt",
+                           EvalSpm10 == 2 ~ "I liten grad",
+                           EvalSpm10 == 3 ~ "I noen grad",
+                           EvalSpm10 == 4 ~ "I stor grad",
+                           EvalSpm10 == 5 ~ "I svært stor grad",
+                           EvalSpm10 == 9 ~ "Vet ikke"))
 #Endrer rekkefølge og tar i tilleg ved NA-raden (siste)
 eval10 <- eval10[1:(dim(eval10)[1]-1), c(4,2,3)]
 
 #Tilsynstabell
 #Bruker pakke kableextra
-mstt(tab = eval10, colnames = c("Var hjelpen og behandlingen du fikk av smerteteamet, alt i alt, tilfredsstillende", "Antall ",
-                                    "Prosent"),
-    cap = paste0(""),
-    label = "evalspm10",
-    type = params$tableFormat,
-    digs = 0,
-    align = c("l", "r", "r", "r"))
+mstt(tab = eval10,
+     colnames = c("", "Antall ", "Prosent"),
+     cap = paste0("Var hjelpen og behandlingen du fikk av smerteteamet, alt i ",
+                  "alt, tilfredsstillende?"),
+     label = "evalspm10",
+     type = params$tableFormat,
+     digs = 0,
+     align = c("l", "r", "r", "r"))
 ```
 Tabell \@ref(tab:evalspm10) viser oversikten over det tiende spørsmålet i Eval: 'Var hjelpen og behandlingen du fikk av smerteteamet, alt i alt, tilfredsstillende?'.
 
@@ -722,24 +742,26 @@ Tabell \@ref(tab:evalspm10) viser oversikten over det tiende spørsmålet i Eval
 #Evalspm11
 eval11 <- datE %>% count(EvalSpm11) %>% mutate(prosent = round(100*(n/sum(n))))
 #Gi navn i stedet for tall til alternativene for tilsyn/ikke tilsyn
-eval11 = eval11 %>% mutate(spm11 = case_when(EvalSpm11 == 1 ~ "Ikke i det hele tatt",
-                                                              EvalSpm11 == 2 ~ "I liten grad",
-                                                              EvalSpm11 == 3 ~ "I noen grad",
-                                                              EvalSpm11 == 4 ~ "I stor grad",
-                                                              EvalSpm11 == 5 ~ "I svært stor grad",
-                                                              EvalSpm11 == 9 ~ "Vet ikke"))
+eval11 = eval11 %>%
+  mutate(spm11 = case_when(EvalSpm11 == 1 ~ "Ikke i det hele tatt",
+                           EvalSpm11 == 2 ~ "I liten grad",
+                           EvalSpm11 == 3 ~ "I noen grad",
+                           EvalSpm11 == 4 ~ "I stor grad",
+                           EvalSpm11 == 5 ~ "I svært stor grad",
+                           EvalSpm11 == 9 ~ "Vet ikke"))
 #Endrer rekkefølge og tar i tilleg ved NA-raden (siste)
 eval11 <- eval11[1:(dim(eval11)[1]-1), c(4,2,3)]
 
 #Tilsynstabell
 #Bruker pakke kableextra
-mstt(tab = eval11, colnames = c("Mener du at du på noen måte ble feilbehandlet av smerteteamet?", "Antall ",
-                                    "Prosent"),
-    cap = paste0(""),
-    label = "evalspm11",
-    type = params$tableFormat,
-    digs = 0,
-    align = c("l", "r", "r", "r"))
+mstt(tab = eval11,
+     colnames = c("", "Antall ", "Prosent"),
+     cap = paste0("Mener du at du på noen måte ble feilbehandlet av ",
+                  "smerteteamet?"),
+     label = "evalspm11",
+     type = params$tableFormat,
+     digs = 0,
+     align = c("l", "r", "r", "r"))
 ```
 Tabell \@ref(tab:evalspm11) viser oversikten over det ellevte spørsmålet i Eval: 'Mener du at du på noen måte ble feilbehandlet av smerteteamet (etter det du selv kan bedømme)?'.
 
@@ -750,7 +772,8 @@ Tabell \@ref(tab:evalspm11) viser oversikten over det ellevte spørsmålet i Eva
 ```{r opi, warning = FALSE, message=FALSE, results='asis', eval=dataPresent}
 
 #Antall som har fått tilsendt skjema
-antUtsendt <- sum(dat$PasdelUtfylOpioid == 1, na.rm = TRUE) + sum(dat$PasdelUtfylOpioid == 0, na.rm = TRUE)
+antUtsendt <- sum(dat$PasdelUtfylOpioid == 1, na.rm = TRUE) +
+  sum(dat$PasdelUtfylOpioid == 0, na.rm = TRUE)
 #Antall som ikke har fått tilsendt skjema
 antIkkeUtsendt <- sum(is.na(dat$PasdelUtfylOpioid))
 #Antall som svarte
@@ -759,35 +782,40 @@ antiksvar <- sum(dat$PasdelUtfylOpioid == 0, na.rm =TRUE)
 
 #Finner svarandel, men tar høyde for at vi ikke kan dele på 0 (aka ingen skjema sendt ut)
 andsvar <- NA
-if(antUtsendt != 0){
+if(antUtsendt != 0) {
   andsvar <- antsvar/antUtsendt
-}else{andsvar <- paste0("ikke mulig å angi andel grunnet ingen utsendte skjema.")}
+} else {
+  andsvar <- paste0("ikke mulig å angi andel grunnet ingen utsendte skjema.")
+}
 
 
 #Fjerner først de som ikke har fått tilsendt (null) 3 = null
 datO <- dat[!is.na(dat$PasdelUtfylOpioid), ]
 #Bruker her pakkene dplyr og magrittr
-opio <- datO %>% count(AarsakmanglUtfylOpioid) %>% mutate(prosent = round(100*(n/sum(n))))
+opio <- datO %>%
+  count(AarsakmanglUtfylOpioid) %>%
+  mutate(prosent = round(100*(n/sum(n))))
 #Gi navn i stedet for tall til alternativene for tilsyn/ikke tilsyn
-opio = opio %>% mutate(grunnOpi = case_when(AarsakmanglUtfylOpioid == 1 ~ "Tidsmangel behandler",
-                                                              AarsakmanglUtfylOpioid == 2 ~ "Tidlig utskrivning",
-                                                              AarsakmanglUtfylOpioid == 3 ~ "Kritisk syk/død",
-                                                              AarsakmanglUtfylOpioid == 4 ~ "Pasient klarer ikke",
-                                                              AarsakmanglUtfylOpioid == 5 ~ "Manglende samtykke",
-                                                              AarsakmanglUtfylOpioid == 7 ~ "Ikke besvart ePPROMS",
-                                                              AarsakmanglUtfylOpioid == 9 ~ "Annet"))
+opio = opio %>%
+  mutate(grunnOpi = case_when(AarsakmanglUtfylOpioid == 1 ~ "Tidsmangel behandler",
+                              AarsakmanglUtfylOpioid == 2 ~ "Tidlig utskrivning",
+                              AarsakmanglUtfylOpioid == 3 ~ "Kritisk syk/død",
+                              AarsakmanglUtfylOpioid == 4 ~ "Pasient klarer ikke",
+                              AarsakmanglUtfylOpioid == 5 ~ "Manglende samtykke",
+                              AarsakmanglUtfylOpioid == 7 ~ "Ikke besvart ePPROMS",
+                              AarsakmanglUtfylOpioid == 9 ~ "Annet"))
 #Endrer rekkefølge og tar i tilleg ved NA-raden (siste)
 opio <- opio[1:(dim(opio)[1]-1), c(4,2,3)]
 
 #Tilsynstabell
 #Bruker pakke kableextra
-mstt(tab = opio, colnames = c("Grunn manglende utfylling Opioid", "Antall ",
-                                    "Prosent"),
-    cap = paste0(""),
-    label = "opiospmtab",
-    type = params$tableFormat,
-    digs = 0,
-    align = c("l", "r", "r", "r"))
+mstt(tab = opio,
+     colnames = c("", "Antall ", "Prosent"),
+     cap = paste0("Grunn manglende utfylling Opioid"),
+     label = "opiospmtab",
+     type = params$tableFormat,
+     digs = 0,
+     align = c("l", "r", "r", "r"))
 ```
 I den valgte tidsperioden fikk tilsammen `r antUtsendt` pasienter av totalt `r dim(dat)[1]` tilsendt ePROM-skjema for Opioid. Av de som fikk tilsendt skjema var det `r antsvar` pasienter som sendte inn en besvarelse. Dette gir en svarandel på `r round(andsvar, digits = 2)`. Tabell \@ref(tab:opiospmtab) gir en oversikt over registrerte årsaker til manglende besvarelse for de `r antiksvar` som ikke har svart.
 
@@ -809,53 +837,86 @@ På spørsmål om pasienten var skrevet ut av sykehus (ved besvarelse) var det `
 datOE <- datO[datO$Smstilletterutskrivelse == 1, ]
 
 #Medikamenter
-DolcontinMalfin = datOE %>% select(DolcontinMalfin) %>%  summarise(antja = sum(DolcontinMalfin == 1, na.rm=TRUE)) 
-FentanylplDurogesicpl = datOE %>% select(FentanylplDurogesicpl) %>% summarise(antja = sum(FentanylplDurogesicpl== 1, na.rm=TRUE)) 
-Metadon= datOE %>% select(Metadon) %>% summarise(antja = sum(Metadon== 1, na.rm=TRUE)) 
-Morfin= datOE %>% select(Morfin) %>% summarise(antja = sum(Morfin== 1, na.rm=TRUE)) 
-Norspanplaster= datOE %>% select(Norspanplaster) %>% summarise(antja = sum(Norspanplaster== 1, na.rm=TRUE)) 
-OxynormOxykodon= datOE %>% select(OxynormOxykodon) %>% summarise(antja = sum(OxynormOxykodon== 1, na.rm=TRUE)) 
-OxyxontinReltebon= datOE %>% select(OxyxontinReltebon) %>% summarise(antja = sum(OxyxontinReltebon== 1, na.rm=TRUE)) 
-Palexia= datOE %>% select(Palexia) %>% summarise(antja = sum(Palexia== 1, na.rm=TRUE)) 
-PalladonHydromorfon= datOE %>% select(PalladonHydromorfon) %>% summarise(antja = sum(PalladonHydromorfon== 1, na.rm=TRUE)) 
-Paralginforte= datOE %>% select(Paralginforte) %>% summarise(antja = sum(Paralginforte== 1, na.rm=TRUE)) 
-Buprenorfin= datOE %>% select(Buprenorfin) %>% summarise(antja = sum(Buprenorfin== 1, na.rm=TRUE)) 
-Targiniq= datOE %>% select(Targiniq) %>% summarise(antja = sum(Targiniq== 1, na.rm=TRUE)) 
-Tramadolvarianter= datOE %>% select(Tramadolvarianter) %>% summarise(antja = sum(Tramadolvarianter== 1, na.rm=TRUE)) 
-Andre= datOE %>% select(Andre) %>% summarise(antja = sum(Andre== 1, na.rm=TRUE)) 
-Usikker= datOE %>% select(Usikker) %>% summarise(antja = sum(Usikker== 1, na.rm=TRUE)) 
+DolcontinMalfin <- datOE %>%
+  select(DolcontinMalfin) %>% 
+  summarise(antja = sum(DolcontinMalfin == 1, na.rm=TRUE)) 
+FentanylplDurogesicpl <- datOE %>%
+  select(FentanylplDurogesicpl) %>%
+  summarise(antja = sum(FentanylplDurogesicpl == 1, na.rm = TRUE)) 
+Metadon <- datOE %>%
+  select(Metadon) %>%
+  summarise(antja = sum(Metadon == 1, na.rm = TRUE)) 
+Morfin <- datOE %>%
+  select(Morfin) %>%
+  summarise(antja = sum(Morfin== 1, na.rm=TRUE)) 
+Norspanplaster <- datOE %>%
+  select(Norspanplaster) %>%
+  summarise(antja = sum(Norspanplaster== 1, na.rm=TRUE)) 
+OxynormOxykodon <- datOE %>%
+  select(OxynormOxykodon) %>%
+  summarise(antja = sum(OxynormOxykodon== 1, na.rm=TRUE)) 
+OxyxontinReltebon <- datOE %>%
+  select(OxyxontinReltebon) %>%
+  summarise(antja = sum(OxyxontinReltebon== 1, na.rm=TRUE)) 
+Palexia <- datOE %>%
+  select(Palexia) %>%
+  summarise(antja = sum(Palexia== 1, na.rm=TRUE)) 
+PalladonHydromorfon <- datOE %>%
+  select(PalladonHydromorfon) %>%
+  summarise(antja = sum(PalladonHydromorfon== 1, na.rm=TRUE)) 
+Paralginforte <- datOE %>%
+  select(Paralginforte) %>%
+  summarise(antja = sum(Paralginforte== 1, na.rm=TRUE)) 
+Buprenorfin <- datOE %>%
+  select(Buprenorfin) %>%
+  summarise(antja = sum(Buprenorfin== 1, na.rm=TRUE)) 
+Targiniq <- datOE %>%
+  select(Targiniq) %>%
+  summarise(antja = sum(Targiniq== 1, na.rm=TRUE)) 
+Tramadolvarianter <- datOE %>%
+  select(Tramadolvarianter) %>%
+  summarise(antja = sum(Tramadolvarianter== 1, na.rm=TRUE)) 
+Andre <- datOE %>%
+  select(Andre) %>%
+  summarise(antja = sum(Andre== 1, na.rm=TRUE)) 
+Usikker <- datOE %>%
+  select(Usikker) %>%
+  summarise(antja = sum(Usikker== 1, na.rm=TRUE)) 
 #Binder data sammen
-datmed = bind_rows(DolcontinMalfin, FentanylplDurogesicpl, Metadon, Morfin, Norspanplaster, OxynormOxykodon, OxyxontinReltebon, Palexia, PalladonHydromorfon, Paralginforte, Buprenorfin, Targiniq, Tramadolvarianter, Andre, Usikker) %>% set_rownames(c("DolcontinMalfin", "FentanylplDurogesicpl", "Metadon", "Morfin", "Norspanplaster", "OxynormOxykodon", "OxyxontinReltebon", "Palexia", "PalladonHydromorfon", "Paralginforte", "Buprenorfin", "Targiniq", "Tramadolvarianter", "Andre", "Usikker")) %>% set_colnames(c("Antall ja"))
+datmed <- bind_rows(DolcontinMalfin, FentanylplDurogesicpl, Metadon, Morfin, Norspanplaster, OxynormOxykodon, OxyxontinReltebon, Palexia, PalladonHydromorfon, Paralginforte, Buprenorfin, Targiniq, Tramadolvarianter, Andre, Usikker) %>%
+  set_rownames(c("DolcontinMalfin", "FentanylplDurogesicpl", "Metadon", "Morfin", "Norspanplaster", "OxynormOxykodon", "OxyxontinReltebon", "Palexia", "PalladonHydromorfon", "Paralginforte", "Buprenorfin", "Targiniq", "Tramadolvarianter", "Andre", "Usikker")) %>% set_colnames(c("Antall ja"))
 #Tilsynstabell
 
 #Bruker pakke kableextra
-mstt(tab = datmed, colnames = c("Antall ja"),
-    cap = paste0(""),
-    label = "medtab",
-    type = params$tableFormat,
-    digs = 0,
-    align = c("r", "r"))
+mstt(tab = datmed,
+     colnames = c("Antall ja"),
+     cap = paste0(""),
+     label = "medtab",
+     type = params$tableFormat,
+     digs = 0,
+     align = c("r", "r"))
 
 #Bruker fortsatt noe
 #Bruker her pakkene dplyr og magrittr
 bruk <- datO %>% count(Fortsattbruk) %>% mutate(prosent = round(100*(n/sum(n))))
 #Gi navn i stedet for tall til alternativene for tilsyn/ikke tilsyn
-bruk = bruk %>% mutate(brukna = case_when(Fortsattbruk == 0 ~ "Nei",
-                                                              Fortsattbruk == 1 ~ "Ja, i samme dosering",
-                                                              Fortsattbruk == 2 ~ "Ja, i høyere dosering",
-                                                              Fortsattbruk == 3 ~ "Ja, i lavere dosering"))
+bruk = bruk %>%
+  mutate(brukna = case_when(Fortsattbruk == 0 ~ "Nei",
+                            Fortsattbruk == 1 ~ "Ja, i samme dosering",
+                            Fortsattbruk == 2 ~ "Ja, i høyere dosering",
+                            Fortsattbruk == 3 ~ "Ja, i lavere dosering"))
 #Endrer rekkefølge og tar i tilleg ved NA-raden (siste)
 bruk <- bruk[1:(dim(bruk)[1]-1), c(4,2,3)]
 
 #Tilsynstabell
 #Bruker pakke kableextra
-mstt(tab = bruk, colnames = c("Bruker du fortsatt noen av disse medikamentene?", "Antall ",
-                                    "Prosent"),
-    cap = paste0(""),
-    label = "medforts",
-    type = params$tableFormat,
-    digs = 0,
-    align = c("l", "r", "r", "r"))
+mstt(tab = bruk,
+     colnames = c("", "Antall ", "Prosent"),
+     cap = paste0("Bruker du fortsatt noen av disse medikamentene?"),
+     label = "medforts",
+     type = params$tableFormat,
+     digs = 0,
+     align = c("l", "r", "r", "r"))
 ```
 Tabell \@ref(tab:medtab) viser en oversikt over hvilke medikamenter som har blitt brukt av pasientene etter utskrivelse, mens tabell \@ref(tab:medforts) viser hvor mange som fortsatt bruker disse medikamentene når de besvarer spørsmålet.
 
@@ -871,34 +932,38 @@ nedtr <- nedtr[1:(dim(nedtr)[1]-1), c(4,2,3)]
 
 #Tilsynstabell
 #nedtrer pakke kableextra
-mstt(tab = nedtr, colnames = c("Fikk du informasjon om nedtrapping av sterke smertestillende medikamenter?", "Antall ",
-                                    "Prosent"),
-    cap = paste0(""),
-    label = "infonedtab",
-    type = params$tableFormat,
-    digs = 0,
-    align = c("l", "r", "r", "r"))
+mstt(tab = nedtr,
+     colnames = c("", "Antall ", "Prosent"),
+     cap = paste0("Fikk du informasjon om nedtrapping av sterke smertestillende ",
+                  "medikamenter?"),
+     label = "infonedtab",
+     type = params$tableFormat,
+     digs = 0,
+     align = c("l", "r", "r", "r"))
 
 #Info hvem
 #hvemer her pakkene dplyr og magrittr
-hvem <- datO %>% count(HvemInfoNedtrapping) %>% mutate(prosent = round(100*(n/sum(n))))
+hvem <- datO %>%
+  count(HvemInfoNedtrapping) %>% mutate(prosent = round(100*(n/sum(n))))
 #Gi navn i stedet for tall til alternativene for tilsyn/ikke tilsyn
-hvem = hvem %>% mutate(infhvem = case_when(HvemInfoNedtrapping == 1 ~ "Smerteteam",
-                                                              HvemInfoNedtrapping == 2 ~ "Annet helsepersonell",
-                                                              HvemInfoNedtrapping == 3 ~ "Begge",
-                                                              HvemInfoNedtrapping == 9 ~ "Vet ikke"))
+hvem <- hvem %>%
+  mutate(infhvem = case_when(HvemInfoNedtrapping == 1 ~ "Smerteteam",
+                             HvemInfoNedtrapping == 2 ~ "Annet helsepersonell",
+                             HvemInfoNedtrapping == 3 ~ "Begge",
+                             HvemInfoNedtrapping == 9 ~ "Vet ikke"))
 #Endrer rekkefølge og tar i tilleg ved NA-raden (siste)
 hvem <- hvem[1:(dim(hvem)[1]-1), c(4,2,3)]
 
 #Tilsynstabell
 #hvemer pakke kableextra
-mstt(tab = hvem, colnames = c("Av hvem fikk du informasjon om nedtrapping av sterke smertestillende medikamenter?", "Antall ",
-                                    "Prosent"),
-    cap = paste0(""),
-    label = "nedtrhvem",
-    type = params$tableFormat,
-    digs = 0,
-    align = c("l", "r", "r", "r"))
+mstt(tab = hvem,
+     colnames = c("", "Antall ", "Prosent"),
+     cap = paste0("Av hvem fikk du informasjon om nedtrapping av sterke ",
+                  "smertestillende medikamenter?"),
+     label = "nedtrhvem",
+     type = params$tableFormat,
+     digs = 0,
+     align = c("l", "r", "r", "r"))
 ```
 Tabell \@ref(tab:infonedtab) viser om pasienten har fått informasjon om nedtrapping av sterke smertestillende medikamenter, mens tabell \@ref(tab:nedtrhvem) viser hvem som har formidlet informasjonen.
 
@@ -916,24 +981,28 @@ ikbrosj <- sum(datO$InfoBrosjyreNedtrapp == 0, na.rm = TRUE)
 
 #Info fulgt nedtraping
 #fulgter her pakkene dplyr og magrittr
-fulgt <- datO %>% count(FolgeAnbefalingNedtrapp) %>% mutate(prosent = round(100*(n/sum(n))))
+fulgt <- datO %>%
+  count(FolgeAnbefalingNedtrapp) %>%
+  mutate(prosent = round(100*(n/sum(n))))
 #Gi navn i stedet for tall til alternativene for tilsyn/ikke tilsyn
-fulgt = fulgt %>% mutate(inffulgt = case_when(FolgeAnbefalingNedtrapp == 1 ~ "Ja",
-                                                              FolgeAnbefalingNedtrapp == 2 ~ "Nei, lenger enn anbefalt",
-                                                              FolgeAnbefalingNedtrapp == 3 ~ "Nei, har ikke kunnet trappe ned",
-                                                              FolgeAnbefalingNedtrapp == 4 ~ "Ja, raskere"))
+fulgt <- fulgt %>%
+  mutate(inffulgt = case_when(FolgeAnbefalingNedtrapp == 1 ~ "Ja",
+                              FolgeAnbefalingNedtrapp == 2 ~ "Nei, lenger enn anbefalt",
+                              FolgeAnbefalingNedtrapp == 3 ~ "Nei, har ikke kunnet trappe ned",
+                              FolgeAnbefalingNedtrapp == 4 ~ "Ja, raskere"))
 #Endrer rekkefølge og tar i tilleg ved NA-raden (siste)
 fulgt <- fulgt[1:(dim(fulgt)[1]-1), c(4,2,3)]
 
 #Tilsynstabell
 #fulgter pakke kableextra
-mstt(tab = fulgt, colnames = c("Klarte du å følge anbefalingene for bruk og nedtrapping av medikamentene?", "Antall ",
-                                    "Prosent"),
-    cap = paste0(""),
-    label = "nedrfulgtplan",
-    type = params$tableFormat,
-    digs = 0,
-    align = c("l", "r", "r", "r"))
+mstt(tab = fulgt,
+     colnames = c("", "Antall ", "Prosent"),
+     cap = paste0("Klarte du å følge anbefalingene for bruk og nedtrapping av ",
+                  "medikamentene?"),
+     label = "nedrfulgtplan",
+     type = params$tableFormat,
+     digs = 0,
+     align = c("l", "r", "r", "r"))
 ```
 Det er `r munt` pasienter som har fått muntlig informasjon om nedtrapping, mens `r ikmunt` pasienter svarte at de ikke har fått det. Samtidig svarer `r skri` pasienter at de har fått skriftlig nedtrappingsplan, mens `r ikskri` svarer nei på dette. I tillegg svarer `r brosj` pasienter at de fikk utdelt infobrosjyre om nedtrapping, mens `r ikbrosj` svarer at de ikke fikk den utdelt.
 
@@ -942,142 +1011,167 @@ Tabell \@ref(tab:nedrfulgtplan) viser hva pasientene har svart på om de klarte 
 ```{r absti, warning = FALSE, message=FALSE, results='asis', eval=dataPresent}
 #Info plagsomme abstinenser
 #abstier her pakkene dplyr og magrittr
-absti <- datO %>% count(OpplevdAbstinenssympt) %>% mutate(prosent = round(100*(n/sum(n))))
+absti <- datO %>%
+  count(OpplevdAbstinenssympt) %>%
+  mutate(prosent = round(100*(n/sum(n))))
 #Gi navn i stedet for tall til alternativene for tilsyn/ikke tilsyn
-absti = absti %>% mutate(infabsti = case_when(OpplevdAbstinenssympt == 0 ~ "Nei",
-                                                              OpplevdAbstinenssympt == 1 ~ "Ja",
-                                                              OpplevdAbstinenssympt == 9 ~ "Usikker"))
+absti <- absti %>%
+  mutate(infabsti = case_when(OpplevdAbstinenssympt == 0 ~ "Nei",
+                              OpplevdAbstinenssympt == 1 ~ "Ja",
+                              OpplevdAbstinenssympt == 9 ~ "Usikker"))
 #Endrer rekkefølge og tar i tilleg ved NA-raden (siste)
 absti <- absti[1:(dim(absti)[1]-1), c(4,2,3)]
 
 #Tilsynstabell
 #abstier pakke kableextra
-mstt(tab = absti, colnames = c("Opplevde du plagsomme abstinenssymptomer etter utskrivelse?", "Antall ",
-                                    "Prosent"),
-    cap = paste0(""),
-    label = "abstietter",
-    type = params$tableFormat,
-    digs = 0,
-    align = c("l", "r", "r", "r"))
+mstt(tab = absti,
+     colnames = c("", "Antall ","Prosent"),
+     cap = paste0("Opplevde du plagsomme abstinenssymptomer etter ",
+                  "utskrivelse?"),
+     label = "abstietter",
+     type = params$tableFormat,
+     digs = 0,
+     align = c("l", "r", "r", "r"))
 
 #Info forstod forstoabstinenser
 #forstoabstier her pakkene dplyr og magrittr
-forstoabsti <- datO %>% count(ForstodAbstinenssympt) %>% mutate(prosent = round(100*(n/sum(n))))
+forstoabsti <- datO %>%
+  count(ForstodAbstinenssympt) %>%
+  mutate(prosent = round(100*(n/sum(n))))
 #Gi navn i stedet for tall til alternativene for tilsyn/ikke tilsyn
-forstoabsti = forstoabsti %>% mutate(infforstoabsti = case_when(ForstodAbstinenssympt == 0 ~ "Nei",
-                                                                ForstodAbstinenssympt == 1 ~ "Ja",
-                                                                ForstodAbstinenssympt == 9 ~ "Usikker"))
+forstoabsti <- forstoabsti %>%
+  mutate(infforstoabsti = case_when(ForstodAbstinenssympt == 0 ~ "Nei",
+                                    ForstodAbstinenssympt == 1 ~ "Ja",
+                                    ForstodAbstinenssympt == 9 ~ "Usikker"))
 #Endrer rekkefølge og tar i tilleg ved NA-raden (siste)
 forstoabsti <- forstoabsti[1:(dim(forstoabsti)[1]-1), c(4,2,3)]
 
 #Tilsynstabell
 #forstoabstier pakke kableextra
-mstt(tab = forstoabsti, colnames = c("Forstod du at det var abstinenssymptomer?", "Antall ",
-                                    "Prosent"),
-    cap = paste0(""),
-    label = "abstiforstod",
-    type = params$tableFormat,
-    digs = 0,
-    align = c("l", "r", "r", "r"))
+mstt(tab = forstoabsti,
+     colnames = c("", "Antall ", "Prosent"),
+     cap = paste0("Forstod du at det var abstinenssymptomer?"),
+     label = "abstiforstod",
+     type = params$tableFormat,
+     digs = 0,
+     align = c("l", "r", "r", "r"))
 
 #Info løsning
-losn <- datO %>% count(LosningProblemAbstinens) %>% mutate(prosent = round(100*(n/sum(n))))
+losn <- datO %>%
+  count(LosningProblemAbstinens) %>%
+  mutate(prosent = round(100 * (n / sum(n))))
 #Gi navn i stedet for tall til alternativene for tilsyn/ikke tilsyn
-losn = losn %>% mutate(inflosn = case_when(LosningProblemAbstinens == 0 ~ "Nei",
-                                                                LosningProblemAbstinens == 1 ~ "Ja",
-                                                                LosningProblemAbstinens == 9 ~ "Usikker"))
+losn <- losn %>%
+  mutate(inflosn = case_when(LosningProblemAbstinens == 0 ~ "Nei",
+                             LosningProblemAbstinens == 1 ~ "Ja",
+                             LosningProblemAbstinens == 9 ~ "Usikker"))
 #Endrer rekkefølge og tar i tilleg ved NA-raden (siste)
 losn <- losn[1:(dim(losn)[1]-1), c(4,2,3)]
 
 #losner pakke kablextra
-mstt(tab = losn, colnames = c("Visste du hva du kunne gjøre med problemet?", "Antall ",
-                                    "Prosent"),
-    cap = paste0(""),
-    label = "abstilosn",
-    type = params$tableFormat,
-    digs = 0,
-    align = c("l", "r", "r", "r"))
+mstt(tab = losn,
+     colnames = c("", "Antall ", "Prosent"),
+     cap = paste0("Visste du hva du kunne gjøre med problemet?"),
+     label = "abstilosn",
+     type = params$tableFormat,
+     digs = 0,
+     align = c("l", "r", "r", "r"))
 ```
 Tabell \@ref(tab:abstietter) viser en oversikt over om pasienten har opplevd  abstinenssymptomer (svetting/frysing, uro, smerter, diaré, rennende nese) etter utskrivelse, mens tabell \@ref(tab:abstiforstod) viser om pasienten forstod at det var abstinenssymptomer eller ikke. Tabell \@ref(abstilosn) viser om pasienten visste hva den kunne gjøre med problemet.
 
 
 ```{r trett, warning = FALSE, message=FALSE, results='asis', eval=dataPresent}
 #Info tretthet
-trett <- datO %>% count(OpplevdPlagsomTretthet) %>% mutate(prosent = round(100*(n/sum(n))))
+trett <- datO %>%
+  count(OpplevdPlagsomTretthet) %>%
+  mutate(prosent = round(100 * (n / sum(n))))
 #Gi navn i stedet for tall til alternativene for tilsyn/ikke tilsyn
-trett = trett %>% mutate(inftrett = case_when(OpplevdPlagsomTretthet == 0 ~ "Nei",
-                                                                OpplevdPlagsomTretthet == 1 ~ "Ja"))
+trett <- trett %>%
+  mutate(inftrett = case_when(OpplevdPlagsomTretthet == 0 ~ "Nei",
+                              OpplevdPlagsomTretthet == 1 ~ "Ja"))
 #Endrer rekkefølge og tar i tilleg ved NA-raden (siste)
 trett <- trett[1:(dim(trett)[1]-1), c(4,2,3)]
 
 #tretter pakke kablextra
-mstt(tab = trett, colnames = c("Opplevde du plagsom tretthet eller følelse av å være medikamentpåvirket etter at du ble skrevet ut fra sykehuset?", "Antall ",
-                                    "Prosent"),
-    cap = paste0(""),
-    label = "tretth",
-    type = params$tableFormat,
-    digs = 0,
-    align = c("l", "r", "r", "r"))
+mstt(tab = trett,
+     colnames = c("", "Antall ", "Prosent"),
+     cap = paste0("Opplevde du plagsom tretthet eller følelse av å være ",
+                  "medikamentpåvirket etter at du ble skrevet ut fra sykehuset?"),
+     label = "tretth",
+     type = params$tableFormat,
+     digs = 0,
+     align = c("l", "r", "r", "r"))
 
 #Info trettloshet
-trettlos <- datO %>% count(LosningProblemTretthet) %>% mutate(prosent = round(100*(n/sum(n))))
+trettlos <- datO %>%
+  count(LosningProblemTretthet) %>%
+  mutate(prosent = round(100 * (n / sum(n))))
 #Gi navn i stedet for tall til alternativene for tilsyn/ikke tilsyn
-trettlos = trettlos %>% mutate(inftrettlos = case_when(LosningProblemTretthet == 0 ~ "Nei",
-                                                                LosningProblemTretthet == 1 ~ "Ja",
-                                                       LosningProblemTretthet == 9 ~ "Vet ikke"))
+trettlos <- trettlos %>%
+  mutate(inftrettlos = case_when(LosningProblemTretthet == 0 ~ "Nei",
+                                 LosningProblemTretthet == 1 ~ "Ja",
+                                 LosningProblemTretthet == 9 ~ "Vet ikke"))
 #Endrer rekkefølge og tar i tilleg ved NA-raden (siste)
 trettlos <- trettlos[1:(dim(trettlos)[1]-1), c(4,2,3)]
 
 #trettloser pakke kablextra
-mstt(tab = trettlos, colnames = c("Visste du hva du kunne gjøre med problemet?", "Antall ",
-                                    "Prosent"),
-    cap = paste0(""),
-    label = "trettvisste",
-    type = params$tableFormat,
-    digs = 0,
-    align = c("l", "r", "r", "r"))
+mstt(tab = trettlos,
+     colnames = c("", "Antall ", "Prosent"),
+     cap = paste0("Visste du hva du kunne gjøre med problemet?"),
+     label = "trettvisste",
+     type = params$tableFormat,
+     digs = 0,
+     align = c("l", "r", "r", "r"))
 ```
 Tabell \@ref(tab:tretth) viser en oversikt over spørsmålet "Opplevde du plagsom tretthet eller følelse av å være medikamentpåvirket etter at du ble skrevet ut fra sykehuset?", mens tabell \@ref(tab:trettvisste) viser om pasienten visste hva å gjøre hvis den opplevde dette.
 
 ```{r bil, warning = FALSE, message=FALSE, results='asis', eval=dataPresent}
 #Bilkjøring
 #Info bilhet
-bil <- datO %>% count(InfoSmertestillBilkjoring) %>% mutate(prosent = round(100*(n/sum(n))))
+bil <- datO %>%
+  count(InfoSmertestillBilkjoring) %>%
+  mutate(prosent = round(100 * (n / sum(n))))
 #Gi navn i stedet for tall til alternativene for tilsyn/ikke tilsyn
-bil = bil %>% mutate(infbil = case_when(InfoSmertestillBilkjoring == 0 ~ "Nei",
-                                                       InfoSmertestillBilkjoring == 1 ~ "Ja",
-                                                       InfoSmertestillBilkjoring == 9 ~ "Ikke aktuelt"))
+bil <- bil %>%
+  mutate(infbil = case_when(InfoSmertestillBilkjoring == 0 ~ "Nei",
+                            InfoSmertestillBilkjoring == 1 ~ "Ja",
+                            InfoSmertestillBilkjoring == 9 ~ "Ikke aktuelt"))
 #Endrer rekkefølge og tar i tilleg ved NA-raden (siste)
 bil <- bil[1:(dim(bil)[1]-1), c(4,2,3)]
 
 #biler pakke kablextra
-mstt(tab = bil, colnames = c("Fikk du informasjon om sterke smertestillende medikamenter og bilkjøring?", "Antall ",
-                                    "Prosent"),
-    cap = paste0(""),
-    label = "sterkbil",
-    type = params$tableFormat,
-    digs = 0,
-    align = c("l", "r", "r", "r"))
+mstt(tab = bil,
+     colnames = c("", "Antall ", "Prosent"),
+     cap = paste0("Fikk du informasjon om sterke smertestillende medikamenter ",
+                  "og bilkjøring?"),
+     label = "sterkbil",
+     type = params$tableFormat,
+     digs = 0,
+     align = c("l", "r", "r", "r"))
 
 #Info hvembil
-hvembil <- datO %>% count(HvemInfoSmertestillBilkjoring) %>% mutate(prosent = round(100*(n/sum(n))))
+hvembil <- datO %>%
+  count(HvemInfoSmertestillBilkjoring) %>%
+  mutate(prosent = round(100*(n/sum(n))))
 #Gi navn i stedet for tall til alternativene for tilsyn/ikke tilsyn
-hvembil = hvembil %>% mutate(infhvembil = case_when(HvemInfoSmertestillBilkjoring == 1 ~ "Smerteteam",
-                                                              HvemInfoSmertestillBilkjoring == 2 ~ "Annet helsepersonell",
-                                                              HvemInfoSmertestillBilkjoring == 3 ~ "Begge",
-                                                              HvemInfoSmertestillBilkjoring == 9 ~ "Vet ikke"))
+hvembil <- hvembil %>%
+  mutate(infhvembil = case_when(HvemInfoSmertestillBilkjoring == 1 ~ "Smerteteam",
+                                HvemInfoSmertestillBilkjoring == 2 ~ "Annet helsepersonell",
+                                HvemInfoSmertestillBilkjoring == 3 ~ "Begge",
+                                HvemInfoSmertestillBilkjoring == 9 ~ "Vet ikke"))
 #Endrer rekkefølge og tar i tilleg ved NA-raden (siste)
 hvembil <- hvembil[1:(dim(hvembil)[1]-1), c(4,2,3)]
 
 #Tilsynstabell
 #hvembiler pakke kableextra
-mstt(tab = hvembil, colnames = c("Av hvem fikk du informasjon om sterke smertestillende medikamenter og bilkjøring?", "Antall ",
-                                    "Prosent"),
-    cap = paste0(""),
-    label = "hveminfobil",
-    type = params$tableFormat,
-    digs = 0,
-    align = c("l", "r", "r", "r"))
+mstt(tab = hvembil,
+     colnames = c("", "Antall ", "Prosent"),
+     cap = paste0("Av hvem fikk du informasjon om sterke smertestillende ",
+                  "medikamenter og bilkjøring?"),
+     label = "hveminfobil",
+     type = params$tableFormat,
+     digs = 0,
+     align = c("l", "r", "r", "r"))
 
 #Beskjedbil
 #Skriftlig og muntlig beskjed
@@ -1093,21 +1187,25 @@ ikbrosjbil <- sum(datO$InfoBrosyjreBilkjoring == 0, na.rm = TRUE)
 
 
 #Info spørsmål
-hvorinfo <- datO %>% count(HenvendelseAngSmertestill) %>% mutate(prosent = round(100*(n/sum(n))))
+hvorinfo <- datO %>%
+  count(HenvendelseAngSmertestill) %>%
+  mutate(prosent = round(100 * (n / sum(n))))
 #Gi navn i stedet for tall til alternativene for tilsyn/ikke tilsyn
-hvorinfo = hvorinfo %>% mutate(infhvorinfo = case_when(HenvendelseAngSmertestill == 0 ~ "Nei",
-                                                                HenvendelseAngSmertestill == 1 ~ "Ja",
-                                                       HenvendelseAngSmertestill == 9 ~ "Usikker"))
+hvorinfo <- hvorinfo %>%
+  mutate(infhvorinfo = case_when(HenvendelseAngSmertestill == 0 ~ "Nei",
+                                 HenvendelseAngSmertestill == 1 ~ "Ja",
+                                 HenvendelseAngSmertestill == 9 ~ "Usikker"))
 #Endrer rekkefølge og tar i tilleg ved NA-raden (siste)
 hvorinfo <- hvorinfo[1:(dim(hvorinfo)[1]-1), c(4,2,3)]
 
 #hvorinfoer pakke kablextra
-mstt(tab = hvorinfo, colnames = c("Visste du hvor du kunne henvende deg ved spørsmål om bruk av de smertestillende medikamentene?", "Antall ",
-                                    "Prosent"),
-    cap = paste0(""),
-    type = params$tableFormat,
-    digs = 0,
-    align = c("l", "r", "r", "r"))
+mstt(tab = hvorinfo,
+     colnames = c("", "Antall ", "Prosent"),
+     cap = paste0("Visste du hvor du kunne henvende deg ved spørsmål om bruk ",
+                  "av de smertestillende medikamentene?"),
+     type = params$tableFormat,
+     digs = 0,
+     align = c("l", "r", "r", "r"))
 
 
 ```
