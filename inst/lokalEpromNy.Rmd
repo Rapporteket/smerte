@@ -208,7 +208,7 @@ mstt(tab = pr2,
 Tabell \@ref(tab:prspm2) viser oversikten over søvnproblemer etter innleggelse for de `r dim(datpr2)[1]` pasientene som besvarte spørsmålet.
 
 
-```{r kontaktfig, echo=FALSE, warning = FALSE, eval=dataPresent}
+```{r kontaktfig, echo=FALSE, warning = FALSE, eval=dataPresent, fig.cap="\\label{fig:kontaktfig}Antall ganger i kontakt med primær- og spesialisthelsetjenesten på grunn av smerter siste år."}
 
 ###PRSPM3
 #Fjerner først de som ikke har fått tilsendt (null) 3 = null
@@ -218,7 +218,7 @@ datpr3 <- dat[!is.na(dat$PRSpm3), ]
 ggplot(datpr3, aes(x=PRSpm3)) +
   geom_histogram(binwidth=10, boundary=0, fill = "darkgrey", closed="left") +
     scale_x_continuous(minor_breaks = 2) +
-  xlab("Antall ganger i kontakt med primær- og spesialisthelsetjenesten på grunn av smerter siste år") + ylab("Antall\npasienter")
+  xlab("Antall kontakter") + ylab("Antall pasienter")
 ```
 
 Figur \@ref(fig:kontaktfig) viser oversikten over hvor mange ganger pasientene har vært i kontakt med primær- og spesialisthelsetjenesten på grunn av smerter siste år for totalt `r dim(datpr3)[1]` pasienter. 
@@ -366,7 +366,7 @@ mstt(tab = hads, colnames = c("", "Antall ", "Prosent"),
 ```
 I den valgte tidsperioden fikk tilsammen `r antUtsendt` pasienter av totalt `r dim(dat)[1]` tilsendt ePROM-skjema for HADS. Av de som fikk tilsendt skjema var det `r antsvar` pasienter som sendte inn en besvarelse. Dette gir en svarandel på `r round(andsvar, digits = 2)`. Tabell \@ref(tab:hadsspm) gir en oversikt over registrerte årsaker til manglende besvarelse for de `r antiksvar` som ikke har svart.
 
-```{r hadsfig, echo=FALSE, warning = FALSE, eval=dataPresent}
+```{r hadsfig, echo=FALSE, warning = FALSE, eval=dataPresent, fig.cap="\\label{fig:hadsfig}Fordeling av angst og depresjonsscore i HADS. Poengscorene vurderes som følger: lavere enn den grønne linjen viser ingen tegn til symptomer, mellom den grønne og den gule linjen viser milde symptomer, mellom den gule og den røde linjen viser moderate symptomer, mens over den røde viser alvorlig symptomer."}
 
 #Figur for depresjonscore
 dep = dat %>% select(HADSScoreDepresjon) %>% filter(!is.na(HADSScoreDepresjon))
@@ -1077,7 +1077,7 @@ mstt(tab = losn,
      digs = 0,
      align = c("l", "r", "r", "r"))
 ```
-Tabell \@ref(tab:abstietter) viser en oversikt over om pasienten har opplevd  abstinenssymptomer (svetting/frysing, uro, smerter, diaré, rennende nese) etter utskrivelse, mens tabell \@ref(tab:abstiforstod) viser om pasienten forstod at det var abstinenssymptomer eller ikke. Tabell \@ref(abstilosn) viser om pasienten visste hva den kunne gjøre med problemet.
+Tabell \@ref(tab:abstietter) viser en oversikt over om pasienten har opplevd  abstinenssymptomer (svetting/frysing, uro, smerter, diaré, rennende nese) etter utskrivelse, mens tabell \@ref(tab:abstiforstod) viser om pasienten forstod at det var abstinenssymptomer eller ikke. Tabell \@ref(tab:abstilosn) viser om pasienten visste hva den kunne gjøre med problemet.
 
 
 ```{r trett, warning = FALSE, message=FALSE, results='asis', eval=dataPresent}
