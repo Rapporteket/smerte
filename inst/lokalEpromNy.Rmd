@@ -890,7 +890,7 @@ datmed <- bind_rows(DolcontinMalfin, FentanylplDurogesicpl, Metadon, Morfin, Nor
 #Bruker pakke kableextra
 mstt(tab = datmed,
      colnames = c("Antall ja"),
-     cap = paste0(""),
+     cap = paste0("Medikamenter i bruk siden utskrivelse."),
      label = "medtab",
      type = params$tableFormat,
      digs = 0,
