@@ -279,7 +279,7 @@ server <- function(input, output, session) {
 
   # eProm
   output$eprom <- renderUI({
-    htmlRenderRmd(srcFile = "lokalEpromNy.Rmd",
+    htmlRenderRmd(srcFile = "lokalEprom.Rmd",
                   params = list(hospitalName=hospitalName,
                                 reshId=reshId,
                                 startDate=input$dateRangeEprom[1],
@@ -293,13 +293,13 @@ server <- function(input, output, session) {
 
   output$downloadReportEprom <- downloadHandler(
     filename = function() {
-      downloadFilename("lokalEpromNy",
+      downloadFilename("lokalEprom",
                        input$formatEprom)
     },
 
     content = function(file) {
-      contentFile(file, "lokalEpromNy.Rmd",
-                  "tmpLokalEpromNy.Rmd",
+      contentFile(file, "lokalEprom.Rmd",
+                  "tmpLokalEprom.Rmd",
                   input$formatEprom,
                   addParam = list(startDate=input$dateRangeEprom[1],
                                   endDate=input$dateRangeEprom[2]))
