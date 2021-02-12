@@ -1,4 +1,5 @@
 %\documentclass{article}
+\usepackage{datetime2}
 \usepackage{xcolor}
 \usepackage{sectsty}
 \usepackage{marginnote}
@@ -67,7 +68,7 @@
       \raggedleft\footnotesize%
       \includegraphics[width=\hsize]{logo_smerte}%
       \raggedleft\footnotesize%
-      {\\ SMERTEREGISTERET er et nasjonalt kvalitetsregister som kvalitesforbedring av smertebehansling som formål. Bla, bla, bla...\par}
+      {\\ SMERTEREGISTERET er et nasjonalt kvalitetsregister som har kvalitesforbedring av smertebehandling som formål. Bla, bla, bla...\par}
       \includegraphics[width=\hsize]{logo}%
       {\\ RAPPORTEKET er en analysetjenste som tilbyr interaktiv undersøkelse av rådata, rutinemessig utsending av rapporter og visualisering av resultater. Tjenesten utvikles og vedlikeholdes av Nasjonalt servicemiljø for medisinske kvalitetsregistre ved Senter for Klinisk Dokumentasjon og Evaluering (SKDE) og arbeidet finansieres av Helse- og omsorgsdepartementet.}%
     \end{textblock*}
@@ -77,9 +78,10 @@
       \raggedleft\footnotesize\itshape%
       {\large\rmfamily\upshape\bfseries Om rapporten\par}%
       {\textbf{Bestilt av}\\\@author\par}%
+      {\textbf{Ansvarlig for innhold}\\ Smerteregisteret\par}%
       {\textbf{Produsert av}\\ Rapporteket\par}%
-      {\textbf{Dato}\\ dato\par}%
-      {\textbf{Tid}\\ tid\par}%
+      {\textbf{Dato}\\ \DTMtoday\par}%
+      {\textbf{Tid}\\ \DTMcurrenttime\par}%
       {\textbf{Fingeravtrykk}\\ fingeravtrykk\par}%
     \end{textblock*}
 

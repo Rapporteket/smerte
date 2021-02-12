@@ -97,6 +97,10 @@ cat('# Upps...\nI den valgte tidsperioden er det ikke nok data til å gi ut resu
 knitr::knit_exit()
 ```
 
+```{=latex}
+\twocolumn
+```
+
 # ePROM: pasreg
 
 ```{r pasreg, warning = TRUE, message=TRUE, results='asis', eval=dataPresent}
@@ -366,6 +370,10 @@ mstt(tab = hads, colnames = c("", "Antall ", "Prosent"),
 ```
 I den valgte tidsperioden fikk tilsammen `r antUtsendt` pasienter av totalt `r dim(dat)[1]` tilsendt ePROM-skjema for HADS. Av de som fikk tilsendt skjema var det `r antsvar` pasienter som sendte inn en besvarelse. Dette gir en svarandel på `r round(andsvar, digits = 2)`. Tabell \@ref(tab:hadsspm) gir en oversikt over registrerte årsaker til manglende besvarelse for de `r antiksvar` som ikke har svart.
 
+```{=latex}
+\onecolumn
+```
+
 ```{r hadsfig, echo=FALSE, warning = FALSE, eval=dataPresent, fig.cap="\\label{fig:hadsfig}Fordeling av angst og depresjonsscore i HADS. Poengscorene vurderes som følger: lavere enn den grønne linjen viser ingen tegn til symptomer, mellom den grønne og den gule linjen viser milde symptomer, mellom den gule og den røde linjen viser moderate symptomer, mens over den røde viser alvorlig symptomer."}
 
 #Figur for depresjonscore
@@ -394,6 +402,11 @@ angstplot = ggplot(angst, aes(x=HADSScoreAngst)) +
                 color = "red", size=1) 
 
 grid.arrange(depplot, angstplot, ncol=2)
+```
+
+
+```{=latex}
+\twocolumn
 ```
 
 Figur \@ref(fig:hadsfig) viser viser hvordan de `r antsvar` aktuelle forløpene fordeles på depresjonsscore og angstscore i HADS. Poengscorene vurderes som følger: lavere enn den grønne linjen viser ingen tegn til symptomer, mellom den grønne og den gule linjen viser milde symptomer, mellom den gule og den røde linjen viser moderate symptomer, mens over den røde viser alvorlig symptomer.
