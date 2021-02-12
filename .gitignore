@@ -4,4 +4,7 @@
 .Ruserdata
 *.html
 inst/shinyApps/smerte/*.md
+inst/*.md
+inst/*.log
+inst/*.aux
 docs/
