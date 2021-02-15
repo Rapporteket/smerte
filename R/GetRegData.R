@@ -91,7 +91,7 @@ SELECT
   PasientID,
   ForlopsID,
   InklKritOppf,
-  SkrSamtykke
+  SkriftligSamtyk
 FROM
   AlleVarNum
 WHERE
