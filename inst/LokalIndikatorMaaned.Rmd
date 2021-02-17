@@ -516,9 +516,6 @@ mst(tab = tabplan,
 Figuren under viser hvordan andelen har fordelt seg i løpet av året.
 
 ```{r nedtrfig, warning = FALSE, message=FALSE, results='asis', fig.pos= "H", out.extra = '', fig.width=7.5}
-if (dim(dat)[1] < 1) {
-  message <- "I den valgte tidsperioden er det ikke nok data til å vise figur for denne kvalitetsindikatoren."
-  } else {
 
 #Aggregate by month for plot
 plotnedtr<- dat %>% 
@@ -527,6 +524,9 @@ plotnedtr<- dat %>%
   summarise(n = n()) %>%
   mutate(freq = n/sum(n)) %>%
   filter(Journalnotat == 1)
+if (dim(plotnedtr)[1] < 1) {
+  message <- "I den valgte tidsperioden er det ikke nok data til å vise figur for denne kvalitetsindikatoren."
+  } else {
 
 #Plotting plotdat
 ggplot(plotnedtr, aes(month, freq)) + 
@@ -542,3 +542,5 @@ ggplot(plotnedtr, aes(month, freq)) +
 
 }
 ```
+
+`r message`
