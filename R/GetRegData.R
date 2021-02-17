@@ -143,7 +143,11 @@ SELECT
   var.StSmBev21,
   var.PasientID,
   var.ForlopsID,
-  var.InnlAvd
+  var.InnlAvd,
+  var.VidereOppf,
+  var.BehNedtrappAvsluttTils,
+  var.Journalnotat,
+  var.IkkeMedBeh
 FROM
   AlleVarNum var
 WHERE
