@@ -140,7 +140,7 @@ server <- function(input, output, session) {
                                   getUserRole(session), sep = ", "))
 
   # Brukerinformasjon
-  userInfo <- rapbase::howWeDealWithPersonalData(session)
+  userInfo <- rapbase::howWeDealWithPersonalData(session, callerPkg = "smerte")
   observeEvent(input$userInfo, {
     shinyalert("Dette vet Rapporteket om deg:", userInfo,
                type = "", imageUrl = "rap/logo.svg",
