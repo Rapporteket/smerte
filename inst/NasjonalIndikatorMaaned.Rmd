@@ -479,6 +479,8 @@ Figuren under viser hvordan andelen har fordelt seg i løpet av året.
 
 ```{r ikkemedfig, warning = FALSE, message=FALSE, results='asis', fig.pos= "H", out.extra = '', fig.width=8.5}
 
+messageik <- ""
+
 plotikmed <- dat %>%
   filter(!is.na(IkkeMedBeh)) %>%
   group_by(SykehusNavn, monthname, IkkeMedBeh) %>%
