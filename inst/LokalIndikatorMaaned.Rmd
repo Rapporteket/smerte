@@ -417,3 +417,136 @@ print(p)
 
 }
 ```
+
+# Ikke-medikamentell behandling
+Andel pasienter hvor ikke-medikamentell behandling startes, endres og/eller følges opp av Smerteteam. Det er ønskelig å utnytte også ikke-medikamentell behandling ved akutt smertebehandling. Dette inkluderer alt fra enkle tiltak som for eksempel varme/kuldebehandling og mobilisering til  berøringstrening og speilbehandling.  Videre også ulike fysioterapeutiske tiltak inkludert TENS og avspenning og ikke minst kognitive tilnærminger som for eksempel avledning, smertemestring og endringsorientert samtale.
+
+```{r ikkemed, warning = FALSE, message=FALSE, results='asis'}
+# Klargjøre
+if (dim(dat)[1] < 1) {
+  message <- "I den valgte tidsperioden er det ikke nok data til å angi denne 
+  kvalitetsindikatoren."
+} else {
+  
+#Verdier som skal vises i tabell for denne indikatoren
+ant <- sum(dat$IkkeMedBeh == 1, na.rm = TRUE)
+totant <- sum(dat$IkkeMedBeh == 1, na.rm = TRUE) + 
+  sum(dat$IkkeMedBeh == 0, na.rm = TRUE)
+and <- sum(dat$IkkeMedBeh == 1, na.rm = TRUE) / 
+  (sum(dat$IkkeMedBeh == 1, na.rm = TRUE) + 
+     sum(dat$IkkeMedBeh == 0, na.rm = TRUE))
+antiksvar <- sum(is.na(dat$IkkeMedBeh))
+
+tabikmed <- cbind(ant, totant, and)
+
+mst(tab = tabikmed,
+    colnames = c("Antall", "Totalt antall", "Andel"),
+    type = params$tableFormat,
+    cap = paste0("Oversikt over andel pasienter med ikke-medikamentell 
+                 behandling. Det var totalt ", antiksvar, " av pasientene der 
+                 det ikke var grunnlag for å angi svar her."),
+    digs = 2,
+    align = c("r", "r", "r"))
+  
+}
+
+
+```
+
+Figuren under viser hvordan andelen har fordelt seg i løpet av året.
+
+```{r ikkemedfig, warning = FALSE, message=FALSE, results='asis', fig.pos= "H", out.extra = '', fig.width=7.5}
+if (dim(dat)[1] < 1) {
+  message <- "I den valgte tidsperioden er det ikke nok data til å vise figur for denne kvalitetsindikatoren."
+  } else {
+
+#Aggregate by month for plot
+#Grouping by month and finding frequency (remove NA here), then filtering on the "correct" frequency (if not, we get the inverse too)
+plotikmed <- dat %>%
+  filter(!is.na(IkkeMedBeh)) %>%
+  group_by(month = monthname, IkkeMedBeh) %>%
+  summarise(n = n()) %>%
+  mutate(freq = n/sum(n)) %>%
+  filter(IkkeMedBeh == 1)
+
+#Plotting plotdat
+ggplot(plotikmed, aes(month, freq)) + 
+  geom_line(aes(group = 1)) + geom_point() + 
+  labs(x = "Måned", y = "Andel", 
+       subtitle = "Andel med ikke-medikamentell behandling per måned") +
+  theme_classic() +
+  theme(axis.text.x = element_text(size = 7.3), 
+        plot.margin = unit(c(1, 1, 2, 0), "cm"), 
+        axis.title.y = element_text(margin = 
+                                      margin(t = 0, r = 10, b = 0, l = 0)), 
+        axis.title.x = element_text(margin = margin(t = 10, r = 0, b = 0, l = 0)))
+
+}
+```
+
+# Nedtrappingsplan (for opioider)
+Andel pasienter som har fått laget nedtrappingsplan (for opioider) hvor det er vurdert behov for dette. Sterke smertestillende er effektive og potente medikamenter som brukes i utstrakt grad i akutt smertebehandling på sykehus. Langvarig bruk er derimot sjelden indisert og det er derfor viktig at pasienter som behandles med slike medikamenter også får en nedtrappingsplan for å hjelpe med optimal bruk.
+
+```{r nedtr, warning = FALSE, message=FALSE, results='asis'}
+# Klargjøre
+if (dim(dat)[1] < 1) {
+  message <- "I den valgte tidsperioden er det ikke nok data til å angi denne 
+  kvalitetsindikatoren."
+} else {
+  
+    #VidereOppf, BehNedtrappAvsluttTils og Journalnotat
+  
+#Verdier som skal vises i tabell for denne indikatoren
+ant <- sum(dat$VidereOppf == 1 &
+             dat$BehNedtrappAvsluttTils == 1 &
+             dat$Journalnotat == 1, na.rm = TRUE)
+
+totant <- sum(dat$VidereOppf == 1 & 
+                dat$BehNedtrappAvsluttTils == 1, na.rm = TRUE) 
+
+and <- ant/totant
+
+tabplan <- cbind(ant, totant, and)
+
+mst(tab = tabplan,
+    colnames = c("Antall", "Totalt antall", "Andel"),
+    type = params$tableFormat,
+    cap = paste0("Oversikt over andel som fikk en plan for nedtrapping av de 
+                 som ble vurdert til å trenge det."),
+    digs = 2, 
+    align = c("r", "r", "r"))
+  
+}
+
+
+```
+
+Figuren under viser hvordan andelen har fordelt seg i løpet av året.
+
+```{r nedtrfig, warning = FALSE, message=FALSE, results='asis', fig.pos= "H", out.extra = '', fig.width=7.5}
+if (dim(dat)[1] < 1) {
+  message <- "I den valgte tidsperioden er det ikke nok data til å vise figur for denne kvalitetsindikatoren."
+  } else {
+
+#Aggregate by month for plot
+plotnedtr<- dat %>% 
+  filter(!is.na(Journalnotat), VidereOppf == 1, BehNedtrappAvsluttTils == 1) %>%
+  group_by(month = monthname, Journalnotat) %>%
+  summarise(n = n()) %>%
+  mutate(freq = n/sum(n)) %>%
+  filter(Journalnotat == 1)
+
+#Plotting plotdat
+ggplot(plotnedtr, aes(month, freq)) + 
+  geom_line(aes(group = 1)) + geom_point() + 
+  labs(x = "Måned", y = "Andel", 
+       subtitle = "Andel med nedtrappingsplan per måned") +
+  theme_classic() +
+  theme(axis.text.x = element_text(size = 7.3), 
+        plot.margin = unit(c(1, 1, 2, 0), "cm"), 
+        axis.title.y = element_text(margin = 
+                                      margin(t = 0, r = 10, b = 0, l = 0)), 
+        axis.title.x = element_text(margin = margin(t = 10, r = 0, b = 0, l = 0)))
+
+}
+```
