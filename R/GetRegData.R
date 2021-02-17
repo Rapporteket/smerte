@@ -74,7 +74,7 @@ WHERE
                                   registryName, ": ", query))
   }
 
-  rapbase::LoadRegData(registryName, query, dbType)
+  rapbase::loadRegData(registryName, query, dbType)
 }
 
 
@@ -91,7 +91,7 @@ SELECT
   PasientID,
   ForlopsID,
   InklKritOppf,
-  SkrSamtykke
+  SkriftligSamtyk
 FROM
   AlleVarNum
 WHERE
@@ -105,7 +105,7 @@ WHERE
                       msg = paste0("Load data from ", registryName, ":", query))
   }
 
-  rapbase::LoadRegData(registryName, query, dbType)
+  rapbase::loadRegData(registryName, query, dbType)
 }
 
 #' @rdname getRegData
@@ -165,7 +165,7 @@ WHERE
                                   registryName, ": ", query))
   }
 
-  rapbase::LoadRegData(registryName, query, dbType)
+  rapbase::loadRegData(registryName, query, dbType)
 }
 
 #' @rdname getRegData
@@ -187,7 +187,7 @@ GROUP BY
   YEAR(RegDato11);
 ")
 
-  rapbase::LoadRegData(registryName, query, dbType)
+  rapbase::loadRegData(registryName, query, dbType)
 }
 
 #' @rdname getRegData
@@ -205,7 +205,7 @@ GROUP BY
   YEAR(RegDato11);
 ")
 
-  rapbase::LoadRegData(registryName, query, dbType)
+  rapbase::loadRegData(registryName, query, dbType)
 }
 
 
@@ -236,7 +236,7 @@ GROUP BY
   if (reshId %in% conf$reg$smerte$nationalAccess$reshId) {
     return("Nasjonal")
   } else {
-    df <- rapbase::LoadRegData(registryName, dbType = dbType, query = query)
+    df <- rapbase::loadRegData(registryName, dbType = dbType, query = query)
     n <- dim(df)[1]
     hVec <- df[1:n, 1]
     if (n > 1) {
@@ -299,8 +299,8 @@ WHERE
   }
 
   if ("session" %in% names(list(...))) {
-    raplog::repLogger(session = list(...)[["session"]],
+    rapbase::repLogger(session = list(...)[["session"]],
                       msg = paste("Smerte data dump:\n", query))
   }
-  rapbase::LoadRegData(registryName, query)
+  rapbase::loadRegData(registryName, query)
 }
