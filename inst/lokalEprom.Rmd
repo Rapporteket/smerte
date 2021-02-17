@@ -369,12 +369,40 @@ mstt(tab = hads, colnames = c("", "Antall ", "Prosent"),
      type = params$tableFormat,
      digs = 0,
      align = c("l", "r", "r", "r"))
+
+
+#Tabeller som viser oversiktene over score
+tabdep <- dat %>%
+  filter(!is.na(HADSScoreDepresjon)) %>%
+  count(HADSScoreDepresjon) %>% group_by(HADSScoreDepresjon)
+
+mstt(tab = tabdep, colnames = c("Score ", "Antall"),
+     cap = paste0("Resultatfordeling for HADS depresjon"),
+     label = "deptab",
+     type = params$tableFormat,
+     digs = 0,
+     align = c("l", "r", "r"))
+
+tabangst <- dat %>%
+  filter(!is.na(HADSScoreAngst)) %>%
+  count(HADSScoreAngst) %>% group_by(HADSScoreAngst)
+
+mstt(tab = tabangst, colnames = c("Score ", "Antall"),
+     cap = paste0("Resultatfordeling for HADS angst"),
+     label = "angsttab",
+     type = params$tableFormat,
+     digs = 0,
+     align = c("l", "r", "r"))
 ```
 I den valgte tidsperioden fikk tilsammen `r antUtsendt` pasienter av totalt `r dim(dat)[1]` tilsendt ePROM-skjema for HADS. Av de som fikk tilsendt skjema var det `r antsvar` pasienter som sendte inn en besvarelse. Dette gir en svarandel på `r round(andsvar, digits = 2)`. Tabell \@ref(tab:hadsspm) gir en oversikt over registrerte årsaker til manglende besvarelse for de `r antiksvar` som ikke har svart.
 
+<<<<<<< HEAD
+Tabell \@ref(tab:deptab) viser en oversikt over hvordan poengsummene for depresjonsdelen av HADS fordeler seg, mens tabell \@ref(tab:angsttab) gjør det samme for angstdelen av HADS.
+=======
 ```{=latex}
 \onecolumn
 ```
+>>>>>>> 2169daaad571b5350e78a24e13b4586e57e573bf
 
 ```{r hadsfig, echo=FALSE, warning = FALSE, eval=dataPresent, fig.cap="\\label{fig:hadsfig}Fordeling av angst og depresjonsscore i HADS. Poengscorene vurderes som følger: lavere enn den grønne linjen viser ingen tegn til symptomer, mellom den grønne og den gule linjen viser milde symptomer, mellom den gule og den røde linjen viser moderate symptomer, mens over den røde viser alvorlig symptomer."}
 
