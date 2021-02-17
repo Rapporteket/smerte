@@ -265,13 +265,21 @@ server <- function(input, output, session) {
 
   output$downloadReportIndikator <- downloadHandler(
     filename = function() {
-      downloadFilename("LokalIndikatorMaaned",
+      repPrefix <- "Lokal"
+      if (isNationalReg(reshId)) {
+        repPrefix <- "Nasjonal"
+      }
+      downloadFilename(paste0(repPrefix, "IndikatorMaaned"),
                        input$formatIndikator)
     },
 
     content = function(file) {
-      contentFile(file, "LokalIndikatorMaaned.Rmd",
-                  "tmpLokalIndikatorMaaned.Rmd",
+      repPrefix <- "Lokal"
+      if (isNationalReg(reshId)) {
+        repPrefix <- "Nasjonal"
+      }
+      contentFile(file, paste0(repPrefix, "IndikatorMaaned.Rmd"),
+                  paste0("tmp", repPrefix, "IndikatorMaaned.Rmd"),
                   input$formatIndikator,
                   addParam = list(year=input$indYearSet))
     }
