@@ -21,8 +21,8 @@ Tilsynsrapporten er en rapport for lokale data for ditt sykehus. Den gir ut info
 ## Dekningsgrad (lokal)
 Til utregning av dekningsgrad for ditt sykehus over valgfri tidsperiode.
 
-## Indikatorrapport (lokal og nasjonal)
-Denne rapporten viser Smerteregisterets fire indikatorer for lokale/nasjonale data. 
+## Indikatorrapport (lokal)
+Denne rapporten viser Smerteregisterets resultat - og kvalitetsindikatorer for lokale data. 
 
-## eProm (lokal)
-Denne rapporten viser pasientenes besvarelser på fire (e)Prom-skjema.
+## EPROM (lokal)
+Denne rapporten gir ut en oversikt over alle variablene i alle eprom-skjema.
