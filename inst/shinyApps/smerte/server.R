@@ -92,7 +92,7 @@ server <- function(input, output, session) {
     file.copy(system.file("preamble.tex", package="smerte"), ".")
     file.copy(system.file("www/logo_rapporteket_gray60.pdf",
                           package="smerte"), "logo.pdf")
-    file.copy(system.file("www/logo_smerte.jpeg", package="smerte"), ".")
+    file.copy(system.file("www/logo_smerte.pdf", package="smerte"), ".")
     out <- rmarkdown::render(
       tmpFile,
       output_format =
