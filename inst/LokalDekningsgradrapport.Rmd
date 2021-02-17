@@ -79,7 +79,7 @@ if (dim(dat)[1] < 1) {
   message <- "I den valgte tidsperioden er det ikke nok data til å angi dekningsgrad."
 } else {
   antInk <- sum(dat$InklKritOppf == 1)
-  sam <- dat$SkrSamtykke
+  sam <- dat$SkriftligSamtyk
   # NA/NULL to be counted as none-consent
   sam[is.na(sam)] <- 0
   antSam <- sum(sam[sam == 1])
