@@ -447,10 +447,7 @@ mst(tab = tabikmed,
 
 Figuren under viser hvordan andelen har fordelt seg i løpet av året.
 
-```{r ikkemedfig, warning = FALSE, message=FALSE, results='asis', fig.pos= "H", out.extra = '', fig.width=7.5}
-if (dim(dat)[1] < 1) {
-  message <- "I den valgte tidsperioden er det ikke nok data til å vise figur for denne kvalitetsindikatoren."
-  } else {
+```{r ikkemedfig, warning = FALSE, message=FALSE, results='asis', fig.pos= "H", out.extra = '', fig.width=8}
 
 #Aggregate by month for plot
 #Grouping by month and finding frequency (remove NA here), then filtering on the "correct" frequency (if not, we get the inverse too)
@@ -460,6 +457,11 @@ plotikmed <- dat %>%
   summarise(n = n()) %>%
   mutate(freq = n/sum(n)) %>%
   filter(IkkeMedBeh == 1)
+
+if (dim(plotikmed)[1] < 1) {
+  messageik <- "I den valgte tidsperioden er det ikke nok data til å vise 
+  figur for denne kvalitetsindikatoren."
+  } else {
 
 #Plotting plotdat
 ggplot(plotikmed, aes(month, freq)) + 
@@ -475,6 +477,7 @@ ggplot(plotikmed, aes(month, freq)) +
 
 }
 ```
+`r messageik`
 
 # Nedtrappingsplan (for opioider)
 Andel pasienter som har fått laget nedtrappingsplan (for opioider) hvor det er vurdert behov for dette. Sterke smertestillende er effektive og potente medikamenter som brukes i utstrakt grad i akutt smertebehandling på sykehus. Langvarig bruk er derimot sjelden indisert og det er derfor viktig at pasienter som behandles med slike medikamenter også får en nedtrappingsplan for å hjelpe med optimal bruk.
@@ -515,7 +518,7 @@ mst(tab = tabplan,
 
 Figuren under viser hvordan andelen har fordelt seg i løpet av året.
 
-```{r nedtrfig, warning = FALSE, message=FALSE, results='asis', fig.pos= "H", out.extra = '', fig.width=7.5}
+```{r nedtrfig, warning = FALSE, message=FALSE, results='asis', fig.pos= "H", out.extra = '', fig.width=8}
 
 #Aggregate by month for plot
 plotnedtr<- dat %>% 
@@ -524,8 +527,10 @@ plotnedtr<- dat %>%
   summarise(n = n()) %>%
   mutate(freq = n/sum(n)) %>%
   filter(Journalnotat == 1)
+
 if (dim(plotnedtr)[1] < 1) {
-  message <- "I den valgte tidsperioden er det ikke nok data til å vise figur for denne kvalitetsindikatoren."
+  message <- "I den valgte tidsperioden er det ikke nok data til å vise 
+  figur for denne kvalitetsindikatoren."
   } else {
 
 #Plotting plotdat
