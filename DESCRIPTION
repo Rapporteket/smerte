@@ -1,7 +1,7 @@
 Package: smerte
 Type: Package
 Title: R-pakke for smerteregisteret
-Version: 0.4.2
+Version: 0.5.0
 Authors@R: c(
     person(given = "Janne",
            family = "Mannseth",
@@ -18,25 +18,33 @@ License: GPL-3
 Depends:
   R (>= 3.5.0)
 Imports:
+    bookdown,
     DT,
     dplyr,
     gridExtra,
     kableExtra,
+    knitr,
     lubridate,
     magrittr,
     rapbase,
     raplog,
+    revealjs,
+    rlang,
     rmarkdown,
     shiny,
     shinyalert,
     shinycssloaders,
     stringr,
     tidyr,
-    zoo,
-    revealjs
+    yaml,
+    zoo
 Remotes:
-  Rapporteket/rapbase,
-  Rapporteket/raplog
+    Rapporteket/rapbase@*release,
+    Rapporteket/raplog@*release
+Suggests: 
+    covr,
+    lintr,
+    testthat (>= 2.1.0)
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.1.1

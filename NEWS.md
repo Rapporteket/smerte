@@ -1,3 +1,13 @@
+# smerte 0.5
+
+* new eProm report
+* more registry indicators
+* new and standard layout for pdf reports
+* upgraded to rapbase version 1.12
+* ci now on github actions
+* some code clean-up
+* general technical fixes
+
 # smerte 0.4.2
 
 * fixed tilsyn

@@ -79,6 +79,25 @@ ui <- tagList(
                )
              )
     ),
+    tabPanel("Eprom",
+             sidebarLayout(
+               sidebarPanel(
+                 dateRangeInput('dateRangeEprom',
+                                label = "Velg periode:", start = "2017-01-01",
+                                end = Sys.Date(), separator = "-"),
+                 radioButtons('formatEprom',
+                              'Format for nedlasting',
+                              c('PDF', 'HTML'),
+                              inline = FALSE),
+                 downloadButton('downloadReportEprom', 'Last ned')
+               ),
+               mainPanel(
+                 htmlOutput("eprom", inline = TRUE) #%>%
+                 # withSpinner(color = "#18bc9c",color.background = "#ffffff",
+                 #             type = 2)
+               )
+             )
+    ),
     tabPanel("Abonnement"
       ,
       sidebarLayout(

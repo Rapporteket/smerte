@@ -6,7 +6,7 @@ library(smerte)
 
 server <- function(input, output, session) {
 
-  raplog::appLogger(session)
+  rapbase::appLogger(session, msg = "Starting smerte app")
 
   # Parameters that will remain throughout the session
   ## setting values that do depend on a Rapporteket context
@@ -16,7 +16,7 @@ server <- function(input, output, session) {
     userFullName <- rapbase::getUserFullName(session)
     userRole <- rapbase::getUserRole(session)
     hospitalName <- getHospitalName(registryName, reshId, userRole)
-    author <- paste0(userFullName, "/", "Rapporteket")
+    author <- userFullName
   } else {
     ### if need be, define your (local) values here
     hospitalName <- "Helse Bergen HF"
@@ -28,6 +28,7 @@ server <- function(input, output, session) {
   if (isNationalReg(reshId)) {
     hideTab(inputId = "tabs", target = "Tilsynsrapport")
     hideTab(inputId = "tabs", target = "Dekningsgrad")
+    hideTab(inputId = "tabs", target = "Abonnement")
     if (!userRole %in% "SC") {
       hideTab(inputId = "tabs", target = "Datadump")
     }
@@ -54,16 +55,16 @@ server <- function(input, output, session) {
     sourceFile <- tempfile(fileext = ".Rmd")
     file.copy(system.file(srcFile, package="smerte"), sourceFile,
               overwrite = TRUE)
+
     owd <- setwd(dirname(sourceFile))
     on.exit(setwd(owd))
-    sourceFile %>%
-      knitr::knit() %>%
-      markdown::markdownToHTML(.,
-                               options = c('fragment_only',
-                                           'base64_images',
-                                           'highlight_code'),
-                                            encoding = "utf-8") %>%
-      shiny::HTML()
+    file.copy(system.file("_bookdown.yml", package="smerte"), ".")
+    html_file <-
+      rmarkdown::render(sourceFile,
+                        output_format = bookdown::html_fragment2(),
+                        params = params,
+                        envir = new.env())
+    shiny::HTML(readLines(html_file))
   }
 
 
@@ -84,33 +85,41 @@ server <- function(input, output, session) {
     # permission to the current working directory
     owd <- setwd(tempdir())
     on.exit(setwd(owd))
+    print(getwd())
     file.copy(src, tmpFile, overwrite = TRUE)
-
-    library(rmarkdown)
-    out <- render(tmpFile,
-                  output_format =
-                    switch(
-                      type,
-                      PDF = pdf_document(),
-                      HTML = html_document(),
-                      BEAMER = beamer_presentation(theme = "Hannover"),
-                      REVEAL = revealjs::revealjs_presentation(theme = "sky")
-                    ),
-                  params = c(
-                    list(tableFormat =
-                           switch(
-                             type,
-                             PDF = "latex",
-                             HTML = "html",
-                             BEAMER = "latex",
-                             REVEAL = "html"),
-                    hospitalName=hospitalName,
-                    reshId=reshId,
-                    userRole=userRole,
-                    registryName=registryName,
-                    author=author,
-                    shinySession=session), addParam),
-                  output_dir = tempdir())
+    file.copy(system.file("_bookdown.yml", package="smerte"), ".")
+    file.copy(system.file("_output.yml", package="smerte"), ".")
+    file.copy(system.file("rapporteket.cls", package="smerte"), ".")
+    file.copy(system.file("preamble.tex", package="smerte"), ".")
+    file.copy(system.file("www/logo_rapporteket_gray60.pdf",
+                          package="smerte"), "logo.pdf")
+    file.copy(system.file("www/logo_smerte.pdf", package="smerte"), ".")
+    out <- rmarkdown::render(
+      tmpFile,
+      output_format =
+        switch(
+          type,
+          PDF = bookdown::pdf_document2(pandoc_args = c("--include-in-header=preamble.tex")),
+          #PDF = bookdown::pdf_document2(pandoc_args = c("--template=preamble.tex")),
+          HTML = bookdown::html_document2(),
+          BEAMER = rmarkdown::beamer_presentation(theme = "Hannover"),
+          REVEAL = revealjs::revealjs_presentation(theme = "sky")
+        ),
+      params = c(
+        list(tableFormat =
+               switch(
+                 type,
+                 PDF = "latex",
+                 HTML = "html",
+                 BEAMER = "latex",
+                 REVEAL = "html"),
+             hospitalName=hospitalName,
+             reshId=reshId,
+             userRole=userRole,
+             registryName=registryName,
+             author=author,
+             shinySession=session), addParam),
+      output_dir = tempdir())
     file.rename(out, file)
   }
 
@@ -132,7 +141,7 @@ server <- function(input, output, session) {
                                   getUserRole(session), sep = ", "))
 
   # Brukerinformasjon
-  userInfo <- rapbase::howWeDealWithPersonalData(session)
+  userInfo <- rapbase::howWeDealWithPersonalData(session, callerPkg = "smerte")
   observeEvent(input$userInfo, {
     shinyalert("Dette vet Rapporteket om deg:", userInfo,
                type = "", imageUrl = "rap/logo.svg",
@@ -257,15 +266,52 @@ server <- function(input, output, session) {
 
   output$downloadReportIndikator <- downloadHandler(
     filename = function() {
-      downloadFilename("LokalIndikatorMaaned",
+      repPrefix <- "Lokal"
+      if (isNationalReg(reshId)) {
+        repPrefix <- "Nasjonal"
+      }
+      downloadFilename(paste0(repPrefix, "IndikatorMaaned"),
                        input$formatIndikator)
     },
 
     content = function(file) {
-      contentFile(file, "LokalIndikatorMaaned.Rmd",
-                  "tmpLokalIndikatorMaaned.Rmd",
+      repPrefix <- "Lokal"
+      if (isNationalReg(reshId)) {
+        repPrefix <- "Nasjonal"
+      }
+      contentFile(file, paste0(repPrefix, "IndikatorMaaned.Rmd"),
+                  paste0("tmp", repPrefix, "IndikatorMaaned.Rmd"),
                   input$formatIndikator,
                   addParam = list(year=input$indYearSet))
+    }
+  )
+
+  # eProm
+  output$eprom <- renderUI({
+    htmlRenderRmd(srcFile = "lokalEprom.Rmd",
+                  params = list(hospitalName=hospitalName,
+                                reshId=reshId,
+                                startDate=input$dateRangeEprom[1],
+                                endDate=input$dateRangeEprom[2],
+                                tableFormat = "html",
+                                registryName=registryName,
+                                userRole=userRole,
+                                shinySession=session)
+    )
+  })
+
+  output$downloadReportEprom <- downloadHandler(
+    filename = function() {
+      downloadFilename("lokalEprom",
+                       input$formatEprom)
+    },
+
+    content = function(file) {
+      contentFile(file, "lokalEprom.Rmd",
+                  "tmpLokalEprom.Rmd",
+                  input$formatEprom,
+                  addParam = list(startDate=input$dateRangeEprom[1],
+                                  endDate=input$dateRangeEprom[2]))
     }
   )
 
@@ -274,12 +320,14 @@ server <- function(input, output, session) {
   ## rekative verdier for å holde rede på endringer som skjer mens
   ## applikasjonen kjører
   rv <- reactiveValues(
-    subscriptionTab = rapbase::makeUserSubscriptionTab(session))
+    subscriptionTab = rapbase::makeAutoReportTab(session))
 
   ## lag tabell over gjeldende status for abonnement
   output$activeSubscriptions <- DT::renderDataTable(
     rv$subscriptionTab, server = FALSE, escape = FALSE, selection = 'none',
-    options = list(dom = 'tp', ordering = FALSE), rownames = FALSE
+    options = list(dom = 'tp', ordering = FALSE,
+                   columnDefs = list(list(visible = FALSE, targets = 6))),
+    rownames = FALSE
   )
 
   ## lag side som viser status for abonnement, også når det ikke finnes noen
@@ -291,7 +339,7 @@ server <- function(input, output, session) {
     } else {
       tagList(
         p(paste0("Aktive abonnement som sendes per epost til ", userFullName,
-                 " (", userEmail, "):")),
+                 ":")),
         DT::dataTableOutput("activeSubscriptions")
       )
     }
@@ -342,14 +390,14 @@ server <- function(input, output, session) {
                                 runDayOfYear = runDayOfYear,
                                 interval = interval, intervalName = intervalName)
     }
-    rv$subscriptionTab <- rapbase::makeUserSubscriptionTab(session)
+    rv$subscriptionTab <- rapbase::makeAutoReportTab(session)
   })
 
   ## slett eksisterende abonnement
   observeEvent(input$del_button, {
     selectedRepId <- strsplit(input$del_button, "_")[[1]][2]
     rapbase::deleteAutoReport(selectedRepId)
-    rv$subscriptionTab <- rapbase::makeUserSubscriptionTab(session)
+    rv$subscriptionTab <- rapbase::makeAutoReportTab(session)
   })
 
   # Metadata
