@@ -1,5 +1,5 @@
 %\documentclass{article}
-\usepackage{datetime2}
+\usepackage[24hr]{datetime}
 \usepackage{xcolor}
 \usepackage{sectsty}
 \usepackage{marginnote}
@@ -79,8 +79,8 @@
       {\textbf{Bestilt av}\\\@author\par}%
       {\textbf{Ansvarlig for innhold}\\ Smerteregisteret\par}%
       {\textbf{Produsert av}\\ Rapporteket\par}%
-      {\textbf{Dato}\\ \DTMtoday\par}%
-      {\textbf{Tid}\\ \DTMcurrenttime\par}%
+      {\textbf{Dato}\\ \today\par}%
+      {\textbf{Tid}\\ \currenttime\par}%
     \end{textblock*}
 
     {\raggedright\sffamily\bfseries\fontsize{20}{25}\selectfont\@title\par}%
