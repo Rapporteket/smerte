@@ -463,6 +463,8 @@ Figuren under viser hvordan andelen har fordelt seg i løpet av året.
 
 ```{r ikkemedfig, warning = FALSE, message=FALSE, results='asis', fig.pos= "H", out.extra = '', fig.width=7}
 
+messageik <- ""
+
 #Aggregate by month for plot
 #Grouping by month and finding frequency (remove NA here), then filtering on the "correct" frequency (if not, we get the inverse too)
 plotikmed <- dat %>%
