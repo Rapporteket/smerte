@@ -62,6 +62,21 @@ if (rapbase::isRapContext()) {
 manednamn = months(as.Date(paste0("2019-",1:12,"-01")))
 dat = dat  %>% mutate(monthname = factor(months(as.Date(StartdatoTO)), levels = manednamn))
 
+#Forkorter månedsnavn
+dat = dat %>%
+  mutate(monthname = recode(monthname, januar = "jan", 
+                            februar = "feb",
+                            mars = "mars",
+                            april = "apr",
+                            mai = "mai",
+                            juni = "jun",
+                            juli = "jul",
+                            august = "aug",
+                            september = "sep",
+                            oktober = "okt",
+                            november = "nov",
+                            desember = "des"))
+
 ```
 
 ```{r makeStandardTableFunction, eval=TRUE}
