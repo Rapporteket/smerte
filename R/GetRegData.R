@@ -69,7 +69,7 @@ WHERE
   query <- paste0(query, year, " AND var.AvdRESH IN (", deps, ");")
 
   if ("session" %in% names(list(...))) {
-    raplog::repLogger(session = list(...)[["session"]],
+    rapbase::repLogger(session = list(...)[["session"]],
                       msg = paste("Load tilsynsrapport data from",
                                   registryName, ": ", query))
   }
@@ -101,7 +101,7 @@ WHERE
                   startDate, "' AND '", endDate, "');")
 
   if ("session" %in% names(list(...))) {
-    raplog::repLogger(session = list(...)[["session"]],
+    rapbase::repLogger(session = list(...)[["session"]],
                       msg = paste0("Load data from ", registryName, ":", query))
   }
 
@@ -160,7 +160,7 @@ WHERE
   }
 
   if ("session" %in% names(list(...))) {
-    raplog::repLogger(session = list(...)[["session"]],
+    rapbase::repLogger(session = list(...)[["session"]],
                       msg = paste("Load indikatorrapport data from",
                                   registryName, ": ", query))
   }
