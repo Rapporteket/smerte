@@ -168,7 +168,7 @@ mst(tab = tabto,
 
 Figuren under viser hvordan andelen har fordelt seg i løpet av året.
 
-```{r behandlertilsynfig, warning = FALSE, message=FALSE, results='asis', fig.pos= "H", out.extra = '', fig.width=7.5}
+```{r behandlertilsynfig, warning = FALSE, message=FALSE, results='asis', fig.pos= "H", out.extra = '', fig.width=7}
 if (dim(behdat)[1] < 1) {
   message <- "I den valgte tidsperioden er det ikke nok data til å vise figur for denne kvalitetsindikatoren."
   } else {
@@ -180,7 +180,7 @@ plotdat <- behdat %>% group_by(month = monthname, behtils) %>% summarise(n = n()
 ggplot(plotdat, aes(month, freq)) + 
   geom_line(aes(group = 1)) + geom_point() + 
   labs(x = "Måned", y = "Andel", subtitle = "Andel tilsett av to eller flere faggrupper per måned") + theme_classic() +
-  theme(axis.text.x = element_text(size = 7.3), plot.margin = unit(c(1, 1, 2, 0), "cm"), axis.title.y = element_text(margin = margin(t = 0, r = 10, b = 0, l = 0)), axis.title.x = element_text(margin = margin(t = 10, r = 0, b = 0, l = 0))) 
+  theme(axis.text.x = element_text(size = 9), plot.margin = unit(c(1, 1, 2, 0), "cm"), axis.title.y = element_text(margin = margin(t = 0, r = 10, b = 0, l = 0)), axis.title.x = element_text(margin = margin(t = 10, r = 0, b = 0, l = 0))) 
   
 }
 
@@ -228,7 +228,7 @@ mst(tab = tabtils,
 
 Figuren under viser hvordan andelen har fordelt seg i løpet av året.
 
-```{r tilsetthenvistfig, warning = FALSE, message=FALSE, results='asis', fig.pos= "H", out.extra = '', fig.width=7.5}
+```{r tilsetthenvistfig, warning = FALSE, message=FALSE, results='asis', fig.pos= "H", out.extra = '', fig.width=7}
 if (dim(dat)[1] < 1) {
   message <- "I den valgte tidsperioden er det ikke nok data til å vise figur for denne kvalitetsindikatoren."
   } else {
@@ -240,7 +240,7 @@ plot2 <- henvdat %>% group_by(month = monthname, henvtils) %>% summarise(n = n()
 ggplot(plot2, aes(month, freq)) + 
   geom_line(aes(group = 1)) + geom_point() + 
   labs(x = "Måned", y = "Andel", subtitle = "Andel tilsett samme dag pasienten var henvist per måned") + theme_classic() +
-  theme(axis.text.x = element_text(size = 7.3), plot.margin = unit(c(1, 1, 2, 0), "cm"), axis.title.y = element_text(margin = margin(t = 0, r = 10, b = 0, l = 0)), axis.title.x = element_text(margin = margin(t = 10, r = 0, b = 0, l = 0))) 
+  theme(axis.text.x = element_text(size = 9), plot.margin = unit(c(1, 1, 2, 0), "cm"), axis.title.y = element_text(margin = margin(t = 0, r = 10, b = 0, l = 0)), axis.title.x = element_text(margin = margin(t = 10, r = 0, b = 0, l = 0))) 
 
 }
 ```
@@ -290,7 +290,7 @@ mst(tab = tabforn,
 
 Figuren under viser hvordan andelen har fordelt seg i løpet av året.
 
-```{r fornoydfig, warning = FALSE, message=FALSE, results='asis', fig.pos= "H", out.extra = '', fig.width=7.5}
+```{r fornoydfig, warning = FALSE, message=FALSE, results='asis', fig.pos= "H", out.extra = '', fig.width=7}
 if (dim(dat)[1] < 1) {
   message <- "I den valgte tidsperioden er det ikke nok data til å vise figur for denne kvalitetsindikatoren."
   } else {
@@ -303,7 +303,7 @@ plot3 <- dat %>% filter(!is.na(fornoyd)) %>% group_by(month = monthname, fornoyd
 ggplot(plot3, aes(month, freq)) + 
   geom_line(aes(group = 1)) + geom_point() + 
   labs(x = "Måned", y = "Andel", subtitle = "Andel fornøyd med ivaretakelsen fra smerteteam per måned") + theme_classic() +
-  theme(axis.text.x = element_text(size = 7.3), plot.margin = unit(c(1, 1, 2, 0), "cm"), axis.title.y = element_text(margin = margin(t = 0, r = 10, b = 0, l = 0)), axis.title.x = element_text(margin = margin(t = 10, r = 0, b = 0, l = 0)))
+  theme(axis.text.x = element_text(size = 9), plot.margin = unit(c(1, 1, 2, 0), "cm"), axis.title.y = element_text(margin = margin(t = 0, r = 10, b = 0, l = 0)), axis.title.x = element_text(margin = margin(t = 10, r = 0, b = 0, l = 0)))
 
 }
 ```
@@ -386,7 +386,7 @@ mst(tab = tabnrs,
 
 Figuren under viser hvordan andelene har fordelt seg i løpet av året for de fire NRS-målene.
 
-```{r nrsfig, warning = FALSE, message=FALSE, results='asis', fig.width=18.5, fig.height=9}
+```{r nrsfig, warning = FALSE, message=FALSE, results='asis', fig.width=10}
 
 if (dim(dat)[1] < 1) {
   message <- "I den valgte tidsperioden er det ikke nok data til å vise figur for denne kvalitetsindikatoren."
@@ -461,7 +461,7 @@ mst(tab = tabikmed,
 
 Figuren under viser hvordan andelen har fordelt seg i løpet av året.
 
-```{r ikkemedfig, warning = FALSE, message=FALSE, results='asis', fig.pos= "H", out.extra = '', fig.width=8}
+```{r ikkemedfig, warning = FALSE, message=FALSE, results='asis', fig.pos= "H", out.extra = '', fig.width=7}
 
 #Aggregate by month for plot
 #Grouping by month and finding frequency (remove NA here), then filtering on the "correct" frequency (if not, we get the inverse too)
@@ -483,7 +483,7 @@ ggplot(plotikmed, aes(month, freq)) +
   labs(x = "Måned", y = "Andel", 
        subtitle = "Andel med ikke-medikamentell behandling per måned") +
   theme_classic() +
-  theme(axis.text.x = element_text(size = 7.3), 
+  theme(axis.text.x = element_text(size = 9), 
         plot.margin = unit(c(1, 1, 2, 0), "cm"), 
         axis.title.y = element_text(margin = 
                                       margin(t = 0, r = 10, b = 0, l = 0)), 
@@ -532,7 +532,7 @@ mst(tab = tabplan,
 
 Figuren under viser hvordan andelen har fordelt seg i løpet av året.
 
-```{r nedtrfig, warning = FALSE, message=FALSE, results='asis', fig.pos= "H", out.extra = '', fig.width=8}
+```{r nedtrfig, warning = FALSE, message=FALSE, results='asis', fig.pos= "H", out.extra = '', fig.width=7}
 
 #Aggregate by month for plot
 plotnedtr<- dat %>% 
@@ -553,7 +553,7 @@ ggplot(plotnedtr, aes(month, freq)) +
   labs(x = "Måned", y = "Andel", 
        subtitle = "Andel med nedtrappingsplan per måned") +
   theme_classic() +
-  theme(axis.text.x = element_text(size = 7.3), 
+  theme(axis.text.x = element_text(size = 9), 
         plot.margin = unit(c(1, 1, 2, 0), "cm"), 
         axis.title.y = element_text(margin = 
                                       margin(t = 0, r = 10, b = 0, l = 0)), 

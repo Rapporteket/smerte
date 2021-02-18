@@ -162,7 +162,7 @@ mst(tab = kvalind1,
 ```
 
 Figuren under viser hvordan andelen har fordelt seg i løpet av året.
-```{r behandlertilsynfig, warning = FALSE, message=FALSE, results='asis', fig.width=13, fig.height=6, fig.pos= "H", out.extra = ''}
+```{r behandlertilsynfig, warning = FALSE, message=FALSE, results='asis', fig.width=8.5, fig.height=6, fig.pos= "H", out.extra = ''}
 if (dim(dat)[1] < 1) {
   message <- "I den valgte tidsperioden er det ikke nok data til å vise figur for denne kvalitetsindikatoren."
   } else {
@@ -214,7 +214,7 @@ mst(tab = kvalind2,
 ```
 
 Figuren under viser hvordan andelen har fordelt seg i løpet av året.
-```{r tilsetthenvistfig, warning = FALSE, message=FALSE, results='asis', fig.width=13, fig.height=6, fig.pos= "H", out.extra = ''}
+```{r tilsetthenvistfig, warning = FALSE, message=FALSE, results='asis', fig.width=8.5, fig.height=6, fig.pos= "H", out.extra = ''}
 if (dim(dat)[1] < 1) {
   message <- "I den valgte tidsperioden er det ikke nok data til å vise figur for denne kvalitetsindikatoren."
   } else {
@@ -271,7 +271,7 @@ mst(tab = kvalind3,
 ```
 
 Figuren under viser hvordan andelen har fordelt seg i løpet av året.
-```{r fornoydfig, warning = FALSE, message=FALSE, results='asis', fig.width=13, fig.height=6, fig.pos= "H", out.extra = ''}
+```{r fornoydfig, warning = FALSE, message=FALSE, results='asis', fig.width=8.5, fig.height=6, fig.pos= "H", out.extra = ''}
 if (dim(dat)[1] < 1) {
   message <- "I den valgte tidsperioden er det ikke nok data til å vise figur for denne kvalitetsindikatoren."
   } else {
@@ -387,7 +387,7 @@ if (dim(dat)[1] < 1) {
     
 #Aggregate by month for plot
 #Common plot details
-plotdetails = list(geom_line(aes(group = factor(SykehusNavn), colour=factor(SykehusNavn)), size = 1.5), geom_point(aes(group = factor(SykehusNavn), colour=factor(SykehusNavn)), size = 3.5), theme_classic(), theme(axis.text.x = element_text(size = 15.5), axis.text.y = element_text(size = 17), axis.title = element_text(size = 21), plot.margin = unit(c(1, 1, 2, 1), "cm"), legend.text = element_text(size = 22), plot.title = element_text(size=19), legend.title = element_text(size = 20), axis.title.y = element_text(margin = margin(t = 0, r = 10, b = 0, l = 0)), axis.title.x = element_text(margin = margin(t = 10, r = 0, b = 0, l = 0))))
+plotdetails = list(geom_line(aes(group = factor(SykehusNavn), colour=factor(SykehusNavn)), size = 1.5), geom_point(aes(group = factor(SykehusNavn), colour=factor(SykehusNavn)), size = 3.5), theme_classic(), theme(axis.text.x = element_text(size = 12), axis.text.y = element_text(size = 12), axis.title = element_text(size = 12), plot.margin = unit(c(1, 1, 2, 1), "cm"), legend.text = element_text(size = 14), plot.title = element_text(size=12), legend.title = element_text(size = 14), axis.title.y = element_text(margin = margin(t = 0, r = 10, b = 0, l = 0)), axis.title.x = element_text(margin = margin(t = 10, r = 0, b = 0, l = 0))))
 
 ####
 #Sterkeste smerte i bevegelse
@@ -419,7 +419,7 @@ p4 = ggplot(ind44plot, aes(monthname, freq)) +
 }
 ```
 
-```{r nrsfig1, warning = FALSE, message=FALSE, results='asis', fig.width=22, fig.height=9}
+```{r nrsfig1, warning = FALSE, message=FALSE, results='asis', fig.width=10}
 
 if (dim(dat)[1] < 1) {
   message <- "I den valgte tidsperioden er det ikke nok data til å vise figur for denne kvalitetsindikatoren."
@@ -428,7 +428,7 @@ if (dim(dat)[1] < 1) {
 }
 ```
 
-```{r nrsfig2, warning = FALSE, message=FALSE, results='asis', fig.width=22, fig.height=9}
+```{r nrsfig2, warning = FALSE, message=FALSE, results='asis', fig.width=10}
 
 if (dim(dat)[1] < 1) {
   message <- "I den valgte tidsperioden er det ikke nok data til å vise figur for denne kvalitetsindikatoren."
@@ -437,7 +437,7 @@ if (dim(dat)[1] < 1) {
 }
 ```
 
-```{r nrsfig3, warning = FALSE, message=FALSE, results='asis', fig.width=22, fig.height=9}
+```{r nrsfig3, warning = FALSE, message=FALSE, results='asis', fig.width=10}
 
 if (dim(dat)[1] < 1) {
   message <- "I den valgte tidsperioden er det ikke nok data til å vise figur for denne kvalitetsindikatoren."
@@ -446,7 +446,7 @@ if (dim(dat)[1] < 1) {
 }
 ```
 
-```{r nrsfig4, warning = FALSE, message=FALSE, results='asis', fig.width=22, fig.height=9}
+```{r nrsfig4, warning = FALSE, message=FALSE, results='asis', fig.width=10}
 
 if (dim(dat)[1] < 1) {
   message <- "I den valgte tidsperioden er det ikke nok data til å vise figur for denne kvalitetsindikatoren."
