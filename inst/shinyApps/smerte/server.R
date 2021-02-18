@@ -338,7 +338,7 @@ server <- function(input, output, session) {
     } else {
       tagList(
         p(paste0("Aktive abonnement som sendes per epost til ", userFullName,
-                 " (", userEmail, "):")),
+                 ":")),
         DT::dataTableOutput("activeSubscriptions")
       )
     }
