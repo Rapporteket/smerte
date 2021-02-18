@@ -28,6 +28,7 @@ server <- function(input, output, session) {
   if (isNationalReg(reshId)) {
     hideTab(inputId = "tabs", target = "Tilsynsrapport")
     hideTab(inputId = "tabs", target = "Dekningsgrad")
+    hideTab(inputId = "tabs", target = "Abonnement")
     if (!userRole %in% "SC") {
       hideTab(inputId = "tabs", target = "Datadump")
     }
