@@ -59,7 +59,7 @@ if (rapbase::isRapContext()) {
 
 #Legger inn månedene i riktig rekkefølge
 #NB: vil at bruker skal velge mellom år, dvs. enten 2016, 2017 osv.
-manednamn = months(as.Date(paste0("2019-",1:12,"-01")))
+manednamn = months(as.Date(paste0("2021-",1:12,"-01")))
 dat = dat  %>% mutate(monthname = factor(months(as.Date(StartdatoTO)), levels = manednamn))
 
 #Forkorter månedsnavn
