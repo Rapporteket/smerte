@@ -1,3 +1,7 @@
+# smeret 0.5.1
+
+* Fix Indikator report (#36)
+
 # smerte 0.5
 
 * new eProm report
