@@ -59,7 +59,7 @@ if (rapbase::isRapContext()) {
 
 #Legger inn månedene i riktig rekkefølge
 #NB: vil at bruker skal velge mellom år, dvs. enten 2016, 2017 osv.
-manednamn = months(as.Date(paste0("2019-",1:12,"-01")))
+manednamn = months(as.Date(paste0("2021-",1:12,"-01")))
 dat = dat  %>% mutate(monthname = factor(months(as.Date(StartdatoTO)), levels = manednamn))
 
 #Forkorter månedsnavn
@@ -108,9 +108,12 @@ Smerteregisteret har seks kvalitetsindikatorer som skal være til hjelp i utvikl
 Andel forløp hvor pasientene tilses av to eller flere faggrupper. Det er ønskelig med høyest mulig andel. De ulike faggruppene er lege, sykepleier, sosionom, psykolog og fysioterapeut. Med "totalt antall" menes her alle forløp som har minimum ett tilsyn. 
 
 ```{r behandlertilsyn, warning = FALSE, message=FALSE, results='asis'}
+
+messagebehtils <- ""
+
 # Klargjøre variabler for behandlertilsyn her
 if (dim(dat)[1] < 1) {
-  message <- "I den valgte tidsperioden er det ikke nok data til å angi denne kvalitetsindikatoren."
+  messagebehtils <- "I den valgte tidsperioden er det ikke nok data til å angi denne kvalitetsindikatoren."
   } else {
 if (!rapbase::isRapContext()) {
   #Må gjøre variablene numerisk for bruk i tabell
@@ -165,12 +168,16 @@ mst(tab = tabto,
     align = c("r", "r", "r"))
   }
 ```
+`r messagebehtils`
 
 Figuren under viser hvordan andelen har fordelt seg i løpet av året.
 
 ```{r behandlertilsynfig, warning = FALSE, message=FALSE, results='asis', fig.pos= "H", out.extra = '', fig.width=7}
+
+messagetils <- ""
+
 if (dim(behdat)[1] < 1) {
-  message <- "I den valgte tidsperioden er det ikke nok data til å vise figur for denne kvalitetsindikatoren."
+  messagetils <- "I den valgte tidsperioden er det ikke nok data til å vise figur for denne kvalitetsindikatoren."
   } else {
 #Aggregate by month for plot
 #Grouping by month and finding frequency for behtils, then filtering on the "correct" frequency (if not, we get the inverse too)
@@ -185,19 +192,23 @@ ggplot(plotdat, aes(month, freq)) +
 }
 
 ```
+`r messagetils`
 
 
 # Tilsett samme dag pasienten var henvist
 Andel forløp hvor pasientene får tilsyn samme dag som de ble henvist. Det er ønskelig med høyest mulig andel. Med "totalt antall" menes her alle forløp som har minimum ett tilsyn. 
 
 ```{r tidhenvisttiltilsyn, warning = FALSE, message=FALSE, results='asis'}
+
+messagehenvdat <- ""
+
 # Klargjøre variabler for tid fra henvsining til tilsyn her.
 
 #Tar først ut alle som ikke har fått tilsyn
 henvdat <- dat[!(dat$AntPasTils == 0 | is.na(dat$AntPasTils)), ]
 
 if (dim(henvdat)[1] < 1) {
-  message <- "I den valgte tidsperioden er det ikke nok data til å angi denne kvalitetsindikatoren."
+  messagehenvdat <- "I den valgte tidsperioden er det ikke nok data til å angi denne kvalitetsindikatoren."
 } else {
 
   henvdat$henvtils <- NA
@@ -225,12 +236,16 @@ mst(tab = tabtils,
 
 
 ```
+`r messagehenvdat`
 
 Figuren under viser hvordan andelen har fordelt seg i løpet av året.
 
 ```{r tilsetthenvistfig, warning = FALSE, message=FALSE, results='asis', fig.pos= "H", out.extra = '', fig.width=7}
+
+messagehenv <- ""
+
 if (dim(dat)[1] < 1) {
-  message <- "I den valgte tidsperioden er det ikke nok data til å vise figur for denne kvalitetsindikatoren."
+  messagehenv <- "I den valgte tidsperioden er det ikke nok data til å vise figur for denne kvalitetsindikatoren."
   } else {
 #Aggregate by month for plot
 #Grouping by month and finding frequency, then filtering on the "correct" frequency (if not, we get the inverse too)
@@ -244,14 +259,18 @@ ggplot(plot2, aes(month, freq)) +
 
 }
 ```
+`r messagehenv`
 
 # Fornøyd med ivaretakelsen fra smerteteam
 Andel forløp hvor pasientene er "i stor grad" eller "i svært stor grad" fornøyd med ivaretakelsen fra smerteteamet. Det er ønskelig med høyest mulig andel. Det er kun de forløpene der spørsmålet er besvart som inkluderes.
 
 ```{r pasienttilfredshet, warning = FALSE, message=FALSE, results='asis'}
+
+messagetilfr <- ""
+
 # Klargjøre variabler for tid fra henvsining til tilsyn her.
 if (dim(dat)[1] < 1) {
-  message <- "I den valgte tidsperioden er det ikke nok data til å angi denne kvalitetsindikatoren."
+  messagetilfr <- "I den valgte tidsperioden er det ikke nok data til å angi denne kvalitetsindikatoren."
 } else {
   
   if (!rapbase::isRapContext()) {
@@ -287,12 +306,17 @@ mst(tab = tabforn,
 
 
 ```
+`r messagetilfr`
+
 
 Figuren under viser hvordan andelen har fordelt seg i løpet av året.
 
 ```{r fornoydfig, warning = FALSE, message=FALSE, results='asis', fig.pos= "H", out.extra = '', fig.width=7}
+
+messagefornfig <- ""
+
 if (dim(dat)[1] < 1) {
-  message <- "I den valgte tidsperioden er det ikke nok data til å vise figur for denne kvalitetsindikatoren."
+  messagefornfig <- "I den valgte tidsperioden er det ikke nok data til å vise figur for denne kvalitetsindikatoren."
   } else {
 
 #Aggregate by month for plot
@@ -307,15 +331,19 @@ ggplot(plot3, aes(month, freq)) +
 
 }
 ```
+`r messagefornfig`
 
 # Nedgang i smerte
 Andel forløp hvor pasienten har nedgang i smertescore Numeric Rating Scale (NRS) fra første til siste tilsyn. Totalt måles endring for følgende fire smertetilstander: _sterkeste_ og _svakeste_ smerte i _ro_ og i _bevegelse_. Det er ønskelig med høyest mulig andel. Det er kun de forløpene der spørsmålet er besvart både ved første og siste tilsyn som inkluderes ("vet ikke" telles heller ikke med).
 
 ```{r smertenivå, warning = FALSE, message=FALSE, results='asis'}
+
+messagesmerte <- ""
+
 # Klargjøre variabler for tid fra henvsining til tilsyn her.
 
 if (dim(dat)[1] < 1) {
-  message <- "I den valgte tidsperioden er det ikke nok data til å angi denne kvalitetsindikatoren."
+  messagesmerte <- "I den valgte tidsperioden er det ikke nok data til å angi denne kvalitetsindikatoren."
 } else {
   
 if (!rapbase::isRapContext()) {
@@ -383,13 +411,16 @@ mst(tab = tabnrs,
 
 
 ```
+`r messagesmerte`
 
 Figuren under viser hvordan andelene har fordelt seg i løpet av året for de fire NRS-målene.
 
 ```{r nrsfig, warning = FALSE, message=FALSE, results='asis', fig.width=10}
 
+messagenrsfig <- ""
+
 if (dim(dat)[1] < 1) {
-  message <- "I den valgte tidsperioden er det ikke nok data til å vise figur for denne kvalitetsindikatoren."
+  messagenrsfig <- "I den valgte tidsperioden er det ikke nok data til å vise figur for denne kvalitetsindikatoren."
   } else {
 #Aggregate by month for plot
 
@@ -423,14 +454,18 @@ print(p)
 
 }
 ```
+`r messagenrsfig`
 
 # Ikke-medikamentell behandling
 Andel pasienter hvor ikke-medikamentell behandling startes, endres og/eller følges opp av Smerteteam. Det er ønskelig å utnytte også ikke-medikamentell behandling ved akutt smertebehandling. Dette inkluderer alt fra enkle tiltak som for eksempel varme/kuldebehandling og mobilisering til  berøringstrening og speilbehandling.  Videre også ulike fysioterapeutiske tiltak inkludert TENS og avspenning og ikke minst kognitive tilnærminger som for eksempel avledning, smertemestring og endringsorientert samtale.
 
 ```{r ikkemed, warning = FALSE, message=FALSE, results='asis'}
+
+messageikmed <- ""
+
 # Klargjøre
 if (dim(dat)[1] < 1) {
-  message <- "I den valgte tidsperioden er det ikke nok data til å angi denne 
+  messageikmed <- "I den valgte tidsperioden er det ikke nok data til å angi denne 
   kvalitetsindikatoren."
 } else {
   
@@ -458,6 +493,7 @@ mst(tab = tabikmed,
 
 
 ```
+`r messageikmed`
 
 Figuren under viser hvordan andelen har fordelt seg i løpet av året.
 
@@ -499,9 +535,12 @@ ggplot(plotikmed, aes(month, freq)) +
 Andel pasienter som har fått laget nedtrappingsplan (for opioider) hvor det er vurdert behov for dette. Sterke smertestillende er effektive og potente medikamenter som brukes i utstrakt grad i akutt smertebehandling på sykehus. Langvarig bruk er derimot sjelden indisert og det er derfor viktig at pasienter som behandles med slike medikamenter også får en nedtrappingsplan for å hjelpe med optimal bruk.
 
 ```{r nedtr, warning = FALSE, message=FALSE, results='asis'}
+
+messagened <- ""
+
 # Klargjøre
 if (dim(dat)[1] < 1) {
-  message <- "I den valgte tidsperioden er det ikke nok data til å angi denne 
+  messagened <- "I den valgte tidsperioden er det ikke nok data til å angi denne 
   kvalitetsindikatoren."
 } else {
   
@@ -531,10 +570,13 @@ mst(tab = tabplan,
 
 
 ```
+`r messagened`
 
 Figuren under viser hvordan andelen har fordelt seg i løpet av året.
 
 ```{r nedtrfig, warning = FALSE, message=FALSE, results='asis', fig.pos= "H", out.extra = '', fig.width=7}
+
+messageplot <- ""
 
 #Aggregate by month for plot
 plotnedtr<- dat %>% 
@@ -545,7 +587,7 @@ plotnedtr<- dat %>%
   filter(Journalnotat == 1)
 
 if (dim(plotnedtr)[1] < 1) {
-  message <- "I den valgte tidsperioden er det ikke nok data til å vise 
+  messageplot <- "I den valgte tidsperioden er det ikke nok data til å vise 
   figur for denne kvalitetsindikatoren."
   } else {
 
@@ -564,4 +606,4 @@ ggplot(plotnedtr, aes(month, freq)) +
 }
 ```
 
-`r message`
+`r messageplot`
