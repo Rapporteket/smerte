@@ -315,6 +315,63 @@ server <- function(input, output, session) {
     }
   )
 
+  # Spinalkateter
+  output$spinalkateter <- renderUI({
+    htmlRenderRmd(srcFile = "LokalSpinalkateter.Rmd",
+                  params = list(hospitalName=hospitalName,
+                                reshId=reshId,
+                                startDate=input$dateRangeSpinalkateter[1],
+                                endDate=input$dateRangeSpinalkateter[2],
+                                tableFormat = "html",
+                                registryName=registryName,
+                                userRole=userRole,
+                                shinySession=session)
+    )
+  })
+
+  output$downloadReportSpinalkateter <- downloadHandler(
+    filename = function() {
+      downloadFilename("LokalSpinalkateter",
+                       input$formatSpinalkateter)
+    },
+
+    content = function(file) {
+      contentFile(file, "LokalSpinalkateter.Rmd",
+                  "tmpLokalSpinalkateter.Rmd",
+                  input$formatSpinalkateter,
+                  addParam = list(startDate=input$dateRangeSpinalkateter[1],
+                                  endDate=input$dateRangeSpinalkateter[2]))
+    }
+  )
+
+  # Smertekategori
+  output$smertekategori <- renderUI({
+    htmlRenderRmd(srcFile = "LokalSmertekategori.Rmd",
+                  params = list(hospitalName=hospitalName,
+                                reshId=reshId,
+                                startDate=input$dateRangeSmertekategori[1],
+                                endDate=input$dateRangeSmertekategori[2],
+                                tableFormat = "html",
+                                registryName=registryName,
+                                userRole=userRole,
+                                shinySession=session)
+    )
+  })
+
+  output$downloadReportSmertekategori <- downloadHandler(
+    filename = function() {
+      downloadFilename("LokalSmertekategori",
+                       input$formatSmertekategori)
+    },
+
+    content = function(file) {
+      contentFile(file, "LokalSmertekategori.Rmd",
+                  "tmpLokalSmertekategori.Rmd",
+                  input$formatSmertekategori,
+                  addParam = list(startDate=input$dateRangeSmertekategori[1],
+                                  endDate=input$dateRangeSmertekategori[2]))
+    }
+  )
 
   # Abonnement
   ## rekative verdier for å holde rede på endringer som skjer mens

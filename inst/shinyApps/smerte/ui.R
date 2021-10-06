@@ -98,6 +98,44 @@ ui <- tagList(
                )
              )
     ),
+    tabPanel("Spinalkateter",
+             sidebarLayout(
+               sidebarPanel(
+                 dateRangeInput('dateRangeSpinalkateter',
+                                label = "Velg periode:", start = "2017-01-01",
+                                end = Sys.Date(), separator = "-"),
+                 radioButtons('formatSpinalkateter',
+                              'Format for nedlasting',
+                              c('PDF', 'HTML'),
+                              inline = FALSE),
+                 downloadButton('downloadReportSpinalkateter', 'Last ned')
+               ),
+               mainPanel(
+                 htmlOutput("spinalkateter", inline = TRUE) #%>%
+                 # withSpinner(color = "#18bc9c",color.background = "#ffffff",
+                 #             type = 2)
+               )
+             )
+    ),
+    tabPanel("Smertekategori",
+             sidebarLayout(
+               sidebarPanel(
+                 dateRangeInput('dateRangeSmertekategori',
+                                label = "Velg periode:", start = "2017-01-01",
+                                end = Sys.Date(), separator = "-"),
+                 radioButtons('formatSmertekategori',
+                              'Format for nedlasting',
+                              c('PDF', 'HTML'),
+                              inline = FALSE),
+                 downloadButton('downloadReportSmertekategori', 'Last ned')
+               ),
+               mainPanel(
+                 htmlOutput("smertekategori", inline = TRUE) #%>%
+                 # withSpinner(color = "#18bc9c",color.background = "#ffffff",
+                 #             type = 2)
+               )
+             )
+    ),
     tabPanel("Abonnement"
       ,
       sidebarLayout(
