@@ -198,7 +198,7 @@ knitr::knit_exit()
 #as_tibble brukes for å fjerne radnummer som ellers vises i tabellen
 datspinalgen = as_tibble(datspinal %>%
                            select(AntPasTils, behtils, StartdatoTO, PasientID, 
-                                  ForlopsID, TotTid, StartdatoTO, SluttDato, 
+                                  ForlopsID, TotTid, SluttDato, 
                                   MoEkvivalens, MoEkvivalens22) %>% 
                            mutate(difftid = as.numeric(gsub("[^0-9]", "", 
                                                             as.Date(datspinal$SluttDato) - 
