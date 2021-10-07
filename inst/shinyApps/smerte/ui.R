@@ -26,121 +26,122 @@ ui <- tagList(
         tags$head(tags$link(rel="shortcut icon", href="rap/favicon.ico"))
       )
     ),
-    tabPanel("Tilsynsrapport",
-      sidebarLayout(
-        sidebarPanel(
-          uiOutput("years"),
-          radioButtons('formatTilsyn',
-                       'Format for nedlasting',
-                       c('PDF', 'HTML'),
-                       inline = FALSE),
-          downloadButton('downloadReportTilsyn', 'Last ned')
-        ),
-        mainPanel(
-          htmlOutput("tilsynsrapport", inline = TRUE) #%>%
+    shiny::navbarMenu(
+      "Rapporter",
+      shiny::tabPanel(
+        "Tilsyn",
+        shiny::sidebarLayout(
+          shiny::sidebarPanel(
+            shiny::uiOutput("years"),
+            shiny::radioButtons('formatTilsyn',
+                                'Format for nedlasting',
+                                c('PDF', 'HTML'),
+                                inline = FALSE),
+            shiny::downloadButton('downloadReportTilsyn', 'Last ned')
+          ),
+          shiny::mainPanel(
+            shiny::htmlOutput("tilsynsrapport", inline = TRUE)
+          )
+        )
+      ),
+      shiny::tabPanel(
+        "Dekningsgrad",
+        shiny::sidebarLayout(
+          shiny::sidebarPanel(
+            shiny::dateRangeInput('dateRangeDekningsgrad',
+                                  label = "Velg periode:", start = "2017-01-01",
+                                  end = Sys.Date(), separator = "-"),
+            shiny::radioButtons('formatDekningsgrad',
+                                'Format for nedlasting',
+                                c('PDF', 'HTML'),
+                                inline = FALSE),
+            shiny::downloadButton('downloadReportDekningsgrad', 'Last ned')
+          ),
+          shiny::mainPanel(
+            htmlOutput("dekningsgrad", inline = TRUE) #%>%
             # withSpinner(color = "#18bc9c",color.background = "#ffffff",
             #             type = 2)
+          )
+        )
+      ),
+      shiny::tabPanel(
+        "Indikatorrapport",
+        shiny::sidebarLayout(
+          shiny::sidebarPanel(
+            shiny::uiOutput("indYears"),
+            shiny::radioButtons('formatIndikator',
+                                'Format for nedlasting',
+                                c('PDF', 'HTML'),
+                                inline = FALSE),
+            shiny::downloadButton('downloadReportIndikator', 'Last ned')
+          ),
+          shiny::mainPanel(
+            shiny::htmlOutput("indikatorrapport", inline = TRUE)
+          )
+        )
+      ),
+      shiny::tabPanel(
+        "Eprom",
+        shiny::sidebarLayout(
+          shiny::sidebarPanel(
+            shiny::dateRangeInput('dateRangeEprom',
+                                  label = "Velg periode:", start = "2017-01-01",
+                                  end = Sys.Date(), separator = "-"),
+            shiny::radioButtons('formatEprom',
+                                'Format for nedlasting',
+                                c('PDF', 'HTML'),
+                                inline = FALSE),
+            shiny::downloadButton('downloadReportEprom', 'Last ned')
+          ),
+          shiny::mainPanel(
+            shiny::htmlOutput("eprom", inline = TRUE) #%>%
+            # withSpinner(color = "#18bc9c",color.background = "#ffffff",
+            #             type = 2)
+          )
+        )
+      ),
+      shiny::tabPanel(
+        "Spinalkateter",
+        shiny::sidebarLayout(
+          shiny::sidebarPanel(
+            shiny::dateRangeInput('dateRangeSpinalkateter',
+                                  label = "Velg periode:", start = "2017-01-01",
+                                  end = Sys.Date(), separator = "-"),
+            shiny::radioButtons('formatSpinalkateter',
+                                'Format for nedlasting',
+                                c('PDF', 'HTML'),
+                                inline = FALSE),
+            shiny::downloadButton('downloadReportSpinalkateter', 'Last ned')
+          ),
+          shiny::mainPanel(
+            shiny::htmlOutput("spinalkateter", inline = TRUE)
+          )
+        )
+      ),
+      shiny::tabPanel(
+        "Smertekategori",
+        shiny::sidebarLayout(
+          shiny::sidebarPanel(
+            shiny::dateRangeInput('dateRangeSmertekategori',
+                                  label = "Velg periode:", start = "2017-01-01",
+                                  end = Sys.Date(), separator = "-"),
+            shiny::radioButtons('formatSmertekategori',
+                                'Format for nedlasting',
+                                c('PDF', 'HTML'),
+                                inline = FALSE),
+            shiny::downloadButton('downloadReportSmertekategori', 'Last ned')
+          ),
+          shiny::mainPanel(
+            shiny::htmlOutput("smertekategori", inline = TRUE)
+          )
         )
       )
     ),
-    tabPanel("Dekningsgrad",
-             sidebarLayout(
-               sidebarPanel(
-                 dateRangeInput('dateRangeDekningsgrad',
-                                label = "Velg periode:", start = "2017-01-01",
-                                end = Sys.Date(), separator = "-"),
-                 radioButtons('formatDekningsgrad',
-                              'Format for nedlasting',
-                              c('PDF', 'HTML'),
-                              inline = FALSE),
-                 downloadButton('downloadReportDekningsgrad', 'Last ned')
-               ),
-               mainPanel(
-                 htmlOutput("dekningsgrad", inline = TRUE) #%>%
-                 # withSpinner(color = "#18bc9c",color.background = "#ffffff",
-                 #             type = 2)
-               )
-             )
-    ),
-    tabPanel("Indikatorrapport",
-             sidebarLayout(
-               sidebarPanel(
-                 uiOutput("indYears"),
-                 radioButtons('formatIndikator',
-                              'Format for nedlasting',
-                              c('PDF', 'HTML'),
-                              inline = FALSE),
-                 downloadButton('downloadReportIndikator', 'Last ned')
-               ),
-               mainPanel(
-                 htmlOutput("indikatorrapport", inline = TRUE) #%>%
-                 # withSpinner(color = "#18bc9c",color.background = "#ffffff",
-                 #             type = 2)
-               )
-             )
-    ),
-    tabPanel("Eprom",
-             sidebarLayout(
-               sidebarPanel(
-                 dateRangeInput('dateRangeEprom',
-                                label = "Velg periode:", start = "2017-01-01",
-                                end = Sys.Date(), separator = "-"),
-                 radioButtons('formatEprom',
-                              'Format for nedlasting',
-                              c('PDF', 'HTML'),
-                              inline = FALSE),
-                 downloadButton('downloadReportEprom', 'Last ned')
-               ),
-               mainPanel(
-                 htmlOutput("eprom", inline = TRUE) #%>%
-                 # withSpinner(color = "#18bc9c",color.background = "#ffffff",
-                 #             type = 2)
-               )
-             )
-    ),
-    tabPanel("Spinalkateter",
-             sidebarLayout(
-               sidebarPanel(
-                 dateRangeInput('dateRangeSpinalkateter',
-                                label = "Velg periode:", start = "2017-01-01",
-                                end = Sys.Date(), separator = "-"),
-                 radioButtons('formatSpinalkateter',
-                              'Format for nedlasting',
-                              c('PDF', 'HTML'),
-                              inline = FALSE),
-                 downloadButton('downloadReportSpinalkateter', 'Last ned')
-               ),
-               mainPanel(
-                 htmlOutput("spinalkateter", inline = TRUE) #%>%
-                 # withSpinner(color = "#18bc9c",color.background = "#ffffff",
-                 #             type = 2)
-               )
-             )
-    ),
-    tabPanel("Smertekategori",
-             sidebarLayout(
-               sidebarPanel(
-                 dateRangeInput('dateRangeSmertekategori',
-                                label = "Velg periode:", start = "2017-01-01",
-                                end = Sys.Date(), separator = "-"),
-                 radioButtons('formatSmertekategori',
-                              'Format for nedlasting',
-                              c('PDF', 'HTML'),
-                              inline = FALSE),
-                 downloadButton('downloadReportSmertekategori', 'Last ned')
-               ),
-               mainPanel(
-                 htmlOutput("smertekategori", inline = TRUE) #%>%
-                 # withSpinner(color = "#18bc9c",color.background = "#ffffff",
-                 #             type = 2)
-               )
-             )
-    ),
-    tabPanel("Abonnement"
-      ,
-      sidebarLayout(
-        sidebarPanel(width = 3,
-          uiOutput("subscriptionRepList"),
+    shiny::tabPanel(
+      "Abonnement",
+      shiny::sidebarLayout(
+        shiny::sidebarPanel(width = 3,
+                            shiny::uiOutput("subscriptionRepList"),
           selectInput("subscriptionFreq", "Frekvens:",
                       list(Årlig="Årlig-year",
                             Kvartalsvis="Kvartalsvis-quarter",
@@ -155,13 +156,6 @@ ui <- tagList(
         mainPanel(
           uiOutput("subscriptionContent")
         )
-      )
-    ),
-    tabPanel("Metadata"
-      ,
-      sidebarLayout(
-        sidebarPanel(uiOutput("metaControl")),
-        mainPanel(htmlOutput("metaData"))
       )
     ),
 
@@ -188,6 +182,13 @@ ui <- tagList(
           mainPanel(
             htmlOutput("dumpDataInfo")
           )
+        )
+      ),
+      shiny::tabPanel(
+        "Metadata",
+        shiny::sidebarLayout(
+          shiny::sidebarPanel(uiOutput("metaControl")),
+          shiny::mainPanel(htmlOutput("metaData"))
         )
       ),
       shiny::tabPanel(
