@@ -146,7 +146,17 @@ ui <- tagList(
           htmlOutput("dumpDataInfo")
         )
       )
+    ),
+    shiny::tabPanel(
+      "Eksport",
+      shiny::sidebarLayout(
+        shiny::sidebarPanel(
+          rapbase::exportUCInput("smerteExport")
+        ),
+        shiny::mainPanel(
+          rapbase::exportGuideUI("smerteExportGuide")
+        )
+      )
     )
-
   ) # navbarPage
 ) # tagList
