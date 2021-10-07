@@ -494,4 +494,11 @@ server <- function(input, output, session) {
       contentDump(file, input$dumpFormat)
     }
   )
+
+  # Eksport
+  ## brukerkontroller
+  rapbase::exportUCServer("smerteExport", registryName = registryName,
+                          repoName = "smerte", eligible = (userRole == "SC"))
+  ## veileding
+  rapbase::exportGuideServer("smerteExportGuide", registryName)
 }
