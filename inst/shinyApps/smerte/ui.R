@@ -126,35 +126,41 @@ ui <- tagList(
         mainPanel(htmlOutput("metaData"))
       )
     ),
-    tabPanel("Datadump"
-      ,
-      sidebarLayout(
-        sidebarPanel(width = 4,
-          uiOutput("dumpTabControl"),
-          dateRangeInput("dumpDateRange", "Velg periode:",
-                         start = lubridate::ymd(Sys.Date())- years(1),
-                         end = Sys.Date(), separator = "-",
-                         weekstart = 1),
-          radioButtons("dumpFormat", "Velg filformat:",
-            choices = list(csv = "csv",
+
+    shiny::navbarMenu("Verktøy",
+      tabPanel(
+        "Datadump",
+        sidebarLayout(
+          sidebarPanel(
+            width = 4,
+            uiOutput("dumpTabControl"),
+            dateRangeInput("dumpDateRange", "Velg periode:",
+                           start = lubridate::ymd(Sys.Date())- years(1),
+                           end = Sys.Date(), separator = "-",
+                           weekstart = 1),
+            radioButtons("dumpFormat", "Velg filformat:",
+                         choices = list(
+                           csv = "csv",
                            `csv2 (nordisk format)` = "csv2",
                            `xlsx-csv` = "xlsx-csv",
-                           `xlsx-csv2 (nordisk format)` = "xlsx-csv2")),
-          downloadButton("dumpDownload", "Hent!")
-        ),
-        mainPanel(
-          htmlOutput("dumpDataInfo")
+                           `xlsx-csv2 (nordisk format)` = "xlsx-csv2")
+                         ),
+            downloadButton("dumpDownload", "Hent!")
+          ),
+          mainPanel(
+            htmlOutput("dumpDataInfo")
+          )
         )
-      )
-    ),
-    shiny::tabPanel(
-      "Eksport",
-      shiny::sidebarLayout(
-        shiny::sidebarPanel(
-          rapbase::exportUCInput("smerteExport")
-        ),
-        shiny::mainPanel(
-          rapbase::exportGuideUI("smerteExportGuide")
+      ),
+      shiny::tabPanel(
+        "Eksport",
+        shiny::sidebarLayout(
+          shiny::sidebarPanel(
+            rapbase::exportUCInput("smerteExport")
+          ),
+          shiny::mainPanel(
+            rapbase::exportGuideUI("smerteExportGuide")
+          )
         )
       )
     )
