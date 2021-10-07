@@ -35,7 +35,7 @@ ui <- tagList(
             shiny::uiOutput("years"),
             shiny::radioButtons('formatTilsyn',
                                 'Format for nedlasting',
-                                c('PDF', 'HTML'),
+                                list(PDF = "pdf", HTML = "html"),
                                 inline = FALSE),
             shiny::downloadButton('downloadReportTilsyn', 'Last ned')
           ),
@@ -58,9 +58,7 @@ ui <- tagList(
             shiny::downloadButton('downloadReportDekningsgrad', 'Last ned')
           ),
           shiny::mainPanel(
-            htmlOutput("dekningsgrad", inline = TRUE) #%>%
-            # withSpinner(color = "#18bc9c",color.background = "#ffffff",
-            #             type = 2)
+            htmlOutput("dekningsgrad", inline = TRUE)
           )
         )
       ),

@@ -142,8 +142,6 @@ server <- function(input, output, session) {
     selectInput("yearSet", "Velg år:", years)
   })
   output$tilsynsrapport <- renderUI({
-    #reshId <- rapbase::getUserReshId(session)
-    #registryName <- makeRegistryName(baseName = "smerte", reshID = reshId)
     if (is.null(input$yearSet)) {
       NULL
     } else {
@@ -163,15 +161,24 @@ server <- function(input, output, session) {
 
   output$downloadReportTilsyn <- downloadHandler(
     filename = function() {
-      downloadFilename("LokalTilsynsrapportMaaned",
-                       input$formatTilsyn)
+      basename(tempfile(pattern = "LokalTilsynsrapportMaaned",
+                        fileext = paste0(".", input$formatTilsyn)))
     },
-
     content = function(file) {
-      contentFile(file, "LokalTilsynsrapportMaaned.Rmd",
-                  "tmpLokalTilsynsrapportMaaned.Rmd",
-                  input$formatTilsyn,
-                  addParam = list(year = input$yearSet))
+      fn <- rapbase::renderRmd(
+        system.file("LokalTilsynsrapportMaaned.Rmd", package = "smerte"),
+        outputType = input$formatTilsyn,
+        params = list(author = author,
+                      hospitalName = hospitalName,
+                      tableFormat = input$formatTilsyn,
+                      reshId = reshId,
+                      registryName = registryName,
+                      userRole = userRole,
+                      userFullName = userFullName,
+                      year = input$yearSet,
+                      shinySession = session)
+      )
+      file.rename(fn, file)
     }
   )
 

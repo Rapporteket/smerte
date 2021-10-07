@@ -6,6 +6,7 @@ params:
   hospitalName: 'Ukjent sykehus'
   reshId: 'locallyDefined'
   userRole: 'MyRole'
+  userFullName: 'Ukjent bruker'
   startDate: '2017-01-01'
   endDate: '2017-12-31'
   year: '2017'
@@ -15,7 +16,10 @@ params:
 title: '`r paste(params$title, params$hospitalName, "for", params$year)`'
 author: '`r params$author`'
 date: '`r format(Sys.time(), "%d\\. %B, %Y")`'
-
+reglogo: '`r system.file("www/logoSmerte.pdf", package = "smerte")`'
+regtext: '`r readLines(system.file("registryShortDescription.txt", package = "smerte"))`'
+registryName: Smerteregisteret
+userFullName: '`r params$userFullName`'
 ---
 ```{r set options and load packages, include = FALSE}
 knitr::opts_chunk$set(echo=FALSE)
@@ -81,30 +85,6 @@ if (rapbase::isRapContext()) {
 
 ```
 
-```{r makeStandardTableFunction, eval=TRUE}
-mst <- function(tab, colnames = colnames(tab), type, cap, digs, align = NULL,
-                fs = 8, lsd = FALSE) {
-  if (type == "latex") {
-    if (lsd) {
-      lo <- c("hold_position", "scale_down")
-    } else {
-      lo <- c("hold_position")
-    }
-    k <- knitr::kable(tab, col.names = colnames, caption = cap, digits = digs,
-                      align = align, booktabs = TRUE) %>% 
-      kableExtra::kable_styling(latex_options = lo, font_size = fs)
-  }
-  
-  if (type == "html") {
-    k <- knitr::kable(tab, col.names = colnames, caption = cap, digits = digs,
-                      align = align) %>% 
-      kableExtra::kable_styling(bootstrap_options = c("striped", "hover",
-                                                      "condensed"),
-                                full_width = F)
-  }
-  cat(k)
-}
-```
 
 # Antall tilsyn og årsak til ikke tilsyn
 
@@ -130,13 +110,14 @@ tilsynsdata <- tilsynsdata %>%
                                    FALSE ~ "Ikke angitt"))
 tilsynsdata <- tilsynsdata[ ,c(4,2,3)]
 
-#Tilsynstabell
-mst(tab = tilsynsdata, colnames = c("Har pasienten fått tilsyn?", "Antall ",
-                                    "Prosent"),
-    cap = paste0("Antall for hver kategori om pasienten har fått tilsyn."),
-    type = params$tableFormat,
-    digs = 0,
-    align = c("l", "r", "r", "r"))
+rapbase::mst(
+  tab = tilsynsdata,
+  col_names = c("Har pasienten fått tilsyn?", "Antall ", "Prosent"),
+  cap = paste0("Antall for hver kategori om pasienten har fått tilsyn."),
+  type = params$tableFormat,
+  digs = 0,
+  align = c("l", "r", "r", "r")
+)
 
 ```
 
@@ -234,14 +215,15 @@ sum_tilsyn_maned$monthname[is.na(sum_tilsyn_maned$monthname)] <- "Total"
 # Bytte på rekkefølgen slik at behandlertilsyn kommer før pasienttilsyn
 sum_tilsyn_maned <- sum_tilsyn_maned[,c(1, 2, 3, 4, 5, 6, 8, 7, 9, 10)]
 
-mst(tab = sum_tilsyn_maned,
-    colnames = c("Måned", "Fysio", "Lege", "Psykolog", "Sosionom",
-                 "Sykepleier", "Beh tilsyn", "Pas tilsyn", "Ant pas",
-                 "Ant henv"),
-    type = params$tableFormat,
-    cap = paste0("Antall tilsyn per måned for de ulike behandlergruppene."),
-    digs = 0,
-    align = c("l", "r", "r", "r", "r", "r", "r", "r", "r", "r"))
+rapbase::mst(
+  tab = sum_tilsyn_maned,
+  col_names = c("Måned", "Fysio", "Lege", "Psykolog", "Sosionom",
+                "Sykepleier", "Beh tilsyn", "Pas tilsyn", "Ant pas",
+                "Ant henv"),
+  type = params$tableFormat,
+  cap = paste0("Antall tilsyn per måned for de ulike behandlergruppene."),
+  digs = 0,
+  align = c("l", "r", "r", "r", "r", "r", "r", "r", "r", "r"))
 ```
 
 
@@ -295,14 +277,15 @@ sum_tilsyn_avdeling = sum_tilsyn_avdeling %>%
   dplyr::mutate(DEPARTMENT_SHORTNAME =
                   stringr::str_replace_all(DEPARTMENT_SHORTNAME, "\n", " "))
 
-mst(tab = sum_tilsyn_avdeling,
-    colnames = c("Avdeling", "Fysio", "Lege", "Psyk", "Sosio", "Sykepl",
-                 "Beh tilsyn", "Pas tilsyn", "Ant pas"),
-    type = params$tableFormat,
-    cap = paste("Antall tilsyn per avdeling.",
-                "Vises i synkende rekkefølge fra flest pasienter til", 
-                "færrest."),
-    digs = 0,
-    align = c("l", "r", "r", "r", "r", "r", "r", "r", "r"))
+rapbase::mst(
+  tab = sum_tilsyn_avdeling,
+  col_names = c("Avdeling", "Fysio", "Lege", "Psyk", "Sosio", "Sykepl",
+                "Beh tilsyn", "Pas tilsyn", "Ant pas"),
+  type = params$tableFormat,
+  cap = paste("Antall tilsyn per avdeling.",
+              "Vises i synkende rekkefølge fra flest pasienter til", 
+              "færrest."),
+  digs = 0,
+  align = c("l", "r", "r", "r", "r", "r", "r", "r", "r"))
 
 ```

@@ -1,0 +1,1 @@
+SmerteReg er et nasjonalt kvalitetsregister som registrer alleinneliggende pasienter som henvises for tilsyn fra akutt smerteteam. Formålet med SmerteReg er å bedre kvaliteten på tjenesten akutt smerteteam yter til smertepasienter på norske sykehus samt å danne grunnlag for forskning.
