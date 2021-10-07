@@ -4,6 +4,7 @@
 \alias{getRegData}
 \alias{getRegDataLokalTilsynsrapportMaaned}
 \alias{getRegDataRapportDekningsgrad}
+\alias{getRegDataSmertekategori}
 \alias{getRegDataSpinalkateter}
 \alias{getLocalYears}
 \alias{getAllYears}
@@ -24,6 +25,15 @@ getRegDataRapportDekningsgrad(
 )
 
 getRegDataIndikator(registryName, reshId, userRole, year, ...)
+
+getRegDataSmertekategori(
+  registryName,
+  reshId,
+  userRole,
+  startDate,
+  endDate,
+  ...
+)
 
 getRegDataSpinalkateter(
   registryName,
