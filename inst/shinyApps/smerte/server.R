@@ -26,16 +26,11 @@ server <- function(input, output, session) {
   # Hide tabs depending on context
   ## do not show local reports in national context
   if (isNationalReg(reshId)) {
-    hideTab(inputId = "tabs", target = "Tilsynsrapport")
-    hideTab(inputId = "tabs", target = "Dekningsgrad")
-    hideTab(inputId = "tabs", target = "Abonnement")
-    if (!userRole %in% "SC") {
-      hideTab(inputId = "tabs", target = "Datadump")
-    }
+    hideTab(inputId = "tabs", target = "Rapporter")
   }
-  ## metadata and dump only for SC
+  ## tools only for SC
   if (!userRole %in% "SC") {
-    hideTab(inputId = "tabs", target = "Metadata")
+    hideTab(inputId = "tabs", target = "Verktøy")
   }
 
 
