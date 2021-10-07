@@ -39,12 +39,12 @@ library(tidyverse)
 ```{r get data, include=FALSE}
 
 if (rapbase::isRapContext()) {
-  dat <- getRegDataRapportDekningsgrad(registryName = params$registryName,
-                                       reshId = params$reshId,
-                                       userRole = params$userRole,
-                                       startDate = params$startDate,
-                                       endDate = params$endDate,
-                                       session = params$shinySession)
+  dat <- getRegDataSpinalkateter(registryName = params$registryName,
+                                 reshId = params$reshId,
+                                 userRole = params$userRole,
+                                 startDate = params$startDate,
+                                 endDate = params$endDate,
+                                 session = params$shinySession)
 } else {
   #Dataimport: skal hente lokale data for hvert sykehus (tar vekk sti, og erstatter med lokal fil)
   path <- read.csv(file = "H:/path.csv", header = FALSE, sep = ";")

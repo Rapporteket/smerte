@@ -14,7 +14,8 @@
 #' @param ... Optional arguments to be passed to the function
 #' @name getRegData
 #' @aliases getRegDataLokalTilsynsrapportMaaned
-#' getRegDataRapportDekningsgrad getLocalYears getAllYears getHospitalName
+#' getRegDataRapportDekningsgrad getRegDataSpinalkateter getLocalYears
+#' getAllYears getHospitalName
 #' getDataDump
 NULL
 
@@ -167,6 +168,60 @@ WHERE
 
   rapbase::loadRegData(registryName, query, dbType)
 }
+
+
+#' @rdname getRegData
+#' @export
+getRegDataSpinalkateter <- function(registryName, reshId, userRole,
+                                    startDate, endDate, ...) {
+
+  dbType <- "mysql"
+
+  # special case at OUS
+  deps <- .getDeps(reshId, userRole)
+
+  query <- "
+SELECT
+  MoEkvivalens,
+  MoEkvivalens22,
+  AntPasTils,
+  AntTilsLege,
+  AntTilsSykPleier,
+  AntTilsFysioT,
+  AntTilsPsyk,
+  AntTilsSosio,
+  StartdatoTO,
+  ForlopsID,
+  StSmBev12,
+  StSmBev21,
+  SvSmBev12,
+  SvSmBev21,
+  StSmRo12,
+  StSmRo21,
+  SvSmRo12,
+  SvSmRo21,
+  SAB11,
+  PasientID,
+  TotTid,
+  SluttDato
+FROM
+  AlleVarNum
+WHERE
+  AvdRESH IN ("
+
+  query <- paste0(query, deps, ") AND (DATE(StartdatoTO) BETWEEN '",
+                  startDate, "' AND '", endDate, "');")
+
+  if ("session" %in% names(list(...))) {
+    rapbase::repLogger(session = list(...)[["session"]],
+                       msg = paste("Load indikatorrapport data from",
+                                   registryName, ": ", query))
+  }
+
+  rapbase::loadRegData(registryName, query, dbType)
+}
+
+
 
 #' @rdname getRegData
 #' @export
