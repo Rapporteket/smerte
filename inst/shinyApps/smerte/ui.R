@@ -65,7 +65,7 @@ ui <- tagList(
         )
       ),
       shiny::tabPanel(
-        "Indikatorrapport",
+        "Indikatorer",
         shiny::sidebarLayout(
           shiny::sidebarPanel(
             shiny::uiOutput("indYears"),
