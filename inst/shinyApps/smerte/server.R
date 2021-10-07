@@ -441,8 +441,7 @@ server <- function(input, output, session) {
   # Eksport
   ## brukerkontroller
   rapbase::exportUCServer("smerteExport", registryName = registryName,
-                          repoName = "smerte"#, eligible = (userRole == "SC")
-                          )
+                          repoName = "smerte", eligible = (userRole == "SC"))
   ## veileding
   rapbase::exportGuideServer("smerteExportGuide", registryName)
 }
