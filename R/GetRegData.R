@@ -70,9 +70,13 @@ WHERE
   query <- paste0(query, year, " AND var.AvdRESH IN (", deps, ");")
 
   if ("session" %in% names(list(...))) {
-    rapbase::repLogger(session = list(...)[["session"]],
-                      msg = paste("Load tilsynsrapport data from",
-                                  registryName, ": ", query))
+    session <- list(...)[["session"]]
+    print(attr(session, "class"))
+    if ("ShinySession" %in% attr(session, "class")) {
+      rapbase::repLogger(session = session,
+                         msg = paste("Load tilsynsrapport data from",
+                                     registryName, ": ", query))
+    }
   }
 
   rapbase::loadRegData(registryName, query, dbType)
