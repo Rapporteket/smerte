@@ -71,7 +71,6 @@ WHERE
 
   if ("session" %in% names(list(...))) {
     session <- list(...)[["session"]]
-    print(attr(session, "class"))
     if ("ShinySession" %in% attr(session, "class")) {
       rapbase::repLogger(session = session,
                          msg = paste("Load tilsynsrapport data from",

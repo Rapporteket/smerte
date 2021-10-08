@@ -11,7 +11,7 @@ reportProcessor(
   author = "unknown author",
   orgName = "unknown organization",
   orgId = 999999,
-  registryName = "ablanor",
+  registryName = "unknown registry",
   userFullName = "unknown person name",
   userRole = "unknown role",
   year = format(Sys.Date(), "\%Y"),
