@@ -212,6 +212,18 @@ ui <- tagList(
             rapbase::exportGuideUI("smerteExportGuide")
           )
         )
+      ),
+      shiny::tabPanel(
+        "Bruksstatisitkk",
+        shiny::sidebarLayout(
+          shiny::sidebarPanel(
+            rapbase::statsInput("smerteStats"),
+            rapbase::statsGuideUI("smerteStats")
+          ),
+          shiny::mainPanel(
+            rapbase::statsUI("smerteStats")
+          )
+        )
       )
     )
   ) # navbarPage

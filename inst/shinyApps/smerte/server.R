@@ -511,4 +511,9 @@ server <- function(input, output, session) {
                           repoName = "smerte", eligible = (userRole == "SC"))
   ## veileding
   rapbase::exportGuideServer("smerteExportGuide", registryName)
+
+  # Bruksstatistikk
+  rapbase::statsServer("smerteStats", registryName = "smerte",
+                       eligible = (userRole == "SC"))
+  rapbase::statsGuideServer("smerteStats", registryName = "smerte")
 }
