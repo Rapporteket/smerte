@@ -448,6 +448,25 @@ server <- function(input, output, session) {
     rv$subscriptionTab <- rapbase::makeAutoReportTab(session)
   })
 
+  # Abonnement (NY)
+  subReports <- list(
+    Tilsyn = list(
+      synopsis = "Tilsynsrapport",
+      fun = "reportProcessor",
+      paramNames = c("report", "outputType", "title", "orgId"),
+      paramValues = c("tilsyn", "pdf", "Tilsyn", reshId)
+    ),
+    Spinalkateter = list(
+      synopsis = "Spinalkateterrapport",
+      fun = "reportProcessor",
+      paramNames = c("report", "outputType", "title", "orgId"),
+      paramValues = c("spinalkateter", "pdf", "Spinalkateter", reshId)
+    )
+  )
+  rapbase::autoReportFormatServer("smerteSubscription")
+  rapbase::autoReportServer("smerteSubscription", registryName = "smerte",
+                            type = "subscription", reports = subReports)
+
   # Metadata
   meta <- reactive({
     smerte::describeRegistryDb(registryName)

@@ -157,6 +157,19 @@ ui <- tagList(
       )
     ),
 
+    shiny::tabPanel(
+      "Abonnement NY!",
+      shiny::sidebarLayout(
+        shiny::sidebarPanel(
+          rapbase::autoReportFormatInput("smerteSubscription"),
+          rapbase::autoReportInput("smerteSubscription")
+        ),
+        shiny::mainPanel(
+          rapbase::autoReportUI("smerteSubscription")
+        )
+      )
+    ),
+
     shiny::navbarMenu("Verktøy",
       tabPanel(
         "Datadump",
