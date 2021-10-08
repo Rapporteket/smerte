@@ -69,7 +69,7 @@ ui <- tagList(
             shiny::uiOutput("indYears"),
             shiny::radioButtons('formatIndikator',
                                 'Format for nedlasting',
-                                c('PDF', 'HTML'),
+                                list(PDF = "pdf", HTML = "html"),
                                 inline = FALSE),
             shiny::downloadButton('downloadReportIndikator', 'Last ned')
           ),
@@ -87,7 +87,7 @@ ui <- tagList(
                                   end = Sys.Date(), separator = "-"),
             shiny::radioButtons('formatEprom',
                                 'Format for nedlasting',
-                                c('PDF', 'HTML'),
+                                list(PDF = "pdf", HTML = "html"),
                                 inline = FALSE),
             shiny::downloadButton('downloadReportEprom', 'Last ned')
           ),
@@ -107,7 +107,7 @@ ui <- tagList(
                                   end = Sys.Date(), separator = "-"),
             shiny::radioButtons('formatSpinalkateter',
                                 'Format for nedlasting',
-                                c('PDF', 'HTML'),
+                                list(PDF = "pdf", HTML = "html"),
                                 inline = FALSE),
             shiny::downloadButton('downloadReportSpinalkateter', 'Last ned')
           ),
@@ -125,7 +125,7 @@ ui <- tagList(
                                   end = Sys.Date(), separator = "-"),
             shiny::radioButtons('formatSmertekategori',
                                 'Format for nedlasting',
-                                c('PDF', 'HTML'),
+                                list(PDF = "pdf", HTML = "html"),
                                 inline = FALSE),
             shiny::downloadButton('downloadReportSmertekategori', 'Last ned')
           ),

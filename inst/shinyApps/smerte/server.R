@@ -27,7 +27,6 @@ server <- function(input, output, session) {
   ## do not show local reports in national context
   if (isNationalReg(reshId)) {
     hideTab(inputId = "tabs", target = "Dekningsgrad")
-    hideTab(inputId = "tabs", target = "Indikatorer")
     hideTab(inputId = "tabs", target = "Eprom")
     hideTab(inputId = "tabs", target = "Spinalkateter")
     hideTab(inputId = "tabs", target = "Smertekategori")
@@ -211,7 +210,7 @@ server <- function(input, output, session) {
         outputType = input$formatDekningsgrad,
         params = list(author = author,
                       hospitalName = hospitalName,
-                      tableFormat = input$formatTilsyn,
+                      tableFormat = input$formatDekningsgrad,
                       reshId = reshId,
                       registryName = registryName,
                       userRole = userRole,
@@ -265,19 +264,29 @@ server <- function(input, output, session) {
       if (isNationalReg(reshId)) {
         repPrefix <- "Nasjonal"
       }
-      downloadFilename(paste0(repPrefix, "IndikatorMaaned"),
-                       input$formatIndikator)
+      basename(tempfile(pattern = paste0(repPrefix, "IndikatorMaaned"),
+                        fileext = paste0(".", input$formatIndikator)))
     },
-
     content = function(file) {
       repPrefix <- "Lokal"
       if (isNationalReg(reshId)) {
         repPrefix <- "Nasjonal"
       }
-      contentFile(file, paste0(repPrefix, "IndikatorMaaned.Rmd"),
-                  paste0("tmp", repPrefix, "IndikatorMaaned.Rmd"),
-                  input$formatIndikator,
-                  addParam = list(year=input$indYearSet))
+      fn <- rapbase::renderRmd(
+        system.file(paste0(repPrefix, "IndikatorMaaned.Rmd"),
+                    package = "smerte"),
+        outputType = input$formatIndikator,
+        params = list(author = author,
+                      hospitalName = hospitalName,
+                      tableFormat = input$formatIndikator,
+                      reshId = reshId,
+                      registryName = registryName,
+                      userRole = userRole,
+                      userFullName = userFullName,
+                      year=input$indYearSet,
+                      shinySession = session)
+      )
+      file.rename(fn, file)
     }
   )
 
