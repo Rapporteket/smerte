@@ -195,22 +195,32 @@ server <- function(input, output, session) {
                     tableFormat='html',
                     registryName=registryName,
                     userRole=userRole,
+                    userFullName = userFullName,
                     shinySession=session)
     )
   })
 
   output$downloadReportDekningsgrad <- downloadHandler(
     filename = function() {
-      downloadFilename("LokalDekningsgradrapport",
-                       input$formatDekningsgrad)
+      basename(tempfile(pattern ="LokalDekningsgradrapport",
+                        fileext = paste0(".", input$formatDekningsgrad)))
     },
-
     content = function(file) {
-      contentFile(file, "LokalDekningsgradrapport.Rmd",
-                  "tmpLokalDekningsgradrapport.Rmd",
-                  input$formatDekningsgrad,
-                  addParam = list(startDate=input$dateRangeDekningsgrad[1],
-                                  endDate=input$dateRangeDekningsgrad[2]))
+      fn <- rapbase::renderRmd(
+        system.file("LokalDekningsgradrapport.Rmd", package = "smerte"),
+        outputType = input$formatDekningsgrad,
+        params = list(author = author,
+                      hospitalName = hospitalName,
+                      tableFormat = input$formatTilsyn,
+                      reshId = reshId,
+                      registryName = registryName,
+                      userRole = userRole,
+                      userFullName = userFullName,
+                      startDate=input$dateRangeDekningsgrad[1],
+                      endDate=input$dateRangeDekningsgrad[2],
+                      shinySession = session)
+      )
+      file.rename(fn, file)
     }
   )
 

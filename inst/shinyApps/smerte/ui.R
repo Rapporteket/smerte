@@ -53,7 +53,7 @@ ui <- tagList(
                                   end = Sys.Date(), separator = "-"),
             shiny::radioButtons('formatDekningsgrad',
                                 'Format for nedlasting',
-                                c('PDF', 'HTML'),
+                                list(PDF = "pdf", HTML = "html"),
                                 inline = FALSE),
             shiny::downloadButton('downloadReportDekningsgrad', 'Last ned')
           ),
