@@ -308,16 +308,25 @@ server <- function(input, output, session) {
 
   output$downloadReportEprom <- downloadHandler(
     filename = function() {
-      downloadFilename("lokalEprom",
-                       input$formatEprom)
+      basename(tempfile(pattern ="lokalEprom",
+                        fileext = paste0(".", input$formatEprom)))
     },
-
     content = function(file) {
-      contentFile(file, "lokalEprom.Rmd",
-                  "tmpLokalEprom.Rmd",
-                  input$formatEprom,
-                  addParam = list(startDate=input$dateRangeEprom[1],
-                                  endDate=input$dateRangeEprom[2]))
+      fn <- rapbase::renderRmd(
+        system.file("lokalEprom.Rmd", package = "smerte"),
+        outputType = input$formatEprom,
+        params = list(author = author,
+                      hospitalName = hospitalName,
+                      tableFormat = input$formatEprom,
+                      reshId = reshId,
+                      registryName = registryName,
+                      userRole = userRole,
+                      userFullName = userFullName,
+                      startDate=input$dateRangeEprom[1],
+                      endDate=input$dateRangeEprom[2],
+                      shinySession = session)
+      )
+      file.rename(fn, file)
     }
   )
 
