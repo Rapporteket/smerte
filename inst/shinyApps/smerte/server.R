@@ -37,61 +37,6 @@ server <- function(input, output, session) {
   }
 
 
-  # filename function for re-use
-  downloadFilename <- function(fileBaseName, type) {
-    paste(paste0(fileBaseName,
-                 as.character(as.integer(as.POSIXct(Sys.time())))),
-          sep = '.', switch(
-            type,
-            PDF = 'pdf', HTML = 'html', REVEAL = 'html', BEAMER = 'pdf')
-    )
-  }
-
-  # render file function for re-use
-  contentFile <- function(file, srcFile, tmpFile, type, addParam = list()) {
-    src <- normalizePath(system.file(srcFile, package="smerte"))
-    # temporarily switch to the temp dir, in case we do not have write
-    # permission to the current working directory
-    owd <- setwd(tempdir())
-    on.exit(setwd(owd))
-    print(getwd())
-    file.copy(src, tmpFile, overwrite = TRUE)
-    file.copy(system.file("_bookdown.yml", package="smerte"), ".")
-    file.copy(system.file("_output.yml", package="smerte"), ".")
-    file.copy(system.file("rapporteket.cls", package="smerte"), ".")
-    file.copy(system.file("preamble.tex", package="smerte"), ".")
-    file.copy(system.file("www/logo_rapporteket_gray60.pdf",
-                          package="smerte"), "logo.pdf")
-    file.copy(system.file("www/logo_smerte.pdf", package="smerte"), ".")
-    out <- rmarkdown::render(
-      tmpFile,
-      output_format =
-        switch(
-          type,
-          PDF = bookdown::pdf_document2(pandoc_args = c("--include-in-header=preamble.tex")),
-          #PDF = bookdown::pdf_document2(pandoc_args = c("--template=preamble.tex")),
-          HTML = bookdown::html_document2(),
-          BEAMER = rmarkdown::beamer_presentation(theme = "Hannover"),
-          REVEAL = revealjs::revealjs_presentation(theme = "sky")
-        ),
-      params = c(
-        list(tableFormat =
-               switch(
-                 type,
-                 PDF = "latex",
-                 HTML = "html",
-                 BEAMER = "latex",
-                 REVEAL = "html"),
-             hospitalName=hospitalName,
-             reshId=reshId,
-             userRole=userRole,
-             registryName=registryName,
-             author=author,
-             shinySession=session), addParam),
-      output_dir = tempdir())
-    file.rename(out, file)
-  }
-
   contentDump <- function(file, type) {
     d <- smerte::getDataDump(registryName,input$dumpDataSet,
                             fromDate = input$dumpDateRange[1],
