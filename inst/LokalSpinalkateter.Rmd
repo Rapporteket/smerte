@@ -5,6 +5,7 @@ params:
   hospitalName: 'Ukjent sykehus'
   reshId: 'locallyDefined'
   userRole: 'MyRole'
+  userFullName: 'Ukjent bruker'
   startDate: '2017-01-01'
   endDate: '2017-12-31'
   year: '2016'
@@ -14,6 +15,10 @@ params:
 title: '`r paste(params$title, params$hospitalName, " i perioden fra ", params$startDate, " til ", params$endDate)`'
 author: '`r params$author`'
 date: '`r format(Sys.time(), "%d\\. %B, %Y")`'
+reglogo: '`r system.file("www/logoSmerte.pdf", package = "smerte")`'
+regtext: '`r readLines(system.file("registryShortDescription.txt", package = "smerte"))`'
+registryName: Smerteregisteret
+userFullName: '`r params$userFullName`'
 header-includes:
 - \usepackage[english, norsk]{babel}
 - \usepackage{booktabs}
@@ -213,8 +218,8 @@ pastils_mean <- mean(datspinal$AntPasTils, na.rm = TRUE)
 #Til tabell
 spinaltabell <- datspinalgen[ , c(5, 1, 2, 6, 10, 8, 9)]
 
-mstt(tab = spinaltabell, 
-    colnames = c("ForløpsID" ,"Pasienttilsyn", "Behandlertilsyn", "Totaltid", "Følgetid", "MoEkv før", "MoEkv etter"),
+rapbase::mst(tab = spinaltabell, 
+    col_names = c("ForløpsID" ,"Pasienttilsyn", "Behandlertilsyn", "Totaltid", "Følgetid", "MoEkv før", "MoEkv etter"),
     cap = paste0("Informasjon rundt pasienter registert med spinalkateter. Totaltid gir antall timer totalt brukt på tilsyn, mens følgetid gir antall dager fra henvisning til sluttføring. MoEkv før og MoEkv etter gir antall morfinekvivalenter henholdsvis ved innleggelse og ved utskrivelse."),
     label = "spinalkat",
     type = params$tableFormat,
@@ -232,8 +237,8 @@ I den valgte tidsperioden ble spinalkateter gitt til tilsammen `r antspinal` av 
 nrsendring = as_tibble(datspinal %>%
                          select(ForlopsID, stbe, svbe, stro, svro))
 
-mstt(tab = nrsendring, 
-    colnames = c("ForløpsID", "Sterkeste smerte bevegelse", "Svakeste smerte bevegelse", "Sterkeste smerte ro", "Svakeste smerte ro"),
+rapbase::mst(tab = nrsendring, 
+    col_names = c("ForløpsID", "Sterkeste smerte bevegelse", "Svakeste smerte bevegelse", "Sterkeste smerte ro", "Svakeste smerte ro"),
     cap = paste0("Informasjon om endring i NRS for hver pasient som fikk spinalkateter. En endring > 0 betyr nedgang i smerte fra første til siste måling, mens en endring < 0 betyr økning i smerte. 0 betyr ingen endring. 'Mangler' betyr at pasienten ikke har gitt NRS, enten ved første, siste eller begge målinger."),
     label = "spinalnrs",
     type = params$tableFormat,

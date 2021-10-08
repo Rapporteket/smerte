@@ -5,6 +5,7 @@ params:
   hospitalName: 'Ukjent sykehus'
   reshId: 'locallyDefined'
   userRole: 'MyRole'
+  userFullName: 'Ukjent bruker'
   startDate: '2017-01-01'
   endDate: '2017-12-31'
   year: '2016'
@@ -14,6 +15,10 @@ params:
 title: '`r paste(params$title, params$hospitalName, " i perioden fra ", params$startDate, " til ", params$endDate)`'
 author: '`r params$author`'
 date: '`r format(Sys.time(), "%d\\. %B, %Y")`'
+reglogo: '`r system.file("www/logoSmerte.pdf", package = "smerte")`'
+regtext: '`r readLines(system.file("registryShortDescription.txt", package = "smerte"))`'
+registryName: Smerteregisteret
+userFullName: '`r params$userFullName`'
 header-includes:
 - \usepackage[english, norsk]{babel}
 - \usepackage{booktabs}
@@ -164,8 +169,8 @@ tot_smertekat = bind_rows(akutt, langvarig, palliativ)
 rownames(tot_smertekat) = c("Akutt smerte", "Langvarig smerte", "Palliativ")
 
 #Smertekategori
-mstt(tab = tot_smertekat, 
-     colnames = c( "Antall ja" ,"Antall totalt", "Andel"),
+rapbase::mst(tab = tot_smertekat, 
+     col_names = c( "Antall ja" ,"Antall totalt", "Andel"),
      cap = paste0("Tabellen viser hvordan pasientenes hovedkategori (smerte) fordeler seg mellom akutt, langvarig eller palliativ smerte."),
      label = "smertekattab",
      type = params$tableFormat,
@@ -173,8 +178,8 @@ mstt(tab = tot_smertekat,
      align = c("l", "c", "c", "c"))
 
 #Akutt og langvarig samtidig
-mstt(tab = akklang, 
-     colnames = c( "Antall ja" ,"Antall totalt", "Andel"),
+rapbase::mst(tab = akklang, 
+     col_names = c( "Antall ja" ,"Antall totalt", "Andel"),
      cap = paste0("Tabellen viser antall og andel forløp med både akutt og langvarig smerte."),
      label = "akklangtab",
      type = params$tableFormat,
@@ -182,8 +187,8 @@ mstt(tab = akklang,
      align = c("l", "c", "c", "c"))
 
 #Underkategori for de med akutt smerte som hovedsmerte
-mstt(tab = underdiag, 
-     colnames = c( "Antall ja" ,"Antall totalt", "Andel"),
+rapbase::mst(tab = underdiag, 
+     col_names = c( "Antall ja" ,"Antall totalt", "Andel"),
      cap = paste0("Tabellen viser underkateogriene for smerte for de forløpene med akutt smerte som hovedkategori."),
      label = "underdiag",
      type = params$tableFormat,
@@ -202,8 +207,8 @@ opi = fulldat %>% filter(!is.na(Opioid4a)) %>%
   summarise(antall_ja = sum(Opioid4a == 1), nevner = n(), ind = antall_ja/nevner) %>% 
   ungroup
 
-mstt(tab = opi, 
-     colnames = c( "Antall ja" ,"Antall totalt", "Andel"),
+rapbase::mst(tab = opi, 
+     col_names = c( "Antall ja" ,"Antall totalt", "Andel"),
      cap = paste0("Tabellen viser hvordan opioidbruk før innleggelse fordeler seg."),
      label = "opitab",
      type = params$tableFormat,

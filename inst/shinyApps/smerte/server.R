@@ -348,16 +348,25 @@ server <- function(input, output, session) {
 
   output$downloadReportSpinalkateter <- downloadHandler(
     filename = function() {
-      downloadFilename("LokalSpinalkateter",
-                       input$formatSpinalkateter)
+      basename(tempfile(pattern ="LokalSpinalkateter",
+                        fileext = paste0(".", input$formatSpinalkateter)))
     },
-
     content = function(file) {
-      contentFile(file, "LokalSpinalkateter.Rmd",
-                  "tmpLokalSpinalkateter.Rmd",
-                  input$formatSpinalkateter,
-                  addParam = list(startDate=input$dateRangeSpinalkateter[1],
-                                  endDate=input$dateRangeSpinalkateter[2]))
+      fn <- rapbase::renderRmd(
+        system.file("LokalSpinalkateter.Rmd", package = "smerte"),
+        outputType = input$formatSpinalkateter,
+        params = list(author = author,
+                      hospitalName = hospitalName,
+                      tableFormat = input$formatSpinalkateter,
+                      reshId = reshId,
+                      registryName = registryName,
+                      userRole = userRole,
+                      userFullName = userFullName,
+                      startDate=input$dateRangeSpinalkateter[1],
+                      endDate=input$dateRangeSpinalkateter[2],
+                      shinySession = session)
+      )
+      file.rename(fn, file)
     }
   )
 
@@ -379,16 +388,25 @@ server <- function(input, output, session) {
 
   output$downloadReportSmertekategori <- downloadHandler(
     filename = function() {
-      downloadFilename("LokalSmertekategori",
-                       input$formatSmertekategori)
+      basename(tempfile(pattern ="LokalSmertekategori",
+                        fileext = paste0(".", input$formatSmertekategori)))
     },
-
     content = function(file) {
-      contentFile(file, "LokalSmertekategori.Rmd",
-                  "tmpLokalSmertekategori.Rmd",
-                  input$formatSmertekategori,
-                  addParam = list(startDate=input$dateRangeSmertekategori[1],
-                                  endDate=input$dateRangeSmertekategori[2]))
+      fn <- rapbase::renderRmd(
+        system.file("LokalSmertekategori.Rmd", package = "smerte"),
+        outputType = input$formatSmertekategori,
+        params = list(author = author,
+                      hospitalName = hospitalName,
+                      tableFormat = input$formatSmertekategori,
+                      reshId = reshId,
+                      registryName = registryName,
+                      userRole = userRole,
+                      userFullName = userFullName,
+                      startDate=input$dateRangeSmertekategori[1],
+                      endDate=input$dateRangeSmertekategori[2],
+                      shinySession = session)
+      )
+      file.rename(fn, file)
     }
   )
 
