@@ -1,3 +1,8 @@
+# smerte 0.6.0
+
+* New reports added
+* Reports and subscriptions now delivered by rapbase functions and modules 
+
 # smeret 0.5.1
 
 * Fix Indikator report (#36)
