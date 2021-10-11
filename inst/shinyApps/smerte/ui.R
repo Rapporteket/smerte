@@ -138,28 +138,6 @@ ui <- tagList(
     shiny::tabPanel(
       "Abonnement",
       shiny::sidebarLayout(
-        shiny::sidebarPanel(width = 3,
-                            shiny::uiOutput("subscriptionRepList"),
-          selectInput("subscriptionFreq", "Frekvens:",
-                      list(Årlig="Årlig-year",
-                            Kvartalsvis="Kvartalsvis-quarter",
-                            Månedlig="Månedlig-month",
-                            Ukentlig="Ukentlig-week",
-                            Daglig="Daglig-DSTday"),
-                      selected = "Månedlig-month"),
-          selectInput("subscriptionFileFormat", "Format:",
-                      c("html", "pdf")),
-          actionButton("subscribe", "Bestill!")
-        ),
-        mainPanel(
-          uiOutput("subscriptionContent")
-        )
-      )
-    ),
-
-    shiny::tabPanel(
-      "Abonnement NY!",
-      shiny::sidebarLayout(
         shiny::sidebarPanel(
           rapbase::autoReportFormatInput("smerteSubscription"),
           rapbase::autoReportInput("smerteSubscription")
