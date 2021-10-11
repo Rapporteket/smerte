@@ -405,6 +405,18 @@ server <- function(input, output, session) {
                             orgs = orgs)
 
   # Utsendelser
+  org <- rapbase::autoReportOrgServer("smerteDispatchment", orgs)
+  format <- rapbase::autoReportFormatServer("smerteDispatchment")
+
+  # set reactive parameters overriding those in the reports list
+  paramNames <- shiny::reactive(c("orgId", "outputType"))
+  paramValues <- shiny::reactive(c(org$value(), format()))
+
+  rapbase::autoReportServer(
+    "smerteDispatchment", registryName = "smerte", type = "dispatchment",
+    org = org$value, paramNames = paramNames, paramValues = paramValues,
+    reports = reports, orgs = orgs, eligible = (userRole == "SC")
+  )
 
   # Metadata
   meta <- reactive({

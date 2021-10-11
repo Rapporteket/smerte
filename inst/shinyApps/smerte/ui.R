@@ -203,6 +203,19 @@ ui <- tagList(
         )
       ),
       shiny::tabPanel(
+        "Utsendelser",
+        shiny::sidebarLayout(
+          shiny::sidebarPanel(
+            autoReportFormatInput("smerteDispatchment"),
+            autoReportOrgInput("smerteDispatchment"),
+            autoReportInput("smerteDispatchment")
+          ),
+          shiny::mainPanel(
+            rapbase::autoReportUI("smerteDispatchment")
+          )
+        )
+      ),
+      shiny::tabPanel(
         "Eksport",
         shiny::sidebarLayout(
           shiny::sidebarPanel(
