@@ -147,32 +147,31 @@ ui <- tagList(
         )
       )
     ),
-
-    shiny::navbarMenu("Verktøy",
-      tabPanel(
-        "Datadump",
-        sidebarLayout(
-          sidebarPanel(
-            width = 4,
-            uiOutput("dumpTabControl"),
-            dateRangeInput("dumpDateRange", "Velg periode:",
-                           start = lubridate::ymd(Sys.Date())- years(1),
-                           end = Sys.Date(), separator = "-",
-                           weekstart = 1),
-            radioButtons("dumpFormat", "Velg filformat:",
-                         choices = list(
-                           csv = "csv",
-                           `csv2 (nordisk format)` = "csv2",
-                           `xlsx-csv` = "xlsx-csv",
-                           `xlsx-csv2 (nordisk format)` = "xlsx-csv2")
-                         ),
-            downloadButton("dumpDownload", "Hent!")
+    tabPanel(
+      "Datadump",
+      sidebarLayout(
+        sidebarPanel(
+          width = 4,
+          uiOutput("dumpTabControl"),
+          dateRangeInput("dumpDateRange", "Velg periode:",
+                         start = lubridate::ymd(Sys.Date())- years(1),
+                         end = Sys.Date(), separator = "-",
+                         weekstart = 1),
+          radioButtons("dumpFormat", "Velg filformat:",
+                       choices = list(
+                         csv = "csv",
+                         `csv2 (nordisk format)` = "csv2",
+                         `xlsx-csv` = "xlsx-csv",
+                         `xlsx-csv2 (nordisk format)` = "xlsx-csv2")
           ),
-          mainPanel(
-            htmlOutput("dumpDataInfo")
-          )
+          downloadButton("dumpDownload", "Hent!")
+        ),
+        mainPanel(
+          htmlOutput("dumpDataInfo")
         )
-      ),
+      )
+    ),
+    shiny::navbarMenu("Verktøy",
       shiny::tabPanel(
         "Metadata",
         shiny::sidebarLayout(
