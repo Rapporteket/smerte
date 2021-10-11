@@ -325,15 +325,14 @@ getHospitalName <- function(registryName, reshId, userRole) {
 
   query <- paste0("
 SELECT
-  LOCATIONNAME AS ln
+  LOCATION_SHORTNAME AS ln
 FROM
   avdelingsoversikt
 WHERE
   DEPARTMENT_CENTREID IN (", deps, ") AND
   DEPARTMENT_ACTIVE = 1
 GROUP BY
-  LOCATIONNAME;
-                  ")
+  LOCATION_SHORTNAME;")
 
 
 
