@@ -355,6 +355,9 @@ server <- function(input, output, session) {
     }
   )
 
+  # Values shared among subscriptions and dispatchment
+  orgs <- getNameReshId(registryName = registryName, asNamedList = TRUE)
+
   # Abonnement
   subReports <- list(
     Tilsyn = list(
@@ -377,7 +380,8 @@ server <- function(input, output, session) {
   )
 
   rapbase::autoReportServer("smerteSubscription", registryName = "smerte",
-                            type = "subscription", reports = subReports)
+                            type = "subscription", reports = subReports,
+                            orgs = orgs)
 
   # Metadata
   meta <- reactive({

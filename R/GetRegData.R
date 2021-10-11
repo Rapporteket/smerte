@@ -16,7 +16,7 @@
 #' @aliases getRegDataLokalTilsynsrapportMaaned
 #' getRegDataRapportDekningsgrad getRegDataSmertekategori
 #' getRegDataSpinalkateter getLocalYears getAllYears getHospitalName
-#' getDataDump
+#' getNameReshId getDataDump
 NULL
 
 
@@ -351,6 +351,32 @@ GROUP BY
     return(hStr)
   }
 }
+
+
+#' @rdname getRegData
+#' @export
+getNameReshId <- function(registryName, asNamedList = FALSE) {
+
+  query <- "
+SELECT
+  SykehusNavn AS name,
+  AvdRESH AS id
+FROM
+  AlleVar
+GROUP BY
+  SykehusNavn,
+  AvdRESH;"
+
+  res <- rapbase::loadRegData(registryName, query)
+
+  if (asNamedList) {
+    res <- stats::setNames(res$id, res$name)
+    res <- as.list(res)
+  }
+
+  res
+}
+
 
 #' @rdname getRegData
 #' @export

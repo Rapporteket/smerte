@@ -9,6 +9,7 @@
 \alias{getLocalYears}
 \alias{getAllYears}
 \alias{getHospitalName}
+\alias{getNameReshId}
 \alias{getDataDump}
 \alias{getRegDataIndikator}
 \title{Provide dataframe of registry data}
@@ -49,6 +50,8 @@ getLocalYears(registryName, reshId, userRole)
 getAllYears(registryName, reshId, userRole)
 
 getHospitalName(registryName, reshId, userRole)
+
+getNameReshId(registryName, asNamedList = FALSE)
 
 getDataDump(registryName, tableName, fromDate, toDate, ...)
 }
