@@ -442,19 +442,24 @@ server <- function(input, output, session) {
   # Abonnement (NY)
   subReports <- list(
     Tilsyn = list(
-      synopsis = "Tilsynsrapport",
+      synopsis = paste("Smerteregisteret: månedlig oppsummering av tilsyn for",
+                       "inneværende år"),
       fun = "reportProcessor",
-      paramNames = c("report", "outputType", "title", "orgId"),
-      paramValues = c("tilsyn", "pdf", "Tilsyn", reshId)
+      paramNames = c("report", "outputType", "title", "author", "orgId",
+                     "userFullName"),
+      paramValues = c("tilsyn", "pdf", "Tilsyn", "Smerteregisteret", reshId,
+                      userFullName)
     ),
     Spinalkateter = list(
-      synopsis = "Spinalkateterrapport",
+      synopsis = "Smerteregisteret: bruk av spinalkateter inneværende år",
       fun = "reportProcessor",
-      paramNames = c("report", "outputType", "title", "orgId"),
-      paramValues = c("spinalkateter", "pdf", "Spinalkateter", reshId)
+      paramNames = c("report", "outputType", "title", "author", "orgId",
+                     "userFullName"),
+      paramValues = c("spinalkateter", "pdf", "Spinalkateter",
+                      "Smerteregisteret", reshId, userFullName)
     )
   )
-  rapbase::autoReportFormatServer("smerteSubscription")
+
   rapbase::autoReportServer("smerteSubscription", registryName = "smerte",
                             type = "subscription", reports = subReports)
 
