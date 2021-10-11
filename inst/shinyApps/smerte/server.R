@@ -355,33 +355,56 @@ server <- function(input, output, session) {
     }
   )
 
-  # Values shared among subscriptions and dispatchment
+  # Felles verdier for abonnement og utsendelser
   orgs <- getNameReshId(registryName = registryName, asNamedList = TRUE)
 
-  # Abonnement
-  subReports <- list(
-    Tilsyn = list(
-      synopsis = paste("Smerteregisteret: månedlig oppsummering av tilsyn for",
-                       "inneværende år"),
-      fun = "reportProcessor",
-      paramNames = c("report", "outputType", "title", "author", "orgId",
-                     "userFullName"),
-      paramValues = c("tilsyn", "pdf", "Tilsyn", "Smerteregisteret", reshId,
-                      userFullName)
-    ),
-    Spinalkateter = list(
-      synopsis = "Smerteregisteret: bruk av spinalkateter inneværende år",
-      fun = "reportProcessor",
-      paramNames = c("report", "outputType", "title", "author", "orgId",
-                     "userFullName"),
-      paramValues = c("spinalkateter", "pdf", "Spinalkateter",
-                      "Smerteregisteret", reshId, userFullName)
+  if (isNationalReg(reshId)) {
+    reports <- list(
+      Kvalitetsindikatorer = list(
+        synopsis = paste("Kvalitetsindikatorer fra Smerteregisteret"),
+        fun = "reportProcessor",
+        paramNames = c("report", "outputType", "title", "author", "orgId",
+                       "userFullName"),
+        paramValues = c("nasjonalIndikator", "pdf", "Kvalitetsindikatorer",
+                        "Smerteregisteret", reshId, userFullName)
+      )
     )
-  )
+  } else {
+    reports <- list(
+      Tilsyn = list(
+        synopsis = paste("Smerteregisteret: månedlig oppsummering av tilsyn for",
+                         "inneværende år"),
+        fun = "reportProcessor",
+        paramNames = c("report", "outputType", "title", "author", "orgId",
+                       "userFullName"),
+        paramValues = c("tilsyn", "pdf", "Tilsyn", "Smerteregisteret", reshId,
+                        userFullName)
+      ),
+      Kvalitetsindikatorer = list(
+        synopsis = paste("Kvalitetsindikatorer fra Smerteregisteret"),
+        fun = "reportProcessor",
+        paramNames = c("report", "outputType", "title", "author", "orgId",
+                       "userFullName"),
+        paramValues = c("indikator", "pdf", "Kvalitetsindikatorer",
+                        "Smerteregisteret", reshId, userFullName)
+      ),
+      Spinalkateter = list(
+        synopsis = "Smerteregisteret: bruk av spinalkateter inneværende år",
+        fun = "reportProcessor",
+        paramNames = c("report", "outputType", "title", "author", "orgId",
+                       "userFullName"),
+        paramValues = c("spinalkateter", "pdf", "Spinalkateter",
+                        "Smerteregisteret", reshId, userFullName)
+      )
+    )
+  }
 
+  # Abonnement
   rapbase::autoReportServer("smerteSubscription", registryName = "smerte",
-                            type = "subscription", reports = subReports,
+                            type = "subscription", reports = reports,
                             orgs = orgs)
+
+  # Utsendelser
 
   # Metadata
   meta <- reactive({

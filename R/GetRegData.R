@@ -164,9 +164,12 @@ WHERE
   }
 
   if ("session" %in% names(list(...))) {
-    rapbase::repLogger(session = list(...)[["session"]],
-                      msg = paste("Load indikatorrapport data from",
-                                  registryName, ": ", query))
+    session <- list(...)[["session"]]
+    if ("ShinySession" %in% attr(session, "class")) {
+      rapbase::repLogger(session = session,
+                         msg = paste("Load indikatorrapport data from",
+                                     registryName, ": ", query))
+    }
   }
 
   rapbase::loadRegData(registryName, query, dbType)

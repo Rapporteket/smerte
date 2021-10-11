@@ -57,7 +57,8 @@ reportProcessor <- function(report,
                             startDate = paste(year, "01", "01", sep = "-"),
                             endDate = paste(year, "12", "31", sep = "-")) {
 
-  stopifnot(report %in% c("veiledning", "tilsyn", "spinalkateter"))
+  stopifnot(report %in% c("veiledning", "tilsyn", "indikator",
+                          "nasjonalIndikator", "spinalkateter"))
 
   stopifnot(outputType %in% c("html", "pdf"))
 
@@ -93,6 +94,42 @@ reportProcessor <- function(report,
         registryName = registryName,
         userRole = userRole,
         year = year
+      )
+    )
+  }
+
+  if (report == "indikator") {
+    filePath <- rapbase::renderRmd(
+      system.file("LokalIndikatorMaaned.Rmd", package = "smerte"),
+      outputType = outputType,
+      params = list(
+        author = author,
+        hospitalName = orgName,
+        tableFormat = outputType,
+        reshId = orgId,
+        registryName = registryName,
+        userRole = userRole,
+        year = year,
+        startDate = startDate,
+        endDate = endDate
+      )
+    )
+  }
+
+  if (report == "nasjonalIndikator") {
+    filePath <- rapbase::renderRmd(
+      system.file("NasjonalIndikatorMaaned.Rmd", package = "smerte"),
+      outputType = outputType,
+      params = list(
+        author = author,
+        hospitalName = orgName,
+        tableFormat = outputType,
+        reshId = orgId,
+        registryName = registryName,
+        userRole = userRole,
+        year = year,
+        startDate = startDate,
+        endDate = endDate
       )
     )
   }
