@@ -11,6 +11,7 @@
 #' @param tableName String providing a table name
 #' @param fromDate String providing start date
 #' @param toDate String provideing end date
+#' @param asNamedList Logical whether to return a list of named values or not.
 #' @param ... Optional arguments to be passed to the function
 #' @name getRegData
 #' @aliases getRegDataLokalTilsynsrapportMaaned

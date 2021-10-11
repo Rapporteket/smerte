@@ -70,6 +70,8 @@ getDataDump(registryName, tableName, fromDate, toDate, ...)
 
 \item{endDate}{String defing end of date range as YYYY-MM-DD}
 
+\item{asNamedList}{Logical whether to return a list of named values or not.}
+
 \item{tableName}{String providing a table name}
 
 \item{fromDate}{String providing start date}
