@@ -125,9 +125,12 @@ ui <- tagList(
         "Smertekategori",
         shiny::sidebarLayout(
           shiny::sidebarPanel(
-            shiny::dateRangeInput('dateRangeSmertekategori',
-                                  label = "Velg periode:", start = "2017-01-01",
-                                  end = Sys.Date(), separator = "-"),
+            shiny::dateRangeInput(
+              "dateRangeSmertekategori",
+              label = "Velg periode:",
+              start = lubridate::today() - lubridate::years(1),
+              end = lubridate::today() - lubridate::weeks(1),
+              separator = "-"),
             shiny::radioButtons('formatSmertekategori',
                                 'Format for nedlasting',
                                 list(PDF = "pdf", HTML = "html"),

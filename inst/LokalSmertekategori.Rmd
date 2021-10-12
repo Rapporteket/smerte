@@ -6,8 +6,8 @@ params:
   reshId: 'locallyDefined'
   userRole: 'MyRole'
   userFullName: 'Ukjent bruker'
-  startDate: '2017-01-01'
-  endDate: '2017-12-31'
+  startDate: !r lubridate::today() - lubridate::years(1)
+  endDate: !r lubridate::today() - lubridate::weeks(1)
   year: '2016'
   tableFormat: 'html'
   registryName: 'rapbase'
@@ -19,7 +19,6 @@ reglogo: '`r system.file("www/logoSmerte.png", package = "smerte")`'
 regtext: '`r readLines(system.file("registryShortDescription.txt", package = "smerte"))`'
 registryName: Smerteregisteret
 userFullName: '`r params$userFullName`'
-header-includes:
 ---
 ```{r set options and load packages, include = FALSE}
 knitr::opts_chunk$set(echo=FALSE)
@@ -184,13 +183,15 @@ rapbase::mst(tab = akklang,
      align = c("l", "c", "c", "c"))
 
 #Underkategori for de med akutt smerte som hovedsmerte
-rapbase::mst(tab = underdiag, 
-     col_names = c( "Antall ja" ,"Antall totalt", "Andel"),
-     cap = paste0("Tabellen viser underkateogriene for smerte for de forløpene med akutt smerte som hovedkategori."),
-     label = "underdiag",
-     type = params$tableFormat,
-     digs = 2,
-     align = c("l", "c", "c", "c"))
+rapbase::mst(
+  tab = underdiag, 
+  col_names = c( "Type akutt smerte" ,"Antall totalt", "Andel"),
+  cap = paste0("Tabellen viser underkateogriene for smerte for de forløpene med akutt smerte som hovedkategori."),
+  label = "underdiag",
+  type = params$tableFormat,
+  digs = 2,
+  align = c("l", "c", "c", "c")
+)
 ```
 
 Tabell \@ref(tab:smertekattab) gir en oversikt over fordelingen i smertekategori for forløpene, mens \@ref(tab:akklangtab) viser hvor mange forløp som er registrert med både akutt og langvarig smerte. Tabell \@ref(tab:underdiag) viser fordelingen av underkategoriene for de forløpene der hovedkategori er registert som akutt smerte.

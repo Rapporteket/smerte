@@ -194,10 +194,14 @@ SELECT
   diag.SmerteDiagID,
   diag.SmerteKat AS `SmerteKat.x`,
   var.AkuttLang,
-  diag.DiagKat AS `DiagKat.y`,
+  diagTxt.DiagKat AS `DiagKat.y`,
   var.Opioid4a
 FROM
   SmerteDiagnoserNum AS diag
+LEFT JOIN
+  SmerteDiagnoser AS diagTxt
+ON
+  diag.ForlopsID = diagTxt.ForlopsID
 LEFT JOIN
   AlleVarNum AS var
 ON
