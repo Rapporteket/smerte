@@ -221,7 +221,7 @@ rapbase::mst(tab = pr2,
 Tabell \@ref(tab:prspm2) viser oversikten over søvnproblemer etter innleggelse for de `r dim(datpr2)[1]` pasientene som besvarte spørsmålet.
 
 
-```{r kontaktfig, echo=FALSE, warning = FALSE, eval=dataPresent, out.width='80%', fig.cap="\\label{fig:kontaktfig}Antall ganger i kontakt med primær- og spesialisthelsetjenesten på grunn av smerter siste år."}
+```{r kontaktfig, echo=FALSE, warning = FALSE, eval=dataPresent, out.width='80%', fig.cap="Antall ganger i kontakt med primær- og spesialisthelsetjenesten på grunn av smerter siste år."}
 
 ###PRSPM3
 #Fjerner først de som ikke har fått tilsendt (null) 3 = null
@@ -408,7 +408,7 @@ Tabell \@ref(tab:deptab) viser en oversikt over hvordan poengsummene for depresj
 \onecolumn
 ```
 
-```{r hadsfig, echo=FALSE, warning = FALSE, eval=dataPresent, out.width='80%', fig.cap="\\label{fig:hadsfig}Fordeling av angst og depresjonsscore i HADS. Poengscorene vurderes som følger: lavere enn den grønne linjen viser ingen tegn til symptomer, mellom den grønne og den gule linjen viser milde symptomer, mellom den gule og den røde linjen viser moderate symptomer, mens over den røde viser alvorlig symptomer."}
+```{r hadsfig, echo=FALSE, warning = FALSE, eval=dataPresent, out.width='80%', fig.cap="Fordeling av angst og depresjonsscore i HADS. Poengscorene vurderes som følger: lavere enn den grønne linjen viser ingen tegn til symptomer, mellom den grønne og den gule linjen viser milde symptomer, mellom den gule og den røde linjen viser moderate symptomer, mens over den røde viser alvorlig symptomer."}
 
 #Figur for depresjonscore
 dep = dat %>%
