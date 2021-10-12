@@ -1,5 +1,4 @@
 ---
-geometry:
 params:
   title: 'Dekningsgrad ved'
   author: 'Rapporteket'
@@ -16,7 +15,7 @@ params:
 title: '`r paste(params$title, params$hospitalName, " i perioden fra ", params$startDate, " til ", params$endDate)`'
 author: '`r params$author`'
 date: '`r format(Sys.time(), "%d\\. %B, %Y")`'
-reglogo: '`r system.file("www/logo_smerte.png", package = "smerte")`'
+reglogo: '`r system.file("www/logoSmerte.png", package = "smerte")`'
 regtext: '`r readLines(system.file("registryShortDescription.txt", package = "smerte"))`'
 registryName: Smerteregisteret
 userFullName: '`r params$userFullName`'
