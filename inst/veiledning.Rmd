@@ -23,7 +23,7 @@ Indikatorer: Smerteregisterets resultat - og kvalitetsindikatorer for lokale ell
 
 ePROM: oversikt over alle variablene i alle eprom-skjema for lokale eller nasjonale data.
 
-Spinalkateter: diverse informasjon om de pasientene som har fått spinalkateter (tilsyn, NRS m.m.) for lokale data.
+Spinalkateter: diverse informasjon om de pasientene som har fått spinalkateter (tilsyn, morfinekvivalenter, NRS m.m.) for lokale data.
 
 Smertekategori: oversikt over hovedsmertekategori, undersmertekategorier og opioidbruk ved innleggelse for lokale data.
 
