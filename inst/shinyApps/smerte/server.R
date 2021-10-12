@@ -74,26 +74,16 @@ server <- function(input, output, session) {
   })
 
   # Tilsynsrapport
-  output$years <- renderUI({
-    ## years available, hardcoded if outside known context
-    if (rapbase::isRapContext()) {
-      years <- getLocalYears(registryName, reshId, userRole)
-      # remove NAs if they exists (bad registry)
-      years <- years[!is.na(years)]
-    } else {
-      years <- c("2016", "2017", "2018", "2019", "2020")
-    }
-    selectInput("yearSet", "Velg år:", years)
-  })
   output$tilsynsrapport <- renderUI({
-    if (is.null(input$yearSet)) {
+    if (is.null(input$dateRangeTilsyn)) {
       NULL
     } else {
       rapbase::renderRmd(
         system.file("LokalTilsynsrapportMaaned.Rmd", package = "smerte"),
         outputType = "html_fragment",
-        params = list(hospitalName=hospitalName,
-                      year=input$yearSet,
+        params = list(hospitalName = hospitalName,
+                      startDate = input$dateRangeTilsyn[1],
+                      endDate = input$dateRangeTilsyn[2],
                       tableFormat='html',
                       registryName=registryName,
                       reshId=reshId,

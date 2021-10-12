@@ -92,8 +92,7 @@ reportProcessor <- function(report,
         tableFormat = outputType,
         reshId = orgId,
         registryName = registryName,
-        userRole = userRole,
-        year = year
+        userRole = userRole
       )
     )
   }

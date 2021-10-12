@@ -32,7 +32,12 @@ ui <- tagList(
         "Tilsyn",
         shiny::sidebarLayout(
           shiny::sidebarPanel(
-            shiny::uiOutput("years"),
+            shiny::dateRangeInput(
+              "dateRangeTilsyn",
+              label = "Velg periode:",
+              start = lubridate::today() - lubridate::years(1),
+              end = lubridate::today() - lubridate::weeks(1),
+              separator = "-"),
             shiny::radioButtons('formatTilsyn',
                                 'Format for nedlasting',
                                 list(PDF = "pdf", HTML = "html"),

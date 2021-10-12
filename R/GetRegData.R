@@ -35,7 +35,7 @@ NULL
 #' @rdname getRegData
 #' @export
 getRegDataLokalTilsynsrapportMaaned <- function(registryName, reshId, userRole,
-                                                year, ...) {
+                                                startDate, endDate, ...) {
 
   dbType <- "mysql"
 
@@ -66,9 +66,11 @@ LEFT JOIN
 ON
   avd.DEPARTMENT_ID = var.InnlAvd
 WHERE
-  YEAR(var.RegDato11) = "
+  var.RegDato11 >= DATE('"
 
-  query <- paste0(query, year, " AND var.AvdRESH IN (", deps, ");")
+  query <- paste0(query, startDate, "') AND var.RegDato11 <= DATE('",
+                  endDate, "') AND var.AvdRESH IN (", deps, ");")
+
 
   if ("session" %in% names(list(...))) {
     session <- list(...)[["session"]]

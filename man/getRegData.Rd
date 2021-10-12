@@ -14,7 +14,14 @@
 \alias{getRegDataIndikator}
 \title{Provide dataframe of registry data}
 \usage{
-getRegDataLokalTilsynsrapportMaaned(registryName, reshId, userRole, year, ...)
+getRegDataLokalTilsynsrapportMaaned(
+  registryName,
+  reshId,
+  userRole,
+  startDate,
+  endDate,
+  ...
+)
 
 getRegDataRapportDekningsgrad(
   registryName,
@@ -62,13 +69,13 @@ getDataDump(registryName, tableName, fromDate, toDate, ...)
 
 \item{userRole}{String providing user role}
 
-\item{year}{Integer four digit year to be reported from}
-
-\item{...}{Optional arguments to be passed to the function}
-
 \item{startDate}{String defing start of date range as YYYY-MM-DD}
 
 \item{endDate}{String defing end of date range as YYYY-MM-DD}
+
+\item{...}{Optional arguments to be passed to the function}
+
+\item{year}{Integer four digit year to be reported from}
 
 \item{asNamedList}{Logical whether to return a list of named values or not.}
 
