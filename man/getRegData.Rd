@@ -5,6 +5,7 @@
 \alias{getRegDataLokalTilsynsrapportMaaned}
 \alias{getRegDataRapportDekningsgrad}
 \alias{getRegDataSmertekategori}
+\alias{getSmerteDiagKatValueLab}
 \alias{getRegDataSpinalkateter}
 \alias{getLocalYears}
 \alias{getAllYears}
@@ -33,6 +34,8 @@ getRegDataRapportDekningsgrad(
 )
 
 getRegDataIndikator(registryName, reshId, userRole, year, ...)
+
+getSmerteDiagKatValueLab(registryName, smerteKat)
 
 getRegDataSmertekategori(
   registryName,
@@ -76,6 +79,8 @@ getDataDump(registryName, tableName, fromDate, toDate, ...)
 \item{...}{Optional arguments to be passed to the function}
 
 \item{year}{Integer four digit year to be reported from}
+
+\item{smerteKat}{Integer defining the SmerteKat code to use in query}
 
 \item{asNamedList}{Logical whether to return a list of named values or not.}
 

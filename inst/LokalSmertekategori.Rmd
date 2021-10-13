@@ -127,38 +127,45 @@ Her finner vi diverse informasjon rundt smertekategori.
 #Oversikt over diverse angående akutt og langvarig smerte
 
 #Akutt og langvarig smerte i samme forløp
-akklang = fulldat %>% filter(!is.na(SmerteKat.x)) %>% 
-  distinct(ForlopsID, .keep_all = TRUE) %>% 
-  summarise(antall_ja = sum(AkuttLang == 1), nevner = n(), ind = antall_ja/nevner) %>% 
-  ungroup
+akklang = fulldat %>%
+  dplyr::filter(!is.na(SmerteKat)) %>% 
+  dplyr::distinct(ForlopsID, .keep_all = TRUE) %>% 
+  dplyr::summarise(
+    antall_ja = sum(AkuttLang == 1), nevner = n(), ind = antall_ja/nevner) %>% 
+  dplyr::ungroup()
 
 #SmerteKat.x = 1 er akutt smerte (se SmerteKat.y)
 akutt = fulldat %>% 
-  filter(!is.na(SmerteKat.x)) %>% 
+  filter(!is.na(SmerteKat)) %>% 
   distinct(ForlopsID, .keep_all = TRUE) %>% 
-  summarise(antall_ja = sum(SmerteKat.x == 1), nevner = n(), ind = antall_ja/nevner) %>% 
+  summarise(antall_ja = sum(SmerteKat == 1), nevner = n(), ind = antall_ja/nevner) %>% 
   ungroup
 
 #SmerteKat.x = 2 er langvarig smerte (se SmerteKat.y)
 langvarig = fulldat %>% 
-  filter(!is.na(SmerteKat.x)) %>% 
+  filter(!is.na(SmerteKat)) %>% 
   distinct(ForlopsID, .keep_all = TRUE) %>% 
-  summarise(antall_ja = sum(SmerteKat.x == 2), nevner = n(), ind = antall_ja/nevner) %>% 
+  summarise(antall_ja = sum(SmerteKat == 2), nevner = n(), ind = antall_ja/nevner) %>% 
   ungroup
 
 #SmerteKat.x = 3 er palliativ smerte (se SmerteKat.y)
 palliativ = fulldat %>% 
-  filter(!is.na(SmerteKat.x)) %>% 
+  filter(!is.na(SmerteKat)) %>% 
   distinct(ForlopsID, .keep_all = TRUE) %>% 
-  summarise(antall_ja = sum(SmerteKat.x == 3), nevner = n(), ind = antall_ja/nevner) %>% 
+  summarise(antall_ja = sum(SmerteKat == 3), nevner = n(), ind = antall_ja/nevner) %>% 
   ungroup
 
 #Underdiagnose for de forløp med hoveddiagnose akutt smerte
 underdiag = fulldat %>% 
-  filter(SmerteKat.x == 1) %>% 
+  filter(SmerteKat == 1) %>% 
   distinct(ForlopsID, .keep_all = TRUE) %>% 
-  count(DiagKat.y) %>%
-  mutate(pro = n/sum(n))
+  count(DiagKat) %>%
+  mutate(pro = n/sum(n)) %>%
+  dplyr::mutate(
+    DiagKat = dplyr::recode(
+      DiagKat, !!!getSmerteDiagKatValueLab(params$registryName, smerteKat = 1)
+    )
+  )
 
 #Setter sammen
 tot_smertekat = bind_rows(akutt, langvarig, palliativ)

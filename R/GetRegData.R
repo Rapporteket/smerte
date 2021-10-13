@@ -12,10 +12,12 @@
 #' @param fromDate String providing start date
 #' @param toDate String provideing end date
 #' @param asNamedList Logical whether to return a list of named values or not.
+#' @param smerteKat Integer defining the SmerteKat code to use in query
 #' @param ... Optional arguments to be passed to the function
 #' @name getRegData
 #' @aliases getRegDataLokalTilsynsrapportMaaned
 #' getRegDataRapportDekningsgrad getRegDataSmertekategori
+#' getSmerteDiagKatValueLab
 #' getRegDataSpinalkateter getLocalYears getAllYears getHospitalName
 #' getNameReshId getDataDump
 NULL
@@ -181,6 +183,30 @@ WHERE
 
 #' @rdname getRegData
 #' @export
+getSmerteDiagKatValueLab <- function(registryName, smerteKat) {
+
+  query <- paste0("
+SELECT
+  val.DiagKat AS value,
+  lab.DiagKat AS lable
+FROM
+  SmerteDiagnoserNum AS val
+LEFT JOIN
+  SmerteDiagnoser AS lab ON val.SmerteDiagID = lab.SmerteDiagID
+WHERE
+  val.SmerteKat = ", smerteKat, "
+GROUP BY
+  val.DiagKat,
+  lab.DiagKat;"
+  )
+
+  res <- rapbase::loadRegData(registryName, query)
+
+  as.list(stats::setNames(res$lable, res$value))
+}
+
+#' @rdname getRegData
+#' @export
 getRegDataSmertekategori <- function(registryName, reshId, userRole,
                                      startDate, endDate, ...) {
   dbType <- "mysql"
@@ -192,16 +218,12 @@ SELECT
   diag.ForlopsID,
   fo.HovedDato,
   diag.SmerteDiagID,
-  diag.SmerteKat AS `SmerteKat.x`,
+  diag.SmerteKat,
   var.AkuttLang,
-  diagTxt.DiagKat AS `DiagKat.y`,
+  diag.DiagKat,
   var.Opioid4a
 FROM
   SmerteDiagnoserNum AS diag
-LEFT JOIN
-  SmerteDiagnoser AS diagTxt
-ON
-  diag.ForlopsID = diagTxt.ForlopsID
 LEFT JOIN
   AlleVarNum AS var
 ON
