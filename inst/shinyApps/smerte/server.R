@@ -26,8 +26,8 @@ server <- function(input, output, session) {
   # Hide tabs depending on context
   ## do not show local reports in national context
   if (isNationalReg(reshId)) {
+    hideTab(inputId = "tabs", target = "Tilsyn")
     hideTab(inputId = "tabs", target = "Dekningsgrad")
-    hideTab(inputId = "tabs", target = "Eprom")
     hideTab(inputId = "tabs", target = "Spinalkateter")
     hideTab(inputId = "tabs", target = "Smertekategori")
   }
