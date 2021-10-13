@@ -170,7 +170,7 @@ rapbase::mst(tab = tot_smertekat,
      cap = paste0("Tabellen viser hvordan pasientenes hovedkategori (smerte) fordeler seg mellom akutt, langvarig eller palliativ smerte."),
      label = "smertekattab",
      type = params$tableFormat,
-     digs = 3,
+     digs = 2,
      align = c("l", "c", "c", "c"))
 
 #Akutt og langvarig samtidig
