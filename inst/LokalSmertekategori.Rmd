@@ -82,32 +82,6 @@ if(dim(fulldat)[1] < 1) {
 }
 ```
 
-```{r makeStandardTableFunction, eval=TRUE}
-mstt <- function(tab, colnames = colnames(tab), type, cap,
-                 label = knitr::opts_current$get("label"), digs, align = NULL,
-                 fs = 8, lsd = FALSE) {
-  if (type == "latex") {
-    if (lsd) {
-      lo <- c("hold_position", "scale_down")
-    } else {
-      lo <- c("hold_position")
-    }
-    k <- knitr::kable(tab, col.names = colnames, caption = cap,
-                      label = label, digits = digs,
-                      align = align, booktabs = TRUE) %>% 
-      kableExtra::kable_styling(latex_options = lo, font_size = fs)
-  }
-  
-  if (type == "html") {
-    k <- knitr::kable(tab, col.names = colnames, caption = cap,
-                      label = label, digits = digs,
-                      align = align) %>% 
-      kableExtra::kable_styling(
-        bootstrap_options = c("striped", "hover", "condensed"), full_width = F)
-  }
-  k
-}
-```
 
 
 ```{r noData, eval=!dataPresent, results='asis'}
