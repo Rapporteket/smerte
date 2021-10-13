@@ -120,14 +120,14 @@ WHERE
 #' @rdname getRegData
 #' @export
 getRegDataIndikator <- function(registryName, reshId, userRole,
-                                                year, ...) {
+                                startDate, endDate, ...) {
 
   dbType <- "mysql"
 
   # special case at OUS
   deps <- .getDeps(reshId, userRole)
 
-  query <- "
+  query <- paste0("
 SELECT
   var.AntTilsLege,
   var.AntTilsSykPleier,
@@ -160,12 +160,13 @@ SELECT
 FROM
   AlleVarNum var
 WHERE
-  YEAR(var.RegDato11) = "
+  var.RegDato11>=DATE('", startDate, "') AND var.RegDato11<=DATE('", endDate, "')"
+  )
 
   if (isNationalReg(reshId)) {
-    query <- paste0(query, year, ";")
+    query <- paste0(query, ";")
   } else {
-    query <- paste0(query, year, " AND var.AvdRESH IN (", deps, ");")
+    query <- paste0(query, " AND var.AvdRESH IN (", deps, ");")
   }
 
   if ("session" %in% names(list(...))) {

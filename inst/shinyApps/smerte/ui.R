@@ -71,7 +71,12 @@ ui <- tagList(
         "Indikatorer",
         shiny::sidebarLayout(
           shiny::sidebarPanel(
-            shiny::uiOutput("indYears"),
+            shiny::dateRangeInput(
+              "dateRangeIndikator",
+              label = "Velg periode:",
+              start = lubridate::today() - lubridate::years(1),
+              end = lubridate::today() - lubridate::weeks(1),
+              separator = "-"),
             shiny::radioButtons('formatIndikator',
                                 'Format for nedlasting',
                                 list(PDF = "pdf", HTML = "html"),

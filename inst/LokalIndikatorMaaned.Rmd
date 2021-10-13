@@ -1,18 +1,18 @@
 ---
 params:
-  title: 'Kvalitetsindikatorer for'
+  title: ': kvalitetsindikatorer i perioden '
   author: 'Rapporteket'
   hospitalName: 'Ukjent sykehus'
   reshId: 'locallyDefined'
   userRole: 'MyRole'
   userFullName: 'Ukjent bruker'
-  startDate: '2017-01-01'
-  endDate: '2017-12-31'
+  startDate: !r lubridate::today() - lubridate::years(1)
+  endDate: !r lubridate::today() - lubridate::weeks(1)
   year: '2016'
   tableFormat: 'html'
   registryName: 'rapbase'
   shinySession: list()
-title: '`r paste(params$title, params$hospitalName, "i", params$year)`'
+title: '`r paste0(params$hospitalName, params$title, params$startDate, " til ", params$endDate)`'
 author: '`r params$author`'
 date: '`r format(Sys.time(), "%d\\. %B, %Y")`'
 reglogo: '`r system.file("www/logoSmerte.png", package = "smerte")`'
@@ -46,7 +46,8 @@ if (rapbase::isRapContext()) {
   dat <- getRegDataIndikator(registryName = params$registryName,
                              reshId = params$reshId,
                              userRole=params$userRole,
-                             year = params$year,
+                             startDate = params$startDate,
+                             endDate = params$endDate,
                              session = params$shinySession)
 } else {
   #Dataimport: skal hente lokale data for hvert sykehus (tar vekk sti, og erstatter med lokal filB)
@@ -81,7 +82,7 @@ dat = dat %>%
                             desember = "des"))
 ```
 
-Smerteregisteret har seks kvalitetsindikatorer som skal være til hjelp i utviklingen av god smertebehandling. Merk at det her skilles mellom forløp og pasienter, siden samme pasient kan ha flere forløp. Denne rapporten viser resultater for `r params$hospitalName` i `r params$year`.
+Smerteregisteret har seks kvalitetsindikatorer som skal være til hjelp i utviklingen av god smertebehandling. Merk at det her skilles mellom forløp og pasienter, siden samme pasient kan ha flere forløp. Denne rapporten viser resultater for `r params$hospitalName` i periode `r params$startDate` til `r params$endDate`.
 
 # Tilsett av to eller flere faggrupper
 Andel forløp hvor pasientene tilses av to eller flere faggrupper. Det er ønskelig med høyest mulig andel. De ulike faggruppene er lege, sykepleier, sosionom, psykolog og fysioterapeut. Med "totalt antall" menes her alle forløp som har minimum ett tilsyn. 
@@ -153,7 +154,7 @@ if (dim(dat)[1] < 1) {
 
 Figuren under viser hvordan andelen har fordelt seg i løpet av året.
 
-```{r behandlertilsynfig, warning = FALSE, message=FALSE, results='asis', fig.pos= "H", out.extra = '', fig.width=7}
+```{r behandlertilsynfig, warning = FALSE, message=FALSE, results='asis', fig.pos= "H", out.extra = '', fig.align='center', out.width='100%'}
 
 messagetils <- ""
 
@@ -222,7 +223,7 @@ if (dim(henvdat)[1] < 1) {
 
 Figuren under viser hvordan andelen har fordelt seg i løpet av året.
 
-```{r tilsetthenvistfig, warning = FALSE, message=FALSE, results='asis', fig.pos= "H", out.extra = '', fig.width=7}
+```{r tilsetthenvistfig, warning = FALSE, message=FALSE, results='asis', fig.pos= "H", out.extra = '', fig.align='center', out.width='100%'}
 
 messagehenv <- ""
 
@@ -294,7 +295,7 @@ if (dim(dat)[1] < 1) {
 
 Figuren under viser hvordan andelen har fordelt seg i løpet av året.
 
-```{r fornoydfig, warning = FALSE, message=FALSE, results='asis', fig.pos= "H", out.extra = '', fig.width=7}
+```{r fornoydfig, warning = FALSE, message=FALSE, results='asis', fig.pos= "H", out.extra = '', fig.align='center', out.width='100%'}
 
 messagefornfig <- ""
 
@@ -399,7 +400,7 @@ if (dim(dat)[1] < 1) {
 
 Figuren under viser hvordan andelene har fordelt seg i løpet av året for de fire NRS-målene.
 
-```{r nrsfig, warning = FALSE, message=FALSE, results='asis', fig.width=10}
+```{r nrsfig, warning = FALSE, message=FALSE, results='asis', fig.align='center', out.width='100%'}
 
 messagenrsfig <- ""
 
@@ -482,7 +483,7 @@ if (dim(dat)[1] < 1) {
 
 Figuren under viser hvordan andelen har fordelt seg i løpet av året.
 
-```{r ikkemedfig, warning = FALSE, message=FALSE, results='asis', fig.pos= "H", out.extra = '', fig.width=7}
+```{r ikkemedfig, warning = FALSE, message=FALSE, results='asis', fig.pos= "H", out.extra = '', fig.align='center', out.width='100%'}
 
 messageik <- ""
 
@@ -560,7 +561,7 @@ if (dim(dat)[1] < 1) {
 
 Figuren under viser hvordan andelen har fordelt seg i løpet av året.
 
-```{r nedtrfig, warning = FALSE, message=FALSE, results='asis', fig.pos= "H", out.extra = '', fig.width=7}
+```{r nedtrfig, warning = FALSE, message=FALSE, results='asis', fig.pos= "H", out.extra = '', fig.align='center', out.width='100%'}
 
 messageplot <- ""
 
