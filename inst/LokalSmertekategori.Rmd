@@ -186,7 +186,7 @@ rapbase::mst(tab = akklang,
 rapbase::mst(
   tab = underdiag, 
   col_names = c( "Type akutt smerte" ,"Antall totalt", "Andel"),
-  cap = paste0("Tabellen viser underkateogriene for smerte for de forløpene med akutt smerte som hovedkategori."),
+  cap = paste0("Tabellen viser underkateogriene for smerte for de forløpene med akutt smerte som hovedkategori. Et forløp kan ha flere underkategorier."),
   label = "underdiag",
   type = params$tableFormat,
   digs = 2,
