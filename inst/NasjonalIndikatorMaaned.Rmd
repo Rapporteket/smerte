@@ -1,6 +1,6 @@
 ---
 params:
-  title: 'Kvalitetsindikatorer for Rapporteket nasjonalt i  '
+  title: ': kvalitetsindikatorer i perioden '
   author: 'Rapporteket'
   hospitalName: 'Ukjent sykehus'
   reshId: 'locallyDefined'
@@ -12,7 +12,7 @@ params:
   tableFormat: 'html'
   registryName: 'rapbase'
   shinySession: list()
-title: '`r paste(params$title, params$year)`'
+title: '`r paste0("Smerteregisteret ", params$hospitalName, params$title, params$startDate, " til ", params$endDate)`'
 author: '`r params$author`'
 date: '`r format(Sys.time(), "%d\\. %B, %Y")`'
 reglogo: '`r system.file("www/logoSmerte.png", package = "smerte")`'
@@ -62,28 +62,12 @@ if (rapbase::isRapContext()) {
 }
 
 #Legger inn månedene i riktig rekkefølge
-#NB: vil at bruker skal velge mellom år, dvs. enten 2016, 2017 osv.
-manednamn = months(as.Date(paste0("2021-",1:12,"-01")))
-dat = dat  %>% mutate(monthname = factor(months(as.Date(StartdatoTO)), levels = manednamn))
-
-#Forkorter månedsnavn
-dat = dat %>%
-  mutate(monthname = recode(monthname, januar = "jan", 
-                            februar = "feb",
-                            mars = "mars",
-                            april = "apr",
-                            mai = "mai",
-                            juni = "jun",
-                            juli = "jul",
-                            august = "aug",
-                            september = "sep",
-                            oktober = "okt",
-                            november = "nov",
-                            desember = "des"))
+dat <- dat %>%
+  dplyr::mutate(monthname = zoo::as.Date(zoo::as.yearmon(StartdatoTO)))
 
 ```
 
-Smerteregisteret har seks kvalitetsindikatorer som skal være til hjelp i utviklingen av god smertebehandling. Merk at det her skilles mellom forløp og pasienter, siden samme pasient kan ha flere forløp. I denne rapporten vises _nasjonale_ tall, det vil si at alle forløp som er inkluderbare og har samtykke er med.
+Smerteregisteret har seks kvalitetsindikatorer som skal være til hjelp i utviklingen av god smertebehandling. Merk at det her skilles mellom forløp og pasienter, siden samme pasient kan ha flere forløp. I denne rapporten vises _nasjonale_ tall i perioden `r params$startDate` til `r params$endDate`, det vil si at alle forløp som er inkluderbare og har samtykke er med.
 
 # Tilsett av to eller flere faggrupper
 Andel forløp hvor pasientene tilses av to eller flere faggrupper. Det er ønskelig med høyest mulig andel. De ulike faggruppene er lege, sykepleier, sosionom, psykolog og fysioterapeut. Med "totalt antall" menes her alle forløp som har minimum ett tilsyn. 
@@ -147,7 +131,7 @@ if (dim(dat)[1] < 1) {
 `r messagebehtils`
 
 Figuren under viser hvordan andelen har fordelt seg i løpet av året.
-```{r behandlertilsynfig, warning = FALSE, message=FALSE, results='asis', fig.width=8.5, fig.height=6, fig.pos= "H", out.extra = ''}
+```{r behandlertilsynfig, warning = FALSE, message=FALSE, results='asis', fig.pos= "H", out.extra = '', fig.align='center', out.width='100%'}
 
 messagetilsfig <- ""
 
@@ -156,7 +140,11 @@ if (dim(dat)[1] < 1) {
 } else {
   #Aggregate by month for plot
   
-  ind1plot <- dat %>% group_by(SykehusNavn, monthname, behtils) %>% summarise(n = n()) %>% mutate( ant = sum(n), freq = n/sum(n)) %>% filter(behtils == 1)
+  ind1plot <- dat %>%
+    dplyr::group_by(SykehusNavn, monthname, behtils) %>%
+    dplyr::summarise(n = n()) %>%
+    dplyr::mutate( ant = sum(n), freq = n/sum(n)) %>%
+    dplyr::filter(behtils == 1)
   
   #Adding the mean of the groups each month
   meanind1plot <- ind1plot %>% 
@@ -170,7 +158,7 @@ if (dim(dat)[1] < 1) {
   #Plotting plotdat
   ggplot(ind1plot, aes(monthname, freq)) + 
     geom_line(aes(group = factor(SykehusNavn), colour=factor(SykehusNavn)), size = 0.8) + geom_point(aes(group = factor(SykehusNavn), colour=factor(SykehusNavn)), size = 2) + 
-    labs(x = "Måned", y = "Andel", subtitle = "Andel tilsett av to eller flere faggrupper (månedlig)", color = "Sykehus") + theme_classic() + theme(axis.text.x = element_text(size = 8.5), axis.text.y = element_text(size = 10), axis.title = element_text(size = 12), plot.margin = unit(c(1, 1, 2, 1), "cm"), legend.text = element_text(size = 13), axis.title.y = element_text(margin = margin(t = 0, r = 10, b = 0, l = 0)), axis.title.x = element_text(margin = margin(t = 10, r = 0, b = 0, l = 0)))
+    labs(x = "Måned", y = "Andel", subtitle = "Andel tilsett av to eller flere faggrupper (månedlig)", color = "Sykehus") + theme_classic() + theme(axis.text.x = element_text(size = 8.5), axis.text.y = element_text(size = 10), axis.title = element_text(size = 10), plot.margin = unit(c(1, 1, 2, 1), "cm"), legend.text = element_text(size = 10), axis.title.y = element_text(margin = margin(t = 0, r = 10, b = 0, l = 0)), axis.title.x = element_text(margin = margin(t = 10, r = 0, b = 0, l = 0)))
   
 }
 
@@ -216,7 +204,7 @@ if (dim(dat)[1] < 1) {
 `r messagetils`
 
 Figuren under viser hvordan andelen har fordelt seg i løpet av året.
-```{r tilsetthenvistfig, warning = FALSE, message=FALSE, results='asis', fig.width=8.5, fig.height=6, fig.pos= "H", out.extra = ''}
+```{r tilsetthenvistfig, warning = FALSE, message=FALSE, results='asis', fig.pos= "H", out.extra = '', fig.align='center', out.width='100%'}
 
 messagehenv <- ""
 
@@ -238,7 +226,7 @@ if (dim(dat)[1] < 1) {
   #Plotting plotdat
   ggplot(ind2plot, aes(monthname, freq)) + 
     geom_line(aes(group = factor(SykehusNavn), colour=factor(SykehusNavn)), size = 0.8) + geom_point(aes(group = factor(SykehusNavn), colour=factor(SykehusNavn)), size = 2) + 
-    labs(x = "Måned", y = "Andel", subtitle = "Andel tilsett samme dag som de ble henvist (månedlig)", color = "Sykehus") + theme_classic() + theme(axis.text.x = element_text(size = 8.5), axis.text.y = element_text(size = 10), axis.title = element_text(size = 12), plot.margin = unit(c(1, 1, 2, 1), "cm"), legend.text = element_text(size = 13), axis.title.y = element_text(margin = margin(t = 0, r = 10, b = 0, l = 0)), axis.title.x = element_text(margin = margin(t = 10, r = 0, b = 0, l = 0)))
+    labs(x = "Måned", y = "Andel", subtitle = "Andel tilsett samme dag som de ble henvist (månedlig)", color = "Sykehus") + theme_classic() + theme(axis.text.x = element_text(size = 8.5), axis.text.y = element_text(size = 10), axis.title = element_text(size = 10), plot.margin = unit(c(1, 1, 2, 1), "cm"), legend.text = element_text(size = 10), axis.title.y = element_text(margin = margin(t = 0, r = 10, b = 0, l = 0)), axis.title.x = element_text(margin = margin(t = 10, r = 0, b = 0, l = 0)))
   
 }
 ```
@@ -291,7 +279,7 @@ if (dim(dat)[1] < 1) {
 `r messagetilfr`
 
 Figuren under viser hvordan andelen har fordelt seg i løpet av året.
-```{r fornoydfig, warning = FALSE, message=FALSE, results='asis', fig.width=8.5, fig.height=6, fig.pos= "H", out.extra = ''}
+```{r fornoydfig, warning = FALSE, message=FALSE, results='asis', fig.pos= "H", out.extra = '', fig.align='center', out.width='100%'}
 
 messageforn <- ""
 
@@ -315,7 +303,7 @@ if (dim(dat)[1] < 1) {
   #Plotting plotdat
   ggplot(ind3plot, aes(monthname, freq)) + 
     geom_line(aes(group = factor(SykehusNavn), colour=factor(SykehusNavn)), size = 0.8) + geom_point(aes(group = factor(SykehusNavn), colour=factor(SykehusNavn)), size = 2) + 
-    labs(x = "Måned", y = "Andel", subtitle = "Andel fornøyd med ivaretakelsen fra smerteteam (månedlig)", color = "Sykehus") + theme_classic() + theme(axis.text.x = element_text(size = 8.5), axis.text.y = element_text(size = 10), axis.title = element_text(size = 12), plot.margin = unit(c(1, 1, 2, 1), "cm"), legend.text = element_text(size = 13), axis.title.y = element_text(margin = margin(t = 0, r = 10, b = 0, l = 0)), axis.title.x = element_text(margin = margin(t = 10, r = 0, b = 0, l = 0))) 
+    labs(x = "Måned", y = "Andel", subtitle = "Andel fornøyd med ivaretakelsen fra smerteteam (månedlig)", color = "Sykehus") + theme_classic() + theme(axis.text.x = element_text(size = 8.5), axis.text.y = element_text(size = 10), axis.title = element_text(size = 10), plot.margin = unit(c(1, 1, 2, 1), "cm"), legend.text = element_text(size = 10), axis.title.y = element_text(margin = margin(t = 0, r = 10, b = 0, l = 0)), axis.title.x = element_text(margin = margin(t = 10, r = 0, b = 0, l = 0))) 
   
 }
 ```
@@ -419,7 +407,7 @@ if (dim(dat)[1] < 1) {
 `r messageniva`
 
 Figuren under viser hvordan andelene har fordelt seg i løpet av året for de fire NRS-målene.
-```{r nrsfig, warning = FALSE, message=FALSE, results='asis'}
+```{r nrsfig, warning = FALSE, message=FALSE, results='asis', fig.align='center', out.width='100%'}
 messagenrsfig <- ""
 
 if (dim(dat)[1] < 1) {
@@ -428,7 +416,7 @@ if (dim(dat)[1] < 1) {
   
   #Aggregate by month for plot
   #Common plot details
-  plotdetails = list(geom_line(aes(group = factor(SykehusNavn), colour=factor(SykehusNavn)), size = 1.5), geom_point(aes(group = factor(SykehusNavn), colour=factor(SykehusNavn)), size = 3.5), theme_classic(), theme(axis.text.x = element_text(size = 12), axis.text.y = element_text(size = 12), axis.title = element_text(size = 12), plot.margin = unit(c(1, 1, 2, 1), "cm"), legend.text = element_text(size = 14), plot.title = element_text(size=12), legend.title = element_text(size = 14), axis.title.y = element_text(margin = margin(t = 0, r = 10, b = 0, l = 0)), axis.title.x = element_text(margin = margin(t = 10, r = 0, b = 0, l = 0))))
+  plotdetails = list(geom_line(aes(group = factor(SykehusNavn), colour=factor(SykehusNavn)), size = 1.5), geom_point(aes(group = factor(SykehusNavn), colour=factor(SykehusNavn)), size = 3.5), theme_classic(), theme(axis.text.x = element_text(size = 10), axis.text.y = element_text(size = 10), axis.title = element_text(size = 10), plot.margin = unit(c(1, 1, 2, 1), "cm"), legend.text = element_text(size = 10), plot.title = element_text(size=10), legend.title = element_text(size = 10), axis.title.y = element_text(margin = margin(t = 0, r = 10, b = 0, l = 0)), axis.title.x = element_text(margin = margin(t = 10, r = 0, b = 0, l = 0))))
   
   ####
   #Sterkeste smerte i bevegelse
@@ -501,7 +489,7 @@ if (dim(dat)[1] < 1) {
 ```
 `r messagenrsfig`
 
-```{r nrsfig1, warning = FALSE, message=FALSE, results='asis', fig.width=10}
+```{r nrsfig1, warning = FALSE, message=FALSE, results='asis', fig.align='center', out.width='100%'}
 message1 <- ""
 
 if (dim(dat)[1] < 1) {
@@ -512,7 +500,7 @@ if (dim(dat)[1] < 1) {
 ```
 `r message1`
 
-```{r nrsfig2, warning = FALSE, message=FALSE, results='asis', fig.width=10}
+```{r nrsfig2, warning = FALSE, message=FALSE, results='asis', , fig.align='center', out.width='100%'}
 message2 <- ""
 
 if (dim(dat)[1] < 1) {
@@ -523,7 +511,7 @@ if (dim(dat)[1] < 1) {
 ```
 `r message2`
 
-```{r nrsfig3, warning = FALSE, message=FALSE, results='asis', fig.width=10}
+```{r nrsfig3, warning = FALSE, message=FALSE, results='asis', fig.align='center', out.width='100%'}
 message3 <- ""
 
 if (dim(dat)[1] < 1) {
@@ -534,7 +522,7 @@ if (dim(dat)[1] < 1) {
 ```
 `r message3`
 
-```{r nrsfig4, warning = FALSE, message=FALSE, results='asis', fig.width=10}
+```{r nrsfig4, warning = FALSE, message=FALSE, results='asis', fig.align='center', out.width='100%'}
 message4 <- ""
 
 if (dim(dat)[1] < 1) {
@@ -587,7 +575,7 @@ if (dim(dat)[1] < 1) {
 
 Figuren under viser hvordan andelen har fordelt seg i løpet av året.
 
-```{r ikkemedfig, warning = FALSE, message=FALSE, results='asis', fig.pos= "H", out.extra = '', fig.width=8.5}
+```{r ikkemedfig, warning = FALSE, message=FALSE, results='asis', fig.pos= "H", out.extra = '', fig.align='center', out.width='100%'}
 
 messageik <- ""
 
@@ -623,9 +611,9 @@ if (dim(plotikmed)[1] < 1) {
          color = "Sykehus") + theme_classic() + 
     theme(axis.text.x = element_text(size = 8.5), 
           axis.text.y = element_text(size = 10), 
-          axis.title = element_text(size = 12), 
+          axis.title = element_text(size = 10), 
           plot.margin = unit(c(1, 1, 2, 1), "cm"), 
-          legend.text = element_text(size = 13), 
+          legend.text = element_text(size = 10), 
           axis.title.y = element_text(margin = margin(t = 0, r = 10, b = 0, l = 0)), 
           axis.title.x = element_text(margin = margin(t = 10, r = 0, b = 0, l = 0))) 
   
@@ -675,7 +663,7 @@ if (dim(dat)[1] < 1) {
 
 Figuren under viser hvordan andelen har fordelt seg i løpet av året.
 
-```{r nedtrfig, warning = FALSE, message=FALSE, results='asis', fig.pos= "H", out.extra = '', fig.width=8.5}
+```{r nedtrfig, warning = FALSE, message=FALSE, results='asis', fig.pos= "H", out.extra = '', fig.align='center', out.width='100%'}
 
 messagenedfig <- ""
 
@@ -711,7 +699,7 @@ if (dim(plotnedtr)[1] < 1) {
          color = "Sykehus") + theme_classic() + 
     theme(axis.text.x = element_text(size = 8.5), 
           axis.text.y = element_text(size = 10), 
-          axis.title = element_text(size = 12), 
+          axis.title = element_text(size = 10), 
           plot.margin = unit(c(1, 1, 2, 1), "cm"), 
           legend.text = element_text(size = 13), 
           axis.title.y = element_text(margin = margin(t = 0, r = 10, b = 0, l = 0)), 
