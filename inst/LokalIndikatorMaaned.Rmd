@@ -12,7 +12,7 @@ params:
   tableFormat: 'html'
   registryName: 'rapbase'
   shinySession: list()
-title: '`r paste0(params$hospitalName, params$title, params$startDate, " til ", params$endDate)`'
+title: '`r paste0("Smerteregisteret ", params$hospitalName, params$title, params$startDate, " til ", params$endDate)`'
 author: '`r params$author`'
 date: '`r format(Sys.time(), "%d\\. %B, %Y")`'
 reglogo: '`r system.file("www/logoSmerte.png", package = "smerte")`'
@@ -62,27 +62,11 @@ if (rapbase::isRapContext()) {
 }
 
 #Legger inn månedene i riktig rekkefølge
-#NB: vil at bruker skal velge mellom år, dvs. enten 2016, 2017 osv.
-manednamn = months(as.Date(paste0("2021-",1:12,"-01")))
-dat = dat  %>% mutate(monthname = factor(months(as.Date(StartdatoTO)), levels = manednamn))
-
-#Forkorter månedsnavn
-dat = dat %>%
-  mutate(monthname = recode(monthname, januar = "jan", 
-                            februar = "feb",
-                            mars = "mars",
-                            april = "apr",
-                            mai = "mai",
-                            juni = "jun",
-                            juli = "jul",
-                            august = "aug",
-                            september = "sep",
-                            oktober = "okt",
-                            november = "nov",
-                            desember = "des"))
+dat <- dat %>%
+  dplyr::mutate(monthname = zoo::as.Date(zoo::as.yearmon(StartdatoTO)))
 ```
 
-Smerteregisteret har seks kvalitetsindikatorer som skal være til hjelp i utviklingen av god smertebehandling. Merk at det her skilles mellom forløp og pasienter, siden samme pasient kan ha flere forløp. Denne rapporten viser resultater for `r params$hospitalName` i periode `r params$startDate` til `r params$endDate`.
+Smerteregisteret har seks kvalitetsindikatorer som skal være til hjelp i utviklingen av god smertebehandling. Merk at det her skilles mellom forløp og pasienter, siden samme pasient kan ha flere forløp. Denne rapporten viser resultater for `r params$hospitalName` i perioden `r params$startDate` til `r params$endDate`.
 
 # Tilsett av to eller flere faggrupper
 Andel forløp hvor pasientene tilses av to eller flere faggrupper. Det er ønskelig med høyest mulig andel. De ulike faggruppene er lege, sykepleier, sosionom, psykolog og fysioterapeut. Med "totalt antall" menes her alle forløp som har minimum ett tilsyn. 
@@ -163,11 +147,16 @@ if (dim(behdat)[1] < 1) {
 } else {
   #Aggregate by month for plot
   #Grouping by month and finding frequency for behtils, then filtering on the "correct" frequency (if not, we get the inverse too)
-  plotdat <- behdat %>% group_by(month = monthname, behtils) %>% summarise(n = n()) %>% mutate(freq = n/sum(n)) %>% filter(behtils == 1)
+  plotdat <- behdat %>%
+    dplyr::group_by(month = monthname, behtils) %>%
+    dplyr::summarise(n = n()) %>%
+    dplyr::mutate(freq = n/sum(n)) %>%
+    dplyr::filter(behtils == 1)
   
   #Plotting plotdat
   ggplot(plotdat, aes(month, freq)) + 
-    geom_line(aes(group = 1)) + geom_point() + 
+    geom_line(aes(group = 1)) + geom_point() +
+    scale_x_date(date_labels = "%m-%y") +
     labs(x = "Måned", y = "Andel", subtitle = "Andel tilsett av to eller flere faggrupper per måned") + theme_classic() +
     theme(axis.text.x = element_text(size = 9), plot.margin = unit(c(1, 1, 2, 0), "cm"), axis.title.y = element_text(margin = margin(t = 0, r = 10, b = 0, l = 0)), axis.title.x = element_text(margin = margin(t = 10, r = 0, b = 0, l = 0))) 
   
@@ -425,13 +414,18 @@ if (dim(dat)[1] < 1) {
   labelsplot <- c("Sterkeste smerte i bevegelse", "Svakeste smerte i bevegelse", "Sterkeste smerte i ro", "Svakeste smerte i ro")
   
   p = ggplot() + 
-    geom_line(data = p1, aes(month, freq1, group = 1, color = "stbe"), size = 1.5) + geom_point(data = p1, aes(month, freq1, group = 1, color = "stbe"), shape = 16, size = 3.5) +
-    geom_line(data = p2, aes(month, freq2, group = 1, color = "svbe"), size = 1.5) + geom_point(data = p2, aes(month, freq2, group = 1, color = "svbe"), shape = 16, size = 3.5) +
-    geom_line(data = p3, aes(month, freq3, group = 1, color = "stro"), size = 1.5) + geom_point(data = p3, aes(month, freq3, group = 1, color = "stro"), shape = 16, size = 3.5) +
-    geom_line(data = p4, aes(month, freq4, group = 1, color = "svro"), size = 1.5) + geom_point(data = p4, aes(month, freq4, group = 1, color = "svro"), shape = 16, size = 3.5) +
+    geom_line(data = p1, aes(month, freq1, group = 1, color = "stbe"), size = 1.5) +
+    geom_point(data = p1, aes(month, freq1, group = 1, color = "stbe"), shape = 16, size = 3.5) +
+    geom_line(data = p2, aes(month, freq2, group = 1, color = "svbe"), size = 1.5) +
+    geom_point(data = p2, aes(month, freq2, group = 1, color = "svbe"), shape = 16, size = 3.5) +
+    geom_line(data = p3, aes(month, freq3, group = 1, color = "stro"), size = 1.5) +
+    geom_point(data = p3, aes(month, freq3, group = 1, color = "stro"), shape = 16, size = 3.5) +
+    geom_line(data = p4, aes(month, freq4, group = 1, color = "svro"), size = 1.5) +
+    geom_point(data = p4, aes(month, freq4, group = 1, color = "svro"), shape = 16, size = 3.5) +
     labs(x = 'Måned', y = "Andel", title = "Andel med nedgang i smerte") + 
     theme_classic() +
-    theme(axis.text.x = element_text(size = 15), axis.text.y = element_text(size = 17), axis.title = element_text(size = 18), plot.margin = unit(c(1, 1, 2, 1), "cm"), legend.title = element_text(size = 22), plot.title = element_text(size=19), legend.text = element_text(size = 22), axis.title.y = element_text(margin = margin(t = 0, r = 10, b = 0, l = 0)), axis.title.x = element_text(margin = margin(t = 10, r = 0, b = 0, l = 0))) +
+    scale_x_date(date_labels = "%m-%y") +
+    theme(axis.text.x = element_text(size = 10), axis.text.y = element_text(size = 10), axis.title = element_text(size = 12), plot.margin = unit(c(1, 1, 2, 1), "cm"), legend.title = element_text(size = 12), plot.title = element_text(size=12), legend.text = element_text(size = 12), axis.title.y = element_text(margin = margin(t = 0, r = 10, b = 0, l = 0)), axis.title.x = element_text(margin = margin(t = 10, r = 0, b = 0, l = 0))) +
     scale_color_manual(name = "NRS", values = c("magenta3", "hotpink1", "darkcyan", "cyan2"), labels = labelsplot) +
     guides(color = guide_legend(override.aes = list(size=0.8)))
   
