@@ -26,8 +26,8 @@ server <- function(input, output, session) {
   # Hide tabs depending on context
   ## do not show local reports in national context
   if (isNationalReg(reshId)) {
+    hideTab(inputId = "tabs", target = "Tilsyn")
     hideTab(inputId = "tabs", target = "Dekningsgrad")
-    hideTab(inputId = "tabs", target = "Eprom")
     hideTab(inputId = "tabs", target = "Spinalkateter")
     hideTab(inputId = "tabs", target = "Smertekategori")
   }
@@ -160,30 +160,20 @@ server <- function(input, output, session) {
 
 
   # Indikatorrapport
-  output$indYears <- renderUI({
-    ## years available, hardcoded if outside known context
-    if (rapbase::isRapContext()) {
-      years <- getAllYears(registryName, reshId, userRole)
-      # remove NAs if they exists (bad registry)
-      years <- years[!is.na(years)]
-    } else {
-      years <- c("2016", "2017", "2018", "2019", "2020")
-    }
-    selectInput("indYearSet", "Velg år:", years)
-  })
   output$indikatorrapport <- renderUI({
     reportTemplate <- "LokalIndikatorMaaned.Rmd"
     if (isNationalReg(reshId)) {
       reportTemplate <- "NasjonalIndikatorMaaned.Rmd"
     }
-    if (is.null(input$indYearSet)) {
-      p("Velg fra menyen til venstre hvilket år indikatorene skal vises for.")
+    if (is.null(input$dateRangeIndikator)) {
+      NULL
     } else {
       rapbase::renderRmd(
         system.file(reportTemplate, package = "smerte"),
         outputType = "html_fragment",
         params = list(hospitalName=hospitalName,
-                      year=input$indYearSet,
+                      startDate=input$dateRangeIndikator[1],
+                      endDate=input$dateRangeIndikator[2],
                       tableFormat='html',
                       registryName=registryName,
                       reshId=reshId,

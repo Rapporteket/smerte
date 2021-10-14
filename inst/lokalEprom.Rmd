@@ -1,6 +1,6 @@
 ---
 params:
-  title: 'Oversikt over PROM-skjema'
+  title: ': oversikt over PROM-skjema i perioden '
   author: 'Rapporteket'
   hospitalName: 'Ukjent sykehus'
   reshId: 'locallyDefined'
@@ -12,8 +12,7 @@ params:
   tableFormat: 'html'
   registryName: 'rapbase'
   shinySession: list()
-title: '`r paste(params$title)`'
-subtitle: '`r paste(params$hospitalName, " i perioden fra ", params$startDate, " til ", params$endDate)`'
+title: '`r paste0("Smerteregisteret ", params$hospitalName, params$title, params$startDate, " til ", params$endDate)`'
 author: '`r params$author`'
 date: '`r format(Sys.time(), "%d\\. %B, %Y")`'
 reglogo: '`r system.file("www/logoSmerte.png", package = "smerte")`'
@@ -61,39 +60,13 @@ if(dim(dat)[1] < 1) {
 
 ```
 
-```{r makeStandardTableFunction, eval=TRUE}
-mstt <- function(tab, colnames = colnames(tab), type, cap,
-                label = knitr::opts_current$get("label"), digs, align = NULL,
-                fs = 8, lsd = FALSE) {
-  if (type == "latex") {
-    if (lsd) {
-      lo <- c("hold_position", "scale_down")
-    } else {
-      lo <- c("hold_position")
-    }
-    k <- knitr::kable(tab, col.names = colnames, caption = cap,
-                      label = label, digits = digs,
-                      align = align, booktabs = TRUE) %>% 
-      kableExtra::kable_styling(latex_options = lo, font_size = fs)
-  }
-  
-  if (type == "html") {
-    k <- knitr::kable(tab, col.names = colnames, caption = cap,
-                      label = label, digits = digs,
-                      align = align) %>% 
-      kableExtra::kable_styling(
-        bootstrap_options = c("striped", "hover", "condensed"), full_width = F)
-  }
-  k
-}
-```
 
 # Innledning
 I denne rapporten finner vi en oversikt over besvarelsene som er gitt via PROM, både andelen som besvarer og grunnene som er oppgitt til at besvarelse mangler. I tillegg vises det hvordan svarene fordeler seg på de ulike spørsmålene for hvert skjema. Det er for tiden fire PROM-skjema som vises her. Disse er: _pasreg_, _evaluering_, _HADS_ og _opioid_. 
 
 Mange av resultatene presenteres i tabeller. Her vises også andelen som har gitt de ulike svarene. I de tilfellene der andelen ikke summeres til 100\% er dette fordi den "manglende" prosenten er fjernet fra oversikten (grunnet manglende besvarelse og lignende).
 
-En periode kunne man dele ut pasientregistreringsskjema til pasienter selv om de ikke hadde samtykket fra før. Dersom man valgte å ikke dele ut pasientregistreringsskjemaene ved manglende samtykke, krysset man av for «Annet» under «Årsak til manglende utfylling». Derfor vil en del av annet-kategoriene som vises være store.
+En periode kunne man dele ut pasientregistreringsskjema til pasienter selv om de ikke hadde samtykket fra før. Dersom man valgte å ikke dele ut pasientregistreringsskjemaene ved manglende samtykke, krysset man av for "Annet" under "Årsak til manglende utfylling". Derfor vil en del av annet-kategoriene som vises være store.
 
 ```{r noData, eval=!dataPresent, results='asis'}
 cat('# Upps...\nI den valgte tidsperioden er det ikke nok data til å gi 
@@ -101,9 +74,8 @@ cat('# Upps...\nI den valgte tidsperioden er det ikke nok data til å gi
 knitr::knit_exit()
 ```
 
-```{=latex}
+
 \twocolumn
-```
 
 # ePROM: pasreg
 
@@ -221,7 +193,7 @@ rapbase::mst(tab = pr2,
 Tabell \@ref(tab:prspm2) viser oversikten over søvnproblemer etter innleggelse for de `r dim(datpr2)[1]` pasientene som besvarte spørsmålet.
 
 
-```{r kontaktfig, echo=FALSE, warning = FALSE, eval=dataPresent, out.width='80%', fig.cap="Antall ganger i kontakt med primær- og spesialisthelsetjenesten på grunn av smerter siste år."}
+```{r kontaktfig, echo=FALSE, warning = FALSE, eval=dataPresent, fig.align='center', out.width='90%', fig.cap="Antall ganger i kontakt med primær- og spesialisthelsetjenesten på grunn av smerter siste år."}
 
 ###PRSPM3
 #Fjerner først de som ikke har fått tilsendt (null) 3 = null
@@ -404,11 +376,9 @@ I den valgte tidsperioden fikk tilsammen `r antUtsendt` pasienter av totalt `r d
 
 Tabell \@ref(tab:deptab) viser en oversikt over hvordan poengsummene for depresjonsdelen av HADS fordeler seg, mens tabell \@ref(tab:angsttab) gjør det samme for angstdelen av HADS.
 
-```{=latex}
 \onecolumn
-```
 
-```{r hadsfig, echo=FALSE, warning = FALSE, eval=dataPresent, out.width='80%', fig.cap="Fordeling av angst og depresjonsscore i HADS. Poengscorene vurderes som følger: lavere enn den grønne linjen viser ingen tegn til symptomer, mellom den grønne og den gule linjen viser milde symptomer, mellom den gule og den røde linjen viser moderate symptomer, mens over den røde viser alvorlig symptomer."}
+```{r hadsfig, echo=FALSE, warning = FALSE, eval=dataPresent, fig.align='center', out.width='100%', fig.cap="Fordeling av angst og depresjonsscore i HADS. Poengscorene vurderes som følger: lavere enn den grønne linjen viser ingen tegn til symptomer, mellom den grønne og den gule linjen viser milde symptomer, mellom den gule og den røde linjen viser moderate symptomer, mens over den røde viser alvorlig symptomer."}
 
 #Figur for depresjonscore
 dep = dat %>%
@@ -445,9 +415,8 @@ grid.arrange(depplot, angstplot, ncol=2)
 ```
 
 
-```{=latex}
 \twocolumn
-```
+
 
 Figur \@ref(fig:hadsfig) viser viser hvordan de `r antsvar` aktuelle forløpene fordeles på depresjonsscore og angstscore i HADS. Poengscorene vurderes som følger: lavere enn den grønne linjen viser ingen tegn til symptomer, mellom den grønne og den gule linjen viser milde symptomer, mellom den gule og den røde linjen viser moderate symptomer, mens over den røde viser alvorlig symptomer.
 
