@@ -355,26 +355,36 @@ server <- function(input, output, session) {
         synopsis = paste("Smerteregisteret: månedlig oppsummering av tilsyn for",
                          "inneværende år"),
         fun = "reportProcessor",
-        paramNames = c("report", "outputType", "title", "author", "orgId",
-                       "userFullName"),
-        paramValues = c("tilsyn", "pdf", "Tilsyn", "Smerteregisteret", reshId,
-                        userFullName)
+        paramNames = c("report", "outputType", "title", "author",
+                       "orgName", "orgId", "registryName", "userFullName",
+                       "userRole",  "year",
+                       "startDate",
+                       "endDate"),
+        paramValues = c("tilsyn", "pdf", "Tilsyn", "Smerteregisteret",
+                        hospitalName, reshId, registryName, userFullName,
+                        userRole, 2021,
+                        lubridate::today() - lubridate::years(1),
+                        lubridate::today() - lubridate::weeks(1))
       ),
       Kvalitetsindikatorer = list(
         synopsis = paste("Kvalitetsindikatorer fra Smerteregisteret"),
         fun = "reportProcessor",
-        paramNames = c("report", "outputType", "title", "author", "orgId",
-                       "userFullName"),
+        paramNames = c("report", "outputType", "title",
+                       "author", "orgId",
+                       "userFullName", "userRole", "registryName"),
         paramValues = c("indikator", "pdf", "Kvalitetsindikatorer",
-                        "Smerteregisteret", reshId, userFullName)
+                        "Smerteregisteret", reshId,
+                        userFullName, userRole, registryName)
       ),
       Spinalkateter = list(
         synopsis = "Smerteregisteret: bruk av spinalkateter inneværende år",
         fun = "reportProcessor",
-        paramNames = c("report", "outputType", "title", "author", "orgId",
-                       "userFullName"),
+        paramNames = c("report", "outputType", "title",
+                       "author", "orgId", "userFullName", "userRole",
+                       "registryName", "orgName"),
         paramValues = c("spinalkateter", "pdf", "Spinalkateter",
-                        "Smerteregisteret", reshId, userFullName)
+                        "Smerteregisteret", reshId, userFullName, userRole,
+                        registryName, hospitalName)
       )
     )
   }
