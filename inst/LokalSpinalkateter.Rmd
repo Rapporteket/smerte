@@ -235,7 +235,7 @@ nrsendring = as_tibble(datspinal %>%
 
 rapbase::mst(tab = nrsendring, 
     col_names = c("ForløpsID", "Sterkeste smerte bevegelse", "Svakeste smerte bevegelse", "Sterkeste smerte ro", "Svakeste smerte ro"),
-    cap = paste0("Informasjon om endring i NRS for hver pasient som fikk spinalkateter. En endring > 0 betyr nedgang i smerte fra første til siste måling, mens en endring < 0 betyr økning i smerte. 0 betyr ingen endring. 'Mangler' betyr at pasienten ikke har gitt NRS, enten ved første, siste eller begge målinger."),
+    cap = paste0("Informasjon om endring i NRS for hver pasient som fikk spinalkateter. En endring større enn 0 betyr nedgang i smerte fra første til siste måling, mens en endring mindre enn 0 betyr økning i smerte. 0 betyr ingen endring. 'Mangler' betyr at pasienten ikke har gitt NRS, enten ved første, siste eller begge målinger."),
     label = "spinalnrs",
     type = params$tableFormat,
     digs = 0,
