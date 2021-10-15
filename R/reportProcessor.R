@@ -92,6 +92,7 @@ reportProcessor <- function(report,
         tableFormat = outputType,
         reshId = orgId,
         registryName = registryName,
+        userFullName = userFullName,
         userRole = userRole
       )
     )
@@ -107,10 +108,8 @@ reportProcessor <- function(report,
         tableFormat = outputType,
         reshId = orgId,
         registryName = registryName,
-        userRole = userRole,
-        year = year,
-        startDate = startDate,
-        endDate = endDate
+        userFullName = userFullName,
+        userRole = userRole
       )
     )
   }
@@ -125,10 +124,8 @@ reportProcessor <- function(report,
         tableFormat = outputType,
         reshId = orgId,
         registryName = registryName,
-        userRole = userRole,
-        year = year,
-        startDate = startDate,
-        endDate = endDate
+        userFullName = userFullName,
+        userRole = userRole
       )
     )
   }
@@ -143,10 +140,8 @@ reportProcessor <- function(report,
         tableFormat = outputType,
         reshId = orgId,
         registryName = registryName,
-        userRole = userRole,
-        year = year,
-        startDate = startDate,
-        endDate = endDate
+        userFullName = userFullName,
+        userRole = userRole
       )
     )
   }
