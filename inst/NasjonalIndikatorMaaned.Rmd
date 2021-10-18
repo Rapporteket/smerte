@@ -416,7 +416,7 @@ if (dim(dat)[1] < 1) {
   
   #Aggregate by month for plot
   #Common plot details
-  plotdetails = list(geom_line(aes(group = factor(SykehusNavn), colour=factor(SykehusNavn)), size = 1.5), geom_point(aes(group = factor(SykehusNavn), colour=factor(SykehusNavn)), size = 3.5), theme_classic(), theme(axis.text.x = element_text(size = 10), axis.text.y = element_text(size = 10), axis.title = element_text(size = 10), plot.margin = unit(c(1, 1, 2, 1), "cm"), legend.text = element_text(size = 10), plot.title = element_text(size=10), legend.title = element_text(size = 10), axis.title.y = element_text(margin = margin(t = 0, r = 10, b = 0, l = 0)), axis.title.x = element_text(margin = margin(t = 10, r = 0, b = 0, l = 0))))
+  plotdetails = list(geom_line(aes(group = factor(SykehusNavn), colour=factor(SykehusNavn)), size = 0.5), geom_point(aes(group = factor(SykehusNavn), colour=factor(SykehusNavn)), size = 1.5), theme_classic(), theme(axis.text.x = element_text(size = 10), axis.text.y = element_text(size = 10), axis.title = element_text(size = 10), plot.margin = unit(c(1, 1, 2, 1), "cm"), legend.text = element_text(size = 10), plot.title = element_text(size=10), legend.title = element_text(size = 10), axis.title.y = element_text(margin = margin(t = 0, r = 10, b = 0, l = 0)), axis.title.x = element_text(margin = margin(t = 10, r = 0, b = 0, l = 0))))
   
   ####
   #Sterkeste smerte i bevegelse
