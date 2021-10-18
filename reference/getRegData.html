@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">smerte</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.6.0</span>
       </span>
     </div>
 
@@ -115,7 +115,14 @@
     <p>Provides a dataframe containing data from a registry</p>
     </div>
 
-    <pre class="usage"><span class='fu'>getRegDataLokalTilsynsrapportMaaned</span><span class='op'>(</span><span class='va'>registryName</span>, <span class='va'>reshId</span>, <span class='va'>userRole</span>, <span class='va'>year</span>, <span class='va'>...</span><span class='op'>)</span>
+    <pre class="usage"><span class='fu'>getRegDataLokalTilsynsrapportMaaned</span><span class='op'>(</span>
+  <span class='va'>registryName</span>,
+  <span class='va'>reshId</span>,
+  <span class='va'>userRole</span>,
+  <span class='va'>startDate</span>,
+  <span class='va'>endDate</span>,
+  <span class='va'>...</span>
+<span class='op'>)</span>
 
 <span class='fu'>getRegDataRapportDekningsgrad</span><span class='op'>(</span>
   <span class='va'>registryName</span>,
@@ -126,13 +133,35 @@
   <span class='va'>...</span>
 <span class='op'>)</span>
 
-<span class='fu'>getRegDataIndikator</span><span class='op'>(</span><span class='va'>registryName</span>, <span class='va'>reshId</span>, <span class='va'>userRole</span>, <span class='va'>year</span>, <span class='va'>...</span><span class='op'>)</span>
+<span class='fu'>getRegDataIndikator</span><span class='op'>(</span><span class='va'>registryName</span>, <span class='va'>reshId</span>, <span class='va'>userRole</span>, <span class='va'>startDate</span>, <span class='va'>endDate</span>, <span class='va'>...</span><span class='op'>)</span>
+
+<span class='fu'>getSmerteDiagKatValueLab</span><span class='op'>(</span><span class='va'>registryName</span>, <span class='va'>smerteKat</span><span class='op'>)</span>
+
+<span class='fu'>getRegDataSmertekategori</span><span class='op'>(</span>
+  <span class='va'>registryName</span>,
+  <span class='va'>reshId</span>,
+  <span class='va'>userRole</span>,
+  <span class='va'>startDate</span>,
+  <span class='va'>endDate</span>,
+  <span class='va'>...</span>
+<span class='op'>)</span>
+
+<span class='fu'>getRegDataSpinalkateter</span><span class='op'>(</span>
+  <span class='va'>registryName</span>,
+  <span class='va'>reshId</span>,
+  <span class='va'>userRole</span>,
+  <span class='va'>startDate</span>,
+  <span class='va'>endDate</span>,
+  <span class='va'>...</span>
+<span class='op'>)</span>
 
 <span class='fu'>getLocalYears</span><span class='op'>(</span><span class='va'>registryName</span>, <span class='va'>reshId</span>, <span class='va'>userRole</span><span class='op'>)</span>
 
 <span class='fu'>getAllYears</span><span class='op'>(</span><span class='va'>registryName</span>, <span class='va'>reshId</span>, <span class='va'>userRole</span><span class='op'>)</span>
 
 <span class='fu'>getHospitalName</span><span class='op'>(</span><span class='va'>registryName</span>, <span class='va'>reshId</span>, <span class='va'>userRole</span><span class='op'>)</span>
+
+<span class='fu'>getNameReshId</span><span class='op'>(</span><span class='va'>registryName</span>, asNamedList <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span>
 
 <span class='fu'>getDataDump</span><span class='op'>(</span><span class='va'>registryName</span>, <span class='va'>tableName</span>, <span class='va'>fromDate</span>, <span class='va'>toDate</span>, <span class='va'>...</span><span class='op'>)</span></pre>
 
@@ -152,20 +181,24 @@
       <td><p>String providing user role</p></td>
     </tr>
     <tr>
-      <th>year</th>
-      <td><p>Integer four digit year to be reported from</p></td>
-    </tr>
-    <tr>
-      <th>...</th>
-      <td><p>Optional arguments to be passed to the function</p></td>
-    </tr>
-    <tr>
       <th>startDate</th>
       <td><p>String defing start of date range as YYYY-MM-DD</p></td>
     </tr>
     <tr>
       <th>endDate</th>
       <td><p>String defing end of date range as YYYY-MM-DD</p></td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td><p>Optional arguments to be passed to the function</p></td>
+    </tr>
+    <tr>
+      <th>smerteKat</th>
+      <td><p>Integer defining the SmerteKat code to use in query</p></td>
+    </tr>
+    <tr>
+      <th>asNamedList</th>
+      <td><p>Logical whether to return a list of named values or not.</p></td>
     </tr>
     <tr>
       <th>tableName</th>
