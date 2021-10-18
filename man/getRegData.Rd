@@ -33,7 +33,7 @@ getRegDataRapportDekningsgrad(
   ...
 )
 
-getRegDataIndikator(registryName, reshId, userRole, year, ...)
+getRegDataIndikator(registryName, reshId, userRole, startDate, endDate, ...)
 
 getSmerteDiagKatValueLab(registryName, smerteKat)
 
@@ -77,8 +77,6 @@ getDataDump(registryName, tableName, fromDate, toDate, ...)
 \item{endDate}{String defing end of date range as YYYY-MM-DD}
 
 \item{...}{Optional arguments to be passed to the function}
-
-\item{year}{Integer four digit year to be reported from}
 
 \item{smerteKat}{Integer defining the SmerteKat code to use in query}
 

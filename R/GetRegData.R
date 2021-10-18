@@ -3,7 +3,6 @@
 #' Provides a dataframe containing data from a registry
 #'
 #' @param registryName String providing the current registryName
-#' @param year Integer four digit year to be reported from
 #' @param startDate String defing start of date range as YYYY-MM-DD
 #' @param endDate String defing end of date range as YYYY-MM-DD
 #' @param reshId String providing organization Id
