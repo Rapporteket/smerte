@@ -309,7 +309,7 @@ if (dim(dat)[1] < 1) {
 # Nedgang i smerte
 Andel forløp hvor pasienten har nedgang i smertescore Numeric Rating Scale (NRS) fra første til siste tilsyn. Totalt måles endring for følgende fire smertetilstander: _sterkeste_ og _svakeste_ smerte i _ro_ og i _bevegelse_. Det er ønskelig med høyest mulig andel. Det er kun de forløpene der spørsmålet er besvart både ved første og siste tilsyn som inkluderes ("vet ikke" telles heller ikke med).
 
-```{r smertenivå, warning = FALSE, message=FALSE, results='asis'}
+```{r smertenivaa, warning = FALSE, message=FALSE, results='asis'}
 
 messagesmerte <- ""
 
