@@ -26,102 +26,16 @@ server <- function(input, output, session) {
   # Hide tabs depending on context
   ## do not show local reports in national context
   if (isNationalReg(reshId)) {
-    hideTab(inputId = "tabs", target = "Tilsynsrapport")
+    hideTab(inputId = "tabs", target = "Tilsyn")
     hideTab(inputId = "tabs", target = "Dekningsgrad")
-    hideTab(inputId = "tabs", target = "Abonnement")
-    if (!userRole %in% "SC") {
-      hideTab(inputId = "tabs", target = "Datadump")
-    }
+    hideTab(inputId = "tabs", target = "Spinalkateter")
+    hideTab(inputId = "tabs", target = "Smertekategori")
   }
-  ## metadata and dump only for SC
+  ## tools only for SC
   if (!userRole %in% "SC") {
-    hideTab(inputId = "tabs", target = "Metadata")
+    hideTab(inputId = "tabs", target = "Verktøy")
   }
 
-
-
-
-  # Gjenbrukbar funksjon for å bearbeide Rmd til html
-  htmlRenderRmd <- function(srcFile, params = list()) {
-    # set param needed for report meta processing
-    if (rapbase::isRapContext()) {
-      params <- params
-    } else {
-      params <- list(reshId="100082",
-                     year=input$yearSet,
-                     tableFormat="html")
-    }
-    # do all kniting and rendering from temporary directory/file
-    sourceFile <- tempfile(fileext = ".Rmd")
-    file.copy(system.file(srcFile, package="smerte"), sourceFile,
-              overwrite = TRUE)
-
-    owd <- setwd(dirname(sourceFile))
-    on.exit(setwd(owd))
-    file.copy(system.file("_bookdown.yml", package="smerte"), ".")
-    html_file <-
-      rmarkdown::render(sourceFile,
-                        output_format = bookdown::html_fragment2(),
-                        params = params,
-                        envir = new.env())
-    shiny::HTML(readLines(html_file))
-  }
-
-
-  # filename function for re-use
-  downloadFilename <- function(fileBaseName, type) {
-    paste(paste0(fileBaseName,
-                 as.character(as.integer(as.POSIXct(Sys.time())))),
-          sep = '.', switch(
-            type,
-            PDF = 'pdf', HTML = 'html', REVEAL = 'html', BEAMER = 'pdf')
-    )
-  }
-
-  # render file function for re-use
-  contentFile <- function(file, srcFile, tmpFile, type, addParam = list()) {
-    src <- normalizePath(system.file(srcFile, package="smerte"))
-    # temporarily switch to the temp dir, in case we do not have write
-    # permission to the current working directory
-    owd <- setwd(tempdir())
-    on.exit(setwd(owd))
-    print(getwd())
-    file.copy(src, tmpFile, overwrite = TRUE)
-    file.copy(system.file("_bookdown.yml", package="smerte"), ".")
-    file.copy(system.file("_output.yml", package="smerte"), ".")
-    file.copy(system.file("rapporteket.cls", package="smerte"), ".")
-    file.copy(system.file("preamble.tex", package="smerte"), ".")
-    file.copy(system.file("www/logo_rapporteket_gray60.pdf",
-                          package="smerte"), "logo.pdf")
-    file.copy(system.file("www/logo_smerte.pdf", package="smerte"), ".")
-    out <- rmarkdown::render(
-      tmpFile,
-      output_format =
-        switch(
-          type,
-          PDF = bookdown::pdf_document2(pandoc_args = c("--include-in-header=preamble.tex")),
-          #PDF = bookdown::pdf_document2(pandoc_args = c("--template=preamble.tex")),
-          HTML = bookdown::html_document2(),
-          BEAMER = rmarkdown::beamer_presentation(theme = "Hannover"),
-          REVEAL = revealjs::revealjs_presentation(theme = "sky")
-        ),
-      params = c(
-        list(tableFormat =
-               switch(
-                 type,
-                 PDF = "latex",
-                 HTML = "html",
-                 BEAMER = "latex",
-                 REVEAL = "html"),
-             hospitalName=hospitalName,
-             reshId=reshId,
-             userRole=userRole,
-             registryName=registryName,
-             author=author,
-             shinySession=session), addParam),
-      output_dir = tempdir())
-    file.rename(out, file)
-  }
 
   contentDump <- function(file, type) {
     d <- smerte::getDataDump(registryName,input$dumpDataSet,
@@ -152,114 +66,119 @@ server <- function(input, output, session) {
 
   # Veiledning
   output$veiledning <- renderUI({
-    htmlRenderRmd("veiledning.Rmd")
+    #htmlRenderRmd("veiledning.Rmd")
+    rapbase::renderRmd(
+      system.file("veiledning.Rmd", package = "smerte"),
+      outputType = "html_fragment"
+    )
   })
 
   # Tilsynsrapport
-  output$years <- renderUI({
-    ## years available, hardcoded if outside known context
-    if (rapbase::isRapContext()) {
-      years <- getLocalYears(registryName, reshId, userRole)
-      # remove NAs if they exists (bad registry)
-      years <- years[!is.na(years)]
-    } else {
-      years <- c("2016", "2017", "2018", "2019", "2020")
-    }
-    selectInput("yearSet", "Velg år:", years)
-  })
   output$tilsynsrapport <- renderUI({
-    reshId <- rapbase::getUserReshId(session)
-    registryName <- makeRegistryName(baseName = "smerte", reshID = reshId)
-    if (is.null(input$yearSet)) {
+    if (is.null(input$dateRangeTilsyn)) {
       NULL
     } else {
-      htmlRenderRmd(srcFile = "LokalTilsynsrapportMaaned.Rmd",
-                    params = list(hospitalName=hospitalName,
-                                  year=input$yearSet,
-                                  tableFormat='html',
-                                  registryName=registryName,
-                                  reshId=reshId,
-                                  userRole=userRole,
-                                  shinySession=session)
+      rapbase::renderRmd(
+        system.file("LokalTilsynsrapportMaaned.Rmd", package = "smerte"),
+        outputType = "html_fragment",
+        params = list(hospitalName = hospitalName,
+                      startDate = input$dateRangeTilsyn[1],
+                      endDate = input$dateRangeTilsyn[2],
+                      tableFormat='html',
+                      registryName=registryName,
+                      reshId=reshId,
+                      userRole=userRole,
+                      shinySession=session)
       )
     }
   })
 
   output$downloadReportTilsyn <- downloadHandler(
     filename = function() {
-      downloadFilename("LokalTilsynsrapportMaaned",
-                       input$formatTilsyn)
+      basename(tempfile(pattern = "LokalTilsynsrapportMaaned",
+                        fileext = paste0(".", input$formatTilsyn)))
     },
-
     content = function(file) {
-      contentFile(file, "LokalTilsynsrapportMaaned.Rmd",
-                  "tmpLokalTilsynsrapportMaaned.Rmd",
-                  input$formatTilsyn,
-                  addParam = list(year = input$yearSet))
+      fn <- rapbase::renderRmd(
+        system.file("LokalTilsynsrapportMaaned.Rmd", package = "smerte"),
+        outputType = input$formatTilsyn,
+        params = list(author = author,
+                      hospitalName = hospitalName,
+                      tableFormat = input$formatTilsyn,
+                      reshId = reshId,
+                      registryName = registryName,
+                      userRole = userRole,
+                      userFullName = userFullName,
+                      year = input$yearSet,
+                      shinySession = session)
+      )
+      file.rename(fn, file)
     }
   )
 
 
   # Dekningsgrad
   output$dekningsgrad <- renderUI({
-    htmlRenderRmd(srcFile = "LokalDekningsgradrapport.Rmd",
-                  params = list(hospitalName=hospitalName,
-                                reshId=reshId,
-                                startDate=input$dateRangeDekningsgrad[1],
-                                endDate=input$dateRangeDekningsgrad[2],
-                                tableFormat='html',
-                                registryName=registryName,
-                                userRole=userRole,
-                                shinySession=session)
+    rapbase::renderRmd(
+      system.file("LokalDekningsgradrapport.Rmd", package = "smerte"),
+      outputType = "html_fragment",
+      params = list(hospitalName=hospitalName,
+                    reshId=reshId,
+                    startDate=input$dateRangeDekningsgrad[1],
+                    endDate=input$dateRangeDekningsgrad[2],
+                    tableFormat='html',
+                    registryName=registryName,
+                    userRole=userRole,
+                    userFullName = userFullName,
+                    shinySession=session)
     )
   })
 
   output$downloadReportDekningsgrad <- downloadHandler(
     filename = function() {
-      downloadFilename("LokalDekningsgradrapport",
-                       input$formatDekningsgrad)
+      basename(tempfile(pattern ="LokalDekningsgradrapport",
+                        fileext = paste0(".", input$formatDekningsgrad)))
     },
-
     content = function(file) {
-      contentFile(file, "LokalDekningsgradrapport.Rmd",
-                  "tmpLokalDekningsgradrapport.Rmd",
-                  input$formatDekningsgrad,
-                  addParam = list(startDate=input$dateRangeDekningsgrad[1],
-                                  endDate=input$dateRangeDekningsgrad[2]))
+      fn <- rapbase::renderRmd(
+        system.file("LokalDekningsgradrapport.Rmd", package = "smerte"),
+        outputType = input$formatDekningsgrad,
+        params = list(author = author,
+                      hospitalName = hospitalName,
+                      tableFormat = input$formatDekningsgrad,
+                      reshId = reshId,
+                      registryName = registryName,
+                      userRole = userRole,
+                      userFullName = userFullName,
+                      startDate=input$dateRangeDekningsgrad[1],
+                      endDate=input$dateRangeDekningsgrad[2],
+                      shinySession = session)
+      )
+      file.rename(fn, file)
     }
   )
 
 
   # Indikatorrapport
-  output$indYears <- renderUI({
-    ## years available, hardcoded if outside known context
-    if (rapbase::isRapContext()) {
-      years <- getAllYears(registryName, reshId, userRole)
-      # remove NAs if they exists (bad registry)
-      years <- years[!is.na(years)]
-    } else {
-      years <- c("2016", "2017", "2018", "2019", "2020")
-    }
-    selectInput("indYearSet", "Velg år:", years)
-  })
   output$indikatorrapport <- renderUI({
-    reshId <- rapbase::getUserReshId(session)
-    registryName <- makeRegistryName(baseName = "smerte", reshID = reshId)
     reportTemplate <- "LokalIndikatorMaaned.Rmd"
     if (isNationalReg(reshId)) {
       reportTemplate <- "NasjonalIndikatorMaaned.Rmd"
     }
-    if (is.null(input$indYearSet)) {
-      p("Velg fra menyen til venstre hvilket år indikatorene skal vises for.")
+    if (is.null(input$dateRangeIndikator)) {
+      NULL
     } else {
-      htmlRenderRmd(srcFile = reportTemplate,
-                    params = list(hospitalName=hospitalName,
-                                  year=input$indYearSet,
-                                  tableFormat='html',
-                                  registryName=registryName,
-                                  reshId=reshId,
-                                  userRole=userRole,
-                                  shinySession=session)
+      rapbase::renderRmd(
+        system.file(reportTemplate, package = "smerte"),
+        outputType = "html_fragment",
+        params = list(hospitalName=hospitalName,
+                      startDate=input$dateRangeIndikator[1],
+                      endDate=input$dateRangeIndikator[2],
+                      tableFormat='html',
+                      registryName=registryName,
+                      reshId=reshId,
+                      userRole=userRole,
+                      shinySession=session)
       )
     }
   })
@@ -270,135 +189,224 @@ server <- function(input, output, session) {
       if (isNationalReg(reshId)) {
         repPrefix <- "Nasjonal"
       }
-      downloadFilename(paste0(repPrefix, "IndikatorMaaned"),
-                       input$formatIndikator)
+      basename(tempfile(pattern = paste0(repPrefix, "IndikatorMaaned"),
+                        fileext = paste0(".", input$formatIndikator)))
     },
-
     content = function(file) {
       repPrefix <- "Lokal"
       if (isNationalReg(reshId)) {
         repPrefix <- "Nasjonal"
       }
-      contentFile(file, paste0(repPrefix, "IndikatorMaaned.Rmd"),
-                  paste0("tmp", repPrefix, "IndikatorMaaned.Rmd"),
-                  input$formatIndikator,
-                  addParam = list(year=input$indYearSet))
+      fn <- rapbase::renderRmd(
+        system.file(paste0(repPrefix, "IndikatorMaaned.Rmd"),
+                    package = "smerte"),
+        outputType = input$formatIndikator,
+        params = list(author = author,
+                      hospitalName = hospitalName,
+                      tableFormat = input$formatIndikator,
+                      reshId = reshId,
+                      registryName = registryName,
+                      userRole = userRole,
+                      userFullName = userFullName,
+                      year=input$indYearSet,
+                      shinySession = session)
+      )
+      file.rename(fn, file)
     }
   )
 
   # eProm
   output$eprom <- renderUI({
-    htmlRenderRmd(srcFile = "lokalEprom.Rmd",
-                  params = list(hospitalName=hospitalName,
-                                reshId=reshId,
-                                startDate=input$dateRangeEprom[1],
-                                endDate=input$dateRangeEprom[2],
-                                tableFormat = "html",
-                                registryName=registryName,
-                                userRole=userRole,
-                                shinySession=session)
+    rapbase::renderRmd(
+      system.file("lokalEprom.Rmd", package = "smerte"),
+      outputType = "html_fragment",
+      params = list(hospitalName=hospitalName,
+                    reshId=reshId,
+                    startDate=input$dateRangeEprom[1],
+                    endDate=input$dateRangeEprom[2],
+                    tableFormat = "html",
+                    registryName=registryName,
+                    userRole=userRole,
+                    shinySession=session)
     )
   })
 
   output$downloadReportEprom <- downloadHandler(
     filename = function() {
-      downloadFilename("lokalEprom",
-                       input$formatEprom)
+      basename(tempfile(pattern ="lokalEprom",
+                        fileext = paste0(".", input$formatEprom)))
     },
-
     content = function(file) {
-      contentFile(file, "lokalEprom.Rmd",
-                  "tmpLokalEprom.Rmd",
-                  input$formatEprom,
-                  addParam = list(startDate=input$dateRangeEprom[1],
-                                  endDate=input$dateRangeEprom[2]))
+      fn <- rapbase::renderRmd(
+        system.file("lokalEprom.Rmd", package = "smerte"),
+        outputType = input$formatEprom,
+        params = list(author = author,
+                      hospitalName = hospitalName,
+                      tableFormat = input$formatEprom,
+                      reshId = reshId,
+                      registryName = registryName,
+                      userRole = userRole,
+                      userFullName = userFullName,
+                      startDate=input$dateRangeEprom[1],
+                      endDate=input$dateRangeEprom[2],
+                      shinySession = session)
+      )
+      file.rename(fn, file)
     }
   )
 
+  # Spinalkateter
+  output$spinalkateter <- renderUI({
+    rapbase::renderRmd(
+      system.file("LokalSpinalkateter.Rmd", package = "smerte"),
+      outputType = "html_fragment",
+      params = list(hospitalName=hospitalName,
+                    reshId=reshId,
+                    startDate=input$dateRangeSpinalkateter[1],
+                    endDate=input$dateRangeSpinalkateter[2],
+                    tableFormat = "html",
+                    registryName=registryName,
+                    userRole=userRole,
+                    shinySession=session)
+    )
+  })
+
+  output$downloadReportSpinalkateter <- downloadHandler(
+    filename = function() {
+      basename(tempfile(pattern ="LokalSpinalkateter",
+                        fileext = paste0(".", input$formatSpinalkateter)))
+    },
+    content = function(file) {
+      fn <- rapbase::renderRmd(
+        system.file("LokalSpinalkateter.Rmd", package = "smerte"),
+        outputType = input$formatSpinalkateter,
+        params = list(author = author,
+                      hospitalName = hospitalName,
+                      tableFormat = input$formatSpinalkateter,
+                      reshId = reshId,
+                      registryName = registryName,
+                      userRole = userRole,
+                      userFullName = userFullName,
+                      startDate=input$dateRangeSpinalkateter[1],
+                      endDate=input$dateRangeSpinalkateter[2],
+                      shinySession = session)
+      )
+      file.rename(fn, file)
+    }
+  )
+
+  # Smertekategori
+  output$smertekategori <- renderUI({
+    rapbase::renderRmd(
+      system.file("LokalSmertekategori.Rmd", package = "smerte"),
+      outputType = "html_fragment",
+      params = list(hospitalName=hospitalName,
+                    reshId=reshId,
+                    startDate=input$dateRangeSmertekategori[1],
+                    endDate=input$dateRangeSmertekategori[2],
+                    tableFormat = "html",
+                    registryName=registryName,
+                    userRole=userRole,
+                    shinySession=session)
+    )
+  })
+
+  output$downloadReportSmertekategori <- downloadHandler(
+    filename = function() {
+      basename(tempfile(pattern ="LokalSmertekategori",
+                        fileext = paste0(".", input$formatSmertekategori)))
+    },
+    content = function(file) {
+      fn <- rapbase::renderRmd(
+        system.file("LokalSmertekategori.Rmd", package = "smerte"),
+        outputType = input$formatSmertekategori,
+        params = list(author = author,
+                      hospitalName = hospitalName,
+                      tableFormat = input$formatSmertekategori,
+                      reshId = reshId,
+                      registryName = registryName,
+                      userRole = userRole,
+                      userFullName = userFullName,
+                      startDate=input$dateRangeSmertekategori[1],
+                      endDate=input$dateRangeSmertekategori[2],
+                      shinySession = session)
+      )
+      file.rename(fn, file)
+    }
+  )
+
+  # Felles verdier for abonnement og utsendelser
+  orgs <- getNameReshId(registryName = registryName, asNamedList = TRUE)
+
+  if (isNationalReg(reshId)) {
+    reports <- list(
+      Kvalitetsindikatorer = list(
+        synopsis = paste("Kvalitetsindikatorer fra Smerteregisteret"),
+        fun = "reportProcessor",
+        paramNames = c("report", "outputType", "title", "author", "orgId",
+                       "userFullName"),
+        paramValues = c("nasjonalIndikator", "pdf", "Kvalitetsindikatorer",
+                        "Smerteregisteret", reshId, userFullName)
+      )
+    )
+  } else {
+    reports <- list(
+      Tilsyn = list(
+        synopsis = paste("Smerteregisteret: månedlig oppsummering av tilsyn for",
+                         "inneværende år"),
+        fun = "reportProcessor",
+        paramNames = c("report", "outputType", "title", "author",
+                       "orgName", "orgId", "registryName", "userFullName",
+                       "userRole",  "year",
+                       "startDate",
+                       "endDate"),
+        paramValues = c("tilsyn", "pdf", "Tilsyn", "Smerteregisteret",
+                        hospitalName, reshId, registryName, userFullName,
+                        userRole, 2021,
+                        lubridate::today() - lubridate::years(1),
+                        lubridate::today() - lubridate::weeks(1))
+      ),
+      Kvalitetsindikatorer = list(
+        synopsis = paste("Kvalitetsindikatorer fra Smerteregisteret"),
+        fun = "reportProcessor",
+        paramNames = c("report", "outputType", "title",
+                       "author", "orgId",
+                       "userFullName", "userRole", "registryName"),
+        paramValues = c("indikator", "pdf", "Kvalitetsindikatorer",
+                        "Smerteregisteret", reshId,
+                        userFullName, userRole, registryName)
+      ),
+      Spinalkateter = list(
+        synopsis = "Smerteregisteret: bruk av spinalkateter inneværende år",
+        fun = "reportProcessor",
+        paramNames = c("report", "outputType", "title",
+                       "author", "orgId", "userFullName", "userRole",
+                       "registryName", "orgName"),
+        paramValues = c("spinalkateter", "pdf", "Spinalkateter",
+                        "Smerteregisteret", reshId, userFullName, userRole,
+                        registryName, hospitalName)
+      )
+    )
+  }
 
   # Abonnement
-  ## rekative verdier for å holde rede på endringer som skjer mens
-  ## applikasjonen kjører
-  rv <- reactiveValues(
-    subscriptionTab = rapbase::makeAutoReportTab(session))
+  rapbase::autoReportServer("smerteSubscription", registryName = "smerte",
+                            type = "subscription", reports = reports,
+                            orgs = orgs)
 
-  ## lag tabell over gjeldende status for abonnement
-  output$activeSubscriptions <- DT::renderDataTable(
-    rv$subscriptionTab, server = FALSE, escape = FALSE, selection = 'none',
-    options = list(dom = 'tp', ordering = FALSE,
-                   columnDefs = list(list(visible = FALSE, targets = 6))),
-    rownames = FALSE
+  # Utsendelser
+  org <- rapbase::autoReportOrgServer("smerteDispatchment", orgs)
+  format <- rapbase::autoReportFormatServer("smerteDispatchment")
+
+  # set reactive parameters overriding those in the reports list
+  paramNames <- shiny::reactive(c("orgId", "outputType"))
+  paramValues <- shiny::reactive(c(org$value(), format()))
+
+  rapbase::autoReportServer(
+    "smerteDispatchment", registryName = "smerte", type = "dispatchment",
+    org = org$value, paramNames = paramNames, paramValues = paramValues,
+    reports = reports, orgs = orgs, eligible = (userRole == "SC")
   )
-
-  ## lag side som viser status for abonnement, også når det ikke finnes noen
-  output$subscriptionContent <- renderUI({
-    userFullName <- rapbase::getUserFullName(session)
-    userEmail <- rapbase::getUserEmail(session)
-    if (length(rv$subscriptionTab) == 0) {
-      p(paste("Ingen aktive abonnement for", userFullName))
-    } else {
-      tagList(
-        p(paste0("Aktive abonnement som sendes per epost til ", userFullName,
-                 ":")),
-        DT::dataTableOutput("activeSubscriptions")
-      )
-    }
-  })
-
-  ## nye abonnement
-  ### lag liste over mulige valg styrt av lokal eller nasjonal sesjon
-  output$subscriptionRepList <- renderUI({
-    if (isNationalReg(reshId)) {
-      selectInput("subscriptionRep", "Rapport:",
-                  c(""))
-    } else {
-      selectInput("subscriptionRep", "Rapport:",
-                  c("Lokalt tilsyn per måned 2016",
-                    "Lokalt tilsyn per måned 2017"))
-    }
-  })
-
-  observeEvent (input$subscribe, {
-    if (nchar(input$subscriptionRep) > 0) {
-
-      package <- "smerte"
-      owner <- rapbase::getUserName(session)
-      interval <- strsplit(input$subscriptionFreq, "-")[[1]][2]
-      intervalName <- strsplit(input$subscriptionFreq, "-")[[1]][1]
-      organization <- rapbase::getUserReshId(session)
-      runDayOfYear <- rapbase::makeRunDayOfYearSequence(
-        interval = interval)
-      email <- rapbase::getUserEmail(session)
-      synopsis <- "Rutinemessig utsending av lokal tilsynsrapport"
-      baseName <- "LokalTilsynsrapportMaaned"
-      registryName <- makeRegistryName(baseName = "smerte", reshID = reshId)
-      fun <- "subscriptionLocalTilsyn"
-      if (input$subscriptionRep == "Lokalt tilsyn per måned 2016") {
-        year <- "2016"
-      }
-      if (input$subscriptionRep == "Lokalt tilsyn per måned 2017") {
-        year <- "2017"
-      }
-      paramNames <- c("baseName", "reshId", "registryName", "author",
-                      "hospitalName", "year", "type")
-      paramValues <- c(baseName, reshId, registryName, author, hospitalName,
-                       year, input$subscriptionFileFormat)
-      rapbase::createAutoReport(synopsis = synopsis, package = package,
-                                fun = fun, paramNames = paramNames,
-                                paramValues = paramValues, owner = owner,
-                                email = email, organization = organization,
-                                runDayOfYear = runDayOfYear,
-                                interval = interval, intervalName = intervalName)
-    }
-    rv$subscriptionTab <- rapbase::makeAutoReportTab(session)
-  })
-
-  ## slett eksisterende abonnement
-  observeEvent(input$del_button, {
-    selectedRepId <- strsplit(input$del_button, "_")[[1]][2]
-    rapbase::deleteAutoReport(selectedRepId)
-    rv$subscriptionTab <- rapbase::makeAutoReportTab(session)
-  })
 
   # Metadata
   meta <- reactive({
@@ -437,4 +445,16 @@ server <- function(input, output, session) {
       contentDump(file, input$dumpFormat)
     }
   )
+
+  # Eksport
+  ## brukerkontroller
+  rapbase::exportUCServer("smerteExport", registryName = registryName,
+                          repoName = "smerte", eligible = (userRole == "SC"))
+  ## veileding
+  rapbase::exportGuideServer("smerteExportGuide", registryName)
+
+  # Bruksstatistikk
+  rapbase::statsServer("smerteStats", registryName = "smerte",
+                       eligible = (userRole == "SC"))
+  rapbase::statsGuideServer("smerteStats", registryName = "smerte")
 }

@@ -4,14 +4,25 @@
 \alias{getRegData}
 \alias{getRegDataLokalTilsynsrapportMaaned}
 \alias{getRegDataRapportDekningsgrad}
+\alias{getRegDataSmertekategori}
+\alias{getSmerteDiagKatValueLab}
+\alias{getRegDataSpinalkateter}
 \alias{getLocalYears}
 \alias{getAllYears}
 \alias{getHospitalName}
+\alias{getNameReshId}
 \alias{getDataDump}
 \alias{getRegDataIndikator}
 \title{Provide dataframe of registry data}
 \usage{
-getRegDataLokalTilsynsrapportMaaned(registryName, reshId, userRole, year, ...)
+getRegDataLokalTilsynsrapportMaaned(
+  registryName,
+  reshId,
+  userRole,
+  startDate,
+  endDate,
+  ...
+)
 
 getRegDataRapportDekningsgrad(
   registryName,
@@ -22,13 +33,35 @@ getRegDataRapportDekningsgrad(
   ...
 )
 
-getRegDataIndikator(registryName, reshId, userRole, year, ...)
+getRegDataIndikator(registryName, reshId, userRole, startDate, endDate, ...)
+
+getSmerteDiagKatValueLab(registryName, smerteKat)
+
+getRegDataSmertekategori(
+  registryName,
+  reshId,
+  userRole,
+  startDate,
+  endDate,
+  ...
+)
+
+getRegDataSpinalkateter(
+  registryName,
+  reshId,
+  userRole,
+  startDate,
+  endDate,
+  ...
+)
 
 getLocalYears(registryName, reshId, userRole)
 
 getAllYears(registryName, reshId, userRole)
 
 getHospitalName(registryName, reshId, userRole)
+
+getNameReshId(registryName, asNamedList = FALSE)
 
 getDataDump(registryName, tableName, fromDate, toDate, ...)
 }
@@ -39,13 +72,15 @@ getDataDump(registryName, tableName, fromDate, toDate, ...)
 
 \item{userRole}{String providing user role}
 
-\item{year}{Integer four digit year to be reported from}
-
-\item{...}{Optional arguments to be passed to the function}
-
 \item{startDate}{String defing start of date range as YYYY-MM-DD}
 
 \item{endDate}{String defing end of date range as YYYY-MM-DD}
+
+\item{...}{Optional arguments to be passed to the function}
+
+\item{smerteKat}{Integer defining the SmerteKat code to use in query}
+
+\item{asNamedList}{Logical whether to return a list of named values or not.}
 
 \item{tableName}{String providing a table name}
 

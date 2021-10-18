@@ -8,21 +8,27 @@ output:
 ---
 
 # Smerteregisteret i Rapporteket
-Her er Smerteregisterets egen side, hvor du finner informasjon og rapporter knyttet til lokale og nasjonale data. Videre følger en forklaring på hva som ligger under de enkelte fanene som finnes her på siden.
+Dette er Smerteregisterets egen side, hvor du finner informasjon og rapporter knyttet til lokale og nasjonale data. Videre følger en forklaring på hva som finnes på rapporteket og hvordan det kan brukes.
 
-# Rapporter
-På denne siden finner du rapportene det er mulig å hente ut fra rapporteket. Etter hvert som nye rapporter legges til vil det oppdateres her. Dersom det er informasjon du er interessert i å hente ut gjentatte ganger, kan det lønne seg å få laget en rapport. 
+# Rapporter og data
+Her finner du rapportene det er mulig å hente ut fra rapporteket. Etter hvert som nye rapporter lages vil de legges til i nedtrekksmenyen _Rapporter_ øverst på siden. Dersom du ønsker å få tilsendt en rapport fast (f.eks. månedlig) kan dette bestilles under fanen _Abonnement_. Alle registerets datadumper kan hentes ned under fanen _Datadump_. Hvis du er innlogget via ditt lokale sykehus, vil rapportene generes med lokale data for dette sykehuset. Er du innlogget på det nasjonale registeret brukes nasjonale data.
 
-En forespørsel om ny rapport kan sendes til janne.mannseth@helse-bergen.no. Beskriv nøye hva du er ute etter. Det vil f.eks. være hvilke variabler du ønsker å se på, om resultatene skal vises totalt eller gruppevis (etter kjønn, rus/ikke rus o.l.) og hvilken type visualisering som er ønskelig (tabell, figur etc.).
+## Registerets nåværende rapporter
+
+Tilsyn: informasjon om henvisninger, tilsyn (fordelt på lege, sykepleier etc.) og avdelingsoversikt for lokale data.
+
+Dekningsgrad: utregning av dekningsgrad over valgfri tidsperiode for lokale data.
+
+Indikatorer: Smerteregisterets resultat - og kvalitetsindikatorer for lokale eller nasjonale data. 
+
+ePROM: oversikt over alle variablene i alle eprom-skjema for lokale eller nasjonale data.
+
+Spinalkateter: diverse informasjon om de pasientene som har fått spinalkateter (tilsyn, morfinekvivalenter, NRS m.m.) for lokale data.
+
+Smertekategori: oversikt over hovedsmertekategori, undersmertekategorier og opioidbruk ved innleggelse for lokale data.
+
+# Nye rapporter
+Dersom det er informasjon du er interessert i å hente ut gjentatte ganger kan det lønne seg å få laget en rapport. 
+
+En forespørsel om ny rapport kan sendes til janne.mannseth@helse-bergen.no. Beskriv nøye hva du er ute etter. Det vil f.eks. være hvilke variabler du ønsker å se på, om resultatene skal vises totalt eller gruppevis og om en spesiell type visualisering som er ønskelig.
  
-## Tilsynsrapport (lokal)
-Tilsynsrapporten er en rapport for lokale data for ditt sykehus. Den gir ut informasjon om henvisninger, tilsyn (fordelt på lege, sykepleier etc.) og en avdelingsoversikt.
-
-## Dekningsgrad (lokal)
-Til utregning av dekningsgrad for ditt sykehus over valgfri tidsperiode.
-
-## Indikatorrapport (lokal)
-Denne rapporten viser Smerteregisterets resultat - og kvalitetsindikatorer for lokale data. 
-
-## EPROM (lokal)
-Denne rapporten gir ut en oversikt over alle variablene i alle eprom-skjema.

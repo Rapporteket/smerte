@@ -1,0 +1,199 @@
+---
+params:
+  title: 'Informasjon om opioider og smertekategori'
+  author: 'Rapporteket'
+  hospitalName: 'Ukjent sykehus'
+  reshId: 'locallyDefined'
+  userRole: 'MyRole'
+  userFullName: 'Ukjent bruker'
+  startDate: !r lubridate::today() - lubridate::years(1)
+  endDate: !r lubridate::today() - lubridate::weeks(1)
+  year: '2016'
+  tableFormat: 'html'
+  registryName: 'rapbase'
+  shinySession: list()
+title: '`r paste(params$title, params$hospitalName, " i perioden fra ", params$startDate, " til ", params$endDate)`'
+author: '`r params$author`'
+date: '`r format(Sys.time(), "%d\\. %B, %Y")`'
+reglogo: '`r system.file("www/logoSmerte.png", package = "smerte")`'
+regtext: '`r readLines(system.file("registryShortDescription.txt", package = "smerte"))`'
+registryName: Smerteregisteret
+userFullName: '`r params$userFullName`'
+---
+```{r set options and load packages, include = FALSE}
+knitr::opts_chunk$set(echo=FALSE)
+options(knitr.table.format = params$tableFormat)
+options(tinytex.verbose = TRUE)
+
+# Pakker
+library(dplyr)
+library(magrittr)
+library(smerte)
+library(knitr)
+library(kableExtra)
+library(ggplot2)
+library(gridExtra)
+library(zoo)
+library(tidyverse)
+```
+
+```{r get data, include=FALSE}
+
+if (rapbase::isRapContext()) {
+  fulldat <- getRegDataSmertekategori(registryName = params$registryName,
+                                      reshId = params$reshId,
+                                      userRole = params$userRole,
+                                      startDate = params$startDate,
+                                      endDate = params$endDate,
+                                      session = params$shinySession)
+} else {
+  
+  #Dataimport: skal hente lokale data for hvert sykehus (tar vekk sti, og erstatter med lokal fil)
+  
+  #AlleVarNum
+  path <- read.csv(file = "H:/path.csv", header = FALSE, sep = ";")
+  path <- as.data.frame(lapply(path, as.character), stringsAsFactors=FALSE)
+  path <- path$V1
+  dat <- read.csv(file = path, header = TRUE, sep = ";")
+  
+  #Diagnosefil numerisk
+  pathd <- read.csv(file = "H:/pathdiag.csv", header = FALSE, sep = ";")
+  pathd <- as.data.frame(lapply(pathd, as.character), stringsAsFactors=FALSE)
+  pathd <- pathd$V1
+  diagnum <- read.csv(file = pathd, header = TRUE, sep = ";")
+  
+  #Diagnosefil
+  pathdt <- read.csv(file = "H:/pathdiagtekst.csv", header = FALSE, sep = ";", encoding = "UTF-8")
+  pathdt <- as.data.frame(lapply(pathdt, as.character), stringsAsFactors=FALSE)
+  pathdt <- pathdt$V1
+  diag <- read.csv(file = pathdt, header = TRUE, sep = ";", encoding = "UTF-8")
+  
+  #Joiner diagnose numerisk og diagnosetekst
+  diagfull = diagnum %>% left_join(diag, by = c("ForlopsID", "HovedDato", "SmerteDiagID"))
+  #Joiner så AlleVarNum med diagnose_full
+  fulldat = left_join(dat, diagfull, by = "ForlopsID")
+  
+}
+
+#Funksjon som skal evaluere om dataframe er tom eller ikke
+dataPresent <- TRUE
+if(dim(fulldat)[1] < 1) {
+  dataPresent <- FALSE
+}
+```
+
+
+
+```{r noData, eval=!dataPresent, results='asis'}
+cat('# Upps...\nI den valgte tidsperioden er det ikke nok data til å gi 
+    ut resultater.')
+knitr::knit_exit()
+
+```
+
+# Smertekategori
+
+Her finner vi diverse informasjon rundt smertekategori.
+
+
+```{r smertekategori, warning = TRUE, message=TRUE, results='asis', eval=dataPresent}
+
+#Oversikt over diverse angående akutt og langvarig smerte
+
+#Akutt og langvarig smerte i samme forløp
+akklang = fulldat %>%
+  dplyr::filter(!is.na(SmerteKat)) %>% 
+  dplyr::distinct(ForlopsID, .keep_all = TRUE) %>% 
+  dplyr::summarise(
+    antall_ja = sum(AkuttLang == 1), nevner = n(), ind = antall_ja/nevner) %>% 
+  dplyr::ungroup()
+
+#SmerteKat.x = 1 er akutt smerte (se SmerteKat.y)
+akutt = fulldat %>% 
+  filter(!is.na(SmerteKat)) %>% 
+  distinct(ForlopsID, .keep_all = TRUE) %>% 
+  summarise(antall_ja = sum(SmerteKat == 1), nevner = n(), ind = antall_ja/nevner) %>% 
+  ungroup
+
+#SmerteKat.x = 2 er langvarig smerte (se SmerteKat.y)
+langvarig = fulldat %>% 
+  filter(!is.na(SmerteKat)) %>% 
+  distinct(ForlopsID, .keep_all = TRUE) %>% 
+  summarise(antall_ja = sum(SmerteKat == 2), nevner = n(), ind = antall_ja/nevner) %>% 
+  ungroup
+
+#SmerteKat.x = 3 er palliativ smerte (se SmerteKat.y)
+palliativ = fulldat %>% 
+  filter(!is.na(SmerteKat)) %>% 
+  distinct(ForlopsID, .keep_all = TRUE) %>% 
+  summarise(antall_ja = sum(SmerteKat == 3), nevner = n(), ind = antall_ja/nevner) %>% 
+  ungroup
+
+#Underdiagnose for de forløp med hoveddiagnose akutt smerte
+underdiag = fulldat %>% 
+  filter(SmerteKat == 1) %>% 
+  distinct(ForlopsID, .keep_all = TRUE) %>% 
+  count(DiagKat) %>%
+  mutate(pro = n/sum(n)) %>%
+  dplyr::mutate(
+    DiagKat = dplyr::recode(
+      DiagKat, !!!getSmerteDiagKatValueLab(params$registryName, smerteKat = 1)
+    )
+  )
+
+#Setter sammen
+tot_smertekat = bind_rows(akutt, langvarig, palliativ)
+rownames(tot_smertekat) = c("Akutt smerte", "Langvarig smerte", "Palliativ")
+
+#Smertekategori
+rapbase::mst(tab = tot_smertekat, 
+     col_names = c( "Antall ja" ,"Antall totalt", "Andel"),
+     cap = paste0("Tabellen viser hvordan pasientenes hovedkategori (smerte) fordeler seg mellom akutt, langvarig eller palliativ smerte."),
+     label = "smertekattab",
+     type = params$tableFormat,
+     digs = 2,
+     align = c("l", "c", "c", "c"))
+
+#Akutt og langvarig samtidig
+rapbase::mst(tab = akklang, 
+     col_names = c( "Antall ja" ,"Antall totalt", "Andel"),
+     cap = paste0("Tabellen viser antall og andel forløp med både akutt og langvarig smerte."),
+     label = "akklangtab",
+     type = params$tableFormat,
+     digs = 2,
+     align = c("l", "c", "c", "c"))
+
+#Underkategori for de med akutt smerte som hovedsmerte
+rapbase::mst(
+  tab = underdiag, 
+  col_names = c( "Type akutt smerte" ,"Antall totalt", "Andel"),
+  cap = paste0("Tabellen viser underkateogriene for smerte for de forløpene med akutt smerte som hovedkategori. Et forløp kan ha flere underkategorier."),
+  label = "underdiag",
+  type = params$tableFormat,
+  digs = 2,
+  align = c("l", "c", "c", "c")
+)
+```
+
+Tabell \@ref(tab:smertekattab) gir en oversikt over fordelingen i smertekategori for forløpene, mens \@ref(tab:akklangtab) viser hvor mange forløp som er registrert med både akutt og langvarig smerte. Tabell \@ref(tab:underdiag) viser fordelingen av underkategoriene for de forløpene der hovedkategori er registert som akutt smerte.
+
+```{r opioid, warning = TRUE, message=TRUE, results='asis', eval=dataPresent}
+
+#Oversikt over opioidbruk ved innleggelse
+
+opi = fulldat %>% filter(!is.na(Opioid4a)) %>% 
+  distinct(ForlopsID, .keep_all = TRUE) %>% 
+  summarise(antall_ja = sum(Opioid4a == 1), nevner = n(), ind = antall_ja/nevner) %>% 
+  ungroup
+
+rapbase::mst(tab = opi, 
+     col_names = c( "Antall ja" ,"Antall totalt", "Andel"),
+     cap = paste0("Tabellen viser hvordan opioidbruk før innleggelse fordeler seg."),
+     label = "opitab",
+     type = params$tableFormat,
+     digs = 2,
+     align = c("l", "c", "c", "c"))
+
+```
+
+Tabell \@ref(tab:opitab) gir en oversikt over antall og andel som med opioidbruk før innleggelse.

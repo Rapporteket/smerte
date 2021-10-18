@@ -3,7 +3,6 @@
 #' Provides a dataframe containing data from a registry
 #'
 #' @param registryName String providing the current registryName
-#' @param year Integer four digit year to be reported from
 #' @param startDate String defing start of date range as YYYY-MM-DD
 #' @param endDate String defing end of date range as YYYY-MM-DD
 #' @param reshId String providing organization Id
@@ -11,11 +10,15 @@
 #' @param tableName String providing a table name
 #' @param fromDate String providing start date
 #' @param toDate String provideing end date
+#' @param asNamedList Logical whether to return a list of named values or not.
+#' @param smerteKat Integer defining the SmerteKat code to use in query
 #' @param ... Optional arguments to be passed to the function
 #' @name getRegData
 #' @aliases getRegDataLokalTilsynsrapportMaaned
-#' getRegDataRapportDekningsgrad getLocalYears getAllYears getHospitalName
-#' getDataDump
+#' getRegDataRapportDekningsgrad getRegDataSmertekategori
+#' getSmerteDiagKatValueLab
+#' getRegDataSpinalkateter getLocalYears getAllYears getHospitalName
+#' getNameReshId getDataDump
 NULL
 
 
@@ -33,7 +36,7 @@ NULL
 #' @rdname getRegData
 #' @export
 getRegDataLokalTilsynsrapportMaaned <- function(registryName, reshId, userRole,
-                                                year, ...) {
+                                                startDate, endDate, ...) {
 
   dbType <- "mysql"
 
@@ -64,14 +67,19 @@ LEFT JOIN
 ON
   avd.DEPARTMENT_ID = var.InnlAvd
 WHERE
-  YEAR(var.RegDato11) = "
+  var.RegDato11 >= DATE('"
 
-  query <- paste0(query, year, " AND var.AvdRESH IN (", deps, ");")
+  query <- paste0(query, startDate, "') AND var.RegDato11 <= DATE('",
+                  endDate, "') AND var.AvdRESH IN (", deps, ");")
+
 
   if ("session" %in% names(list(...))) {
-    rapbase::repLogger(session = list(...)[["session"]],
-                      msg = paste("Load tilsynsrapport data from",
-                                  registryName, ": ", query))
+    session <- list(...)[["session"]]
+    if ("ShinySession" %in% attr(session, "class")) {
+      rapbase::repLogger(session = session,
+                         msg = paste("Load tilsynsrapport data from",
+                                     registryName, ": ", query))
+    }
   }
 
   rapbase::loadRegData(registryName, query, dbType)
@@ -111,14 +119,14 @@ WHERE
 #' @rdname getRegData
 #' @export
 getRegDataIndikator <- function(registryName, reshId, userRole,
-                                                year, ...) {
+                                startDate, endDate, ...) {
 
   dbType <- "mysql"
 
   # special case at OUS
   deps <- .getDeps(reshId, userRole)
 
-  query <- "
+  query <- paste0("
 SELECT
   var.AntTilsLege,
   var.AntTilsSykPleier,
@@ -151,22 +159,149 @@ SELECT
 FROM
   AlleVarNum var
 WHERE
-  YEAR(var.RegDato11) = "
+  var.RegDato11>=DATE('", startDate, "') AND var.RegDato11<=DATE('", endDate, "')"
+  )
 
   if (isNationalReg(reshId)) {
-    query <- paste0(query, year, ";")
+    query <- paste0(query, ";")
   } else {
-    query <- paste0(query, year, " AND var.AvdRESH IN (", deps, ");")
+    query <- paste0(query, " AND var.AvdRESH IN (", deps, ");")
   }
 
   if ("session" %in% names(list(...))) {
-    rapbase::repLogger(session = list(...)[["session"]],
-                      msg = paste("Load indikatorrapport data from",
-                                  registryName, ": ", query))
+    session <- list(...)[["session"]]
+    if ("ShinySession" %in% attr(session, "class")) {
+      rapbase::repLogger(session = session,
+                         msg = paste("Load indikatorrapport data from",
+                                     registryName, ": ", query))
+    }
   }
 
   rapbase::loadRegData(registryName, query, dbType)
 }
+
+
+#' @rdname getRegData
+#' @export
+getSmerteDiagKatValueLab <- function(registryName, smerteKat) {
+
+  query <- paste0("
+SELECT
+  val.DiagKat AS value,
+  lab.DiagKat AS lable
+FROM
+  SmerteDiagnoserNum AS val
+LEFT JOIN
+  SmerteDiagnoser AS lab ON val.SmerteDiagID = lab.SmerteDiagID
+WHERE
+  val.SmerteKat = ", smerteKat, "
+GROUP BY
+  val.DiagKat,
+  lab.DiagKat;"
+  )
+
+  res <- rapbase::loadRegData(registryName, query)
+
+  as.list(stats::setNames(res$lable, res$value))
+}
+
+#' @rdname getRegData
+#' @export
+getRegDataSmertekategori <- function(registryName, reshId, userRole,
+                                     startDate, endDate, ...) {
+  dbType <- "mysql"
+
+  deps <- .getDeps(reshId, userRole)
+
+  query <- "
+SELECT
+  diag.ForlopsID,
+  fo.HovedDato,
+  diag.SmerteDiagID,
+  diag.SmerteKat,
+  var.AkuttLang,
+  diag.DiagKat,
+  var.Opioid4a
+FROM
+  SmerteDiagnoserNum AS diag
+LEFT JOIN
+  AlleVarNum AS var
+ON
+  diag.ForlopsID = var.ForlopsID
+LEFT JOIN
+  ForlopsOversikt AS fo
+ON
+  diag.ForlopsID = fo.ForlopsID
+WHERE
+  var.AvdRESH IN ("
+
+  query <- paste0(query, deps, ") AND (DATE(StartdatoTO) BETWEEN '",
+                  startDate, "' AND '", endDate, "');")
+
+  if ("session" %in% names(list(...))) {
+    rapbase::repLogger(session = list(...)[["session"]],
+                       msg = paste0("Load data from ", registryName, ":", query))
+  }
+
+  rapbase::loadRegData(registryName, query, dbType)
+}
+
+
+#' @rdname getRegData
+#' @export
+getRegDataSpinalkateter <- function(registryName, reshId, userRole,
+                                    startDate, endDate, ...) {
+
+  dbType <- "mysql"
+
+  # special case at OUS
+  deps <- .getDeps(reshId, userRole)
+
+  query <- "
+SELECT
+  MoEkvivalens,
+  MoEkvivalens22,
+  AntPasTils,
+  AntTilsLege,
+  AntTilsSykPleier,
+  AntTilsFysioT,
+  AntTilsPsyk,
+  AntTilsSosio,
+  StartdatoTO,
+  ForlopsID,
+  StSmBev12,
+  StSmBev21,
+  SvSmBev12,
+  SvSmBev21,
+  StSmRo12,
+  StSmRo21,
+  SvSmRo12,
+  SvSmRo21,
+  SAB11,
+  PasientID,
+  TotTid,
+  SluttDato
+FROM
+  AlleVarNum
+WHERE
+  AvdRESH IN ("
+
+  query <- paste0(query, deps, ") AND (DATE(StartdatoTO) BETWEEN '",
+                  startDate, "' AND '", endDate, "');")
+
+  if ("session" %in% names(list(...))) {
+    session <- list(...)[["session"]]
+    if ("ShinySession" %in% attr(session, "class")) {
+      rapbase::repLogger(session = session,
+                         msg = paste("Load spinalkateter data from",
+                                     registryName, ": ", query))
+    }
+  }
+
+  rapbase::loadRegData(registryName, query, dbType)
+}
+
+
 
 #' @rdname getRegData
 #' @export
@@ -219,15 +354,14 @@ getHospitalName <- function(registryName, reshId, userRole) {
 
   query <- paste0("
 SELECT
-  LOCATIONNAME AS ln
+  LOCATION_SHORTNAME AS ln
 FROM
   avdelingsoversikt
 WHERE
   DEPARTMENT_CENTREID IN (", deps, ") AND
   DEPARTMENT_ACTIVE = 1
 GROUP BY
-  LOCATIONNAME;
-                  ")
+  LOCATION_SHORTNAME;")
 
 
 
@@ -248,6 +382,32 @@ GROUP BY
     return(hStr)
   }
 }
+
+
+#' @rdname getRegData
+#' @export
+getNameReshId <- function(registryName, asNamedList = FALSE) {
+
+  query <- "
+SELECT
+  SykehusNavn AS name,
+  AvdRESH AS id
+FROM
+  AlleVar
+GROUP BY
+  SykehusNavn,
+  AvdRESH;"
+
+  res <- rapbase::loadRegData(registryName, query)
+
+  if (asNamedList) {
+    res <- stats::setNames(res$id, res$name)
+    res <- as.list(res)
+  }
+
+  res
+}
+
 
 #' @rdname getRegData
 #' @export
