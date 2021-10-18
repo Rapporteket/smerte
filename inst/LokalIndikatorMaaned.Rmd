@@ -414,14 +414,14 @@ if (dim(dat)[1] < 1) {
   labelsplot <- c("Sterkeste smerte i bevegelse", "Svakeste smerte i bevegelse", "Sterkeste smerte i ro", "Svakeste smerte i ro")
   
   p = ggplot() + 
-    geom_line(data = p1, aes(month, freq1, group = 1, color = "stbe"), size = 1.5) +
-    geom_point(data = p1, aes(month, freq1, group = 1, color = "stbe"), shape = 16, size = 3.5) +
-    geom_line(data = p2, aes(month, freq2, group = 1, color = "svbe"), size = 1.5) +
-    geom_point(data = p2, aes(month, freq2, group = 1, color = "svbe"), shape = 16, size = 3.5) +
-    geom_line(data = p3, aes(month, freq3, group = 1, color = "stro"), size = 1.5) +
-    geom_point(data = p3, aes(month, freq3, group = 1, color = "stro"), shape = 16, size = 3.5) +
-    geom_line(data = p4, aes(month, freq4, group = 1, color = "svro"), size = 1.5) +
-    geom_point(data = p4, aes(month, freq4, group = 1, color = "svro"), shape = 16, size = 3.5) +
+    geom_line(data = p1, aes(month, freq1, group = 1, color = "stbe"), size = 0.5) +
+    geom_point(data = p1, aes(month, freq1, group = 1, color = "stbe"), shape = 16, size = 1.5) +
+    geom_line(data = p2, aes(month, freq2, group = 1, color = "svbe"), size = 0.5) +
+    geom_point(data = p2, aes(month, freq2, group = 1, color = "svbe"), shape = 16, size = 1.5) +
+    geom_line(data = p3, aes(month, freq3, group = 1, color = "stro"), size = 0.5) +
+    geom_point(data = p3, aes(month, freq3, group = 1, color = "stro"), shape = 16, size = 1.5) +
+    geom_line(data = p4, aes(month, freq4, group = 1, color = "svro"), size = 0.5) +
+    geom_point(data = p4, aes(month, freq4, group = 1, color = "svro"), shape = 16, size = 1.5) +
     labs(x = 'Måned', y = "Andel", title = "Andel med nedgang i smerte") + 
     theme_classic() +
     scale_x_date(date_labels = "%m-%y") +
