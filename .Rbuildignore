@@ -9,3 +9,4 @@
 ^LICENSE\.md$
 ^\.github$
 ^\.lintr$
+^docker-compose.yml$

@@ -1,7 +1,7 @@
 Package: smerte
 Type: Package
 Title: R-pakke for smerteregisteret
-Version: 0.6.0
+Version: 0.7.0.9000
 Authors@R: c(
     person(given = "Janne",
            family = "Mannseth",
@@ -27,7 +27,6 @@ Imports:
     lubridate,
     magrittr,
     rapbase,
-    raplog,
     revealjs,
     rlang,
     rmarkdown,
@@ -39,8 +38,7 @@ Imports:
     yaml,
     zoo
 Remotes:
-    Rapporteket/rapbase@*release,
-    Rapporteket/raplog@*release
+    Rapporteket/rapbase@*release
 Suggests: 
     covr,
     lintr,
