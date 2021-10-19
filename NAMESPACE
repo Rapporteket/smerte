@@ -2,7 +2,6 @@
 
 export("%>%")
 export(.data)
-export(describeRegistryDb)
 export(getAllYears)
 export(getDataDump)
 export(getHospitalName)

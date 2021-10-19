@@ -410,7 +410,7 @@ server <- function(input, output, session) {
 
   # Metadata
   meta <- reactive({
-    smerte::describeRegistryDb(registryName)
+    rapbase::describeRegistryDb(registryName)
   })
 
   output$metaControl <- renderUI({
