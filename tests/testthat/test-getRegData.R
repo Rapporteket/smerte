@@ -59,6 +59,24 @@ cf <- file(file.path(Sys.getenv("R_RAP_CONFIG_PATH"), "dbConfig.yml"))
 writeLines(test_config, cf)
 close(cf)
 
+test_config <- paste0(
+  "reg:",
+  "\n  smerte:",
+  "\n    nationalAccess:",
+  "\n      reshId : 10",
+  "\n      userRole : SC",
+  "\n      nameKey : Nasjonal",
+  "\n    ousAccess:",
+  "\n      reshId :",
+  "\n      - 21",
+  "\n      - 22",
+  "\n      userRole : LC",
+  "\n      nameKey : 20"
+)
+cf <- file(file.path(Sys.getenv("R_RAP_CONFIG_PATH"), "rapbaseConfig.yml"))
+writeLines(test_config, cf)
+close(cf)
+
 # make queries for creating tables
 fc <- file(system.file("testDb.sql", package = "smerte"), "r")
 t <- readLines(fc)
@@ -77,65 +95,142 @@ test_that("relevant test database and tables can be made", {
 })
 
 # onto main testing
-# test_that("hospital name can be read from db", {
-#   check_db()
-#   con <- rapbase::rapOpenDbConnection("testReg")$con
-#   query <- paste("INSERT INTO avdelingsoversikt SET DEPARTMENT_ID=1,",
-#                  "LOCATION_SHORTNAME='s1';")
-#   RMariaDB::dbExecute(con, query)
-#   expect_equal(class(getHospitalName("testReg", 1, "SC")), "character")
-#   expect_equal(getHospitalName("testReg", 1), "s1")
-#   expect_warning(getHospitalName("testReg", 2))
-#   rapbase::rapCloseDbConnection(con)
-# })
+test_that("hospital name can be read from db", {
+  check_db()
+  con <- rapbase::rapOpenDbConnection("testReg")$con
+  query <- paste("INSERT INTO avdelingsoversikt SET DEPARTMENT_ID=1,",
+                 "DEPARTMENT_CENTREID = 1,",
+                 "DEPARTMENT_ACTIVE = 1,",
+                 "LOCATION_SHORTNAME='s1';")
+  RMariaDB::dbExecute(con, query)
+  query <- paste("INSERT INTO avdelingsoversikt SET DEPARTMENT_ID=2,",
+                 "DEPARTMENT_CENTREID = 20,",
+                 "DEPARTMENT_ACTIVE = 1,",
+                 "LOCATION_SHORTNAME='s20';")
+  RMariaDB::dbExecute(con, query)
+  query <- paste("INSERT INTO avdelingsoversikt SET DEPARTMENT_ID=3,",
+                 "DEPARTMENT_CENTREID = 21,",
+                 "DEPARTMENT_ACTIVE = 1,",
+                 "LOCATION_SHORTNAME='s21';")
+  RMariaDB::dbExecute(con, query)
+  query <- paste("INSERT INTO avdelingsoversikt SET DEPARTMENT_ID=4,",
+                 "DEPARTMENT_CENTREID = 22,",
+                 "DEPARTMENT_ACTIVE = 1,",
+                 "LOCATION_SHORTNAME='s22';")
+  RMariaDB::dbExecute(con, query)
+  expect_equal(class(getHospitalName("testReg", 1, "SC")), "character")
+  expect_equal(getHospitalName("testReg", 1), "s1")
+  #expect_warning(getHospitalName("testReg", 2))
+  rapbase::rapCloseDbConnection(con)
+})
 
-# test_that("name-id mapping can be obtained", {
-#   check_db()
-#   con <- rapbase::rapOpenDbConnection("testReg")$con
-#   expect_equal(class(getNameReshId("testReg")), "data.frame")
-#   expect_equal(class(getNameReshId("testReg", asNamedList = TRUE)),
-#                "list")
-#   rapbase::rapCloseDbConnection(con)
-# })
-#
-# test_that("tables can be dumped", {
-#   check_db()
-#   con <- rapbase::rapOpenDbConnection("testReg")$con
-#   expect_equal(class(
-#     getDataDump("testReg", "basereg", Sys.Date(), Sys.Date())
-#   ), "data.frame")
-#   expect_equal(class(
-#     getDataDump("testReg", "friendlycentre", Sys.Date(), Sys.Date())
-#   ), "data.frame")
-#   expect_equal(class(
-#     getDataDump("testReg", "mce", Sys.Date(), Sys.Date())
-#   ), "data.frame")
-#   expect_equal(class(
-#     getDataDump("testReg", "patientlist", Sys.Date(), Sys.Date())
-#   ), "data.frame")
-#   expect_equal(class(
-#     getDataDump("testReg", "pros", Sys.Date(), Sys.Date())
-#   ), "data.frame")
-#   expect_error(
-#     getDataDump("testReg", "notATable", Sys.Date(), Sys.Date())
-#   )
-#   rapbase::rapCloseDbConnection(con)
-# })
-#
-# test_that("pros patient data can be read from db", {
-#   check_db()
-#   expect_equal(class(getProsPatient("testReg", singleRow = FALSE)), "list")
-#   expect_equal(class(getProsPatient("testReg", singleRow = TRUE)), "list")
-# })
-#
-# test_that("rand12 data can be read from db", {
-#   check_db()
-#   expect_equal(class(getRand12("testReg", singleRow = FALSE)), "list")
-#   expect_equal(class(getRand12("testReg", singleRow = TRUE)), "list")
-# })
+test_that("multiple hospital names can be returned", {
+  check_db()
+  con <- rapbase::rapOpenDbConnection("testReg")$con
+  expect_equal(class(getHospitalName("testReg", 20, "LC")), "character")
+  expect_equal(getHospitalName("testReg", 21, "LC"), "s21 og s22")
+  rapbase::rapCloseDbConnection(con)
+})
 
+test_that("name-id mapping can be obtained", {
+  check_db()
+  con <- rapbase::rapOpenDbConnection("testReg")$con
+  expect_equal(class(getNameReshId("testReg")), "data.frame")
+  expect_equal(class(getNameReshId("testReg", asNamedList = TRUE)),
+               "list")
+  rapbase::rapCloseDbConnection(con)
+})
 
+test_that("tables can be dumped", {
+  check_db()
+  con <- rapbase::rapOpenDbConnection("testReg")$con
+  expect_equal(class(
+    getDataDump("testReg", "AlleVar", Sys.Date(), Sys.Date())
+  ), "data.frame")
+  expect_equal(class(
+    getDataDump("testReg", "AlleVarNum", Sys.Date(), Sys.Date())
+  ), "data.frame")
+  expect_equal(class(
+    getDataDump("testReg", "avdelingsoversikt", Sys.Date(), Sys.Date())
+  ), "data.frame")
+  expect_equal(class(
+    getDataDump("testReg", "ForlopsOversikt", Sys.Date(), Sys.Date())
+  ), "data.frame")
+  expect_equal(class(
+    getDataDump("testReg", "SkjemaOversikt", Sys.Date(), Sys.Date())
+  ), "data.frame")
+  expect_equal(class(
+    getDataDump("testReg", "SmerteDiagnoser", Sys.Date(), Sys.Date())
+  ), "data.frame")
+  expect_equal(class(
+    getDataDump("testReg", "SmerteDiagnoserNum", Sys.Date(), Sys.Date())
+  ), "data.frame")
+  rapbase::rapCloseDbConnection(con)
+})
 
+test_that("data for lokal tilsyn can be queried", {
+  check_db()
+  expect_equal(class(getRegDataLokalTilsynsrapportMaaned(
+    "testReg", 1, "SC", Sys.Date(), Sys.Date())),
+    "data.frame"
+  )
+})
+
+test_that("data for dekningsgrad can be queried", {
+  check_db()
+  expect_equal(class(getRegDataRapportDekningsgrad(
+    "testReg", 1, "SC", Sys.Date(), Sys.Date())),
+    "data.frame"
+  )
+})
+
+test_that("data for indikator can be queried", {
+  check_db()
+  expect_equal(class(getRegDataIndikator(
+    "testReg", 1, "SC", Sys.Date(), Sys.Date())),
+    "data.frame"
+  )
+})
+
+test_that("data for SmerteDiagKatValueLab can be queried", {
+  check_db()
+  expect_equal(class(getSmerteDiagKatValueLab(
+    "testReg", 1)),
+    "list"
+  )
+})
+
+test_that("data for smertekategori can be queried", {
+  check_db()
+  expect_equal(class(getRegDataSmertekategori(
+    "testReg", 1, "SC", Sys.Date(), Sys.Date())),
+    "data.frame"
+  )
+})
+
+test_that("data for spinalkateter can be queried", {
+  check_db()
+  expect_equal(class(getRegDataSpinalkateter(
+    "testReg", 1, "SC", Sys.Date(), Sys.Date())),
+    "data.frame"
+  )
+})
+
+test_that("data for local years can be queried", {
+  check_db()
+  expect_equal(class(getLocalYears(
+    "testReg", 1, "SC")),
+    "data.frame"
+  )
+})
+
+test_that("data for all years can be queried", {
+  check_db()
+  expect_equal(class(getAllYears(
+    "testReg", 1, "SC")),
+    "data.frame"
+  )
+})
 
 # remove test db
 if (is.null(check_db(is_test_that = FALSE))) {
