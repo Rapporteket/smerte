@@ -10,7 +10,7 @@ name: test-coverage
 
 jobs:
   test-coverage:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-20.04, rspm: "https://packagemanager.rstudio.com/cran/__linux__/focal/latest"
     env:
       GITHUB_PAT: ${{ secrets.GT }}
       GITHUB_ACTIONS_RUN_DB_UNIT_TESTS: true
