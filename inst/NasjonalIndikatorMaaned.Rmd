@@ -101,7 +101,11 @@ if (dim(dat)[1] < 1) {
   }
   
   #Til tabell
-  kvalind1 <- dat %>% group_by(SykehusNavn, behtils) %>% summarise(n = n()) %>% mutate( ant = sum(n), freq = n/sum(n)) %>% filter(behtils == 1)
+  kvalind1 <- dat %>%
+    dplyr::group_by(SykehusNavn, behtils) %>%
+    dplyr::summarise(n = dplyr::n()) %>%
+    dplyr::mutate( ant = sum(n), freq = n/sum(n)) %>%
+    dplyr::filter(behtils == 1)
   #Tar bort kolonne for behtils oppfylt
   kvalind1 <- kvalind1 %>% select(SykehusNavn, n, ant, freq)
   
@@ -135,15 +139,15 @@ if (dim(dat)[1] < 1) {
   
   #Adding the mean of the groups each month
   meanind1plot <- ind1plot %>% 
-    group_by(monthname) %>%
-    summarise(freq = mean(freq)) %>%
-    mutate(SykehusNavn="Gjennomsnitt", .before = monthname)
+    dplyr::group_by(monthname) %>%
+    dplyr::summarise(freq = mean(freq)) %>%
+    dplyr::mutate(SykehusNavn="Gjennomsnitt", .before = monthname)
   
   #Merging the two tibbles
-  ind1plot <- bind_rows(ind1plot, meanind1plot)
+  ind1plot <- dplyr::bind_rows(ind1plot, meanind1plot)
   
   #Plotting plotdat
-  ggplot(ind1plot, aes(monthname, freq)) + 
+  ggplot2::ggplot(ind1plot, aes(monthname, freq)) + 
     geom_line(aes(group = factor(SykehusNavn), colour=factor(SykehusNavn)), size = 0.8) + geom_point(aes(group = factor(SykehusNavn), colour=factor(SykehusNavn)), size = 2) + 
     labs(x = "Måned", y = "Andel", subtitle = "Andel tilsett av to eller flere faggrupper (månedlig)", color = "Sykehus") + theme_classic() + theme(axis.text.x = element_text(size = 8.5), axis.text.y = element_text(size = 10), axis.title = element_text(size = 10), plot.margin = unit(c(1, 1, 2, 1), "cm"), legend.text = element_text(size = 10), axis.title.y = element_text(margin = margin(t = 0, r = 10, b = 0, l = 0)), axis.title.x = element_text(margin = margin(t = 10, r = 0, b = 0, l = 0)))
   
@@ -171,10 +175,15 @@ if (dim(dat)[1] < 1) {
   }
   
   #Til tabell
-  kvalind2 <- dat %>% group_by(SykehusNavn, henvtils) %>% summarise(n = n()) %>% mutate( ant = sum(n), freq = n/sum(n)) %>% filter(henvtils == 1)
+  kvalind2 <- dat %>%
+    dplyr::group_by(SykehusNavn, henvtils) %>%
+    dplyr::summarise(n = dplyr::n()) %>%
+    dplyr::mutate( ant = sum(n), freq = n/sum(n)) %>%
+    dplyr::filter(henvtils == 1)
   
   #Tar bort kolonne for behtils oppfylt
-  kvalind2 <- kvalind2 %>% select(SykehusNavn, n, ant, freq)
+  kvalind2 <- kvalind2 %>%
+    dplyr::select(SykehusNavn, n, ant, freq)
   
   #Tabell
   rapbase::mst(
@@ -199,19 +208,22 @@ if (dim(dat)[1] < 1) {
   messagehenv <- "I den valgte tidsperioden er det ikke nok data til å vise figur for denne kvalitetsindikatoren."
 } else {
   
-  ind2plot <- dat %>% group_by(SykehusNavn, monthname, henvtils) %>% summarise(n = n()) %>% mutate(ant = sum(n), freq = n/sum(n)) %>% filter(henvtils == 1)
+  ind2plot <- dat %>%
+    dplyr::group_by(SykehusNavn, monthname, henvtils) %>%
+    dplyr::summarise(n = dplyr::n()) %>% mutate(ant = sum(n), freq = n/sum(n)) %>%
+    dplyr::filter(henvtils == 1)
   
   #Adding the mean of the groups each month
   meanind2plot <- ind2plot %>% 
-    group_by(monthname) %>%
-    summarise(freq = mean(freq)) %>%
-    mutate(SykehusNavn="Gjennomsnitt", .before = monthname)
+    dplyr::group_by(monthname) %>%
+    dplyr::summarise(freq = mean(freq)) %>%
+    dplyr::mutate(SykehusNavn="Gjennomsnitt", .before = monthname)
   
   #Merging the two tibbles
-  ind2plot <- bind_rows(ind2plot, meanind2plot)
+  ind2plot <- dplyr::bind_rows(ind2plot, meanind2plot)
   
   #Plotting plotdat
-  ggplot(ind2plot, aes(monthname, freq)) + 
+  ggplot2::ggplot(ind2plot, aes(monthname, freq)) + 
     geom_line(aes(group = factor(SykehusNavn), colour=factor(SykehusNavn)), size = 0.8) + geom_point(aes(group = factor(SykehusNavn), colour=factor(SykehusNavn)), size = 2) + 
     labs(x = "Måned", y = "Andel", subtitle = "Andel tilsett samme dag som de ble henvist (månedlig)", color = "Sykehus") + theme_classic() + theme(axis.text.x = element_text(size = 8.5), axis.text.y = element_text(size = 10), axis.title = element_text(size = 10), plot.margin = unit(c(1, 1, 2, 1), "cm"), legend.text = element_text(size = 10), axis.title.y = element_text(margin = margin(t = 0, r = 10, b = 0, l = 0)), axis.title.x = element_text(margin = margin(t = 10, r = 0, b = 0, l = 0)))
   
@@ -246,10 +258,16 @@ if (dim(dat)[1] < 1) {
   }
   
   #Til tabell
-  kvalind3 <- dat %>% filter(!is.na(fornoyd)) %>% group_by(SykehusNavn, fornoyd) %>% summarise(n = n()) %>% mutate( ant = sum(n), freq = n/sum(n)) %>% filter(fornoyd == 1)
+  kvalind3 <- dat %>%
+    dplyr::filter(!is.na(fornoyd)) %>%
+    dplyr::group_by(SykehusNavn, fornoyd) %>%
+    dplyr::summarise(n = dplyr::n()) %>%
+    dplyr::mutate( ant = sum(n), freq = n/sum(n)) %>%
+    dplyr::filter(fornoyd == 1)
   
   #Tar bort kolonne for behtils oppfylt
-  kvalind3 <- kvalind3 %>% select(SykehusNavn, n, ant, freq)
+  kvalind3 <- kvalind3 %>%
+    dplyr::select(SykehusNavn, n, ant, freq)
   
   #Tabell
   rapbase::mst(
@@ -276,19 +294,24 @@ if (dim(dat)[1] < 1) {
   
   #Aggregate by month for plot
   #Grouping by month and finding frequency (remove NA here), then filtering on the "correct" frequency (if not, we get the inverse too)
-  ind3plot <- dat %>% filter(!is.na(fornoyd)) %>% group_by(SykehusNavn, monthname, fornoyd) %>% summarise(n = n()) %>% mutate(ant = sum(n), freq = n/sum(n)) %>% filter(fornoyd == 1)
+  ind3plot <- dat %>%
+    dplyr::filter(!is.na(fornoyd)) %>%
+    dplyr::group_by(SykehusNavn, monthname, fornoyd) %>%
+    dplyr::summarise(n = dplyr::n()) %>%
+    dplyr::mutate(ant = sum(n), freq = n/sum(n)) %>%
+    dplyr::filter(fornoyd == 1)
   
   #Adding the mean of the groups each month
   meanind3plot <- ind3plot %>% 
-    group_by(monthname) %>%
-    summarise(freq = mean(freq)) %>%
-    mutate(SykehusNavn="Gjennomsnitt", .before = monthname)
+    dplyr::group_by(monthname) %>%
+    dplyr::summarise(freq = mean(freq)) %>%
+    dplyr::mutate(SykehusNavn="Gjennomsnitt", .before = monthname)
   
   #Merging the two tibbles
-  ind3plot <- bind_rows(ind3plot, meanind3plot)
+  ind3plot <- dplyr::bind_rows(ind3plot, meanind3plot)
   
   #Plotting plotdat
-  ggplot(ind3plot, aes(monthname, freq)) + 
+  ggplot2::ggplot(ind3plot, aes(monthname, freq)) + 
     geom_line(aes(group = factor(SykehusNavn), colour=factor(SykehusNavn)), size = 0.8) + geom_point(aes(group = factor(SykehusNavn), colour=factor(SykehusNavn)), size = 2) + 
     labs(x = "Måned", y = "Andel", subtitle = "Andel fornøyd med ivaretakelsen fra smerteteam (månedlig)", color = "Sykehus") + theme_classic() + theme(axis.text.x = element_text(size = 8.5), axis.text.y = element_text(size = 10), axis.title = element_text(size = 10), plot.margin = unit(c(1, 1, 2, 1), "cm"), legend.text = element_text(size = 10), axis.title.y = element_text(margin = margin(t = 0, r = 10, b = 0, l = 0)), axis.title.x = element_text(margin = margin(t = 10, r = 0, b = 0, l = 0))) 
   
@@ -335,16 +358,37 @@ if (dim(dat)[1] < 1) {
   }
   
   #Sterkeste bevegelse
-  kvalind41 <- dat %>% filter(!is.na(stbe))%>% mutate(stbe1 = stbe > 0) %>% group_by(SykehusNavn, stbe1) %>% summarise(n = n()) %>% mutate(ant = sum(n), freq = n/sum(n)) %>% filter(stbe1 > 0)
-  kvalind41 <- kvalind41 %>% select(SykehusNavn, n, ant, freq)
+  kvalind41 <- dat %>%
+    dplyr::filter(!is.na(stbe))%>%
+    dplyr::mutate(stbe1 = stbe > 0) %>%
+    dplyr::group_by(SykehusNavn, stbe1) %>%
+    dplyr::summarise(n = dplyr::n()) %>%
+    dplyr::mutate(ant = sum(n), freq = n/sum(n)) %>%
+    dplyr::filter(stbe1 > 0)
+  kvalind41 <- kvalind41 %>%
+    dplyr::select(SykehusNavn, n, ant, freq)
   
   #Svakeste bevegelse
-  kvalind42 <- dat %>% filter(!is.na(svbe))%>% mutate(svbe1 = svbe > 0) %>% group_by(SykehusNavn, svbe1) %>% summarise(n = n()) %>% mutate(ant = sum(n), freq = n/sum(n)) %>% filter(svbe1 > 0)
-  kvalind42 <- kvalind42 %>% select(SykehusNavn, n, ant, freq)
+  kvalind42 <- dat %>%
+    dplyr::filter(!is.na(svbe))%>%
+    dplyr::mutate(svbe1 = svbe > 0) %>%
+    dplyr::group_by(SykehusNavn, svbe1) %>%
+    dplyr::summarise(n = dplyr::n()) %>%
+    dplyr::mutate(ant = sum(n), freq = n/sum(n)) %>%
+    dplyr::filter(svbe1 > 0)
+  kvalind42 <- kvalind42 %>%
+    dplyr::select(SykehusNavn, n, ant, freq)
   
   #Sterkeste ro
-  kvalind43 <- dat %>% filter(!is.na(stro))%>% mutate(stro1 = stro > 0) %>% group_by(SykehusNavn, stro1) %>% summarise(n = n()) %>% mutate(ant = sum(n), freq = n/sum(n)) %>% filter(stro1 > 0)
-  kvalind43 <- kvalind43 %>% select(SykehusNavn, n, ant, freq)
+  kvalind43 <- dat %>%
+    dplyr::filter(!is.na(stro))%>%
+    dplyr::mutate(stro1 = stro > 0) %>%
+    dplyr::group_by(SykehusNavn, stro1) %>%
+    dplyr::summarise(n = dplyr::n()) %>%
+    dplyr::mutate(ant = sum(n), freq = n/sum(n)) %>%
+    dplyr::filter(stro1 > 0)
+  kvalind43 <- kvalind43 %>%
+    dplyr::select(SykehusNavn, n, ant, freq)
   
   #Svakeste ro
   kvalind44 <- dat %>% filter(!is.na(svro))%>% mutate(svro1 = svro > 0) %>% group_by(SykehusNavn, svro1) %>% summarise(n = n()) %>% mutate(ant = sum(n), freq = n/sum(n)) %>% filter(svro1 > 0)
@@ -403,74 +447,141 @@ if (dim(dat)[1] < 1) {
   
   #Aggregate by month for plot
   #Common plot details
-  plotdetails = list(geom_line(aes(group = factor(SykehusNavn), colour=factor(SykehusNavn)), size = 0.5), geom_point(aes(group = factor(SykehusNavn), colour=factor(SykehusNavn)), size = 1.5), theme_classic(), theme(axis.text.x = element_text(size = 10), axis.text.y = element_text(size = 10), axis.title = element_text(size = 10), plot.margin = unit(c(1, 1, 2, 1), "cm"), legend.text = element_text(size = 10), plot.title = element_text(size=10), legend.title = element_text(size = 10), axis.title.y = element_text(margin = margin(t = 0, r = 10, b = 0, l = 0)), axis.title.x = element_text(margin = margin(t = 10, r = 0, b = 0, l = 0))))
+  plotdetails = list(
+    ggplot2::geom_line(
+      aes(group = factor(SykehusNavn), colour=factor(SykehusNavn)),
+      size = 0.5),
+    ggplot2::geom_point(
+      ggplot2::aes(group = factor(SykehusNavn), colour=factor(SykehusNavn)),
+      size = 1.5
+    ),
+    ggplot2::theme_classic(),
+    ggplot2::theme(
+      axis.text.x = element_text(size = 10),
+      axis.text.y = element_text(size = 10),
+      axis.title = element_text(size = 10),
+      plot.margin = unit(c(1, 1, 2, 1), "cm"),
+      legend.text = element_text(size = 10),
+      plot.title = element_text(size=10),
+      legend.title = element_text(size = 10),
+      axis.title.y = element_text(margin = margin(t = 0, r = 10, b = 0, l = 0)),
+      axis.title.x = element_text(margin = margin(t = 10, r = 0, b = 0, l = 0))
+    )
+  )
   
   ####
   #Sterkeste smerte i bevegelse
-  ind41plot = dat %>% filter(!is.na(stbe)) %>% mutate(stbe1 = stbe > 0) %>% group_by(SykehusNavn, monthname, stbe1) %>% summarise(n = n()) %>% mutate(ant = sum(n), freq = n/sum(n)) %>% filter(stbe1 == 1)
+  ind41plot = dat %>%
+    dplyr::filter(!is.na(stbe)) %>%
+    dplyr::mutate(stbe1 = stbe > 0) %>%
+    dplyr::group_by(SykehusNavn, monthname, stbe1) %>%
+    dplyr::summarise(n = dplyr::n()) %>%
+    dplyr::mutate(ant = sum(n), freq = n/sum(n)) %>%
+    dplyr::filter(stbe1 == 1)
   
   #Adding the mean of the groups each month
   meanind41plot <- ind41plot %>% 
-    group_by(monthname) %>%
-    summarise(freq = mean(freq)) %>%
-    mutate(SykehusNavn="Gjennomsnitt", .before = monthname)
+    dplyr::group_by(monthname) %>%
+    dplyr::summarise(freq = mean(freq)) %>%
+    dplyr::mutate(SykehusNavn="Gjennomsnitt", .before = monthname)
   
   #Merging the two tibbles
-  ind41plot <- bind_rows(ind41plot, meanind41plot)
+  ind41plot <- dplyr::bind_rows(ind41plot, meanind41plot)
   
-  p1 = ggplot(ind41plot, aes(monthname, freq)) + 
-    plotdetails + labs(x = "Måned", y = "Andel", title = "Andel med nedgang i NRS for sterkeste smerte i bevegelse (månedlig)", color = "Sykehus") 
+  p1 = ggplot2::ggplot(ind41plot, aes(monthname, freq)) + 
+    plotdetails +
+    labs(
+      x = "Måned", y = "Andel",
+      title = "Andel med nedgang i NRS for sterkeste smerte i bevegelse (månedlig)",
+      color = "Sykehus"
+    ) 
   
   ####
   #Svakeste smerte i bevegelse
-  ind42plot <- dat %>% filter(!is.na(svbe)) %>% mutate(svbe1 = svbe > 0) %>% group_by(SykehusNavn, monthname, svbe1) %>% summarise(n = n()) %>% mutate(ant = sum(n), freq = n/sum(n)) %>% filter(svbe1 == 1)
+  ind42plot <- dat %>%
+    dplyr::filter(!is.na(svbe)) %>%
+    dplyr::mutate(svbe1 = svbe > 0) %>%
+    dplyr::group_by(SykehusNavn, monthname, svbe1) %>%
+    dplyr::summarise(n = dplyr::n()) %>%
+    dplyr::mutate(ant = sum(n), freq = n/sum(n)) %>%
+    dplyr::filter(svbe1 == 1)
   
   #Adding the mean of the groups each month
   meanind42plot <- ind42plot %>% 
-    group_by(monthname) %>%
-    summarise(freq = mean(freq)) %>%
-    mutate(SykehusNavn="Gjennomsnitt", .before = monthname)
+    dplyr::group_by(monthname) %>%
+    dplyr::summarise(freq = mean(freq)) %>%
+    dplyr::mutate(SykehusNavn="Gjennomsnitt", .before = monthname)
   
   #Merging the two tibbles
-  ind42plot <- bind_rows(ind42plot, meanind42plot)
+  ind42plot <- dplyr::bind_rows(ind42plot, meanind42plot)
   
   #Plotting plotdat
-  p2 = ggplot(ind42plot, aes(monthname, freq)) + 
-    plotdetails + labs(x = "Måned", y = "Andel", title = "Andel med nedgang i NRS for svakeste smerte i bevegelse (månedlig)", color = "Sykehus")
+  p2 = ggplot2::ggplot(ind42plot, aes(monthname, freq)) + 
+    plotdetails +
+    labs(
+      x = "Måned",
+      y = "Andel",
+      title = "Andel med nedgang i NRS for svakeste smerte i bevegelse (månedlig)",
+      color = "Sykehus"
+    )
   
   ####
   #Sterkeste smerte i ro
-  ind43plot <- dat %>% filter(!is.na(stro)) %>% mutate(stro1 = stro > 0) %>% group_by(SykehusNavn, monthname, stro1) %>% summarise(n = n()) %>% mutate(ant = sum(n), freq = n/sum(n)) %>% filter(stro1 == 1)
+  ind43plot <- dat %>%
+    dplyr::filter(!is.na(stro)) %>%
+    dplyr::mutate(stro1 = stro > 0) %>%
+    dplyr::group_by(SykehusNavn, monthname, stro1) %>%
+    dplyr::summarise(n = dplyr::n()) %>%
+    dplyr::mutate(ant = sum(n), freq = n/sum(n)) %>%
+    dplyr::filter(stro1 == 1)
   
   #Adding the mean of the groups each month
   meanind43plot <- ind43plot %>% 
-    group_by(monthname) %>%
-    summarise(freq = mean(freq)) %>%
-    mutate(SykehusNavn="Gjennomsnitt", .before = monthname)
+    dplyr::group_by(monthname) %>%
+    dplyr::summarise(freq = mean(freq)) %>%
+    dplyr::mutate(SykehusNavn="Gjennomsnitt", .before = monthname)
   
   #Merging the two tibbles
-  ind43plot <- bind_rows(ind43plot, meanind43plot)
+  ind43plot <- dplyr::bind_rows(ind43plot, meanind43plot)
   
   #Plotting plotdat
-  p3 = ggplot(ind43plot, aes(monthname, freq)) + 
-    plotdetails + labs(x = "Måned", y = "Andel", title = "Andel med nedgang i NRS for sterkeste smerte i ro (månedlig)", color = "Sykehus")
+  p3 = ggplot2::ggplot(ind43plot, aes(monthname, freq)) + 
+    plotdetails +
+    labs(
+      x = "Måned",
+      y = "Andel",
+      title = "Andel med nedgang i NRS for sterkeste smerte i ro (månedlig)",
+      color = "Sykehus"
+    )
   
   ####
   #Svakeste smerte i ro
-  ind44plot <- dat %>% filter(!is.na(svro)) %>% mutate(svro1 = svro > 0) %>% group_by(SykehusNavn, monthname, svro1) %>% summarise(n = n()) %>% mutate(ant = sum(n), freq = n/sum(n)) %>% filter(svro1 == 1)
+  ind44plot <- dat %>%
+    dplyr::filter(!is.na(svro)) %>%
+    dplyr::mutate(svro1 = svro > 0) %>%
+    dplyr::group_by(SykehusNavn, monthname, svro1) %>%
+    dplyr::summarise(n = dplyr::n()) %>%
+    dplyr::mutate(ant = sum(n), freq = n/sum(n)) %>%
+    dplyr::filter(svro1 == 1)
   
   #Adding the mean of the groups each month
   meanind44plot <- ind44plot %>% 
-    group_by(monthname) %>%
-    summarise(freq = mean(freq)) %>%
-    mutate(SykehusNavn="Gjennomsnitt", .before = monthname)
+    dplyr::group_by(monthname) %>%
+    dplyr::summarise(freq = mean(freq)) %>%
+    dplyr::mutate(SykehusNavn="Gjennomsnitt", .before = monthname)
   
   #Merging the two tibbles
-  ind44plot <- bind_rows(ind44plot, meanind44plot)
+  ind44plot <- dplyr::bind_rows(ind44plot, meanind44plot)
   
   #Plotting plotdat
-  p4 = ggplot(ind44plot, aes(monthname, freq)) + 
-    plotdetails + labs(x = "Måned", y = "Andel", title = "Andel med nedgang i NRS for svakeste smerte i ro (månedlig)", color = "Sykehus")
+  p4 = ggplot2::ggplot(ind44plot, aes(monthname, freq)) + 
+    plotdetails +
+    labs(
+      x = "Måned",
+      y = "Andel",
+      title = "Andel med nedgang i NRS for svakeste smerte i ro (månedlig)",
+      color = "Sykehus"
+    )
   
 }
 ```
@@ -534,15 +645,15 @@ if (dim(dat)[1] < 1) {
 } else {
   
   ikkmed <- dat %>%
-    filter(!is.na(IkkeMedBeh)) %>%
-    group_by(SykehusNavn, IkkeMedBeh) %>%
-    summarise(n = n()) %>%
-    mutate( ant = sum(n), freq = n/sum(n)) %>%
-    filter(IkkeMedBeh == 1)
+    dplyr::filter(!is.na(IkkeMedBeh)) %>%
+    dplyr::group_by(SykehusNavn, IkkeMedBeh) %>%
+    dplyr::summarise(n = dplyr::n()) %>%
+    dplyr::mutate( ant = sum(n), freq = n/sum(n)) %>%
+    dplyr::filter(IkkeMedBeh == 1)
   
   #Tar bort kolonne  
   ikkmed <- ikkmed %>%
-    select(SykehusNavn, n, ant, freq)
+    dplyr::select(SykehusNavn, n, ant, freq)
   
   #Tabell
   rapbase::mst(
@@ -567,20 +678,20 @@ Figuren under viser hvordan andelen har fordelt seg i løpet av året.
 messageik <- ""
 
 plotikmed <- dat %>%
-  filter(!is.na(IkkeMedBeh)) %>%
-  group_by(SykehusNavn, monthname, IkkeMedBeh) %>%
-  summarise(n = n()) %>%
-  mutate(ant = sum(n), freq = n/sum(n)) %>%
-  filter(IkkeMedBeh == 1)
+  dplyr::filter(!is.na(IkkeMedBeh)) %>%
+  dplyr::group_by(SykehusNavn, monthname, IkkeMedBeh) %>%
+  dplyr::summarise(n = dplyr::n()) %>%
+  dplyr::mutate(ant = sum(n), freq = n/sum(n)) %>%
+  dplyr::filter(IkkeMedBeh == 1)
 
 #Adding the mean of the groups each month
 meanplotikmed <- plotikmed %>% 
-  group_by(monthname, IkkeMedBeh) %>%
-  summarise(freq = mean(freq)) %>%
-  mutate(SykehusNavn="Gjennomsnitt", .before = monthname)
+  dplyr::group_by(monthname, IkkeMedBeh) %>%
+  dplyr::summarise(freq = mean(freq)) %>%
+  dplyr::mutate(SykehusNavn="Gjennomsnitt", .before = monthname)
 
 #Merging the two tibbles
-plotikmed <- bind_rows(plotikmed, meanplotikmed)
+plotikmed <- dplyr::bind_rows(plotikmed, meanplotikmed)
 
 if (dim(plotikmed)[1] < 1) {
   messageik <- "I den valgte tidsperioden er det ikke nok data til å vise 
@@ -588,7 +699,7 @@ if (dim(plotikmed)[1] < 1) {
 } else {
   
   #Plotting plotdat
-  ggplot(plotikmed, aes(monthname, freq)) + 
+  ggplot2::ggplot(plotikmed, aes(monthname, freq)) + 
     geom_line(aes(group = factor(SykehusNavn), 
                   colour=factor(SykehusNavn)), size = 0.8) +
     geom_point(aes(group = factor(SykehusNavn), 
@@ -601,8 +712,13 @@ if (dim(plotikmed)[1] < 1) {
           axis.title = element_text(size = 10), 
           plot.margin = unit(c(1, 1, 2, 1), "cm"), 
           legend.text = element_text(size = 10), 
-          axis.title.y = element_text(margin = margin(t = 0, r = 10, b = 0, l = 0)), 
-          axis.title.x = element_text(margin = margin(t = 10, r = 0, b = 0, l = 0))) 
+          axis.title.y = element_text(
+            margin = margin(t = 0, r = 10, b = 0, l = 0)
+          ), 
+          axis.title.x = element_text(
+            margin = margin(t = 10, r = 0, b = 0, l = 0)
+          )
+    ) 
   
 }
 
@@ -624,15 +740,15 @@ if (dim(dat)[1] < 1) {
   
   #VidereOppf, BehNedtrappAvsluttTils og Journalnotat
   nedtr <- dat %>%
-    filter(!is.na(Journalnotat), VidereOppf == 1, BehNedtrappAvsluttTils == 1) %>%
-    group_by(SykehusNavn, Journalnotat) %>%
-    summarise(n = n()) %>%
-    mutate( ant = sum(n), freq = n/sum(n)) %>%
-    filter(Journalnotat == 1)
+    dplyr::filter(!is.na(Journalnotat), VidereOppf == 1, BehNedtrappAvsluttTils == 1) %>%
+    dplyr::group_by(SykehusNavn, Journalnotat) %>%
+    dplyr::summarise(n = dplyr::n()) %>%
+    dplyr::mutate( ant = sum(n), freq = n/sum(n)) %>%
+    dplyr::filter(Journalnotat == 1)
   
   #Tar bort kolonne  
   nedtr <- nedtr %>%
-    select(SykehusNavn, n, ant, freq)
+    dplyr::select(SykehusNavn, n, ant, freq)
   
   #Tabell
   rapbase::mst(
@@ -655,20 +771,22 @@ Figuren under viser hvordan andelen har fordelt seg i løpet av året.
 messagenedfig <- ""
 
 plotnedtr <- dat %>%
-  filter(!is.na(Journalnotat), VidereOppf == 1, BehNedtrappAvsluttTils == 1) %>%
-  group_by(SykehusNavn, monthname, Journalnotat) %>%
-  summarise(n = n()) %>%
-  mutate(ant = sum(n), freq = n/sum(n)) %>%
-  filter(Journalnotat == 1)
+  dplyr::filter(
+    !is.na(Journalnotat), VidereOppf == 1, BehNedtrappAvsluttTils == 1
+  ) %>%
+  dplyr::group_by(SykehusNavn, monthname, Journalnotat) %>%
+  dplyr::summarise(n = dplyr::n()) %>%
+  dplyr::mutate(ant = sum(n), freq = n/sum(n)) %>%
+  dplyr::filter(Journalnotat == 1)
 
 #Adding the mean of the groups each month
 meanplotnedtr <- plotnedtr %>% 
-  group_by(monthname) %>%
-  summarise(freq = mean(freq)) %>%
-  mutate(SykehusNavn="Gjennomsnitt", .before = monthname)
+  dplyr::group_by(monthname) %>%
+  dplyr::summarise(freq = mean(freq)) %>%
+  dplyr::mutate(SykehusNavn="Gjennomsnitt", .before = monthname)
 
 #Merging the two tibbles
-plotnedtr <- bind_rows(plotnedtr, meanplotnedtr)
+plotnedtr <- dplyr::bind_rows(plotnedtr, meanplotnedtr)
 
 if (dim(plotnedtr)[1] < 1) {
   messagenedfig <- "I den valgte tidsperioden er det ikke nok data til å vise 
@@ -676,7 +794,7 @@ if (dim(plotnedtr)[1] < 1) {
 } else {
   
   #Plotting plotdat
-  ggplot(plotnedtr, aes(monthname, freq)) + 
+  ggplot2::ggplot(plotnedtr, aes(monthname, freq)) + 
     geom_line(aes(group = factor(SykehusNavn), 
                   colour=factor(SykehusNavn)), size = 0.8) +
     geom_point(aes(group = factor(SykehusNavn), 
@@ -689,8 +807,13 @@ if (dim(plotnedtr)[1] < 1) {
           axis.title = element_text(size = 10), 
           plot.margin = unit(c(1, 1, 2, 1), "cm"), 
           legend.text = element_text(size = 13), 
-          axis.title.y = element_text(margin = margin(t = 0, r = 10, b = 0, l = 0)), 
-          axis.title.x = element_text(margin = margin(t = 10, r = 0, b = 0, l = 0))) 
+          axis.title.y = element_text(
+            margin = margin(t = 0, r = 10, b = 0, l = 0)
+          ), 
+          axis.title.x = element_text(
+            margin = margin(t = 10, r = 0, b = 0, l = 0)
+          )
+    ) 
   
 }
 ```
