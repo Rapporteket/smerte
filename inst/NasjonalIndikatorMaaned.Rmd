@@ -16,7 +16,7 @@ title: '`r paste0("Smerteregisteret ", params$hospitalName, params$title, params
 author: '`r params$author`'
 date: '`r format(Sys.time(), "%d\\. %B, %Y")`'
 reglogo: '`r system.file("www/logoSmerte.png", package = "smerte")`'
-regtext: '`r readLines(system.file("registryShortDescription.txt", package = "smerte"))`'
+regtext: 'SmerteReg er et nasjonalt kvalitetsregister som registrer alleinneliggende pasienter som henvises for tilsyn fra akutt smerteteam. Formålet med SmerteReg er å bedre kvaliteten på tjenesten akutt smerteteam yter til smertepasienter på norske sykehus samt å danne grunnlag for forskning.'
 registryName: Smerteregisteret
 userFullName: '`r params$userFullName`'
 ---
@@ -24,7 +24,6 @@ userFullName: '`r params$userFullName`'
 knitr::opts_chunk$set(echo=FALSE)
 options(knitr.table.format = params$tableFormat)
 options(tinytex.verbose = TRUE)
-
 ```
 
 ```{r get data, warning = FALSE, message=TRUE}
