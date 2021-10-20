@@ -24,17 +24,6 @@ userFullName: '`r params$userFullName`'
 knitr::opts_chunk$set(echo=FALSE)
 options(knitr.table.format = params$tableFormat)
 options(tinytex.verbose = TRUE)
-
-# Pakker
-library(dplyr)
-library(magrittr)
-library(smerte)
-library(knitr)
-library(kableExtra)
-library(ggplot2)
-library(gridExtra)
-library(zoo)
-library(tidyverse)
 ```
 
 ```{r get data, include=FALSE}
