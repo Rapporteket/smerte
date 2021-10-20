@@ -24,6 +24,10 @@ jobs:
 
       - uses: r-lib/actions/setup-pandoc@v1
 
+      - name: Install system dependencies
+        run: |
+          sudo apt-get install libcurl4-openssl-dev
+
       - name: Set up MySQL, ubuntu only
         run: |
           sudo /etc/init.d/mysql start
