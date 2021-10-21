@@ -104,9 +104,9 @@ dat$MoEkvivalens22[is.na(dat$MoEkvivalens22)] <- 0
 #Få med behandlertilsyn på alle før vi selekterer på spinalkateter
 
 datbeh = dat %>%
-  gather(key = tilsynstype, value=antall, AntPasTils, AntTilsLege,
+  tidyr::gather(key = tilsynstype, value=antall, AntPasTils, AntTilsLege,
          AntTilsSykPleier, AntTilsFysioT, AntTilsPsyk, AntTilsSosio) %>%
-  mutate(antall = replace(antall, is.na(antall), 0), 
+  dplyr::mutate(antall = replace(antall, is.na(antall), 0), 
          month = months(zoo::as.Date(StartdatoTO)),
          tilsynstype=stringr::str_replace_all(tilsynstype,"AntTilsLege",
                                               "Lege"),
@@ -135,7 +135,9 @@ datbeh = datbeh %>%
 
 #Kun siste kolonne er relevant og legges til i hoveddata 
 #unlist pga fra tibble til vektor
-dat$behtils = datbeh %>% select(Behandlertilsyn) %>% unlist(use.names = FALSE)
+dat$behtils = datbeh %>%
+  dplyr::select(Behandlertilsyn) %>%
+  unlist(use.names = FALSE)
 
 #Lager nye variabler som skal inneholde endring i NRS, settes initielt til NA
 dat$stro <- dat$svro <- dat$stbe <- dat$svbe <-  NA
@@ -158,10 +160,10 @@ for(i in 1:dim(dat)[1]){
 }
   
 #De som er NA må få en meningsfullverdi til tabellen som skal skrives
-dat$stbe =  dat$stbe %>% replace_na('Mangler')
-dat$svbe =  dat$svbe %>% replace_na('Mangler')
-dat$stro =  dat$stro %>% replace_na('Mangler')
-dat$svro =  dat$svro %>% replace_na('Mangler')
+dat$stbe =  dat$stbe %>% tidyr::replace_na('Mangler')
+dat$svbe =  dat$svbe %>% tidyr::replace_na('Mangler')
+dat$stro =  dat$stro %>% tidyr::replace_na('Mangler')
+dat$svro =  dat$svro %>% tidyr::replace_na('Mangler')
 
 ### Ta med kun de som har hatt spinalkateter: SAB11 = 1
 datspinal <- dat[!is.na(dat$SAB11) & dat$SAB11 == 1, ]
@@ -186,13 +188,17 @@ knitr::knit_exit()
 
 #Tar med relevant data og lager difftid som er tid fra henvisning til forløpets avslutning
 #as_tibble brukes for å fjerne radnummer som ellers vises i tabellen
-datspinalgen = as_tibble(datspinal %>%
-                           select(AntPasTils, behtils, StartdatoTO, PasientID, 
-                                  ForlopsID, TotTid, SluttDato, 
-                                  MoEkvivalens, MoEkvivalens22) %>% 
-                           mutate(difftid = as.numeric(gsub("[^0-9]", "", 
-                                                            as.Date(datspinal$SluttDato) - 
-                                                              as.Date(datspinal$StartdatoTO)))))
+datspinalgen <- tibble::as_tibble(
+  datspinal %>%
+    dplyr::select(AntPasTils, behtils, StartdatoTO, PasientID, 
+                  ForlopsID, TotTid, SluttDato, 
+                  MoEkvivalens, MoEkvivalens22) %>% 
+    dplyr::mutate(
+      difftid = as.numeric(gsub("[^0-9]", "", 
+                                as.Date(datspinal$SluttDato) - 
+                                  as.Date(datspinal$StartdatoTO)))
+    )
+)
 
 #Antall forløp med spinalkateter
 antspinal <- dim(datspinal)[1]  
@@ -203,13 +209,15 @@ pastils_mean <- mean(datspinal$AntPasTils, na.rm = TRUE)
 #Til tabell
 spinaltabell <- datspinalgen[ , c(5, 1, 2, 6, 10, 8, 9)]
 
-rapbase::mst(tab = spinaltabell, 
-    col_names = c("ForløpsID" ,"Pasienttilsyn", "Behandlertilsyn", "Totaltid", "Følgetid", "MoEkv før", "MoEkv etter"),
-    cap = paste0("Informasjon rundt pasienter registert med spinalkateter. Totaltid gir antall timer totalt brukt på tilsyn, mens følgetid gir antall dager fra henvisning til sluttføring. MoEkv før og MoEkv etter gir antall morfinekvivalenter henholdsvis ved innleggelse og ved utskrivelse."),
-    label = "spinalkat",
-    type = params$tableFormat,
-    digs = 0,
-    align = c("l", "c", "c", "c", "c", "c", "c", "c"))
+rapbase::mst(
+  tab = spinaltabell, 
+  col_names = c("ForløpsID" ,"Pasienttilsyn", "Behandlertilsyn", "Totaltid",
+                "Følgetid", "MoEkv før", "MoEkv etter"),
+  cap = paste0("Informasjon rundt pasienter registert med spinalkateter. Totaltid gir antall timer totalt brukt på tilsyn, mens følgetid gir antall dager fra henvisning til sluttføring. MoEkv før og MoEkv etter gir antall morfinekvivalenter henholdsvis ved innleggelse og ved utskrivelse."),
+  label = "spinalkat",
+  type = params$tableFormat,
+  digs = 0,
+  align = c("l", "c", "c", "c", "c", "c", "c", "c"))
 ```
 
 I den valgte tidsperioden ble spinalkateter gitt til tilsammen `r antspinal` av totalt `r dim(dat)[1]` pasienter. For disse ble det gjennomsnittlig gjort `r pastils_mean` pasienttilsyn. Tabell \@ref(tab:spinalkat) gir en oversikt over diverse informasjon angående de pasientene som har fått spinalkateter i den valgte tidsperioden.
@@ -219,16 +227,19 @@ I den valgte tidsperioden ble spinalkateter gitt til tilsammen `r antspinal` av 
 ```{r spinalNRS, warning = FALSE, message=FALSE, results='asis', eval=dataSpinalPresent}
 
 # Endring i NRS fra første tilsyn til siste tilsyn
-nrsendring = as_tibble(datspinal %>%
-                         select(ForlopsID, stbe, svbe, stro, svro))
+nrsendring = tibble::as_tibble(
+  datspinal %>%
+    dplyr::select(ForlopsID, stbe, svbe, stro, svro)
+)
 
-rapbase::mst(tab = nrsendring, 
-    col_names = c("ForløpsID", "Sterkeste smerte bevegelse", "Svakeste smerte bevegelse", "Sterkeste smerte ro", "Svakeste smerte ro"),
-    cap = paste0("Informasjon om endring i NRS for hver pasient som fikk spinalkateter. En endring større enn 0 betyr nedgang i smerte fra første til siste måling, mens en endring mindre enn 0 betyr økning i smerte. 0 betyr ingen endring. 'Mangler' betyr at pasienten ikke har gitt NRS, enten ved første, siste eller begge målinger."),
-    label = "spinalnrs",
-    type = params$tableFormat,
-    digs = 0,
-    align = c("l", "c", "c", "c", "c", "c"))
+rapbase::mst(
+  tab = nrsendring, 
+  col_names = c("ForløpsID", "Sterkeste smerte bevegelse", "Svakeste smerte bevegelse", "Sterkeste smerte ro", "Svakeste smerte ro"),
+  cap = paste0("Informasjon om endring i NRS for hver pasient som fikk spinalkateter. En endring større enn 0 betyr nedgang i smerte fra første til siste måling, mens en endring mindre enn 0 betyr økning i smerte. 0 betyr ingen endring. 'Mangler' betyr at pasienten ikke har gitt NRS, enten ved første, siste eller begge målinger."),
+  label = "spinalnrs",
+  type = params$tableFormat,
+  digs = 0,
+  align = c("l", "c", "c", "c", "c", "c"))
 ```
 
 Tabell \@ref(tab:spinalnrs) gir en oversikt over endring i NRS for de pasientene som har svart ved begge målinger.

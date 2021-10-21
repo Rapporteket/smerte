@@ -24,6 +24,10 @@ userFullName: '`r params$userFullName`'
 knitr::opts_chunk$set(echo=FALSE)
 options(knitr.table.format = params$tableFormat)
 options(tinytex.verbose = TRUE)
+
+library(dplyr)
+library(ggplot2)
+library(gridExtra)
 ```
 
 ```{r get data, include=FALSE}
