@@ -116,14 +116,14 @@ test_that("indikator report can be produced as file", {
 
 test_that("nasjonalIndikator report can be produced as file", {
   check_db()
-  testthat::skip("This report does not run in ci env. Please fix!")
+  #testthat::skip("This report does not run in ci env. Please fix!")
   expect_true(file.exists(reportProcessor("nasjonalIndikator", title = "Test",
                                           registryName = "testReg")))
 })
 
 test_that("spinalkateter report can be produced as file", {
   check_db()
-  testthat::skip("This report does not run in ci env. Please fix!")
+  #testthat::skip("This report does not run in ci env. Please fix!")
   expect_true(file.exists(reportProcessor("spinalkateter", title = "Test",
                                           registryName = "testReg")))
 })
