@@ -24,17 +24,6 @@ userFullName: '`r params$userFullName`'
 knitr::opts_chunk$set(echo=FALSE)
 options(knitr.table.format = params$tableFormat)
 options(tinytex.verbose = TRUE)
-
-# Pakker
-library(dplyr)
-library(magrittr)
-library(smerte)
-library(knitr)
-library(kableExtra)
-library(ggplot2)
-library(gridExtra)
-library(zoo)
-library(tidyverse)
 ```
 
 ```{r get data, include=FALSE}
@@ -105,36 +94,44 @@ akklang = fulldat %>%
   dplyr::filter(!is.na(SmerteKat)) %>% 
   dplyr::distinct(ForlopsID, .keep_all = TRUE) %>% 
   dplyr::summarise(
-    antall_ja = sum(AkuttLang == 1), nevner = n(), ind = antall_ja/nevner) %>% 
+    antall_ja = sum(AkuttLang == 1),
+    nevner = dplyr::n(),
+    ind = antall_ja/nevner) %>% 
   dplyr::ungroup()
 
 #SmerteKat.x = 1 er akutt smerte (se SmerteKat.y)
 akutt = fulldat %>% 
-  filter(!is.na(SmerteKat)) %>% 
-  distinct(ForlopsID, .keep_all = TRUE) %>% 
-  summarise(antall_ja = sum(SmerteKat == 1), nevner = n(), ind = antall_ja/nevner) %>% 
-  ungroup
+  dplyr::filter(!is.na(SmerteKat)) %>% 
+  dplyr::distinct(ForlopsID, .keep_all = TRUE) %>% 
+  dplyr::summarise(antall_ja = sum(SmerteKat == 1),
+            nevner = dplyr::n(),
+            ind = antall_ja/nevner) %>% 
+  dplyr::ungroup()
 
 #SmerteKat.x = 2 er langvarig smerte (se SmerteKat.y)
 langvarig = fulldat %>% 
-  filter(!is.na(SmerteKat)) %>% 
-  distinct(ForlopsID, .keep_all = TRUE) %>% 
-  summarise(antall_ja = sum(SmerteKat == 2), nevner = n(), ind = antall_ja/nevner) %>% 
-  ungroup
+  dplyr::filter(!is.na(SmerteKat)) %>% 
+  dplyr::distinct(ForlopsID, .keep_all = TRUE) %>% 
+  dplyr::summarise(antall_ja = sum(SmerteKat == 2),
+                   nevner = dplyr::n(),
+                   ind = antall_ja/nevner) %>% 
+  dplyr::ungroup()
 
 #SmerteKat.x = 3 er palliativ smerte (se SmerteKat.y)
 palliativ = fulldat %>% 
-  filter(!is.na(SmerteKat)) %>% 
-  distinct(ForlopsID, .keep_all = TRUE) %>% 
-  summarise(antall_ja = sum(SmerteKat == 3), nevner = n(), ind = antall_ja/nevner) %>% 
-  ungroup
+  dplyr::filter(!is.na(SmerteKat)) %>% 
+  dplyr::distinct(ForlopsID, .keep_all = TRUE) %>% 
+  dplyr::summarise(antall_ja = sum(SmerteKat == 3),
+                   nevner = dplyr::n(),
+                   ind = antall_ja/nevner) %>% 
+  dplyr::ungroup()
 
 #Underdiagnose for de forløp med hoveddiagnose akutt smerte
 underdiag = fulldat %>% 
-  filter(SmerteKat == 1) %>% 
-  distinct(ForlopsID, .keep_all = TRUE) %>% 
-  count(DiagKat) %>%
-  mutate(pro = n/sum(n)) %>%
+  dplyr::filter(SmerteKat == 1) %>% 
+  dplyr::distinct(ForlopsID, .keep_all = TRUE) %>% 
+  dplyr::count(DiagKat) %>%
+  dplyr::mutate(pro = n/sum(n)) %>%
   dplyr::mutate(
     DiagKat = dplyr::recode(
       DiagKat, !!!getSmerteDiagKatValueLab(params$registryName, smerteKat = 1)
@@ -142,26 +139,30 @@ underdiag = fulldat %>%
   )
 
 #Setter sammen
-tot_smertekat = bind_rows(akutt, langvarig, palliativ)
+tot_smertekat <- dplyr::bind_rows(akutt, langvarig, palliativ)
 rownames(tot_smertekat) = c("Akutt smerte", "Langvarig smerte", "Palliativ")
 
 #Smertekategori
-rapbase::mst(tab = tot_smertekat, 
-     col_names = c( "Antall ja" ,"Antall totalt", "Andel"),
-     cap = paste0("Tabellen viser hvordan pasientenes hovedkategori (smerte) fordeler seg mellom akutt, langvarig eller palliativ smerte."),
-     label = "smertekattab",
-     type = params$tableFormat,
-     digs = 2,
-     align = c("l", "c", "c", "c"))
+rapbase::mst(
+  tab = tot_smertekat, 
+  col_names = c( "Antall ja" ,"Antall totalt", "Andel"),
+  cap = paste0("Tabellen viser hvordan pasientenes hovedkategori (smerte) fordeler seg mellom akutt, langvarig eller palliativ smerte."),
+  label = "smertekattab",
+  type = params$tableFormat,
+  digs = 2,
+  align = c("l", "c", "c", "c")
+)
 
 #Akutt og langvarig samtidig
-rapbase::mst(tab = akklang, 
-     col_names = c( "Antall ja" ,"Antall totalt", "Andel"),
-     cap = paste0("Tabellen viser antall og andel forløp med både akutt og langvarig smerte."),
-     label = "akklangtab",
-     type = params$tableFormat,
-     digs = 2,
-     align = c("l", "c", "c", "c"))
+rapbase::mst(
+  tab = akklang, 
+  col_names = c( "Antall ja" ,"Antall totalt", "Andel"),
+  cap = paste0("Tabellen viser antall og andel forløp med både akutt og langvarig smerte."),
+  label = "akklangtab",
+  type = params$tableFormat,
+  digs = 2,
+  align = c("l", "c", "c", "c")
+)
 
 #Underkategori for de med akutt smerte som hovedsmerte
 rapbase::mst(
@@ -181,18 +182,23 @@ Tabell \@ref(tab:smertekattab) gir en oversikt over fordelingen i smertekategori
 
 #Oversikt over opioidbruk ved innleggelse
 
-opi = fulldat %>% filter(!is.na(Opioid4a)) %>% 
-  distinct(ForlopsID, .keep_all = TRUE) %>% 
-  summarise(antall_ja = sum(Opioid4a == 1), nevner = n(), ind = antall_ja/nevner) %>% 
-  ungroup
+opi <- fulldat %>%
+  dplyr::filter(!is.na(Opioid4a)) %>% 
+  dplyr::distinct(ForlopsID, .keep_all = TRUE) %>% 
+  dplyr::summarise(antall_ja = sum(Opioid4a == 1),
+                   nevner = dplyr::n(),
+                   ind = antall_ja/nevner) %>% 
+  dplyr::ungroup()
 
-rapbase::mst(tab = opi, 
-     col_names = c( "Antall ja" ,"Antall totalt", "Andel"),
-     cap = paste0("Tabellen viser hvordan opioidbruk før innleggelse fordeler seg."),
-     label = "opitab",
-     type = params$tableFormat,
-     digs = 2,
-     align = c("l", "c", "c", "c"))
+rapbase::mst(
+  tab = opi, 
+  col_names = c( "Antall ja" ,"Antall totalt", "Andel"),
+  cap = paste0("Tabellen viser hvordan opioidbruk før innleggelse fordeler seg."),
+  label = "opitab",
+  type = params$tableFormat,
+  digs = 2,
+  align = c("l", "c", "c", "c")
+)
 
 ```
 

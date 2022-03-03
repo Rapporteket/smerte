@@ -25,16 +25,9 @@ knitr::opts_chunk$set(echo=FALSE)
 options(knitr.table.format = params$tableFormat)
 options(tinytex.verbose = TRUE)
 
-# Pakker
- library(dplyr)
- library(magrittr)
-#library(smerte)
- library(knitr)
- library(kableExtra)
- library(ggplot2)
- library(gridExtra)
- library(tidyverse)
- library(bookdown)
+library(dplyr)
+library(ggplot2)
+library(gridExtra)
 ```
 
 ```{r get data, include=FALSE}

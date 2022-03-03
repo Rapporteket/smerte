@@ -1,3 +1,8 @@
+# smerte 0.7.0
+
+* Tests on data queries added
+* Miscellaneous R package tuning
+
 # smerte 0.6.0
 
 * New reports added
