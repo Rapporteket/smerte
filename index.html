@@ -19,6 +19,8 @@
 <![endif]-->
 </head>
 <body data-spy="scroll" data-target="#toc">
+    
+
     <div class="container template-home">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -31,18 +33,12 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">smerte</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.6.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.7.0.9000</span>
       </span>
     </div>
 
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
-<li>
-  <a href="index.html">
-    <span class="fas fa-home fa-lg"></span>
-     
-  </a>
-</li>
 <li>
   <a href="reference/index.html">Reference</a>
 </li>
@@ -62,25 +58,25 @@
 
       </header><div class="row">
   <div class="contents col-md-9">
-<div id="smerte" class="section level1">
-<div class="page-header"><h1 class="hasAnchor">
-<a href="#smerte" class="anchor"></a>smerte</h1></div>
+<div class="section level1">
+<div class="page-header"><h1 id="smerte">smerte<a class="anchor" aria-label="anchor" href="#smerte"></a>
+</h1></div>
 <!-- badges: start -->
 
-<p>Pakke for Smerteregisteret. Lager rapporter for lokale og nasjonale data. Se også <a href="https://rapporteket.github.io/smerte/">nettsida for denne R-pakken</a></p>
-<div id="installation" class="section level2">
-<h2 class="hasAnchor">
-<a href="#installation" class="anchor"></a>Installation</h2>
-<p>You can install the released version of smerte from <a href="https://CRAN.R-project.org">CRAN</a> with:</p>
+<p>Pakke for Smerteregisteret. Lager rapporter for lokale og nasjonale data. Se også <a href="https://rapporteket.github.io/smerte/" class="external-link">nettsida for denne R-pakken</a></p>
+<div class="section level2">
+<h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
+</h2>
+<p>You can install the released version of smerte from <a href="https://CRAN.R-project.org" class="external-link">CRAN</a> with:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">"smerte"</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"smerte"</span><span class="op">)</span></code></pre></div>
 </div>
-<div id="example" class="section level2">
-<h2 class="hasAnchor">
-<a href="#example" class="anchor"></a>Example</h2>
+<div class="section level2">
+<h2 id="example">Example<a class="anchor" aria-label="anchor" href="#example"></a>
+</h2>
 <p>This is a basic example which shows you how to solve a common problem:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">smerte</span><span class="op">)</span>
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">smerte</span><span class="op">)</span>
 <span class="co">## basic example code</span></code></pre></div>
 </div>
 </div>
@@ -88,41 +84,53 @@
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <div class="license">
-<h2>License</h2>
+<h2 data-toc-skip>License</h2>
 <ul class="list-unstyled">
-<li><a href="https://www.r-project.org/Licenses/GPL-3">GPL-3</a></li>
-</ul>
-</div>
-<div class="developers">
-<h2>Developers</h2>
-<ul class="list-unstyled">
-<li>Janne Mannseth <br><small class="roles"> Author, maintainer </small>  </li>
-<li>Are Edvardsen <br><small class="roles"> Author </small> <a href="https://orcid.org/0000-0002-5210-3656" target="orcid.widget" aria-label="ORCID"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
+<li><a href="https://www.r-project.org/Licenses/GPL-3" class="external-link">GPL-3</a></li>
 </ul>
 </div>
 
-  <div class="dev-status">
-<h2>Dev status</h2>
+
+<div class="citation">
+<h2 data-toc-skip>Citation</h2>
 <ul class="list-unstyled">
-<li><a href="https://github.com/rapporteket/smerte/releases"><img src="https://img.shields.io/github/v/release/rapporteket/smerte?sort=semver" alt="Version"></a></li>
-<li><a href="https://codecov.io/gh/Rapporteket/smerte?branch=rel"><img src="https://codecov.io/gh/Rapporteket/smerte/branch/rel/graph/badge.svg" alt="Codecov test coverage"></a></li>
-<li><a href="https://www.tidyverse.org/lifecycle/#maturing"><img src="https://img.shields.io/badge/lifecycle-maturing-blue.svg" alt="Lifecycle: maturing"></a></li>
-<li><a href="https://github.com/rapporteket/smerte/actions"><img src="https://github.com/rapporteket/smerte/workflows/R-CMD-check/badge.svg" alt="R build status"></a></li>
-<li><a href="https://github.com/rapporteket/smerte/issues"><img src="https://img.shields.io/github/issues/rapporteket/smerte.svg" alt="GitHub open issues"></a></li>
-<li><a href="https://www.gnu.org/licenses/gpl-3.0"><img src="https://img.shields.io/badge/License-GPLv3-blue.svg" alt="License: GPL v3"></a></li>
-<li><a href="https://rapporteket.github.io/smerte/"><img src="https://img.shields.io/badge/Doc--grey.svg" alt="Doc"></a></li>
+<li><a href="authors.html#citation">Citing smerte</a></li>
 </ul>
 </div>
+
+<div class="developers">
+<h2 data-toc-skip>Developers</h2>
+<ul class="list-unstyled">
+<li>Janne Mannseth <br><small class="roles"> Author, maintainer </small>  </li>
+<li>Are Edvardsen <br><small class="roles"> Author </small> <a href="https://orcid.org/0000-0002-5210-3656" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
+</ul>
 </div>
+
+<div class="dev-status">
+<h2 data-toc-skip>Dev status</h2>
+<ul class="list-unstyled">
+<li><a href="https://github.com/rapporteket/smerte/releases" class="external-link"><img src="https://img.shields.io/github/v/release/rapporteket/smerte?sort=semver" alt="Version"></a></li>
+<li><a href="https://codecov.io/gh/Rapporteket/smerte?branch=rel" class="external-link"><img src="https://codecov.io/gh/Rapporteket/smerte/branch/rel/graph/badge.svg" alt="Codecov test coverage"></a></li>
+<li><a href="https://www.tidyverse.org/lifecycle/#maturing" class="external-link"><img src="https://img.shields.io/badge/lifecycle-maturing-blue.svg" alt="Lifecycle: maturing"></a></li>
+<li><a href="https://github.com/rapporteket/smerte/actions" class="external-link"><img src="https://github.com/rapporteket/smerte/workflows/R-CMD-check/badge.svg" alt="R build status"></a></li>
+<li><a href="https://github.com/rapporteket/smerte/issues" class="external-link"><img src="https://img.shields.io/github/issues/rapporteket/smerte.svg" alt="GitHub open issues"></a></li>
+<li><a href="https://www.gnu.org/licenses/gpl-3.0" class="external-link"><img src="https://img.shields.io/badge/License-GPLv3-blue.svg" alt="License: GPL v3"></a></li>
+<li><a href="https://rapporteket.github.io/smerte/" class="external-link"><img src="https://img.shields.io/badge/Doc--grey.svg" alt="Doc"></a></li>
+</ul>
+</div>
+
+  </div>
 </div>
 
 
       <footer><div class="copyright">
-  <p>Developed by Janne Mannseth, Are Edvardsen.</p>
+  <p></p>
+<p>Developed by Janne Mannseth, Are Edvardsen.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
+  <p></p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
 </div>
 
       </footer>
@@ -130,6 +138,8 @@
 
   
 
+
+  
 
   </body>
 </html>
