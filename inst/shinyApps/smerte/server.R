@@ -352,19 +352,15 @@ server <- function(input, output, session) {
   } else {
     reports <- list(
       Tilsyn = list(
-        synopsis = paste("Smerteregisteret: månedlig oppsummering av tilsyn for",
-                         "inneværende år"),
+        synopsis = paste("Smerteregisteret: månedlig oppsummering av tilsyn",
+                         "siste år"),
         fun = "reportProcessor",
         paramNames = c("report", "outputType", "title", "author",
                        "orgName", "orgId", "registryName", "userFullName",
-                       "userRole",  "year",
-                       "startDate",
-                       "endDate"),
+                       "userRole"),
         paramValues = c("tilsyn", "pdf", "Tilsyn", "Smerteregisteret",
                         hospitalName, reshId, registryName, userFullName,
-                        userRole, 2021,
-                        lubridate::today() - lubridate::years(1),
-                        lubridate::today() - lubridate::weeks(1))
+                        userRole)
       ),
       Kvalitetsindikatorer = list(
         synopsis = paste("Kvalitetsindikatorer fra Smerteregisteret"),
