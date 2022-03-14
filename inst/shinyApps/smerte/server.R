@@ -109,6 +109,8 @@ server <- function(input, output, session) {
                       registryName = registryName,
                       userRole = userRole,
                       userFullName = userFullName,
+                      startDate = input$dateRangeTilsyn[1],
+                      endDate = input$dateRangeTilsyn[2],
                       year = input$yearSet,
                       shinySession = session)
       )
@@ -208,6 +210,8 @@ server <- function(input, output, session) {
                       registryName = registryName,
                       userRole = userRole,
                       userFullName = userFullName,
+                      startDate = input$dateRangeIndikator[1],
+                      endDate = input$dateRangeIndikator[2],
                       year=input$indYearSet,
                       shinySession = session)
       )
