@@ -4,8 +4,8 @@
 \alias{defaultReport}
 \alias{defaultReportInput}
 \alias{defaultReportUI}
-\alias{defaultReportApp}
 \alias{defaultReportServer}
+\alias{defaultReportApp}
 \title{Shiny modules for Smertereg at Rapportket}
 \usage{
 defaultReportInput(
@@ -28,6 +28,13 @@ providing start date. Default is one year ago.}
 
 \item{endDate}{Character string of the form YYYY-MM-DD or Date object
 providing end date. Default is today minus one week.}
+
+\item{reportFileName}{Character string providing basename of the file
+representing the report template. Such templates must be placed directly
+under the inst directory of the package.}
+
+\item{reportParams}{A named list of parameters that will be used by the
+report template.}
 }
 \value{
 Shiny object
