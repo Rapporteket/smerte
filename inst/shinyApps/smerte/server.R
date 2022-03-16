@@ -120,10 +120,12 @@ server <- function(input, output, session) {
       Kvalitetsindikatorer = list(
         synopsis = paste("Kvalitetsindikatorer fra Smerteregisteret"),
         fun = "reportProcessor",
-        paramNames = c("report", "outputType", "title", "author", "orgId",
-                       "userFullName"),
+        paramNames = c("report", "outputType", "title",
+                       "author", "orgName", "orgId",
+                      "registryName", "userFullName"),
         paramValues = c("nasjonalIndikator", "pdf", "Kvalitetsindikatorer",
-                        "Smerteregisteret", reshId, userFullName)
+                        "Smerteregisteret", hospitalName, reshId,
+                        registryName, userFullName)
       )
     )
   } else {
@@ -143,10 +145,10 @@ server <- function(input, output, session) {
         synopsis = paste("Kvalitetsindikatorer fra Smerteregisteret"),
         fun = "reportProcessor",
         paramNames = c("report", "outputType", "title",
-                       "author", "orgId",
+                       "author", "orgName", "orgId",
                        "userFullName", "userRole", "registryName"),
         paramValues = c("indikator", "pdf", "Kvalitetsindikatorer",
-                        "Smerteregisteret", reshId,
+                        "Smerteregisteret", hospitalName, reshId,
                         userFullName, userRole, registryName)
       ),
       Spinalkateter = list(
