@@ -1,29 +1,25 @@
-library(magrittr)
-library(shiny)
-library(shinyalert)
-library(shinycssloaders)
-library(rapbase)
-library(lubridate)
-
-addResourcePath('rap', system.file('www', package='rapbase'))
+shiny::addResourcePath('rap', system.file('www', package='rapbase'))
 regTitle = "Smerteregisteret"
 
-ui <- tagList(
-  navbarPage(
-    title = div(a(includeHTML(system.file('www/logo.svg', package='rapbase'))),
-                regTitle),
+ui <- shiny::tagList(
+  shiny::navbarPage(
+    title = shiny::div(
+      shiny::a(
+        shiny::includeHTML(system.file('www/logo.svg', package='rapbase'))),
+      regTitle
+    ),
     windowTitle = regTitle,
     theme = "rap/bootstrap.css",
     id = "tabs",
 
-    tabPanel("Veiledning",
-      useShinyalert(),
-      mainPanel(width = 12,
-        htmlOutput("veiledning", inline = TRUE),
-        appNavbarUserWidget(user = uiOutput("appUserName"),
-                            organization = uiOutput("appOrgName"),
-                            addUserInfo = TRUE),
-        tags$head(tags$link(rel="shortcut icon", href="rap/favicon.ico"))
+    shiny::tabPanel("Veiledning",
+      shinyalert::useShinyalert(),
+      shiny::mainPanel(width = 12,
+        shiny::htmlOutput("veiledning", inline = TRUE),
+        rapbase::appNavbarUserWidget(user = uiOutput("appUserName"),
+                                     organization = uiOutput("appOrgName"),
+                                     addUserInfo = TRUE),
+        shiny::tags$head(tags$link(rel="shortcut icon", href="rap/favicon.ico"))
       )
     ),
     shiny::navbarMenu(
@@ -32,20 +28,10 @@ ui <- tagList(
         "Tilsyn",
         shiny::sidebarLayout(
           shiny::sidebarPanel(
-            shiny::dateRangeInput(
-              "dateRangeTilsyn",
-              label = "Velg periode:",
-              start = lubridate::today() - lubridate::years(1),
-              end = lubridate::today() - lubridate::weeks(1),
-              separator = "-"),
-            shiny::radioButtons('formatTilsyn',
-                                'Format for nedlasting',
-                                list(PDF = "pdf", HTML = "html"),
-                                inline = FALSE),
-            shiny::downloadButton('downloadReportTilsyn', 'Last ned')
+            smerte::defaultReportInput("tilsyn")
           ),
           shiny::mainPanel(
-            shiny::htmlOutput("tilsynsrapport", inline = TRUE)
+            smerte::defaultReportUI("tilsyn")
           )
         )
       ),
@@ -53,17 +39,10 @@ ui <- tagList(
         "Dekningsgrad",
         shiny::sidebarLayout(
           shiny::sidebarPanel(
-            shiny::dateRangeInput('dateRangeDekningsgrad',
-                                  label = "Velg periode:", start = "2017-01-01",
-                                  end = Sys.Date(), separator = "-"),
-            shiny::radioButtons('formatDekningsgrad',
-                                'Format for nedlasting',
-                                list(PDF = "pdf", HTML = "html"),
-                                inline = FALSE),
-            shiny::downloadButton('downloadReportDekningsgrad', 'Last ned')
+            smerte::defaultReportInput("dekningsgrad")
           ),
           shiny::mainPanel(
-            htmlOutput("dekningsgrad", inline = TRUE)
+            smerte::defaultReportUI("dekningsgrad")
           )
         )
       ),
@@ -71,20 +50,10 @@ ui <- tagList(
         "Indikatorer",
         shiny::sidebarLayout(
           shiny::sidebarPanel(
-            shiny::dateRangeInput(
-              "dateRangeIndikator",
-              label = "Velg periode:",
-              start = lubridate::today() - lubridate::years(1),
-              end = lubridate::today() - lubridate::weeks(1),
-              separator = "-"),
-            shiny::radioButtons('formatIndikator',
-                                'Format for nedlasting',
-                                list(PDF = "pdf", HTML = "html"),
-                                inline = FALSE),
-            shiny::downloadButton('downloadReportIndikator', 'Last ned')
+            smerte::defaultReportInput("indikator")
           ),
           shiny::mainPanel(
-            shiny::htmlOutput("indikatorrapport", inline = TRUE)
+            smerte::defaultReportUI("indikator")
           )
         )
       ),
@@ -92,19 +61,10 @@ ui <- tagList(
         "Eprom",
         shiny::sidebarLayout(
           shiny::sidebarPanel(
-            shiny::dateRangeInput('dateRangeEprom',
-                                  label = "Velg periode:", start = "2017-01-01",
-                                  end = Sys.Date(), separator = "-"),
-            shiny::radioButtons('formatEprom',
-                                'Format for nedlasting',
-                                list(PDF = "pdf", HTML = "html"),
-                                inline = FALSE),
-            shiny::downloadButton('downloadReportEprom', 'Last ned')
+            smerte::defaultReportInput("eprom")
           ),
           shiny::mainPanel(
-            shiny::htmlOutput("eprom", inline = TRUE) #%>%
-            # withSpinner(color = "#18bc9c",color.background = "#ffffff",
-            #             type = 2)
+            smerte::defaultReportUI("eprom")
           )
         )
       ),
@@ -112,17 +72,10 @@ ui <- tagList(
         "Spinalkateter",
         shiny::sidebarLayout(
           shiny::sidebarPanel(
-            shiny::dateRangeInput('dateRangeSpinalkateter',
-                                  label = "Velg periode:", start = "2017-01-01",
-                                  end = Sys.Date(), separator = "-"),
-            shiny::radioButtons('formatSpinalkateter',
-                                'Format for nedlasting',
-                                list(PDF = "pdf", HTML = "html"),
-                                inline = FALSE),
-            shiny::downloadButton('downloadReportSpinalkateter', 'Last ned')
+            smerte::defaultReportInput("spinalkateter")
           ),
           shiny::mainPanel(
-            shiny::htmlOutput("spinalkateter", inline = TRUE)
+            smerte::defaultReportUI("spinalkateter")
           )
         )
       ),
@@ -130,20 +83,10 @@ ui <- tagList(
         "Smertekategori",
         shiny::sidebarLayout(
           shiny::sidebarPanel(
-            shiny::dateRangeInput(
-              "dateRangeSmertekategori",
-              label = "Velg periode:",
-              start = lubridate::today() - lubridate::years(1),
-              end = lubridate::today() - lubridate::weeks(1),
-              separator = "-"),
-            shiny::radioButtons('formatSmertekategori',
-                                'Format for nedlasting',
-                                list(PDF = "pdf", HTML = "html"),
-                                inline = FALSE),
-            shiny::downloadButton('downloadReportSmertekategori', 'Last ned')
+            smerte::defaultReportInput("smertekategori")
           ),
           shiny::mainPanel(
-            shiny::htmlOutput("smertekategori", inline = TRUE)
+            smerte::defaultReportUI("smertekategori")
           )
         )
       )
@@ -160,27 +103,34 @@ ui <- tagList(
         )
       )
     ),
-    tabPanel(
+    shiny::tabPanel(
       "Datadump",
-      sidebarLayout(
-        sidebarPanel(
+      shiny::sidebarLayout(
+        shiny::sidebarPanel(
           width = 4,
-          uiOutput("dumpTabControl"),
-          dateRangeInput("dumpDateRange", "Velg periode:",
-                         start = lubridate::ymd(Sys.Date())- years(1),
-                         end = Sys.Date(), separator = "-",
-                         weekstart = 1),
-          radioButtons("dumpFormat", "Velg filformat:",
-                       choices = list(
-                         csv = "csv",
-                         `csv2 (nordisk format)` = "csv2",
-                         `xlsx-csv` = "xlsx-csv",
-                         `xlsx-csv2 (nordisk format)` = "xlsx-csv2")
+          shiny::uiOutput("dumpTabControl"),
+          shiny::dateRangeInput(
+            "dumpDateRange",
+            "Velg periode:",
+            start = lubridate::ymd(Sys.Date()) - lubridate::years(1),
+            end = Sys.Date(),
+            separator = "-",
+            weekstart = 1
           ),
-          downloadButton("dumpDownload", "Hent!")
+          shiny::radioButtons(
+            "dumpFormat",
+            "Velg filformat:",
+            choices = list(
+              csv = "csv",
+              `csv2 (nordisk format)` = "csv2",
+              `xlsx-csv` = "xlsx-csv",
+              `xlsx-csv2 (nordisk format)` = "xlsx-csv2"
+            )
+          ),
+          shiny::downloadButton("dumpDownload", "Hent!")
         ),
-        mainPanel(
-          htmlOutput("dumpDataInfo")
+        shiny::mainPanel(
+          shiny::htmlOutput("dumpDataInfo")
         )
       )
     ),
@@ -196,9 +146,9 @@ ui <- tagList(
         "Utsendelser",
         shiny::sidebarLayout(
           shiny::sidebarPanel(
-            autoReportFormatInput("smerteDispatchment"),
-            autoReportOrgInput("smerteDispatchment"),
-            autoReportInput("smerteDispatchment")
+            rapbase::autoReportFormatInput("smerteDispatchment"),
+            rapbase::autoReportOrgInput("smerteDispatchment"),
+            rapbase::autoReportInput("smerteDispatchment")
           ),
           shiny::mainPanel(
             rapbase::autoReportUI("smerteDispatchment")
