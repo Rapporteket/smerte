@@ -29,12 +29,14 @@ options(tinytex.verbose = TRUE)
 ```{r get data, include=FALSE}
 
 if (rapbase::isRapContext()) {
-  fulldat <- getRegDataSmertekategori(registryName = params$registryName,
-                                      reshId = params$reshId,
-                                      userRole = params$userRole,
-                                      startDate = params$startDate,
-                                      endDate = params$endDate,
-                                      session = params$shinySession)
+  fulldat <- smerte::getRegDataSmertekategori(
+    registryName = params$registryName,
+    reshId = params$reshId,
+    userRole = params$userRole,
+    startDate = params$startDate,
+    endDate = params$endDate,
+    session = params$shinySession
+  )
 } else {
   
   #Dataimport: skal hente lokale data for hvert sykehus (tar vekk sti, og erstatter med lokal fil)
@@ -134,7 +136,8 @@ underdiag = fulldat %>%
   dplyr::mutate(pro = n/sum(n)) %>%
   dplyr::mutate(
     DiagKat = dplyr::recode(
-      DiagKat, !!!getSmerteDiagKatValueLab(params$registryName, smerteKat = 1)
+      DiagKat,
+      !!!smerte::getSmerteDiagKatValueLab(params$registryName, smerteKat = 1)
     )
   )
 

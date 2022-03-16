@@ -33,13 +33,14 @@ options(tinytex.verbose = TRUE)
 ```{r get data, warning = TRUE, message=TRUE}
 
 if (rapbase::isRapContext()) {
-  dat <-
-    getRegDataLokalTilsynsrapportMaaned(registryName = params$registryName,
-                                        reshId = params$reshId,
-                                        userRole = params$userRole,
-                                        startDate = params$startDate,
-                                        endDate = params$endDate,
-                                        session = params$shinySession)
+  dat <- smerte::getRegDataLokalTilsynsrapportMaaned(
+    registryName = params$registryName,
+    reshId = params$reshId,
+    userRole = params$userRole,
+    startDate = params$startDate,
+    endDate = params$endDate,
+    session = params$shinySession
+  )
 } else {
   # Dataimport: skal hente lokale data for hvert sykehus (tar vekk sti, og
   # erstatter med lokal filB)

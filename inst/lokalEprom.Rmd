@@ -28,6 +28,7 @@ options(tinytex.verbose = TRUE)
 library(dplyr)
 library(ggplot2)
 library(gridExtra)
+library(magrittr)
 ```
 
 ```{r get data, include=FALSE}
