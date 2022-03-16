@@ -38,11 +38,6 @@
 #'
 #' @return A character string with a path to where the produced file is located.
 #' @export
-#'
-#' @examples
-#' ## Make the start page for SmerteReg
-#' reportFilePath <- reportProcessor(report = "veiledning",
-#'                                   title = "Example report")
 
 reportProcessor <- function(report,
                             outputType = "pdf",

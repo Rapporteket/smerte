@@ -71,8 +71,3 @@ reports. Altering the names of the arguments will likely be a breaking
 change. Adding new arguments should be safe as long as they are provided a
 default value.
 }
-\examples{
-## Make the start page for SmerteReg
-reportFilePath <- reportProcessor(report = "veiledning",
-                                  title = "Example report")
-}
