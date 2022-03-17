@@ -54,7 +54,8 @@ dat <- dat %>%
 
 ```
 
-Smerteregisteret har seks kvalitetsindikatorer som skal være til hjelp i utviklingen av god smertebehandling. Merk at det her skilles mellom forløp og pasienter, siden samme pasient kan ha flere forløp. I denne rapporten vises _nasjonale_ tall i perioden `r params$startDate` til `r params$endDate`, det vil si at alle forløp som er inkluderbare og har samtykke er med.
+# Innledning
+Smerteregisteret har seks kvalitetsindikatorer som skal være til hjelp i utviklingen av god smertebehandling. Merk at det her skilles mellom forløp og pasienter, siden samme pasient kan ha flere forløp. I denne rapporten vises __nasjonale__ tall i perioden __`r format(params$startDate, "%d. %b %Y")`__ til __`r format(params$endDate, "%d. %b %Y")`__, det vil si at alle forløp som er inkluderbare og har samtykke er med.
 
 # Tilsett av to eller flere faggrupper
 Andel forløp hvor pasientene tilses av to eller flere faggrupper. Det er ønskelig med høyest mulig andel. De ulike faggruppene er lege, sykepleier, sosionom, psykolog og fysioterapeut. Med "totalt antall" menes her alle forløp som har minimum ett tilsyn. 
