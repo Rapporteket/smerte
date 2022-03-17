@@ -117,7 +117,7 @@ reportProcessor <- function(report,
         author = author,
         hospitalName = orgName,
         tableFormat = outputType,
-        reshId = orgId,
+        reshId = 0L,
         registryName = registryName,
         userFullName = userFullName,
         userRole = userRole
