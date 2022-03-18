@@ -63,6 +63,13 @@ reportProcessor <- function(report,
     warning("No title given! Reports should have a title...")
   }
 
+  # swap to locally defined orgName if sufficient info is provided
+  if (registryName != "unknown registry" && orgId != 999999 &&
+      userRole != "unknown role") {
+    orgName <- getHospitalName(registryName = registryName, reshId = orgId,
+                               userRole = userRole)
+  }
+
   if (report == "veiledning") {
     filePath <- rapbase::renderRmd(
       system.file("veiledning.Rmd", package = "smerte"),
@@ -115,7 +122,7 @@ reportProcessor <- function(report,
       outputType = outputType,
       params = list(
         author = author,
-        hospitalName = orgName,
+        hospitalName = "",
         tableFormat = outputType,
         reshId = 0L,
         registryName = registryName,
