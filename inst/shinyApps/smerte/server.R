@@ -166,9 +166,9 @@ server <- function(input, output, session) {
   orgs <- smerte::getNameReshId(registryName = registryName, asNamedList = TRUE)
 
   if (smerte::isNationalReg(reshId)) {
-    orgs$nasjonal <- "0"
+    orgs <- c(list(`Alle nasjonale data` = "0"), orgs)
     subReports <- nationalReports
-    disReports <- c(nationalReports, localReports)
+    disReports <- c(nationalReports)
   } else {
     subReports <- localReports
     disReports <- localReports
@@ -179,9 +179,10 @@ server <- function(input, output, session) {
                             type = "subscription", reports = subReports,
                             orgs = orgs)
 
-  # Utsendelser, national user cannot select org (data source)
+  # Utsendelser
   format <- rapbase::autoReportFormatServer("smerteDispatchment")
   org <- rapbase::autoReportOrgServer("smerteDispatchment", orgs)
+
   ## set reactive parameters overriding those in the reports list
   paramNames <- shiny::reactive(c("orgName", "orgId", "outputType"))
   paramValues <- shiny::reactive(c(org$name(), org$value(), format()))
@@ -191,15 +192,6 @@ server <- function(input, output, session) {
     org = org$value, paramNames = paramNames, paramValues = paramValues,
     reports = disReports, orgs = orgs, eligible = (userRole == "SC")
   )
-
-  ## do not display org ui input when national user
-  # output$autoReportOrgInput <- shiny::renderUI({
-  #   if (smerte::isNationalReg(reshId)) {
-  #     NULL
-  #   } else {
-  #     rapbase::autoReportOrgInput("smerteDispatchment")
-  #   }
-  # })
 
   # Metadata
   meta <- shiny::reactive({

@@ -151,7 +151,6 @@ ui <- shiny::tagList(
             shiny::HTML(
               "NB Dobbeltsjekk at rapporten er gitt riktig datakilde!<br/><br/>"
             ),
-            #shiny::uiOutput("autoReportOrgInput"),
             rapbase::autoReportInput("smerteDispatchment")
           ),
           shiny::mainPanel(
