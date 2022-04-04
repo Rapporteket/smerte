@@ -381,7 +381,7 @@ if (dim(dat)[1] < 1) {
   nrs4and <- sum(dat$svro > 0, na.rm = TRUE) / (sum(dat$svro > 0, na.rm = TRUE) + sum(dat$svro < 0, na.rm = TRUE))
   nrs4tab <- cbind(nrs4, nrs4tot, nrs4and)
   
-  tabnrs <- rbind(nrs1tab, nrs2tab, nrs2tab, nrs2tab)
+  tabnrs <- rbind(nrs1tab, nrs2tab, nrs3tab, nrs4tab)
   rownames(tabnrs) <- c("Sterkeste smerte i bevegelse", "Svakeste smerte i bevegelse", "Sterkeste smerte i ro", "Svakeste smerte i ro")
   
   antiknrs <- sum(is.na(dat$svbe))
