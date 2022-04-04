@@ -48,6 +48,15 @@ if (rapbase::isRapContext()) {
   #dat = dat %>% filter(year(date(StartdatoTO)) == aar) #year
 }
 
+#Forkorter sykehusnavn
+dat$SykehusNavn[dat$SykehusNavn == "Universitetssykehuset Nord-Norge"] = "UNN"
+dat$SykehusNavn[dat$SykehusNavn == "St. Olavs Hospital"] = "St. Olavs"
+dat$SykehusNavn[dat$SykehusNavn == "Oslo universitetssykehus"] = "OUS"
+dat$SykehusNavn[dat$SykehusNavn == "Helse Bergen HF"] = "HB"
+dat$SykehusNavn[dat$SykehusNavn == "Helse Møre og Romsdal HF"] = "HMR"
+dat$SykehusNavn[dat$SykehusNavn == "Vestre Viken HF"] = "VV"
+dat$SykehusNavn[dat$SykehusNavn == "Akershus universitetssykehus HF"] = "AHUS"
+
 #Legger inn månedene i riktig rekkefølge
 dat <- dat %>%
   dplyr::mutate(monthname = zoo::as.Date(zoo::as.yearmon(StartdatoTO)))
@@ -143,7 +152,7 @@ if (dim(dat)[1] < 1) {
   meanind1plot <- ind1plot %>% 
     dplyr::group_by(monthname) %>%
     dplyr::summarise(freq = mean(freq)) %>%
-    dplyr::mutate(SykehusNavn="Gjennomsnitt", .before = monthname)
+    dplyr::mutate(SykehusNavn="Snitt", .before = monthname)
   
   #Merging the two tibbles
   ind1plot <- dplyr::bind_rows(ind1plot, meanind1plot)
@@ -229,7 +238,7 @@ if (dim(dat)[1] < 1) {
   meanind2plot <- ind2plot %>% 
     dplyr::group_by(monthname) %>%
     dplyr::summarise(freq = mean(freq)) %>%
-    dplyr::mutate(SykehusNavn="Gjennomsnitt", .before = monthname)
+    dplyr::mutate(SykehusNavn="Snitt", .before = monthname)
   
   #Merging the two tibbles
   ind2plot <- dplyr::bind_rows(ind2plot, meanind2plot)
@@ -317,7 +326,7 @@ if (dim(dat)[1] < 1) {
   meanind3plot <- ind3plot %>% 
     dplyr::group_by(monthname) %>%
     dplyr::summarise(freq = mean(freq)) %>%
-    dplyr::mutate(SykehusNavn="Gjennomsnitt", .before = monthname)
+    dplyr::mutate(SykehusNavn="Snitt", .before = monthname)
   
   #Merging the two tibbles
   ind3plot <- dplyr::bind_rows(ind3plot, meanind3plot)
@@ -502,7 +511,7 @@ if (dim(dat)[1] < 1) {
   meanind41plot <- ind41plot %>% 
     dplyr::group_by(monthname) %>%
     dplyr::summarise(freq = mean(freq)) %>%
-    dplyr::mutate(SykehusNavn="Gjennomsnitt", .before = monthname)
+    dplyr::mutate(SykehusNavn="Snitt", .before = monthname)
   
   #Merging the two tibbles
   ind41plot <- dplyr::bind_rows(ind41plot, meanind41plot)
@@ -529,7 +538,7 @@ if (dim(dat)[1] < 1) {
   meanind42plot <- ind42plot %>% 
     dplyr::group_by(monthname) %>%
     dplyr::summarise(freq = mean(freq)) %>%
-    dplyr::mutate(SykehusNavn="Gjennomsnitt", .before = monthname)
+    dplyr::mutate(SykehusNavn="Snitt", .before = monthname)
   
   #Merging the two tibbles
   ind42plot <- dplyr::bind_rows(ind42plot, meanind42plot)
@@ -558,7 +567,7 @@ if (dim(dat)[1] < 1) {
   meanind43plot <- ind43plot %>% 
     dplyr::group_by(monthname) %>%
     dplyr::summarise(freq = mean(freq)) %>%
-    dplyr::mutate(SykehusNavn="Gjennomsnitt", .before = monthname)
+    dplyr::mutate(SykehusNavn="Snitt", .before = monthname)
   
   #Merging the two tibbles
   ind43plot <- dplyr::bind_rows(ind43plot, meanind43plot)
@@ -587,7 +596,7 @@ if (dim(dat)[1] < 1) {
   meanind44plot <- ind44plot %>% 
     dplyr::group_by(monthname) %>%
     dplyr::summarise(freq = mean(freq)) %>%
-    dplyr::mutate(SykehusNavn="Gjennomsnitt", .before = monthname)
+    dplyr::mutate(SykehusNavn="Snitt", .before = monthname)
   
   #Merging the two tibbles
   ind44plot <- dplyr::bind_rows(ind44plot, meanind44plot)
@@ -707,7 +716,7 @@ plotikmed <- dat %>%
 meanplotikmed <- plotikmed %>% 
   dplyr::group_by(monthname, IkkeMedBeh) %>%
   dplyr::summarise(freq = mean(freq)) %>%
-  dplyr::mutate(SykehusNavn="Gjennomsnitt", .before = monthname)
+  dplyr::mutate(SykehusNavn="Snitt", .before = monthname)
 
 #Merging the two tibbles
 plotikmed <- dplyr::bind_rows(plotikmed, meanplotikmed)
@@ -802,7 +811,7 @@ plotnedtr <- dat %>%
 meanplotnedtr <- plotnedtr %>% 
   dplyr::group_by(monthname) %>%
   dplyr::summarise(freq = mean(freq)) %>%
-  dplyr::mutate(SykehusNavn="Gjennomsnitt", .before = monthname)
+  dplyr::mutate(SykehusNavn="Snitt", .before = monthname)
 
 #Merging the two tibbles
 plotnedtr <- dplyr::bind_rows(plotnedtr, meanplotnedtr)

@@ -49,6 +49,9 @@ if (rapbase::isRapContext()) {
   #dat = dat %>% filter(year(date(StartdatoTO)) == aar) #year
 }
 
+#Forkorter sykehusnavn
+dat$SykehusNavn[dat$SykehusNavn == "Helse Bergen HF"] = "HB"
+
 #Legger inn månedene i riktig rekkefølge
 dat <- dat %>%
   dplyr::mutate(monthname = zoo::as.Date(zoo::as.yearmon(StartdatoTO)))
