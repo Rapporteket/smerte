@@ -24,7 +24,7 @@ default value."><!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/l
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">smerte</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.7.0.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.7.0</span>
       </span>
     </div>
 
@@ -123,25 +123,6 @@ end of a period. Defaults to December 31st of of the year given in
     <p>A character string with a path to where the produced file is located.</p>
     </div>
 
-    <div id="ref-examples">
-    <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="co">## Make the start page for SmerteReg</span></span>
-<span class="r-in"><span class="va">reportFilePath</span> <span class="op">&lt;-</span> <span class="fu">reportProcessor</span><span class="op">(</span>report <span class="op">=</span> <span class="st">"veiledning"</span>,</span>
-<span class="r-in">                                  title <span class="op">=</span> <span class="st">"Example report"</span><span class="op">)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> processing file: veiledning.Rmd</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   |                                                                              |                                                                      |   0%  |                                                                              |......................................................................| 100%</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    inline R code fragments</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> output file: veiledning.knit.md</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> /usr/local/bin/pandoc +RTS -K512m -RTS veiledning.knit.md --to latex --from markdown+autolink_bare_uris+tex_math_single_backslash --output /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T//RtmpAXgAoT/122f99887e4.tex --lua-filter /Users/runner/work/_temp/Library/bookdown/rmarkdown/lua/custom-environment.lua --lua-filter /Users/runner/work/_temp/Library/rmarkdown/rmarkdown/lua/pagebreak.lua --lua-filter /Users/runner/work/_temp/Library/rmarkdown/rmarkdown/lua/latex-div.lua --metadata-file /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T//RtmpAXgAoT/file122f30700214 --self-contained --table-of-contents --toc-depth 2 --number-sections --highlight-style tango --pdf-engine pdflatex --variable graphics --wrap preserve --template=default.latex --variable 'geometry:margin=1in' --variable tables=yes --standalone -Mhas-frontmatter=false </span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>error in running command</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ! sh: pdflatex: command not found</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> LaTeX failed to compile /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T//RtmpAXgAoT/122f99887e4.tex. See https://yihui.org/tinytex/r/#debugging for debugging tips. See 122f99887e4.log for more info.</span>
-</code></pre></div>
-    </div>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top"><h2 data-toc-skip>Contents</h2>
