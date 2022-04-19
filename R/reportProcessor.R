@@ -38,11 +38,6 @@
 #'
 #' @return A character string with a path to where the produced file is located.
 #' @export
-#'
-#' @examples
-#' ## Make the start page for SmerteReg
-#' reportFilePath <- reportProcessor(report = "veiledning",
-#'                                   title = "Example report")
 
 reportProcessor <- function(report,
                             outputType = "pdf",
@@ -66,6 +61,13 @@ reportProcessor <- function(report,
 
   if (title == "") {
     warning("No title given! Reports should have a title...")
+  }
+
+  # swap to locally defined orgName if sufficient info is provided
+  if (registryName != "unknown registry" && orgId != 999999 &&
+      userRole != "unknown role") {
+    orgName <- getHospitalName(registryName = registryName, reshId = orgId,
+                               userRole = userRole)
   }
 
   if (report == "veiledning") {
@@ -120,9 +122,9 @@ reportProcessor <- function(report,
       outputType = outputType,
       params = list(
         author = author,
-        hospitalName = orgName,
+        hospitalName = "",
         tableFormat = outputType,
-        reshId = orgId,
+        reshId = 0L,
         registryName = registryName,
         userFullName = userFullName,
         userRole = userRole

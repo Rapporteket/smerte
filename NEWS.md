@@ -2,6 +2,10 @@
 
 * Tests on data queries added
 * Miscellaneous R package tuning
+* Fixed time frame mismatch for downloaded reports
+* New scheme for auto reports (subscription and dispatch) proposed
+* Minor adjustments to report templates
+* Extended use of shiny modules to simplify code
 
 # smerte 0.6.0
 

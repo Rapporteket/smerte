@@ -1,0 +1,47 @@
+---
+params:
+  title: 'Testtittel'
+  author: 'Rapporteket'
+  hospitalName: 'Ukjent sykehus'
+  reshId: 'locallyDefined'
+  userRole: 'MyRole'
+  userFullName: 'Ukjent bruker'
+  startDate: '2017-01-01'
+  endDate: '2017-12-31'
+  year: '2016'
+  tableFormat: 'html'
+  registryName: 'rapbase'
+  shinySession: list()
+  var: "mpg"
+  bins: 5
+title: '`r paste(params$title, params$hospitalName, " i perioden fra ", params$startDate, " til ", params$endDate)`'
+author: '`r params$author`'
+date: '`r format(Sys.time(), "%d\\. %B, %Y")`'
+reglogo: '`r system.file("www/logoSmerte.png", package = "smerte")`'
+regtext: '`r readLines(system.file("registryShortDescription.txt", package = "smerte"))`'
+registryName: Smerteregisteret
+userFullName: '`r params$userFullName`'
+---
+
+```{r setup, include=FALSE}
+library(knitr)
+library(kableExtra)
+library(rapbase)
+knitr::opts_chunk$set(echo=FALSE)
+options(knitr.table.format = params$tableFormat)
+options(tinytex.verbose = TRUE)
+```
+
+
+## Eksempelrapport
+Dette er eksempel på en samlerapport som er egnet til å kobinere presentasjon
+av dynamisk tekst, tabeller og figurer. Samlerapporter kan vises i selve
+Rapporeket, lastes ned eller sendes (rutinemessig) per epost til de som ønsker
+det.
+
+
+## Eksempel på dynamisk tekst
+Idag, `r format(Sys.Date(), "%A %d. %b %Y")` er det
+`r as.numeric(format(Sys.Date(), "%j"))` dager siden nyttår. Perioden som er
+valgt er fra `r format(params$startDate, "%A %d. %b %Y")` til
+`r format(params$endDate, "%A %d. %b %Y")`.
