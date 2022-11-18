@@ -423,7 +423,7 @@ if (dim(dat)[1] < 1) {
     dplyr::select(SykehusNavn, n, ant, freq)
   
   #Sterkeste bevegelse
-  rapbase::mst(
+ tab41 <- rapbase::mst(
     tab = kvalind41,
     col_names = c("Sykehus", "Antall", "Totalt antall", "Andel"),
     type = params$tableFormat,
@@ -432,7 +432,7 @@ if (dim(dat)[1] < 1) {
     align = c("l", "r", "r", "r"))
   
   #Svakeste bevegelse
-  rapbase::mst(
+ tab42 <- rapbase::mst(
     tab = kvalind42,
     col_names = c("Sykehus", "Antall", "Totalt antall", "Andel"),
     type = params$tableFormat,
@@ -441,7 +441,7 @@ if (dim(dat)[1] < 1) {
     align = c("l", "r", "r", "r"))
   
   #Sterkeste ro
-  rapbase::mst(
+  tab43 <- rapbase::mst(
     tab = kvalind43,
     col_names = c("Sykehus", "Antall", "Totalt antall", "Andel"),
     type = params$tableFormat,
@@ -450,7 +450,7 @@ if (dim(dat)[1] < 1) {
     align = c("l", "r", "r", "r"))
   
   #Svakeste ro
-  rapbase::mst(
+ tab44 <- rapbase::mst(
     tab = kvalind44,
     col_names = c("Sykehus", "Antall", "Totalt antall", "Andel"),
     type = params$tableFormat,
@@ -464,6 +464,50 @@ if (dim(dat)[1] < 1) {
 
 ```
 `r messageniva`
+
+```{r nrstab1, warning = FALSE, message=FALSE, results='asis'}
+messagetab1 <- ""
+
+if (dim(dat)[1] < 1) {
+  messagetab1 <- "I den valgte tidsperioden er det ikke nok data til å vise tabell for denne kvalitetsindikatoren."
+} else {
+  tab41
+}
+```
+`r messagetab1`
+
+```{r nrstab2, warning = FALSE, message=FALSE, results='asis'}
+messagetab2 <- ""
+
+if (dim(dat)[1] < 1) {
+  messagetab2 <- "I den valgte tidsperioden er det ikke nok data til å vise tabell for denne kvalitetsindikatoren."
+} else {
+  tab42
+}
+```
+`r messagetab2`
+
+```{r nrstab3, warning = FALSE, message=FALSE, results='asis'}
+messagetab3 <- ""
+
+if (dim(dat)[1] < 1) {
+  messagetab3 <- "I den valgte tidsperioden er det ikke nok data til å vise tabell for denne kvalitetsindikatoren."
+} else {
+  tab43
+}
+```
+`r messagetab3`
+
+```{r nrstab4, warning = FALSE, message=FALSE, results='asis'}
+messagetab4 <- ""
+
+if (dim(dat)[1] < 1) {
+  messagetab4 <- "I den valgte tidsperioden er det ikke nok data til å vise tabell for denne kvalitetsindikatoren."
+} else {
+  tab44
+}
+```
+`r messagetab4`
 
 Figuren under viser hvordan andelene har fordelt seg i løpet av året for de fire NRS-målene.
 ```{r nrsfig, warning = FALSE, message=FALSE, results='asis', fig.align='center', out.width='100%'}
