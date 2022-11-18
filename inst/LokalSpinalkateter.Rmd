@@ -160,10 +160,12 @@ for(i in 1:dim(dat)[1]){
 }
   
 #De som er NA må få en meningsfullverdi til tabellen som skal skrives
-dat$stbe =  dat$stbe %>% tidyr::replace_na('Mangler')
-dat$svbe =  dat$svbe %>% tidyr::replace_na('Mangler')
-dat$stro =  dat$stro %>% tidyr::replace_na('Mangler')
-dat$svro =  dat$svro %>% tidyr::replace_na('Mangler')
+dat$stbe = dat %>% dplyr::mutate(stbe = ifelse(is.na(stbe), "Mangler", stbe))
+dat$svbe = dat %>% dplyr::mutate(svbe = ifelse(is.na(svbe), "Mangler", svbe))
+dat$stro = dat %>% dplyr::mutate(stro = ifelse(is.na(stro), "Mangler", stro))
+dat$svro = dat %>% dplyr::mutate(svro = ifelse(is.na(svro), "Mangler", svro))
+
+
 
 ### Ta med kun de som har hatt spinalkateter: SAB11 = 1
 datspinal <- dat[!is.na(dat$SAB11) & dat$SAB11 == 1, ]
