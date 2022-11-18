@@ -133,7 +133,7 @@ if (dim(dat)[1] < 1) {
 `r messagebehtils`
 
 Figuren under viser hvordan andelen har fordelt seg i løpet av året.
-```{r behandlertilsynfig, warning = FALSE, message=FALSE, results='asis', fig.pos= "H", out.extra = '', fig.align='center', out.width='100%'}
+```{r behandlertilsynfig, warning = FALSE, message=FALSE, results='asis', fig.pos= "H", out.extra = '', fig.align='center', out.width='100%', fig.width = 14, fig.asp = 0.5}
 
 messagetilsfig <- ""
 
@@ -220,7 +220,7 @@ if (dim(dat)[1] < 1) {
 `r messagetils`
 
 Figuren under viser hvordan andelen har fordelt seg i løpet av året.
-```{r tilsetthenvistfig, warning = FALSE, message=FALSE, results='asis', fig.pos= "H", out.extra = '', fig.align='center', out.width='100%'}
+```{r tilsetthenvistfig, warning = FALSE, message=FALSE, results='asis', fig.pos= "H", out.extra = '', fig.align='center', out.width='100%', fig.width = 14, fig.asp = 0.5}
 
 messagehenv <- ""
 
@@ -305,7 +305,7 @@ if (dim(dat)[1] < 1) {
 `r messagetilfr`
 
 Figuren under viser hvordan andelen har fordelt seg i løpet av året.
-```{r fornoydfig, warning = FALSE, message=FALSE, results='asis', fig.pos= "H", out.extra = '', fig.align='center', out.width='100%'}
+```{r fornoydfig, warning = FALSE, message=FALSE, results='asis', fig.pos= "H", out.extra = '', fig.align='center', out.width='100%', fig.width = 14, fig.asp = 0.5}
 
 messageforn <- ""
 
@@ -481,7 +481,7 @@ if (dim(dat)[1] < 1) {
       size = 0.5),
     ggplot2::geom_point(
       ggplot2::aes(group = factor(SykehusNavn), colour=factor(SykehusNavn)),
-      size = 1.5
+      size = 1
     ),
     ggplot2::theme_classic(),
     ggplot2::theme(
@@ -615,7 +615,7 @@ if (dim(dat)[1] < 1) {
 ```
 `r messagenrsfig`
 
-```{r nrsfig1, warning = FALSE, message=FALSE, results='asis', fig.align='center', out.width='100%'}
+```{r nrsfig1, warning = FALSE, message=FALSE, results='asis', fig.align='center', out.width='100%', fig.width = 14, fig.asp = 0.5}
 message1 <- ""
 
 if (dim(dat)[1] < 1) {
@@ -626,7 +626,7 @@ if (dim(dat)[1] < 1) {
 ```
 `r message1`
 
-```{r nrsfig2, warning = FALSE, message=FALSE, results='asis', , fig.align='center', out.width='100%'}
+```{r nrsfig2, warning = FALSE, message=FALSE, results='asis', , fig.align='center', out.width='100%', fig.width = 14, fig.asp = 0.5}
 message2 <- ""
 
 if (dim(dat)[1] < 1) {
@@ -637,7 +637,7 @@ if (dim(dat)[1] < 1) {
 ```
 `r message2`
 
-```{r nrsfig3, warning = FALSE, message=FALSE, results='asis', fig.align='center', out.width='100%'}
+```{r nrsfig3, warning = FALSE, message=FALSE, results='asis', fig.align='center', out.width='100%', fig.width = 14, fig.asp = 0.5}
 message3 <- ""
 
 if (dim(dat)[1] < 1) {
@@ -648,7 +648,7 @@ if (dim(dat)[1] < 1) {
 ```
 `r message3`
 
-```{r nrsfig4, warning = FALSE, message=FALSE, results='asis', fig.align='center', out.width='100%'}
+```{r nrsfig4, warning = FALSE, message=FALSE, results='asis', fig.align='center', out.width='100%', fig.width = 14, fig.asp = 0.5}
 message4 <- ""
 
 if (dim(dat)[1] < 1) {
@@ -701,7 +701,7 @@ if (dim(dat)[1] < 1) {
 
 Figuren under viser hvordan andelen har fordelt seg i løpet av året.
 
-```{r ikkemedfig, warning = FALSE, message=FALSE, results='asis', fig.pos= "H", out.extra = '', fig.align='center', out.width='100%'}
+```{r ikkemedfig, warning = FALSE, message=FALSE, results='asis', fig.pos= "H", out.extra = '', fig.align='center', out.width='100%', fig.width = 14, fig.asp = 0.5}
 
 messageik <- ""
 
@@ -794,7 +794,7 @@ if (dim(dat)[1] < 1) {
 
 Figuren under viser hvordan andelen har fordelt seg i løpet av året.
 
-```{r nedtrfig, warning = FALSE, message=FALSE, results='asis', fig.pos= "H", out.extra = '', fig.align='center', out.width='100%'}
+```{r nedtrfig, warning = FALSE, message=FALSE, results='asis', fig.pos= "H", out.extra = '', fig.align='center', out.width='100%', fig.width = 14, fig.asp = 0.5}
 
 messagenedfig <- ""
 
