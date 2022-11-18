@@ -159,8 +159,8 @@ if (dim(dat)[1] < 1) {
   
   #Plotting plotdat
   ggplot2::ggplot(ind1plot, ggplot2::aes(monthname, freq)) + 
-    ggplot2::geom_line(ggplot2::aes(group = factor(SykehusNavn), colour=factor(SykehusNavn)), size = 0.8) +
-    ggplot2::geom_point(ggplot2::aes(group = factor(SykehusNavn), colour=factor(SykehusNavn)), size = 2) + 
+    ggplot2::geom_line(ggplot2::aes(group = factor(SykehusNavn), colour=factor(SykehusNavn)), size = 0.5) +
+    ggplot2::geom_point(ggplot2::aes(group = factor(SykehusNavn), colour=factor(SykehusNavn)), size = 1) + 
     ggplot2::labs(x = "Måned", y = "Andel", subtitle = "Andel tilsett av to eller flere faggrupper (månedlig)", color = "Sykehus") +
     ggplot2::theme_classic() +
     ggplot2::theme(axis.text.x = ggplot2::element_text(size = 8.5),
@@ -245,7 +245,7 @@ if (dim(dat)[1] < 1) {
   
   #Plotting plotdat
   ggplot2::ggplot(ind2plot, ggplot2::aes(monthname, freq)) + 
-    ggplot2::geom_line(ggplot2::aes(group = factor(SykehusNavn), colour=factor(SykehusNavn)), size = 0.8) + ggplot2::geom_point(ggplot2::aes(group = factor(SykehusNavn), colour=factor(SykehusNavn)), size = 2) + 
+    ggplot2::geom_line(ggplot2::aes(group = factor(SykehusNavn), colour=factor(SykehusNavn)), size = 0.5) + ggplot2::geom_point(ggplot2::aes(group = factor(SykehusNavn), colour=factor(SykehusNavn)), size = 1) + 
     ggplot2::labs(x = "Måned", y = "Andel", subtitle = "Andel tilsett samme dag som de ble henvist (månedlig)", color = "Sykehus") + ggplot2::theme_classic() + ggplot2::theme(axis.text.x = ggplot2::element_text(size = 8.5), axis.text.y = ggplot2::element_text(size = 10), axis.title = ggplot2::element_text(size = 10), plot.margin = ggplot2::unit(c(1, 1, 2, 1), "cm"), legend.text = ggplot2::element_text(size = 10), axis.title.y = ggplot2::element_text(margin = ggplot2::margin(t = 0, r = 10, b = 0, l = 0)), axis.title.x = ggplot2::element_text(margin = ggplot2::margin(t = 10, r = 0, b = 0, l = 0)))
   
 }
@@ -333,7 +333,7 @@ if (dim(dat)[1] < 1) {
   
   #Plotting plotdat
   ggplot2::ggplot(ind3plot, ggplot2::aes(monthname, freq)) + 
-    ggplot2::geom_line(ggplot2::aes(group = factor(SykehusNavn), colour=factor(SykehusNavn)), size = 0.8) + ggplot2::geom_point(ggplot2::aes(group = factor(SykehusNavn), colour=factor(SykehusNavn)), size = 2) + 
+    ggplot2::geom_line(ggplot2::aes(group = factor(SykehusNavn), colour=factor(SykehusNavn)), size = 0.5) + ggplot2::geom_point(ggplot2::aes(group = factor(SykehusNavn), colour=factor(SykehusNavn)), size = 1) + 
     ggplot2::labs(x = "Måned", y = "Andel", subtitle = "Andel fornøyd med ivaretakelsen fra smerteteam (månedlig)", color = "Sykehus") + ggplot2::theme_classic() + ggplot2::theme(axis.text.x = ggplot2::element_text(size = 8.5), axis.text.y = ggplot2::element_text(size = 10), axis.title = ggplot2::element_text(size = 10), plot.margin = ggplot2::unit(c(1, 1, 2, 1), "cm"), legend.text = ggplot2::element_text(size = 10), axis.title.y = ggplot2::element_text(margin = ggplot2::margin(t = 0, r = 10, b = 0, l = 0)), axis.title.x = ggplot2::element_text(margin = ggplot2::margin(t = 10, r = 0, b = 0, l = 0))) 
   
 }
@@ -729,9 +729,9 @@ if (dim(plotikmed)[1] < 1) {
   #Plotting plotdat
   ggplot2::ggplot(plotikmed, ggplot2::aes(monthname, freq)) + 
     ggplot2::geom_line(ggplot2::aes(group = factor(SykehusNavn), 
-                  colour=factor(SykehusNavn)), size = 0.8) +
+                  colour=factor(SykehusNavn)), size = 0.5) +
     ggplot2::geom_point(ggplot2::aes(group = factor(SykehusNavn), 
-                   colour=factor(SykehusNavn)), size = 2) + 
+                   colour=factor(SykehusNavn)), size = 1) + 
     ggplot2::labs(x = "Måned", y = "Andel", 
          subtitle = "Andel med ikke-medikamentell behandling per måned", 
          color = "Sykehus") + ggplot2::theme_classic() + 
@@ -824,9 +824,9 @@ if (dim(plotnedtr)[1] < 1) {
   #Plotting plotdat
   ggplot2::ggplot(plotnedtr, ggplot2::aes(monthname, freq)) + 
     ggplot2::geom_line(ggplot2::aes(group = factor(SykehusNavn), 
-                  colour=factor(SykehusNavn)), size = 0.8) +
+                  colour=factor(SykehusNavn)), size = 0.5) +
     ggplot2::geom_point(ggplot2::aes(group = factor(SykehusNavn), 
-                   colour=factor(SykehusNavn)), size = 2) + 
+                   colour=factor(SykehusNavn)), size = 1) + 
     ggplot2::labs(x = "Måned", y = "Andel", 
          subtitle = "Andel med nedtrappingsplan per måned", 
          color = "Sykehus") + ggplot2::theme_classic() + 
