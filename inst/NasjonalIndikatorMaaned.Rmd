@@ -49,9 +49,9 @@ if (rapbase::isRapContext()) {
 }
 
 #Forkorter sykehusnavn
-dat$SykehusNavn[dat$SykehusNavn == "Universitetssykehuset Nord-Norge"] = "UNN"
-dat$SykehusNavn[dat$SykehusNavn == "St. Olavs Hospital"] = "St. Olavs"
-dat$SykehusNavn[dat$SykehusNavn == "Oslo universitetssykehus"] = "OUS"
+dat$SykehusNavn[dat$SykehusNavn == "Universitetssykehuset Nord-Norge HF"] = "UNN"
+dat$SykehusNavn[dat$SykehusNavn == "St. Olavs Hospital HF"] = "St. Olavs"
+dat$SykehusNavn[dat$SykehusNavn == "Oslo universitetssykehus HF"] = "OUS"
 dat$SykehusNavn[dat$SykehusNavn == "Helse Bergen HF"] = "HB"
 dat$SykehusNavn[dat$SykehusNavn == "Helse Møre og Romsdal HF"] = "HMR"
 dat$SykehusNavn[dat$SykehusNavn == "Vestre Viken HF"] = "VV"
