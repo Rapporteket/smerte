@@ -47,81 +47,102 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">getRegDataLokalTilsynsrapportMaaned</span><span class="op">(</span>
-  <span class="va">registryName</span>,
-  <span class="va">reshId</span>,
-  <span class="va">userRole</span>,
-  <span class="va">startDate</span>,
-  <span class="va">endDate</span>,
-  <span class="va">...</span>
-<span class="op">)</span>
-
-<span class="fu">getRegDataRapportDekningsgrad</span><span class="op">(</span>
-  <span class="va">registryName</span>,
-  <span class="va">reshId</span>,
-  <span class="va">userRole</span>,
-  <span class="va">startDate</span>,
-  <span class="va">endDate</span>,
-  <span class="va">...</span>
-<span class="op">)</span>
-
-<span class="fu">getRegDataIndikator</span><span class="op">(</span><span class="va">registryName</span>, <span class="va">reshId</span>, <span class="va">userRole</span>, <span class="va">startDate</span>, <span class="va">endDate</span>, <span class="va">...</span><span class="op">)</span>
-
-<span class="fu">getSmerteDiagKatValueLab</span><span class="op">(</span><span class="va">registryName</span>, <span class="va">smerteKat</span><span class="op">)</span>
-
-<span class="fu">getRegDataSmertekategori</span><span class="op">(</span>
-  <span class="va">registryName</span>,
-  <span class="va">reshId</span>,
-  <span class="va">userRole</span>,
-  <span class="va">startDate</span>,
-  <span class="va">endDate</span>,
-  <span class="va">...</span>
-<span class="op">)</span>
-
-<span class="fu">getRegDataSpinalkateter</span><span class="op">(</span>
-  <span class="va">registryName</span>,
-  <span class="va">reshId</span>,
-  <span class="va">userRole</span>,
-  <span class="va">startDate</span>,
-  <span class="va">endDate</span>,
-  <span class="va">...</span>
-<span class="op">)</span>
-
-<span class="fu">getLocalYears</span><span class="op">(</span><span class="va">registryName</span>, <span class="va">reshId</span>, <span class="va">userRole</span><span class="op">)</span>
-
-<span class="fu">getAllYears</span><span class="op">(</span><span class="va">registryName</span>, <span class="va">reshId</span>, <span class="va">userRole</span><span class="op">)</span>
-
-<span class="fu">getHospitalName</span><span class="op">(</span><span class="va">registryName</span>, <span class="va">reshId</span>, <span class="va">userRole</span><span class="op">)</span>
-
-<span class="fu">getNameReshId</span><span class="op">(</span><span class="va">registryName</span>, asNamedList <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>
-
-<span class="fu">getDataDump</span><span class="op">(</span><span class="va">registryName</span>, <span class="va">tableName</span>, <span class="va">fromDate</span>, <span class="va">toDate</span>, <span class="va">...</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">getRegDataLokalTilsynsrapportMaaned</span><span class="op">(</span></span>
+<span>  <span class="va">registryName</span>,</span>
+<span>  <span class="va">reshId</span>,</span>
+<span>  <span class="va">userRole</span>,</span>
+<span>  <span class="va">startDate</span>,</span>
+<span>  <span class="va">endDate</span>,</span>
+<span>  <span class="va">...</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">getRegDataRapportDekningsgrad</span><span class="op">(</span></span>
+<span>  <span class="va">registryName</span>,</span>
+<span>  <span class="va">reshId</span>,</span>
+<span>  <span class="va">userRole</span>,</span>
+<span>  <span class="va">startDate</span>,</span>
+<span>  <span class="va">endDate</span>,</span>
+<span>  <span class="va">...</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">getRegDataIndikator</span><span class="op">(</span><span class="va">registryName</span>, <span class="va">reshId</span>, <span class="va">userRole</span>, <span class="va">startDate</span>, <span class="va">endDate</span>, <span class="va">...</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">getSmerteDiagKatValueLab</span><span class="op">(</span><span class="va">registryName</span>, <span class="va">smerteKat</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">getRegDataSmertekategori</span><span class="op">(</span></span>
+<span>  <span class="va">registryName</span>,</span>
+<span>  <span class="va">reshId</span>,</span>
+<span>  <span class="va">userRole</span>,</span>
+<span>  <span class="va">startDate</span>,</span>
+<span>  <span class="va">endDate</span>,</span>
+<span>  <span class="va">...</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">getRegDataSpinalkateter</span><span class="op">(</span></span>
+<span>  <span class="va">registryName</span>,</span>
+<span>  <span class="va">reshId</span>,</span>
+<span>  <span class="va">userRole</span>,</span>
+<span>  <span class="va">startDate</span>,</span>
+<span>  <span class="va">endDate</span>,</span>
+<span>  <span class="va">...</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">getLocalYears</span><span class="op">(</span><span class="va">registryName</span>, <span class="va">reshId</span>, <span class="va">userRole</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">getAllYears</span><span class="op">(</span><span class="va">registryName</span>, <span class="va">reshId</span>, <span class="va">userRole</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">getHospitalName</span><span class="op">(</span><span class="va">registryName</span>, <span class="va">reshId</span>, <span class="va">userRole</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">getNameReshId</span><span class="op">(</span><span class="va">registryName</span>, asNamedList <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">getDataDump</span><span class="op">(</span><span class="va">registryName</span>, <span class="va">tableName</span>, <span class="va">fromDate</span>, <span class="va">toDate</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>registryName</dt>
 <dd><p>String providing the current registryName</p></dd>
+
+
 <dt>reshId</dt>
 <dd><p>String providing organization Id</p></dd>
+
+
 <dt>userRole</dt>
 <dd><p>String providing user role</p></dd>
+
+
 <dt>startDate</dt>
 <dd><p>String defing start of date range as YYYY-MM-DD</p></dd>
+
+
 <dt>endDate</dt>
 <dd><p>String defing end of date range as YYYY-MM-DD</p></dd>
+
+
 <dt>...</dt>
 <dd><p>Optional arguments to be passed to the function</p></dd>
+
+
 <dt>smerteKat</dt>
 <dd><p>Integer defining the SmerteKat code to use in query</p></dd>
+
+
 <dt>asNamedList</dt>
 <dd><p>Logical whether to return a list of named values or not.</p></dd>
+
+
 <dt>tableName</dt>
 <dd><p>String providing a table name</p></dd>
+
+
 <dt>fromDate</dt>
 <dd><p>String providing start date</p></dd>
+
+
 <dt>toDate</dt>
 <dd><p>String provideing end date</p></dd>
+
 </dl></div>
 
   </div>
@@ -136,7 +157,7 @@
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

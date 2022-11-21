@@ -47,40 +47,51 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">defaultReportInput</span><span class="op">(</span>
-  <span class="va">id</span>,
-  startDate <span class="op">=</span> <span class="fu">lubridate</span><span class="fu">::</span><span class="fu"><a href="https://lubridate.tidyverse.org/reference/now.html" class="external-link">today</a></span><span class="op">(</span><span class="op">)</span> <span class="op">-</span> <span class="fu">lubridate</span><span class="fu">::</span><span class="fu"><a href="https://lubridate.tidyverse.org/reference/period.html" class="external-link">years</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span>,
-  endDate <span class="op">=</span> <span class="fu">lubridate</span><span class="fu">::</span><span class="fu"><a href="https://lubridate.tidyverse.org/reference/now.html" class="external-link">today</a></span><span class="op">(</span><span class="op">)</span> <span class="op">-</span> <span class="fu">lubridate</span><span class="fu">::</span><span class="fu"><a href="https://lubridate.tidyverse.org/reference/period.html" class="external-link">weeks</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span>
-<span class="op">)</span>
-
-<span class="fu">defaultReportUI</span><span class="op">(</span><span class="va">id</span><span class="op">)</span>
-
-<span class="fu">defaultReportServer</span><span class="op">(</span><span class="va">id</span>, <span class="va">reportFileName</span>, <span class="va">reportParams</span><span class="op">)</span>
-
-<span class="fu">defaultReportApp</span><span class="op">(</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">defaultReportInput</span><span class="op">(</span></span>
+<span>  <span class="va">id</span>,</span>
+<span>  startDate <span class="op">=</span> <span class="fu">lubridate</span><span class="fu">::</span><span class="fu"><a href="https://lubridate.tidyverse.org/reference/now.html" class="external-link">today</a></span><span class="op">(</span><span class="op">)</span> <span class="op">-</span> <span class="fu">lubridate</span><span class="fu">::</span><span class="fu"><a href="https://lubridate.tidyverse.org/reference/period.html" class="external-link">years</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span>,</span>
+<span>  endDate <span class="op">=</span> <span class="fu">lubridate</span><span class="fu">::</span><span class="fu"><a href="https://lubridate.tidyverse.org/reference/now.html" class="external-link">today</a></span><span class="op">(</span><span class="op">)</span> <span class="op">-</span> <span class="fu">lubridate</span><span class="fu">::</span><span class="fu"><a href="https://lubridate.tidyverse.org/reference/period.html" class="external-link">weeks</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">defaultReportUI</span><span class="op">(</span><span class="va">id</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">defaultReportServer</span><span class="op">(</span><span class="va">id</span>, <span class="va">reportFileName</span>, <span class="va">reportParams</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">defaultReportApp</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>id</dt>
 <dd><p>Character string with module id (namespace).</p></dd>
+
+
 <dt>startDate</dt>
 <dd><p>Character string of the form YYYY-MM-DD or Date object
 providing start date. Default is one year ago.</p></dd>
+
+
 <dt>endDate</dt>
 <dd><p>Character string of the form YYYY-MM-DD or Date object
 providing end date. Default is today minus one week.</p></dd>
+
+
 <dt>reportFileName</dt>
 <dd><p>Character string providing basename of the file
 representing the report template. Such templates must be placed directly
 under the inst directory of the package.</p></dd>
+
+
 <dt>reportParams</dt>
 <dd><p>A named list of parameters that will be used by the
 report template.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>Shiny object</p>
+    
+
+<p>Shiny object</p>
     </div>
 
   </div>
@@ -95,7 +106,7 @@ report template.</p></dd>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>
