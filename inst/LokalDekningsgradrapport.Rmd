@@ -71,11 +71,12 @@ Dekningsgraden beregnes lokalt for hvert sykehus. Den viser andelen __forløp__ 
 if (dim(dat)[1] < 1) {
   message <- "I den valgte tidsperioden er det ikke nok data til å angi dekningsgrad."
 } else {
-  antInk <- sum(dat$InklKritOppf == 1)
+  antInk <- sum(dat$InklKritOppf == 1, na.rm = TRUE)
   sam <- dat$SkriftligSamtyk
   # NA/NULL to be counted as none-consent
-  sam[is.na(sam)] <- 0
-  antSam <- sum(sam[sam == 1])
+  sam <- sam %>% replace(is.na(.), 0)
+  antSam <- sum(sam == 1, na.rm = TRUE)
+  
   if (antInk < 1) {
     message <- "I den valgte tidsperioden er det ikke nok data til å angi dekningsgrad."
   } else {

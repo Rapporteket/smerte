@@ -402,7 +402,7 @@ if (dim(dat)[1] < 1) {
 
 Figuren under viser hvordan andelene har fordelt seg i løpet av året for de fire NRS-målene.
 
-```{r nrsfig, warning = FALSE, message=FALSE, results='asis', fig.align='center', out.width='100%'}
+```{r nrsfig, warning = FALSE, message=FALSE, results='asis', fig.align='center', out.width='100%', fig.width = 14}
 
 messagenrsfig <- ""
 
@@ -448,7 +448,7 @@ if (dim(dat)[1] < 1) {
     dplyr::filter(svro1 == 1)
   
   colorsplot <- c("stbe" = "magenta3", "svbe" = "hotpink1", "stro" = "darkcyan", "svro" = "cyan2")
-  labelsplot <- c("Sterkeste smerte i bevegelse", "Svakeste smerte i bevegelse", "Sterkeste smerte i ro", "Svakeste smerte i ro")
+  labelsplot <- c("Sterkeste smerte \ni bevegelse", "Svakeste smerte \ni bevegelse", "Sterkeste smerte \ni ro", "Svakeste smerte \ni ro")
   
   p = ggplot2::ggplot() + 
     geom_line(data = p1, ggplot2::aes(month, freq1, group = 1, color = "stbe"), size = 0.5) +
