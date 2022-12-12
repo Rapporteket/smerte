@@ -1,3 +1,8 @@
+# smerte 0.8.0
+* Fix All plots visually
+* Fix (fatal) error in outdated command in Spinalkateter report
+* Fix All tables now shown in Indiktarorraport nasjonal
+
 # smerte 0.7.0
 
 * Tests on data queries added
