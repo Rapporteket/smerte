@@ -235,12 +235,12 @@ server <- function(input, output, session) {
   # Eksport
   ## brukerkontroller
   rapbase::exportUCServer("smerteExport", registryName = registryName,
-                          repoName = "smerte", eligible = (userRole == "SC"))
+                          repoName = "smerte", eligible = TRUE) #(userRole == "SC")
   ## veileding
   rapbase::exportGuideServer("smerteExportGuide", registryName)
 
   # Bruksstatistikk
   rapbase::statsServer("smerteStats", registryName = "smerte",
-                       eligible = TRUE) #(userRole == "SC")
+                       eligible = (userRole == "SC"))
   rapbase::statsGuideServer("smerteStats", registryName = "smerte")
 }
