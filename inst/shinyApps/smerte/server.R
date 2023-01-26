@@ -27,7 +27,8 @@ server <- function(input, output, session) {
   }
   ## tools only for SC
   if (!userRole %in% "SC") {
-    shiny::hideTab(inputId = "tabs", target = "Verktøy")
+    #shiny::hideTab(inputId = "tabs", target = "Verktøy")
+    print("Please revert me!")
   }
 
 
