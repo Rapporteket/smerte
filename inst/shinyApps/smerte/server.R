@@ -241,6 +241,6 @@ server <- function(input, output, session) {
 
   # Bruksstatistikk
   rapbase::statsServer("smerteStats", registryName = "smerte",
-                       eligible = (userRole == "SC"))
+                       eligible = TRUE) #(userRole == "SC")
   rapbase::statsGuideServer("smerteStats", registryName = "smerte")
 }
