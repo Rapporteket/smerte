@@ -1,0 +1,154 @@
+---
+params:
+  title: 'Opioidreduksjon'
+  author: 'Rapporteket'
+  hospitalName: 'Ukjent sykehus'
+  reshId: 'locallyDefined'
+  userRole: 'MyRole'
+  userFullName: 'Ukjent bruker'
+  startDate: '2017-01-01'
+  endDate: '2017-12-31'
+  year: '2016'
+  tableFormat: 'html'
+  registryName: 'rapbase'
+  shinySession: list()
+title: '`r paste(params$title, " i perioden fra ", params$startDate, " til ", params$endDate)`'
+author: '`r params$author`'
+date: '`r format(Sys.time(), "%d\\. %B, %Y")`'
+reglogo: '`r system.file("www/logoSmerte.png", package = "smerte")`'
+regtext: '`r readLines(system.file("registryShortDescription.txt", package = "smerte"))`'
+registryName: Smerteregisteret
+userFullName: '`r params$userFullName`'
+---
+```{r set options and load packages, include = FALSE}
+knitr::opts_chunk$set(echo=FALSE)
+options(knitr.table.format = params$tableFormat)
+options(tinytex.verbose = TRUE)
+```
+
+```{r setup, include=FALSE}
+if (rapbase::isRapContext()) {
+  dat <- smerte::getRegDataRapportOpiod(
+    registryName = params$registryName,
+    reshId = params$reshId,
+    userRole = params$userRole,
+    startDate = params$startDate,
+    endDate = params$endDate,
+    session = params$shinySession
+  )
+} else {
+dat <- path <- read.csv(file = "H:/path.csv", header = FALSE, sep = ";")
+  path <- as.data.frame(lapply(path, as.character), stringsAsFactors=FALSE)
+  path <- path$V1
+  dat <- read.csv(file = path, header = TRUE, sep = ";")
+}
+```
+
+```{r yearSelect, include=FALSE}
+#Lage morfinekvivalens numerisk og lage datasett for hvert år
+
+dat$MoEkvivalens22 = as.numeric(sub(",", ".", dat$MoEkvivalens22, fixed = TRUE))
+
+dat$SykehusNavn[dat$SykehusNavn == "Universitetssykehuset Nord-Norge HF"] = "UNN"
+dat$SykehusNavn[dat$SykehusNavn == "St. Olavs Hospital HF"] = "St. Olavs"
+dat$SykehusNavn[dat$SykehusNavn == "Oslo universitetssykehus HF"] = "OUS"
+dat$SykehusNavn[dat$SykehusNavn == "Akershus universitetssykehus HF"] = "Ahus"
+dat$SykehusNavn[dat$SykehusNavn == "Helse MÃ¸re og Romsdal HF"] = "Møre og Romsdal"
+dat$SykehusNavn[dat$SykehusNavn == "Helse Møre og Romsdal HF"] = "Møre og Romsdal"
+dat$SykehusNavn[dat$SykehusNavn == "Helse Bergen HF"] = "Helse Bergen"
+dat$SykehusNavn[dat$SykehusNavn == "Vestre Viken HF"] = "Vestre Viken"
+dat$SykehusNavn[dat$SykehusNavn == "Helse M<f8>re og Romsdal HF"] = "Møre og Romsdal"
+
+target <- c("UNN", "St. Olavs", "OUS", "Helse Bergen")
+
+#dat <- dat[!(dat$MoEkvivalens22 > 10000),]
+
+#For å evaluere om data er tilstede
+dataPresent <- TRUE
+if(dim(dat)[1] < 1) {
+  dataPresent <- FALSE
+}
+
+```
+
+```{r makeStandardTableFunction, include = FALSE}
+mstt <- function(tab, colnames = colnames(tab), type, cap,
+                label = knitr::opts_current$get("label"), digs, align = NULL,
+                fs = 8, lsd = FALSE) {
+  if (type == "latex") {
+    if (lsd) {
+      lo <- c("hold_position", "scale_down")
+    } else {
+      lo <- c("hold_position")
+    }
+    k <- knitr::kable(tab, col.names = colnames, caption = cap,
+                      label = label, digits = digs,
+                      align = align, booktabs = TRUE) %>% 
+      kableExtra::kable_styling(latex_options = lo, font_size = fs)
+  }
+  
+  if (type == "html") {
+    k <- knitr::kable(tab, col.names = colnames, caption = cap,
+                      label = label, digits = digs,
+                      align = align) %>% 
+      kableExtra::kable_styling(
+        bootstrap_options = c("striped", "hover", "condensed"), full_width = F)
+  }
+  k
+}
+```
+
+```{r noData, eval=!dataPresent, results='asis'}
+cat('# Upps...\nI den valgte tidsperioden er det ikke nok data til å gi 
+    ut resultater.')
+knitr::knit_exit()
+
+```
+
+# Oversikt
+
+Denne oversikten viser resultater for et delmål i kvalitetsforbedringsprosjektet på ikke-medikamentell smertebehandling: Redusere bruk av opioider, målt ved perorale morfinekvivalenter ved siste tilsyn, med 10 % i 2022. 
+
+De årene som ikke vises har ingen registreringer på morfinekvivalenter.
+
+## Totalt
+
+```{r overall, include=FALSE}
+#Gjennomsnittlig antall forløp
+
+d_moek = dat %>% filter(!is.na(MoEkvivalens22), SykehusNavn %in% target) %>%
+    group_by(year(StartdatoTO)) %>%
+    summarise(nevner = n(),
+              ind = sum(MoEkvivalens22)/n())
+```
+
+```{r taboverall, results='asis', echo = FALSE}
+
+mstt(tab = d_moek,
+     colnames = c("År", "Antall forløp", "Gj.snitt MoEkv"),
+     cap = paste0("Gjennomsnittlig mengde morfinekvivalenter per år"),
+     label = "moek",
+     type = "html",
+     digs = 1,
+     align = c("l", "r", "r", "r"))
+```
+
+## Per sykehus
+```{r sykehus, include=FALSE}
+
+d_moek_syk = dat %>% filter(!is.na(MoEkvivalens22)) %>%
+    group_by(year(StartdatoTO), SykehusNavn) %>%
+  summarise(nevner = n(), ind = sum(MoEkvivalens22)/n())
+```
+
+```{r tabsykehus, results='asis', echo = FALSE}
+
+mstt(tab = d_moek_syk,
+     colnames = c("År", "Sykehus",  "Antall forløp", "Gj.snitt MoEkv."),
+     cap = paste0("Gjennomsnittlig mengde morfinekvivalenter per sykehus og år"),
+     label = "moek_sykehus",
+     type = "html",
+     digs = 1,
+     align = c("l", "r", "r", "r", "r"))
+
+```
