@@ -709,7 +709,7 @@ Andel pasienter hvor ikke-medikamentell behandling startes, endres og/eller føl
 ```{r ikkemed, warning = FALSE, message=FALSE, results='asis'}
 
 messageikmed <- ""
-
+#Kun de som er tilsett er aktuell for denne
 # Klargjøre
 if (dim(dat)[1] < 1) {
   messageikmed <- "I den valgte tidsperioden er det ikke nok data til å angi denne 
@@ -717,7 +717,7 @@ if (dim(dat)[1] < 1) {
 } else {
   
   ikkmed <- dat %>%
-    dplyr::filter(!is.na(IkkeMedBeh)) %>%
+    dplyr::filter(!is.na(IkkeMedBeh), Tilsett == 1) %>%
     dplyr::group_by(SykehusNavn, IkkeMedBeh) %>%
     dplyr::summarise(n = dplyr::n()) %>%
     dplyr::mutate( ant = sum(n), freq = n/sum(n)) %>%
