@@ -99,17 +99,17 @@ I den valgte tidsperioden fikk tilsammen `r antUtsendt` pasienter av totalt `r d
 datpr <- dat[!is.na(dat$PasDelUfylPR), ]
 #Bruker her pakkene dplyr og magrittr
 pasreg <- datpr %>% 
-  count(GrunnManglUtfyl) %>%
+  count(GrManglUtfylPR) %>%
   mutate(prosent = round(100*(n/sum(n))))
 #Gi navn i stedet for tall til alternativene for tilsyn/ikke tilsyn
 pasreg = pasreg %>%
-  mutate(grunnPR = case_when(GrunnManglUtfyl == 1 ~ "Tidsmangel behandler",
-                             GrunnManglUtfyl == 2 ~ "Tidlig utskrivning",
-                             GrunnManglUtfyl == 3 ~ "Kritisk syk/død",
-                             GrunnManglUtfyl == 4 ~ "Pasient klarer ikke",
-                             GrunnManglUtfyl == 5 ~ "Manglende samtykke",
-                             GrunnManglUtfyl == 7 ~ "Ikke besvart ePPROMS",
-                             GrunnManglUtfyl == 9 ~ "Annet"))
+  mutate(grunnPR = case_when(GrManglUtfylPR == 1 ~ "Tidsmangel behandler",
+                             GrManglUtfylPR == 2 ~ "Tidlig utskrivning",
+                             GrManglUtfylPR == 3 ~ "Kritisk syk/død",
+                             GrManglUtfylPR == 4 ~ "Pasient klarer ikke",
+                             GrManglUtfylPR == 5 ~ "Manglende samtykke",
+                             GrManglUtfylPR == 7 ~ "Ikke besvart ePPROMS",
+                             GrManglUtfylPR == 9 ~ "Annet"))
 #Endrer rekkefølge og tar i tilleg ved NA-raden (siste)
 pasreg <- pasreg[1:(dim(pasreg)[1]-1), c(4,2,3)]
 
