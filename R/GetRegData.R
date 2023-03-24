@@ -211,13 +211,14 @@ WHERE
     session <- list(...)[["session"]]
     if ("ShinySession" %in% attr(session, "class")) {
       rapbase::repLogger(session = session,
-                         msg = paste("Load data from",
+                         msg = paste("Load opiodrapport data from",
                                      registryName, ": ", query))
     }
   }
 
   rapbase::loadRegData(registryName, query, dbType)
 }
+
 
 #' @rdname getRegData
 #' @export

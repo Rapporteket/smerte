@@ -106,6 +106,7 @@ server <- function(input, output, session) {
                               reportFileName = reportTemplate,
                               reportParams = reportParams)
 
+
   # eProm
   smerte::defaultReportServer(id = "eprom",
                               reportFileName = "lokalEprom.Rmd",

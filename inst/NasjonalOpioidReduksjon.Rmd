@@ -35,7 +35,7 @@ if (rapbase::isRapContext()) {
                                      endDate = params$endDate,
                                      session = params$shinySession)
 } else {
-dat <- path <- read.csv(file = "H:/path.csv", header = FALSE, sep = ";")
+  dat <- path <- read.csv(file = "H:/path.csv", header = FALSE, sep = ";")
   path <- as.data.frame(lapply(path, as.character), stringsAsFactors=FALSE)
   path <- path$V1
   dat <- read.csv(file = path, header = TRUE, sep = ";")
