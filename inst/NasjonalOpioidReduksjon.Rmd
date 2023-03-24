@@ -12,7 +12,7 @@ params:
   tableFormat: 'html'
   registryName: 'rapbase'
   shinySession: list()
-title: '`r paste(params$title, " i perioden fra ", params$startDate, " til ", params$endDate)`'
+title: '`r paste(params$title, params$hospitalName, " i perioden fra ", params$startDate, " til ", params$endDate)`'
 author: '`r params$author`'
 date: '`r format(Sys.time(), "%d\\. %B, %Y")`'
 reglogo: '`r system.file("www/logoSmerte.png", package = "smerte")`'
@@ -28,14 +28,12 @@ options(tinytex.verbose = TRUE)
 
 ```{r setup, include=FALSE}
 if (rapbase::isRapContext()) {
-  dat <- smerte::getRegDataRapportOpiod(
-    registryName = params$registryName,
-    reshId = params$reshId,
-    userRole = params$userRole,
-    startDate = params$startDate,
-    endDate = params$endDate,
-    session = params$shinySession
-  )
+  dat <- smerte::getRegDataOpiodReduksjon(registryName = params$registryName,
+                                     reshId = params$reshId,
+                                     userRole=params$userRole,
+                                     startDate = params$startDate,
+                                     endDate = params$endDate,
+                                     session = params$shinySession)
 } else {
 dat <- path <- read.csv(file = "H:/path.csv", header = FALSE, sep = ";")
   path <- as.data.frame(lapply(path, as.character), stringsAsFactors=FALSE)
@@ -47,7 +45,7 @@ dat <- path <- read.csv(file = "H:/path.csv", header = FALSE, sep = ";")
 ```{r yearSelect, include=FALSE}
 #Lage morfinekvivalens numerisk og lage datasett for hvert år
 
-dat$MoEkvivalens22 = as.numeric(sub(",", ".", dat$MoEkvivalens22, fixed = TRUE))
+#dat$MoEkvivalens22 = as.numeric(sub(",", ".", dat$MoEkvivalens22, fixed = TRUE))
 
 dat$SykehusNavn[dat$SykehusNavn == "Universitetssykehuset Nord-Norge HF"] = "UNN"
 dat$SykehusNavn[dat$SykehusNavn == "St. Olavs Hospital HF"] = "St. Olavs"
@@ -59,7 +57,7 @@ dat$SykehusNavn[dat$SykehusNavn == "Helse Bergen HF"] = "Helse Bergen"
 dat$SykehusNavn[dat$SykehusNavn == "Vestre Viken HF"] = "Vestre Viken"
 dat$SykehusNavn[dat$SykehusNavn == "Helse M<f8>re og Romsdal HF"] = "Møre og Romsdal"
 
-target <- c("UNN", "St. Olavs", "OUS", "Helse Bergen")
+#target <- c("UNN", "St. Olavs", "OUS", "Helse Bergen")
 
 #dat <- dat[!(dat$MoEkvivalens22 > 10000),]
 
@@ -116,7 +114,12 @@ De årene som ikke vises har ingen registreringer på morfinekvivalenter.
 ```{r overall, include=FALSE}
 #Gjennomsnittlig antall forløp
 
-d_moek = dat %>% filter(!is.na(MoEkvivalens22), SykehusNavn %in% target) %>%
+# d_moek = dat %>% filter(!is.na(MoEkvivalens22), SykehusNavn %in% target) %>%
+#     group_by(year(StartdatoTO)) %>%
+#     summarise(nevner = n(),
+#               ind = sum(MoEkvivalens22)/n())
+
+d_moek = dat %>% filter(!is.na(MoEkvivalens22)) %>%
     group_by(year(StartdatoTO)) %>%
     summarise(nevner = n(),
               ind = sum(MoEkvivalens22)/n())
