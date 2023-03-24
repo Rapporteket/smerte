@@ -58,6 +58,17 @@ ui <- shiny::tagList(
         )
       ),
       shiny::tabPanel(
+        "Opioidreduksjon",
+        shiny::sidebarLayout(
+          shiny::sidebarPanel(
+            smerte::defaultReportInput("opioid")
+          ),
+          shiny::mainPanel(
+            smerte::defaultReportUI("opioid")
+          )
+        )
+      ),
+      shiny::tabPanel(
         "Eprom",
         shiny::sidebarLayout(
           shiny::sidebarPanel(

@@ -180,6 +180,44 @@ WHERE
   rapbase::loadRegData(registryName, query, dbType)
 }
 
+#' @rdname getRegData
+#' @export
+getRegDataOpiodReduksjon <- function(registryName, reshId, userRole,
+                                startDate, endDate, ...) {
+
+  dbType <- "mysql"
+
+  # special case at OUS
+  deps <- .getDeps(reshId, userRole)
+
+  query <- paste0("
+SELECT
+  var.MoEkvivalens22,
+  var.SykehusNavn,
+  var.StartdatoTO,
+FROM
+  AlleVarNum var
+WHERE
+  var.RegDato11>=DATE('", startDate, "') AND var.RegDato11<=DATE('", endDate, "')"
+  )
+
+  if (isNationalReg(reshId)) {
+    query <- paste0(query, ";")
+  } else {
+    query <- paste0(query, " AND var.AvdRESH IN (", deps, ");")
+  }
+
+  if ("session" %in% names(list(...))) {
+    session <- list(...)[["session"]]
+    if ("ShinySession" %in% attr(session, "class")) {
+      rapbase::repLogger(session = session,
+                         msg = paste("Load data from",
+                                     registryName, ": ", query))
+    }
+  }
+
+  rapbase::loadRegData(registryName, query, dbType)
+}
 
 #' @rdname getRegData
 #' @export

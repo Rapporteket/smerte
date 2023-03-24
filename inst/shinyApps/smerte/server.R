@@ -97,6 +97,15 @@ server <- function(input, output, session) {
                               reportFileName = reportTemplate,
                               reportParams = reportParams)
 
+  # Opiodreduksjon
+  reportTemplate <- "LokalOpioidReduksjon.Rmd"
+  if (smerte::isNationalReg(reshId)) {
+    reportTemplate <- "NasjonalOpioidReduksjon.Rmd"
+  }
+  smerte::defaultReportServer(id = "opioid",
+                              reportFileName = reportTemplate,
+                              reportParams = reportParams)
+
   # eProm
   smerte::defaultReportServer(id = "eprom",
                               reportFileName = "lokalEprom.Rmd",
