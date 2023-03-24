@@ -195,6 +195,7 @@ SELECT
   var.MoEkvivalens22,
   var.SykehusNavn,
   var.StartdatoTO,
+  var.RegDato11
 FROM
   AlleVarNum var
 WHERE
