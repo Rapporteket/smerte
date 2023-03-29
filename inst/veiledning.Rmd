@@ -8,10 +8,10 @@ output:
 ---
 
 # Smerteregisteret i Rapporteket
-Dette er Smerteregisterets egen side, hvor du finner informasjon og rapporter knyttet til lokale og nasjonale data. Videre følger en forklaring på hva som finnes på rapporteket og hvordan det kan brukes.
+Dette er Smerteregisterets egen side, hvor man finner informasjon og rapporter knyttet til lokale og nasjonale data. Videre følger en forklaring på hva som finnes på rapporteket og hvordan det kan brukes.
 
 # Rapporter og data
-Her finner du rapportene det er mulig å hente ut fra rapporteket. Etter hvert som nye rapporter lages vil de legges til i nedtrekksmenyen _Rapporter_ øverst på siden. Dersom du ønsker å få tilsendt en rapport fast (f.eks. månedlig) kan dette bestilles under fanen _Abonnement_. Alle registerets datadumper kan hentes ned under fanen _Datadump_. Hvis du er innlogget via ditt lokale sykehus, vil rapportene generes med lokale data for dette sykehuset. Er du innlogget på det nasjonale registeret brukes nasjonale data.
+Her finnes rapportene det er mulig å hente ut fra rapporteket. Etter hvert som nye rapporter lages vil de legges til i nedtrekksmenyen _Rapporter_ øverst på siden. Dersom det er ønskelig ønsker å få tilsendt en rapport fast (f.eks. månedlig) kan dette bestilles under fanen _Abonnement_. Alle registerets datadumper kan hentes ned under fanen _Datadump_. Hvis man er innlogget via lokalt sykehus, vil rapportene generes med lokale data for dette sykehuset. Er man innlogget på det nasjonale registeret brukes nasjonale data.
 
 ## Registerets nåværende rapporter
 
@@ -27,8 +27,10 @@ Spinalkateter: diverse informasjon om de pasientene som har fått spinalkateter 
 
 Smertekategori: oversikt over hovedsmertekategori, undersmertekategorier og opioidbruk ved innleggelse for lokale data.
 
-# Nye rapporter
-Dersom det er informasjon du er interessert i å hente ut gjentatte ganger kan det lønne seg å få laget en rapport. 
+Opioidreduksjon: oversikt over nedgang i morfinekvivalenter.
 
-En forespørsel om ny rapport kan sendes til janne.mannseth@helse-bergen.no. Beskriv nøye hva du er ute etter. Det vil f.eks. være hvilke variabler du ønsker å se på, om resultatene skal vises totalt eller gruppevis og om en spesiell type visualisering som er ønskelig.
+# Nye rapporter
+Dersom det er informasjon som er av interesse å hente ut gjentatte ganger kan det lønne seg å få laget en rapport. 
+
+En forespørsel om ny rapport kan sendes til janne.mannseth@helse-bergen.no. Beskriv nøye hva som ønskes. Det vil f.eks. være hvilke variabler som trengs, om resultatene skal vises totalt eller gruppevis og om en spesiell type visualisering som er ønskelig.
  
