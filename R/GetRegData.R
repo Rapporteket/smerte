@@ -155,7 +155,11 @@ SELECT
   var.VidereOppf,
   var.BehNedtrappAvsluttTils,
   var.Journalnotat,
-  var.IkkeMedBeh
+  var.IkkeMedBeh,
+  var.AkseptabelSmerte12,
+  var.AkseptabelSmerte21,
+  var.Funksjon12,
+  var.Funksjon21
 FROM
   AlleVarNum var
 WHERE
