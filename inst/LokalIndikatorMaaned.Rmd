@@ -24,6 +24,7 @@ userFullName: '`r params$userFullName`'
 knitr::opts_chunk$set(echo=FALSE)
 options(knitr.table.format = params$tableFormat)
 options(tinytex.verbose = TRUE)
+options(scipen = 1, digits = 2) #set to two decimal 
 
 library(ggplot2)
 ```
@@ -644,3 +645,85 @@ if (dim(plotnedtr)[1] < 1) {
 ```
 
 `r messageplot`
+
+# Akseptabel smerte
+Andel pasienter som har akseptabel smerte ved siste tilsyn. 
+
+```{r aksept, warning = FALSE, message=FALSE, results='asis'}
+
+messageaks <- ""
+
+# Klargjøre
+if (dim(dat)[1] < 1) {
+  messageaks <- "I den valgte tidsperioden er det ikke nok data til å angi denne 
+  kvalitetsindikatoren."
+} else {
+  
+  #Verdier som skal vises i tabell for denne indikatoren
+  ant <- sum(dat$AkseptabelSmerte21 == 1, na.rm = TRUE)
+  
+  totant <- sum(!is.na(dat$AkseptabelSmerte21))
+  
+  and <- ant/totant
+  
+  #Før, for sammenligning men ikke indikator
+  antfoer <- sum(dat$AkseptabelSmerte12 == 1, na.rm = TRUE)
+  
+  totantfoer <- sum(!is.na(dat$AkseptabelSmerte12))
+  
+  andfoer <- antfoer/totantfoer
+  # 
+  #Tabell for siste tilsyn
+  tabaks <- cbind(ant, totant, and)
+  
+  rapbase::mst(
+    tab = tabaks,
+    col_names = c("Antall", "Totalt antall", "Andel"),
+    type = params$tableFormat,
+    cap = paste0("Oversikt over andel som hadde akseptabel smerte ved siste tilsyn."),
+    digs = 2, 
+    align = c("r", "r", "r"))
+  
+}
+
+
+```
+`r messageaks`
+Andelen med akseptabel smerte ved siste tilsyn ser vi er `r and`, mens den til sammenligning var `r andfoer` ved første tilsyn.
+
+Figuren under viser hvordan andelen har fordelt seg i løpet av året.
+
+```{r akseptfig, warning = FALSE, message=FALSE, results='asis', fig.pos= "H", out.extra = '', fig.align='center', out.width='100%'}
+
+messageplotaks <- ""
+
+#Aggregate by month for plot
+plotaks<- dat %>% 
+  dplyr::filter(
+    !is.na(AkseptabelSmerte21)) %>%
+  dplyr::group_by(month = monthname, AkseptabelSmerte21) %>%
+  dplyr::summarise(n = dplyr::n()) %>%
+  dplyr::mutate(freq = n/sum(n)) %>%
+  dplyr::filter(AkseptabelSmerte21 == 1)
+
+if (dim(plotnedtr)[1] < 1) {
+  messageplot <- "I den valgte tidsperioden er det ikke nok data til å vise 
+  figur for denne kvalitetsindikatoren."
+} else {
+  
+  #Plotting plotdat
+  ggplot2::ggplot(plotaks, ggplot2::aes(month, freq)) + 
+    geom_line(ggplot2::aes(group = 1)) + geom_point() + 
+    labs(x = "Måned", y = "Andel", 
+         subtitle = "Andel med akseptabel smerte ved siste tilsyn per måned") +
+    theme_classic() +
+    theme(axis.text.x = element_text(size = 9), 
+          plot.margin = unit(c(1, 1, 2, 0), "cm"), 
+          axis.title.y = element_text(margin = 
+                                        margin(t = 0, r = 10, b = 0, l = 0)), 
+          axis.title.x = element_text(margin = margin(t = 10, r = 0, b = 0, l = 0)))
+  
+}
+```
+
+`r messageplotaks`
