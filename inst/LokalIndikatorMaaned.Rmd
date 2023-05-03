@@ -733,7 +733,7 @@ if (dim(plotnedtr)[1] < 1) {
 
 
 # Endret funksjonsnivå
-Andel pasienter hvor funksjon bedrer seg fra første til siste tilsyn.
+Andel pasienter hvor funksjon bedrer seg fra første til siste tilsyn. De som ikke hadde bedring kan i tillegg til forverring ha uendret funkjson (mangler det svar på en eller begge målinger er de ikke med i utregningen).
 
 ```{r funk, warning = FALSE, message=FALSE, results='asis'}
 
@@ -746,15 +746,15 @@ if (dim(dat)[1] < 1) {
 } else {
   
   #Verdier som skal vises i tabell for denne indikatoren
+  dat$bedring <-  NA
+  for(i in 1:dim(dat)[1]){
+    if(!is.na(dat$Funksjon12[i]) & !is.na(dat$Funksjon21[i]) & dat$Funksjon12[i] != 9 & dat$Funksjon21[i] != 9)
+    {dat$bedring[i] <- dat$Funksjon21[i] - dat$Funksjon12[i]}}
   
-  datfunk <- dat %>% mutate(bedring = 
-                              case_when((Funksjon12 | Funksjon21) == 9 ~ 9,
-                                        sum(Funksjon21-Funksjon12, na.rm = TRUE) > 0 ~ 1,
-                                        sum(Funksjon21-Funksjon12, na.rm = TRUE) < 0 ~ 0))
+    #De med nedgang i smerte for StSmBe
+  ant <- sum(dat$bedring > 0, na.rm = TRUE)
   
-  ant <- sum(datfunk$bedring == 1, na.rm = TRUE)
-  
-  totant <- sum(!is.na(datfunk$bedring))
+  totant <- sum(!is.na(dat$bedring))
   
   and <- ant/totant
   
@@ -782,7 +782,7 @@ Figuren under viser hvordan andelen har fordelt seg i løpet av året.
 messageplotfunk <- ""
 
 #Aggregate by month for plot
-plotfunk<- datfunk %>% 
+plotfunk<- dat %>% 
   dplyr::filter(
     !is.na(bedring)) %>%
   dplyr::group_by(month = monthname, bedring) %>%
