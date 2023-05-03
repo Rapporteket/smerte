@@ -27,6 +27,9 @@ options(tinytex.verbose = TRUE)
 options(scipen = 1, digits = 2) #set to two decimal 
 
 library(ggplot2)
+library(tidyverse)
+library(dplyr)
+
 ```
 
 ```{r get data, warning = FALSE, message=TRUE}
@@ -727,3 +730,84 @@ if (dim(plotnedtr)[1] < 1) {
 ```
 
 `r messageplotaks`
+
+
+# Endret funksjonsnivå
+Andel pasienter hvor funksjon bedrer seg fra første til siste tilsyn.
+
+```{r funk, warning = FALSE, message=FALSE, results='asis'}
+
+messagefunk <- ""
+
+# Klargjøre
+if (dim(dat)[1] < 1) {
+  messagefunk <- "I den valgte tidsperioden er det ikke nok data til å angi denne 
+  kvalitetsindikatoren."
+} else {
+  
+  #Verdier som skal vises i tabell for denne indikatoren
+  
+  datfunk <- dat %>% mutate(bedring = 
+                              case_when((Funksjon12 | Funksjon21) == 9 ~ 9,
+                                        sum(Funksjon21-Funksjon12, na.rm = TRUE) > 0 ~ 1,
+                                        sum(Funksjon21-Funksjon12, na.rm = TRUE) < 0 ~ 0))
+  
+  ant <- sum(datfunk$bedring == 1, na.rm = TRUE)
+  
+  totant <- sum(!is.na(datfunk$bedring))
+  
+  and <- ant/totant
+  
+  #Tabell for siste tilsyn
+  tabfunk <- cbind(ant, totant, and)
+  
+  rapbase::mst(
+    tab = tabfunk,
+    col_names = c("Antall", "Totalt antall", "Andel"),
+    type = params$tableFormat,
+    cap = paste0("Oversikt over andel som hadde bedring i funksjon fra første til siste tilsyn."),
+    digs = 2, 
+    align = c("r", "r", "r"))
+  
+}
+
+
+```
+`r messagefunk`
+
+Figuren under viser hvordan andelen har fordelt seg i løpet av året.
+
+```{r funkfig, warning = FALSE, message=FALSE, results='asis', fig.pos= "H", out.extra = '', fig.align='center', out.width='100%'}
+
+messageplotfunk <- ""
+
+#Aggregate by month for plot
+plotfunk<- datfunk %>% 
+  dplyr::filter(
+    !is.na(bedring)) %>%
+  dplyr::group_by(month = monthname, bedring) %>%
+  dplyr::summarise(n = dplyr::n()) %>%
+  dplyr::mutate(freq = n/sum(n)) %>%
+  dplyr::filter(bedring == 1)
+
+if (dim(plotnedtr)[1] < 1) {
+  messageplot <- "I den valgte tidsperioden er det ikke nok data til å vise 
+  figur for denne kvalitetsindikatoren."
+} else {
+  
+  #Plotting plotdat
+  ggplot2::ggplot(plotfunk, ggplot2::aes(month, freq)) + 
+    geom_line(ggplot2::aes(group = 1)) + geom_point() + 
+    labs(x = "Måned", y = "Andel", 
+         subtitle = "Andel med bedring i funksjonsnivå per måned") +
+    theme_classic() +
+    theme(axis.text.x = element_text(size = 9), 
+          plot.margin = unit(c(1, 1, 2, 0), "cm"), 
+          axis.title.y = element_text(margin = 
+                                        margin(t = 0, r = 10, b = 0, l = 0)), 
+          axis.title.x = element_text(margin = margin(t = 10, r = 0, b = 0, l = 0)))
+  
+}
+```
+
+`r messageplotfunk`
