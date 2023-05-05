@@ -984,3 +984,100 @@ if (dim(plotaks)[1] < 1) {
 }
 ```
 `r messageaksfig`
+
+# Endret funksjonsnivå
+Andel pasienter hvor funksjon bedrer seg fra første til siste tilsyn. De som ikke hadde bedring kan i tillegg til forverring ha uendret funksjon (mangler det svar på en eller begge målinger er de ikke med i utregningen).
+
+```{r funk, warning = FALSE, message=FALSE, results='asis'}
+
+messagefunk <- ""
+
+# Klargjøre
+if (dim(dat)[1] < 1) {
+  messagefunk <- "I den valgte tidsperioden er det ikke nok data til å angi denne 
+  kvalitetsindikatoren."
+} else {
+  
+  #Verdier som skal vises i tabell for denne indikatoren
+  # dat$bedring <-  NA
+  # for(i in 1:dim(dat)[1]){
+  #   if(!is.na(dat$Funksjon12[i]) & !is.na(dat$Funksjon21[i]) & dat$Funksjon12[i] != 9 & dat$Funksjon21[i] != 9)
+  #   {dat$bedring[i] <- dat$Funksjon21[i] - dat$Funksjon12[i]}}
+  # 
+  #   #De med nedgang i smerte for StSmBe
+  # ant <- sum(dat$bedring > 0, na.rm = TRUE)
+  # 
+  # totant <- sum(!is.na(dat$bedring))
+  # 
+  # and <- ant/totant
+  # 
+  # #Tabell for siste tilsyn
+  # tabfunk <- cbind(ant, totant, and)
+  
+funfor = dat %>% 
+  dplyr::filter(!is.na(Funksjon12), !is.na(Funksjon21), Funksjon12 != 9,
+                Funksjon21 != 9) %>%
+  dplyr:: mutate(bedring = (Funksjon21 - Funksjon12))
+
+funfor1 <- funfor %>%
+    dplyr::mutate(bedring1 = bedring > 0) %>%
+    dplyr::group_by(SykehusNavn, bedring1) %>%
+    dplyr::summarise(n = dplyr::n()) %>%
+    dplyr::mutate(ant = sum(n), freq = n/sum(n)) %>%
+    dplyr::filter(bedring1 > 0)
+
+funfor1 <- funfor1 %>%
+    dplyr::select(SykehusNavn, n, ant, freq)
+
+andel_fun= sum(funfor$bedring == 0, na.rm = TRUE)
+andel_tot = length(funfor$bedring)
+andel_uendret = andel_fun/andel_tot
+
+  rapbase::mst(
+    tab = funfor1,
+    col_names = c("Sykehus", "Antall", "Totalt antall", "Andel"),
+    type = params$tableFormat,
+    cap = paste0("Oversikt over andel som hadde bedring i funksjon fra første til siste tilsyn."),
+    digs = 2,
+    align = c("l", "r", "r", "r"))
+}
+
+```
+`r messagefunk` En andel på `r andel_uendret` (totalt) hadde uendret funksjon.
+
+Figuren under viser hvordan andelen har fordelt seg i løpet av året.
+
+```{r funkfig, warning = FALSE, message=FALSE, results='asis', fig.pos= "H", out.extra = '', fig.align='center', out.width='100%'}
+
+messageplotfunk <- ""
+
+# #Aggregate by month for plot
+# plotfunk<- dat %>% 
+#   dplyr::filter(
+#     !is.na(bedring)) %>%
+#   dplyr::group_by(month = monthname, bedring) %>%
+#   dplyr::summarise(n = dplyr::n()) %>%
+#   dplyr::mutate(freq = n/sum(n)) %>%
+#   dplyr::filter(bedring == 1)
+# 
+# if (dim(plotnedtr)[1] < 1) {
+#   messageplot <- "I den valgte tidsperioden er det ikke nok data til å vise 
+#   figur for denne kvalitetsindikatoren."
+# } else {
+#   
+#   #Plotting plotdat
+#   ggplot2::ggplot(plotfunk, ggplot2::aes(month, freq)) + 
+#     geom_line(ggplot2::aes(group = 1)) + geom_point() + 
+#     labs(x = "Måned", y = "Andel", 
+#          subtitle = "Andel med bedring i funksjonsnivå per måned") +
+#     theme_classic() +
+#     theme(axis.text.x = element_text(size = 9), 
+#           plot.margin = unit(c(1, 1, 2, 0), "cm"), 
+#           axis.title.y = element_text(margin = 
+#                                         margin(t = 0, r = 10, b = 0, l = 0)), 
+#           axis.title.x = element_text(margin = margin(t = 10, r = 0, b = 0, l = 0)))
+#   
+# }
+```
+
+`r messageplotfunk`
