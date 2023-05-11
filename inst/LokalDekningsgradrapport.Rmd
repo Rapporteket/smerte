@@ -72,18 +72,19 @@ if (dim(dat)[1] < 1) {
   message <- "I den valgte tidsperioden er det ikke nok data til å angi dekningsgrad."
 } else {
   antInk <- sum(dat$InklKritOppf == 1, na.rm = TRUE)
-  sam <- dat$SkriftligSamtyk
+  reserv <- dat$Reservasjonsstatus
   # NA/NULL to be counted as none-consent
-  sam <- sam %>% replace(is.na(.), 0)
-  antSam <- sum(sam == 1, na.rm = TRUE)
+  reserv <- reserv %>% replace(is.na(.), 0)
+  antReserv <- sum(reserv == 1, na.rm = TRUE)
+  inklStat <- sum(dat$Inklusjonsstatus == 1, na.rm = TRUE)
   
   if (antInk < 1) {
     message <- "I den valgte tidsperioden er det ikke nok data til å angi dekningsgrad."
   } else {
-    dekning <- antSam / antInk
+    dekning <- inklStat / antInk
     nPatient <- length(unique(dat$PasientID))
     nEvent <- length(unique(dat$ForlopsID))
-    nNoConsent <- length(sam[sam == 0])
+    nNoConsent <- length(reserv[reserv == 0])
     nNoIncl <- length(dat$InklKritOppf[dat$InklKritOppf == 0])
     
     patientTxt <- "."
@@ -97,12 +98,12 @@ if (dim(dat)[1] < 1) {
     message <- paste0("Dekningsgraden for ", params$hospitalName,
                       " i den valgte tidsperioden er __",
                       round(dekning, digits = 2), "__. Totalt antall er ",
-                      antInk, " hvorav ", antSam, " samtykker er gitt.")
+                      antInk, ".")
     
     message <- paste0(message, "\n\n## Tallgrunnlag og utvalg  \n",
                       " I utvalget er det ", nEvent, " forløp", patientTxt,
-                      " Totalt ", nNoConsent,
-                      " forløp mangler samtykke og totalt ", nNoIncl,
+                      " Totalt ", antReserv,
+                      " forløp er registrert med reservasjon og totalt ", nNoIncl,
                       " forløp oppfyller ikke inklusjonskriteriene.")
   }
   
