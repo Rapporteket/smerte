@@ -1051,33 +1051,42 @@ Figuren under viser hvordan andelen har fordelt seg i løpet av året.
 
 messageplotfunk <- ""
 
-# #Aggregate by month for plot
-# plotfunk<- dat %>% 
-#   dplyr::filter(
-#     !is.na(bedring)) %>%
-#   dplyr::group_by(month = monthname, bedring) %>%
-#   dplyr::summarise(n = dplyr::n()) %>%
-#   dplyr::mutate(freq = n/sum(n)) %>%
-#   dplyr::filter(bedring == 1)
-# 
-# if (dim(plotnedtr)[1] < 1) {
-#   messageplot <- "I den valgte tidsperioden er det ikke nok data til å vise 
-#   figur for denne kvalitetsindikatoren."
-# } else {
-#   
-#   #Plotting plotdat
-#   ggplot2::ggplot(plotfunk, ggplot2::aes(month, freq)) + 
-#     geom_line(ggplot2::aes(group = 1)) + geom_point() + 
-#     labs(x = "Måned", y = "Andel", 
-#          subtitle = "Andel med bedring i funksjonsnivå per måned") +
-#     theme_classic() +
-#     theme(axis.text.x = element_text(size = 9), 
-#           plot.margin = unit(c(1, 1, 2, 0), "cm"), 
-#           axis.title.y = element_text(margin = 
-#                                         margin(t = 0, r = 10, b = 0, l = 0)), 
-#           axis.title.x = element_text(margin = margin(t = 10, r = 0, b = 0, l = 0)))
-#   
-# }
+#Aggregate by month for plot
+ plotfunk <- funfor %>%
+    dplyr::mutate(bedring1 = bedring > 0) %>%
+    dplyr::group_by(SykehusNavn, monthname, bedring1) %>%
+    dplyr::summarise(n = dplyr::n()) %>%
+    dplyr::mutate(ant = sum(n), freq = n/sum(n)) %>%
+    dplyr::filter(bedring1 == 1)
+
+if (dim(plotfunk)[1] < 1) {
+  messageplot <- "I den valgte tidsperioden er det ikke nok data til å vise
+  figur for denne kvalitetsindikatoren."
+} else {
+
+  #Plotting plotdat
+  ggplot2::ggplot(plotfunk, ggplot2::aes(monthname, freq)) +
+    ggplot2::geom_line(ggplot2::aes(group = factor(SykehusNavn), 
+                  colour=factor(SykehusNavn)), size = 0.5) +
+    ggplot2::geom_point(ggplot2::aes(group = factor(SykehusNavn), 
+                   colour=factor(SykehusNavn)), size = 1) + 
+    ggplot2::labs(x = "Måned", y = "Andel", 
+         subtitle = "Andel med forbedring i funksjon per måned", 
+         color = "Sykehus") + ggplot2::theme_classic() + 
+    ggplot2::theme(axis.text.x = ggplot2::element_text(size = 8.5), 
+          axis.text.y = ggplot2::element_text(size = 10), 
+          axis.title = ggplot2::element_text(size = 10), 
+          plot.margin = ggplot2::unit(c(1, 1, 2, 1), "cm"), 
+          legend.text = ggplot2::element_text(size = 13), 
+          axis.title.y = ggplot2::element_text(
+            margin = ggplot2::margin(t = 0, r = 10, b = 0, l = 0)
+          ), 
+          axis.title.x = ggplot2::element_text(
+            margin = ggplot2::margin(t = 10, r = 0, b = 0, l = 0)
+          )
+    )
+
+}
 ```
 
 `r messageplotfunk`
