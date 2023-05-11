@@ -99,7 +99,9 @@ SELECT
   PasientID,
   ForlopsID,
   InklKritOppf,
-  SkriftligSamtyk
+  SkriftligSamtyk,
+  Reservasjonsstatus,
+  InklusjonStatus
 FROM
   AlleVarNum
 WHERE
