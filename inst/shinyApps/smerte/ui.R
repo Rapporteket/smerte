@@ -36,13 +36,24 @@ ui <- shiny::tagList(
         )
       ),
       shiny::tabPanel(
-        "Dekningsgrad",
+        "Dekningsgrad før reservasjon",
         shiny::sidebarLayout(
           shiny::sidebarPanel(
             smerte::defaultReportInput("dekningsgrad")
           ),
           shiny::mainPanel(
             smerte::defaultReportUI("dekningsgrad")
+          )
+        )
+      ),
+      shiny::tabPanel(
+        "Dekningsgrad etter reservasjon",
+        shiny::sidebarLayout(
+          shiny::sidebarPanel(
+            smerte::defaultReportInput("dekningsgradReserv")
+          ),
+          shiny::mainPanel(
+            smerte::defaultReportUI("dekningsgradReserv")
           )
         )
       ),

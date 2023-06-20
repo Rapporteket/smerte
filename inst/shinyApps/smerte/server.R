@@ -21,7 +21,8 @@ server <- function(input, output, session) {
   ## do not show local reports in national context
   if (smerte::isNationalReg(reshId)) {
     shiny::hideTab(inputId = "tabs", target = "Tilsyn")
-    shiny::hideTab(inputId = "tabs", target = "Dekningsgrad")
+    shiny::hideTab(inputId = "tabs", target = "Dekningsgrad før reservasjon")
+    shiny::hideTab(inputId = "tabs", target = "Dekningsgrad etter reservasjon")
     shiny::hideTab(inputId = "tabs", target = "Spinalkateter")
     shiny::hideTab(inputId = "tabs", target = "Smertekategori")
   }
@@ -83,9 +84,13 @@ server <- function(input, output, session) {
                               reportParams = reportParams
   )
 
-  # Dekningsgrad
+  # Dekningsgrad gammel
   smerte::defaultReportServer(id = "dekningsgrad",
                               reportFileName = "LokalDekningsgradrapport.Rmd",
+                              reportParams = reportParams)
+  # Dekningsgrad ny
+  smerte::defaultReportServer(id = "dekningsgradReserv",
+                              reportFileName = "LokalDekningsgradrapportReservasjon.Rmd",
                               reportParams = reportParams)
 
   # Indikatorrapport
