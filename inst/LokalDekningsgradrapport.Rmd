@@ -1,6 +1,6 @@
 ---
 params:
-  title: 'Dekningsgrad ved'
+  title: 'Dekningsgrad før reservasjon ved'
   author: 'Rapporteket'
   hospitalName: 'Ukjent sykehus'
   reshId: 'locallyDefined'
@@ -62,9 +62,9 @@ if (rapbase::isRapContext()) {
 
 ```
 
-# Dekningsgrad
+# Dekningsgrad før reservasjon
 
-Dekningsgraden beregnes lokalt for hvert sykehus. Den viser andelen __forløp__ som oppfyller inklusjonskriteriene der pasienter har samtykket til å være med i registeret. 
+Dekningsgraden beregnes lokalt for hvert sykehus. Den viser andelen __forløp__ der pasienten har sammtykket til å være med i registeret av de som oppfyller inklusjonskriteriene. 
 
 ```{r inkludert, results='asis'}
 
