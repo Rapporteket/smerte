@@ -97,7 +97,7 @@ if (dim(dat)[1] < 1) {
     }
     message <- paste0("Dekningsgraden for ", params$hospitalName,
                       " i den valgte tidsperioden er __",
-                      round(dekning, digits = 2), "__. Totalt antall inkluderte er ",
+                      round(dekning, digits = 2), "__. Antall inkluderte er ", inklStat, "mens totalt antall som oppfyller inklusjonskriteriene er ",
                       antInk, ".")
     
     message <- paste0(message, "\n\n## Tallgrunnlag og utvalg  \n",
