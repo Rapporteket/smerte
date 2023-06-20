@@ -1,0 +1,110 @@
+---
+params:
+  title: 'Dekningsgrad etter reservasjon ved'
+  author: 'Rapporteket'
+  hospitalName: 'Ukjent sykehus'
+  reshId: 'locallyDefined'
+  userRole: 'MyRole'
+  userFullName: 'Ukjent bruker'
+  startDate: '2017-01-01'
+  endDate: '2017-12-31'
+  year: '2016'
+  tableFormat: 'html'
+  registryName: 'rapbase'
+  shinySession: list()
+title: '`r paste(params$title, params$hospitalName, " i perioden fra ", params$startDate, " til ", params$endDate)`'
+author: '`r params$author`'
+date: '`r format(Sys.time(), "%d\\. %B, %Y")`'
+reglogo: '`r system.file("www/logoSmerte.png", package = "smerte")`'
+regtext: '`r readLines(system.file("registryShortDescription.txt", package = "smerte"))`'
+registryName: Smerteregisteret
+userFullName: '`r params$userFullName`'
+---
+```{r set options and load packages, include = FALSE}
+knitr::opts_chunk$set(echo=FALSE)
+options(knitr.table.format = params$tableFormat)
+options(tinytex.verbose = TRUE)
+```
+
+```{r get data, include=FALSE}
+
+if (rapbase::isRapContext()) {
+  dat <- smerte::getRegDataRapportDekningsgradReservasjon(
+    registryName = params$registryName,
+    reshId = params$reshId,
+    userRole = params$userRole,
+    startDate = params$startDate,
+    endDate = params$endDate,
+    session = params$shinySession
+  )
+} else {
+  #Dataimport: skal hente lokale data for hvert sykehus (tar vekk sti, og erstatter med lokal filB)
+  path <- read.csv(file = "H:/path.csv", header = FALSE, sep = ";")
+  path <- as.data.frame(lapply(path, as.character), stringsAsFactors=FALSE)
+  path <- path$V1
+  dat <- read.csv(file = path, header = TRUE, sep = ";")
+  
+  # avdpath <- read.csv(file = "H:/avdelingpath.csv", header = FALSE, sep = ";")
+  # avdpath <- as.data.frame(lapply(avdpath, as.character), stringsAsFactors=FALSE)
+  # avdpath <- avdpath$V1
+  # avd <- read.csv(file = avdpath, header = TRUE, sep = ";", encoding = "UTF-8")
+  # #Endrer navn til å matche rapporteket
+  # avd <- avd %>% rename(DEPARTMENT_ID = AvdID, DEPARTMENT_NAME = AvdNavn, DEPARTMENT_SHORTNAME = AvdNavnKort)
+  # 
+  # #Samler datasettene vha InnlAvd i allevarnum og departmentID i avdelingsoversikt
+  # dat <- merge(x = dat, y = avd, by.x = c("InnlAvd"), by.y = c("DEPARTMENT_ID"))
+
+  #Må kunne laste inn data for de ulike årene
+  #aar <- params$year
+  #dat = dat %>% filter(year(date(StartdatoTO)) == aar) #year
+}
+
+
+```
+
+# Dekningsgrad etter reservasjon
+
+Dekningsgraden beregnes lokalt for hvert sykehus. Den viser andelen __forløp__ der pasienten ikke har reservert seg mot å være med i registeret for de forløp der inklusjonskriterene er oppfylt.
+
+```{r inkludert, results='asis'}
+
+if (dim(dat)[1] < 1) {
+  message <- "I den valgte tidsperioden er det ikke nok data til å angi dekningsgrad."
+} else {
+  antInk <- sum(dat$InklKritOppf == 1, na.rm = TRUE)
+  antReserv <- sum(dat$Reservasjonsstatus == 1, na.rm = TRUE)
+  inklStat <- sum(dat$Reservasjonsstatus == 0, na.rm = TRUE)
+  
+  if (antInk < 1) {
+    message <- "I den valgte tidsperioden er det ikke nok data til å angi dekningsgrad."
+  } else {
+    dekning <- inklStat / antInk
+    nPatient <- length(unique(dat$PasientID))
+    nEvent <- length(unique(dat$ForlopsID))
+    nNoIncl <- length(dat$InklKritOppf[dat$InklKritOppf == 0])
+    
+    patientTxt <- "."
+    if (nPatient > 1) {
+      patientTxt <- paste(" fordelt på", nPatient, "pasienter.")
+    }
+    
+    if (nPatient == 1) {
+      patientTxt <- " for én pasient"
+    }
+    message <- paste0("Dekningsgraden for ", params$hospitalName,
+                      " i den valgte tidsperioden er __",
+                      round(dekning, digits = 2), "__. Antall inkluderte er ", inklStat, " mens totalt antall som oppfyller inklusjonskriteriene er ",
+                      antInk, ".")
+    
+    message <- paste0(message, "\n\n## Tallgrunnlag og utvalg  \n",
+                      " I utvalget er det ", nEvent, " forløp", patientTxt,
+                      " Totalt ", antReserv,
+                      " forløp er registrert med reservasjon og totalt ", nNoIncl,
+                      " forløp oppfyller ikke inklusjonskriteriene.")
+  }
+  
+}
+
+cat(paste("  \n", message))
+
+```
