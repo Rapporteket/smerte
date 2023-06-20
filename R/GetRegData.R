@@ -120,6 +120,38 @@ WHERE
 
 #' @rdname getRegData
 #' @export
+getRegDataRapportDekningsgradReservasjon <- function(registryName, reshId, userRole,
+                                          startDate, endDate, ...) {
+  dbType <- "mysql"
+
+  deps <- .getDeps(reshId, userRole)
+
+  query <- "
+SELECT
+  PasientID,
+  ForlopsID,
+  InklKritOppf,
+  SkriftligSamtyk,
+  Reservasjonsstatus,
+  InklusjonStatus
+FROM
+  AlleVarNum
+WHERE
+  AvdRESH IN ("
+
+  query <- paste0(query, deps, ") AND (DATE(StartdatoTO) BETWEEN '",
+                  startDate, "' AND '", endDate, "');")
+
+  if ("session" %in% names(list(...))) {
+    rapbase::repLogger(session = list(...)[["session"]],
+                       msg = paste0("Load data from ", registryName, ":", query))
+  }
+
+  rapbase::loadRegData(registryName, query, dbType)
+}
+
+#' @rdname getRegData
+#' @export
 getRegDataIndikator <- function(registryName, reshId, userRole,
                                 startDate, endDate, ...) {
 
