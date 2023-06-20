@@ -72,10 +72,7 @@ if (dim(dat)[1] < 1) {
   message <- "I den valgte tidsperioden er det ikke nok data til å angi dekningsgrad."
 } else {
   antInk <- sum(dat$InklKritOppf == 1, na.rm = TRUE)
-  reserv <- dat$Reservasjonsstatus
-  # NA/NULL to be counted as none-consent
-  reserv <- reserv %>% replace(is.na(.), 0)
-  antReserv <- sum(reserv == 1, na.rm = TRUE)
+  antReserv <- sum(dat$Reservasjonsstatus == 1, na.rm = TRUE)
   inklStat <- sum(dat$InklusjonStatus == 1, na.rm = TRUE)
   
   if (antInk < 1) {
@@ -84,7 +81,6 @@ if (dim(dat)[1] < 1) {
     dekning <- inklStat / antInk
     nPatient <- length(unique(dat$PasientID))
     nEvent <- length(unique(dat$ForlopsID))
-    nNoConsent <- length(reserv[reserv == 0])
     nNoIncl <- length(dat$InklKritOppf[dat$InklKritOppf == 0])
     
     patientTxt <- "."
