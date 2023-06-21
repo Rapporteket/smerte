@@ -39,7 +39,10 @@ ui <- shiny::tagList(
         "Dekningsgrad før reservasjon",
         shiny::sidebarLayout(
           shiny::sidebarPanel(
-            smerte::defaultReportInput("dekningsgrad")
+            smerte::defaultReportInput("dekningsgrad",
+                                       startDate = "2022-01-01",
+                                       endDate = "2022-11-30",
+                                       max = "2022-11-30")
           ),
           shiny::mainPanel(
             smerte::defaultReportUI("dekningsgrad")
@@ -50,7 +53,9 @@ ui <- shiny::tagList(
         "Dekningsgrad etter reservasjon",
         shiny::sidebarLayout(
           shiny::sidebarPanel(
-            smerte::defaultReportInput("dekningsgradReserv")
+            smerte::defaultReportInput("dekningsgradReserv",
+                                       startDate = "2022-12-01",
+                                       min = "2022-12-01")
           ),
           shiny::mainPanel(
             smerte::defaultReportUI("dekningsgradReserv")
