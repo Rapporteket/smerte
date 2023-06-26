@@ -1,6 +1,6 @@
 ---
 params:
-  title: 'Dekningsgrad før reservasjon ved'
+  title: 'Dekningsgrad etter reservasjon ved'
   author: 'Rapporteket'
   hospitalName: 'Ukjent sykehus'
   reshId: 'locallyDefined'
@@ -29,7 +29,7 @@ options(tinytex.verbose = TRUE)
 ```{r get data, include=FALSE}
 
 if (rapbase::isRapContext()) {
-  dat <- smerte::getRegDataRapportDekningsgrad(
+  dat <- smerte::getRegDataRapportDekningsgradReservasjon(
     registryName = params$registryName,
     reshId = params$reshId,
     userRole = params$userRole,
@@ -62,9 +62,9 @@ if (rapbase::isRapContext()) {
 
 ```
 
-# Dekningsgrad før reservasjon
+# Dekningsgrad etter reservasjon
 
-Dekningsgraden beregnes lokalt for hvert sykehus. Den viser andelen __forløp__ der pasienten har sammtykket til å være med i registeret av de som oppfyller inklusjonskriteriene. 
+Dekningsgraden beregnes lokalt for hvert sykehus. Den viser andelen __forløp__ der pasienten ikke har reservert seg mot å være med i registeret for de forløp der inklusjonskriterene er oppfylt.
 
 ```{r inkludert, results='asis'}
 
@@ -72,8 +72,11 @@ if (dim(dat)[1] < 1) {
   message <- "I den valgte tidsperioden er det ikke nok data til å angi dekningsgrad."
 } else {
   antInk <- sum(dat$InklKritOppf == 1, na.rm = TRUE)
-  antReserv <- sum(dat$Reservasjonsstatus == 1, na.rm = TRUE)
-  inklStat <- sum(dat$InklusjonStatus == 1, na.rm = TRUE)
+  antReserv <- sum((dat$Reservasjonsstatus == 1 & dat$InklKritOppf == 1), 
+                   na.rm = TRUE)
+  antReservTOT <- sum(dat$Reservasjonsstatus == 1, na.rm = TRUE)
+  inklStat <- sum((dat$Reservasjonsstatus == 0 & dat$InklKritOppf == 1), 
+                  na.rm = TRUE)
   
   if (antInk < 1) {
     message <- "I den valgte tidsperioden er det ikke nok data til å angi dekningsgrad."
@@ -89,7 +92,7 @@ if (dim(dat)[1] < 1) {
     }
     
     if (nPatient == 1) {
-      patientTxt <- " for én pasient"
+      patientTxt <- " for én pasient."
     }
     message <- paste0("Dekningsgraden for ", params$hospitalName,
                       " i den valgte tidsperioden er __",
@@ -98,9 +101,8 @@ if (dim(dat)[1] < 1) {
     
     message <- paste0(message, "\n\n## Tallgrunnlag og utvalg  \n",
                       " I utvalget er det ", nEvent, " forløp", patientTxt,
-                      " Totalt ", antReserv,
-                      " forløp er registrert med reservasjon og totalt ", nNoIncl,
-                      " forløp oppfyller ikke inklusjonskriteriene.")
+                      " For forløp der inklusjonskriteriene er oppfylt er ", antReserv,
+                      " registrert med reservasjon, mens det totalt er ", antReservTOT, " forløp med reservasjon. Det er totalt ", nNoIncl, " forløp som oppfyller ikke inklusjonskriteriene.")
   }
   
 }

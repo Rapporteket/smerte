@@ -36,13 +36,29 @@ ui <- shiny::tagList(
         )
       ),
       shiny::tabPanel(
-        "Dekningsgrad",
+        "Dekningsgrad før reservasjon",
         shiny::sidebarLayout(
           shiny::sidebarPanel(
-            smerte::defaultReportInput("dekningsgrad")
+            smerte::defaultReportInput("dekningsgrad",
+                                       startDate = "2022-01-01",
+                                       endDate = "2022-11-30",
+                                       max = "2022-11-30")
           ),
           shiny::mainPanel(
             smerte::defaultReportUI("dekningsgrad")
+          )
+        )
+      ),
+      shiny::tabPanel(
+        "Dekningsgrad etter reservasjon",
+        shiny::sidebarLayout(
+          shiny::sidebarPanel(
+            smerte::defaultReportInput("dekningsgradReserv",
+                                       startDate = "2022-12-01",
+                                       min = "2022-12-01")
+          ),
+          shiny::mainPanel(
+            smerte::defaultReportUI("dekningsgradReserv")
           )
         )
       ),
@@ -54,6 +70,17 @@ ui <- shiny::tagList(
           ),
           shiny::mainPanel(
             smerte::defaultReportUI("indikator")
+          )
+        )
+      ),
+      shiny::tabPanel(
+        "Opioidreduksjon",
+        shiny::sidebarLayout(
+          shiny::sidebarPanel(
+            smerte::defaultReportInput("opioid")
+          ),
+          shiny::mainPanel(
+            smerte::defaultReportUI("opioid")
           )
         )
       ),

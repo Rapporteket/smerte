@@ -25,6 +25,8 @@ userFullName: '`r params$userFullName`'
 knitr::opts_chunk$set(echo=FALSE)
 options(knitr.table.format = params$tableFormat)
 options(tinytex.verbose = TRUE)
+options(scipen = 1, digits = 2) #set to two decimal 
+
 ```
 
 ```{r get data, warning = FALSE, message=TRUE}
@@ -709,7 +711,7 @@ Andel pasienter hvor ikke-medikamentell behandling startes, endres og/eller føl
 ```{r ikkemed, warning = FALSE, message=FALSE, results='asis'}
 
 messageikmed <- ""
-
+#Kun de som er tilsett er aktuell for denne
 # Klargjøre
 if (dim(dat)[1] < 1) {
   messageikmed <- "I den valgte tidsperioden er det ikke nok data til å angi denne 
@@ -717,7 +719,7 @@ if (dim(dat)[1] < 1) {
 } else {
   
   ikkmed <- dat %>%
-    dplyr::filter(!is.na(IkkeMedBeh)) %>%
+    dplyr::filter(!is.na(IkkeMedBeh), Tilsett == 1) %>%
     dplyr::group_by(SykehusNavn, IkkeMedBeh) %>%
     dplyr::summarise(n = dplyr::n()) %>%
     dplyr::mutate( ant = sum(n), freq = n/sum(n)) %>%
@@ -890,3 +892,201 @@ if (dim(plotnedtr)[1] < 1) {
 }
 ```
 `r messagenedfig`
+
+# Akseptabel smerte
+Andel pasienter som har akseptabel smerte ved siste tilsyn. 
+
+```{r aks, warning = FALSE, message=FALSE, results='asis'}
+
+messageaks <- ""
+
+# Klargjøre
+if (dim(dat)[1] < 1) {
+  messageaks <- "I den valgte tidsperioden er det ikke nok data til å angi denne 
+  kvalitetsindikatoren."
+} else {
+  
+  #VidereOppf, BehNedtrappAvsluttTils og Journalnotat
+  nedtr <- dat %>%
+    dplyr::filter(!is.na(AkseptabelSmerte21)) %>%
+    dplyr::group_by(SykehusNavn, AkseptabelSmerte21) %>%
+    dplyr::summarise(n = dplyr::n()) %>%
+    dplyr::mutate( ant = sum(n), freq = n/sum(n)) %>%
+    dplyr::filter(AkseptabelSmerte21 == 1)
+  
+  #Tar bort kolonne  
+  nedtr <- nedtr %>%
+    dplyr::select(SykehusNavn, n, ant, freq)
+  
+  #Tabell
+  rapbase::mst(
+    tab = nedtr,
+    col_names = c("Sykehus", "Antall", "Totalt antall", "Andel"),
+    type = params$tableFormat,
+    cap = paste0("Oversikt over andel med akseptabel smerte ved siste tilsyn."),
+    digs = 2,
+    align = c("l", "r", "r", "r"))
+  
+}
+```
+`r messageaks`
+
+Figuren under viser hvordan andelen har fordelt seg i løpet av året.
+
+```{r aksfig, warning = FALSE, message=FALSE, results='asis', fig.pos= "H", out.extra = '', fig.align='center', out.width='100%', fig.width = 14, fig.asp = 0.5}
+
+messageaksfig <- ""
+
+plotaks <- dat %>%
+  dplyr::filter(
+    !is.na(AkseptabelSmerte21)) %>%
+  dplyr::group_by(SykehusNavn, monthname, AkseptabelSmerte21) %>%
+  dplyr::summarise(n = dplyr::n()) %>%
+  dplyr::mutate(ant = sum(n), freq = n/sum(n)) %>%
+  dplyr::filter(AkseptabelSmerte21 == 1)
+
+#Adding the mean of the groups each month
+meanplotaks <- plotaks %>% 
+  dplyr::group_by(monthname) %>%
+  dplyr::summarise(freq = mean(freq)) %>%
+  dplyr::mutate(SykehusNavn="Snitt", .before = monthname)
+
+#Merging the two tibbles
+plotaks <- dplyr::bind_rows(plotaks, meanplotaks)
+
+if (dim(plotaks)[1] < 1) {
+  messageaksfig <- "I den valgte tidsperioden er det ikke nok data til å vise 
+  figur for denne kvalitetsindikatoren."
+} else {
+  
+  #Plotting plotdat
+  ggplot2::ggplot(plotaks, ggplot2::aes(monthname, freq)) + 
+    ggplot2::geom_line(ggplot2::aes(group = factor(SykehusNavn), 
+                  colour=factor(SykehusNavn)), size = 0.5) +
+    ggplot2::geom_point(ggplot2::aes(group = factor(SykehusNavn), 
+                   colour=factor(SykehusNavn)), size = 1) + 
+    ggplot2::labs(x = "Måned", y = "Andel", 
+         subtitle = "Andel med akseptabel smerte ved siste tilsyn per måned", 
+         color = "Sykehus") + ggplot2::theme_classic() + 
+    ggplot2::theme(axis.text.x = ggplot2::element_text(size = 8.5), 
+          axis.text.y = ggplot2::element_text(size = 10), 
+          axis.title = ggplot2::element_text(size = 10), 
+          plot.margin = ggplot2::unit(c(1, 1, 2, 1), "cm"), 
+          legend.text = ggplot2::element_text(size = 13), 
+          axis.title.y = ggplot2::element_text(
+            margin = ggplot2::margin(t = 0, r = 10, b = 0, l = 0)
+          ), 
+          axis.title.x = ggplot2::element_text(
+            margin = ggplot2::margin(t = 10, r = 0, b = 0, l = 0)
+          )
+    ) 
+  
+}
+```
+`r messageaksfig`
+
+# Endret funksjonsnivå
+Andel pasienter hvor funksjon bedrer seg fra første til siste tilsyn. De som ikke hadde bedring kan i tillegg til forverring ha uendret funksjon (mangler det svar på en eller begge målinger er de ikke med i utregningen).
+
+```{r funk, warning = FALSE, message=FALSE, results='asis'}
+
+messagefunk <- ""
+
+# Klargjøre
+if (dim(dat)[1] < 1) {
+  messagefunk <- "I den valgte tidsperioden er det ikke nok data til å angi denne 
+  kvalitetsindikatoren."
+} else {
+  
+  #Verdier som skal vises i tabell for denne indikatoren
+  # dat$bedring <-  NA
+  # for(i in 1:dim(dat)[1]){
+  #   if(!is.na(dat$Funksjon12[i]) & !is.na(dat$Funksjon21[i]) & dat$Funksjon12[i] != 9 & dat$Funksjon21[i] != 9)
+  #   {dat$bedring[i] <- dat$Funksjon21[i] - dat$Funksjon12[i]}}
+  # 
+  #   #De med nedgang i smerte for StSmBe
+  # ant <- sum(dat$bedring > 0, na.rm = TRUE)
+  # 
+  # totant <- sum(!is.na(dat$bedring))
+  # 
+  # and <- ant/totant
+  # 
+  # #Tabell for siste tilsyn
+  # tabfunk <- cbind(ant, totant, and)
+  
+funfor = dat %>% 
+  dplyr::filter(!is.na(Funksjon12), !is.na(Funksjon21), Funksjon12 != 9,
+                Funksjon21 != 9) %>%
+  dplyr:: mutate(bedring = (Funksjon21 - Funksjon12))
+
+funfor1 <- funfor %>%
+    dplyr::mutate(bedring1 = bedring > 0) %>%
+    dplyr::group_by(SykehusNavn, bedring1) %>%
+    dplyr::summarise(n = dplyr::n()) %>%
+    dplyr::mutate(ant = sum(n), freq = n/sum(n)) %>%
+    dplyr::filter(bedring1 > 0)
+
+funfor1 <- funfor1 %>%
+    dplyr::select(SykehusNavn, n, ant, freq)
+
+andel_fun= sum(funfor$bedring == 0, na.rm = TRUE)
+andel_tot = length(funfor$bedring)
+andel_uendret = andel_fun/andel_tot
+
+  rapbase::mst(
+    tab = funfor1,
+    col_names = c("Sykehus", "Antall", "Totalt antall", "Andel"),
+    type = params$tableFormat,
+    cap = paste0("Oversikt over andel som hadde bedring i funksjon fra første til siste tilsyn."),
+    digs = 2,
+    align = c("l", "r", "r", "r"))
+}
+
+```
+`r messagefunk` En andel på `r andel_uendret` (totalt) hadde uendret funksjon.
+
+Figuren under viser hvordan andelen har fordelt seg i løpet av året.
+
+```{r funkfig, warning = FALSE, message=FALSE, results='asis', fig.pos= "H", out.extra = '', fig.align='center', out.width='100%'}
+
+messageplotfunk <- ""
+
+#Aggregate by month for plot
+ plotfunk <- funfor %>%
+    dplyr::mutate(bedring1 = bedring > 0) %>%
+    dplyr::group_by(SykehusNavn, monthname, bedring1) %>%
+    dplyr::summarise(n = dplyr::n()) %>%
+    dplyr::mutate(ant = sum(n), freq = n/sum(n)) %>%
+    dplyr::filter(bedring1 == 1)
+
+if (dim(plotfunk)[1] < 1) {
+  messageplot <- "I den valgte tidsperioden er det ikke nok data til å vise
+  figur for denne kvalitetsindikatoren."
+} else {
+
+  #Plotting plotdat
+  ggplot2::ggplot(plotfunk, ggplot2::aes(monthname, freq)) +
+    ggplot2::geom_line(ggplot2::aes(group = factor(SykehusNavn), 
+                  colour=factor(SykehusNavn)), size = 0.5) +
+    ggplot2::geom_point(ggplot2::aes(group = factor(SykehusNavn), 
+                   colour=factor(SykehusNavn)), size = 1) + 
+    ggplot2::labs(x = "Måned", y = "Andel", 
+         subtitle = "Andel med forbedring i funksjon per måned", 
+         color = "Sykehus") + ggplot2::theme_classic() + 
+    ggplot2::theme(axis.text.x = ggplot2::element_text(size = 8.5), 
+          axis.text.y = ggplot2::element_text(size = 10), 
+          axis.title = ggplot2::element_text(size = 10), 
+          plot.margin = ggplot2::unit(c(1, 1, 2, 1), "cm"), 
+          legend.text = ggplot2::element_text(size = 13), 
+          axis.title.y = ggplot2::element_text(
+            margin = ggplot2::margin(t = 0, r = 10, b = 0, l = 0)
+          ), 
+          axis.title.x = ggplot2::element_text(
+            margin = ggplot2::margin(t = 10, r = 0, b = 0, l = 0)
+          )
+    )
+
+}
+```
+
+`r messageplotfunk`

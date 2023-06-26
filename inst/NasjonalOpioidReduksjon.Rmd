@@ -1,0 +1,120 @@
+---
+params:
+  title: 'Opioidreduksjon'
+  author: 'Rapporteket'
+  hospitalName: 'Ukjent sykehus'
+  reshId: 'locallyDefined'
+  userRole: 'MyRole'
+  userFullName: 'Ukjent bruker'
+  startDate: '2017-01-01'
+  endDate: '2017-12-31'
+  year: '2016'
+  tableFormat: 'html'
+  registryName: 'rapbase'
+  shinySession: list()
+title: '`r paste(params$title, params$hospitalName, " i perioden fra ", params$startDate, " til ", params$endDate)`'
+author: '`r params$author`'
+date: '`r format(Sys.time(), "%d\\. %B, %Y")`'
+reglogo: '`r system.file("www/logoSmerte.png", package = "smerte")`'
+regtext: '`r readLines(system.file("registryShortDescription.txt", package = "smerte"))`'
+registryName: Smerteregisteret
+userFullName: '`r params$userFullName`'
+---
+```{r set options and load packages, include = FALSE}
+knitr::opts_chunk$set(echo=FALSE)
+options(knitr.table.format = params$tableFormat)
+options(tinytex.verbose = TRUE)
+
+library(dplyr)
+library(tidyverse)
+library(zoo)
+library(lubridate)
+library(forcats)
+library(stringr)
+library(readr)
+library(magrittr)
+library(xtable)
+library(kableExtra)
+```
+
+```{r setup, include=FALSE}
+if (rapbase::isRapContext()) {
+  dat <- smerte::getRegDataOpiodReduksjon(registryName = params$registryName,
+                                     reshId = params$reshId,
+                                     userRole=params$userRole,
+                                     startDate = params$startDate,
+                                     endDate = params$endDate,
+                                     session = params$shinySession)
+} else {
+  dat <- path <- read.csv(file = "H:/path.csv", header = FALSE, sep = ";")
+  path <- as.data.frame(lapply(path, as.character), stringsAsFactors=FALSE)
+  path <- path$V1
+  dat <- read.csv(file = path, header = TRUE, sep = ";")
+}
+```
+
+```{r yearSelect, include=FALSE}
+#Hvis vi vil begrense
+#dat <- dat[!(dat$MoEkvivalens22 > 10000),]
+
+#For å evaluere om data er tilstede
+dataPresent <- TRUE
+if(dim(dat)[1] < 1) {
+  dataPresent <- FALSE
+}
+
+```
+
+
+```{r noData, eval=!dataPresent, results='asis'}
+cat('# Upps...\nI den valgte tidsperioden er det ikke nok data til å gi 
+    ut resultater.')
+knitr::knit_exit()
+
+```
+
+# Oversikt
+
+Denne oversikten viser resultater for et delmål i kvalitetsforbedringsprosjektet på ikke-medikamentell smertebehandling: Redusere bruk av opioider, målt ved perorale morfinekvivalenter ved siste tilsyn, med 10 % i 2022. 
+
+Dersom et valgt år ikke vises er det ingen registreringer på morfinekvivalenter der. Merk at enkelte sykehus ikke har vært med alle årene.
+
+## Totalt
+
+```{r overall, include=FALSE}
+#Gjennomsnittlig antall forløp
+
+d_moek = dat %>% filter(!is.na(MoEkvivalens22)) %>%
+    dplyr::group_by(year(StartdatoTO)) %>%
+    dplyr::summarise(nevner = n(),
+              ind = sum(MoEkvivalens22)/n())
+```
+
+```{r taboverall, results='asis', echo = FALSE}
+
+rapbase::mst(tab = d_moek,
+     col_names = c("År", "Antall forløp", "Gj.snitt MoEkv"),
+     cap = paste0("Gjennomsnittlig mengde morfinekvivalenter per år"),
+     label = "moek",
+     type = "html",
+     digs = 1,
+     align = c("l", "r", "r", "r"))
+```
+
+## Per sykehus
+
+```{r sykehus, include=FALSE}
+d_moek_syk = dat %>% filter(!is.na(MoEkvivalens22)) %>%
+  dplyr::group_by(year(StartdatoTO), SykehusNavn) %>%
+  dplyr::summarise(nevner = n(), ind = sum(MoEkvivalens22)/n())
+```
+
+```{r tabsykehus, results='asis', echo = FALSE}
+rapbase::mst(tab = d_moek_syk,
+     col_names = c("År", "Sykehus",  "Antall forløp", "Gj.snitt MoEkv."),
+     cap = paste0("Gjennomsnittlig mengde morfinekvivalenter per sykehus og år"),
+     label = "moeksyk",
+     type = "html",
+     digs = 1,
+     align = c("l", "r", "r", "r", "r"))
+```
