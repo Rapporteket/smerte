@@ -127,6 +127,11 @@ server <- function(input, output, session) {
                               reportFileName = "LokalSmertekategori.Rmd",
                               reportParams = reportParams)
 
+  # NRS (kvalitetsforbering)
+  smerte::defaultReportServer(id = "NRS",
+                              reportFileName = "NRS.Rmd",
+                              reportParams = reportParams)
+
   # Definisjon av rapporter for abonnement og utsendelser
   nationalReports <- list(
     `Kvalitetsindikatorer - alle enheter`= list(
