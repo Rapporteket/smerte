@@ -380,6 +380,58 @@ WHERE
 }
 
 
+#' @rdname getRegData
+#' @export
+getRegDataNRS <- function(registryName, reshId, userRole,
+                                    startDate, endDate, ...) {
+
+  dbType <- "mysql"
+
+  # special case at OUS
+  deps <- .getDeps(reshId, userRole)
+
+  query <- "
+SELECT
+  AntPasTils,
+  AntTilsLege,
+  AntTilsSykPleier,
+  AntTilsFysioT,
+  AntTilsPsyk,
+  AntTilsSosio,
+  StartdatoTO,
+  ForlopsID,
+  StSmBev12,
+  StSmBev21,
+  SvSmBev12,
+  SvSmBev21,
+  StSmRo12,
+  StSmRo21,
+  SvSmRo12,
+  SvSmRo21,
+  SAB11,
+  PasientID,
+  TotTid,
+  SluttDato
+FROM
+  AlleVarNum
+WHERE
+  AvdRESH IN ("
+
+  query <- paste0(query, deps, ") AND (DATE(StartdatoTO) BETWEEN '",
+                  startDate, "' AND '", endDate, "');")
+
+  if ("session" %in% names(list(...))) {
+    session <- list(...)[["session"]]
+    if ("ShinySession" %in% attr(session, "class")) {
+      rapbase::repLogger(session = session,
+                         msg = paste("Load NRS data from",
+                                     registryName, ": ", query))
+    }
+  }
+
+  rapbase::loadRegData(registryName, query, dbType)
+}
+
 
 #' @rdname getRegData
 #' @export
