@@ -1,0 +1,238 @@
+---
+params:
+  title: 'Rapport for NRS (kvalitetsforbedringsprosjektet)'
+  author: 'Rapporteket'
+  hospitalName: 'Ukjent sykehus'
+  reshId: 'locallyDefined'
+  userRole: 'MyRole'
+  userFullName: 'Ukjent bruker'
+  startDate: !r lubridate::today() - lubridate::years(1)
+  endDate: !r lubridate::today() - lubridate::weeks(1)
+  year: '2016'
+  tableFormat: 'html'
+  registryName: 'rapbase'
+  shinySession: list()
+title: '`r paste(params$title, params$hospitalName, " i perioden fra ", params$startDate, " til ", params$endDate)`'
+author: '`r params$author`'
+date: '`r format(Sys.time(), "%d\\. %B, %Y")`'
+reglogo: '`r system.file("www/logoSmerte.png", package = "smerte")`'
+regtext: 'SmerteReg er et nasjonalt kvalitetsregister som registrer alle inneliggende pasienter som henvises for tilsyn fra akutt smerteteam. Formålet med SmerteReg er å bedre kvaliteten på tjenesten akutt smerteteam yter til smertepasienter på norske sykehus samt å danne grunnlag for forskning.'
+registryName: Smerteregisteret
+userFullName: '`r params$userFullName`'
+---
+```{r set options and load packages, include = FALSE}
+knitr::opts_chunk$set(echo=FALSE)
+options(knitr.table.format = params$tableFormat)
+options(tinytex.verbose = TRUE)
+```
+
+```{r get data, include=FALSE}
+
+if (rapbase::isRapContext()) {
+  dat <- smerte::getRegDataSpinalkateter(registryName = params$registryName,
+                                         reshId = params$reshId,
+                                         userRole = params$userRole,
+                                         startDate = params$startDate,
+                                         endDate = params$endDate,
+                                         session = params$shinySession)
+} else {
+  #Dataimport: skal hente lokale data for hvert sykehus (tar vekk sti, og erstatter med lokal fil)
+  path <- read.csv(file = "H:/path.csv", header = FALSE, sep = ";")
+  path <- as.data.frame(lapply(path, as.character), stringsAsFactors=FALSE)
+  path <- path$V1
+  dat <- read.csv(file = path, header = TRUE, sep = ";")
+}
+
+#For å evaluere om data er tilstede
+dataPresent <- TRUE
+if(dim(dat)[1] < 1) {
+  dataPresent <- FALSE
+}
+```
+
+```{r makeStandardTableFunction, eval=TRUE}
+mstt <- function(tab, colnames = colnames(tab), type, cap,
+                label = knitr::opts_current$get("label"), digs, align = NULL,
+                fs = 8, lsd = FALSE) {
+  if (type == "latex") {
+    if (lsd) {
+      lo <- c("hold_position", "scale_down")
+    } else {
+      lo <- c("hold_position")
+    }
+    k <- knitr::kable(tab, col.names = colnames, caption = cap,
+                      label = label, digits = digs,
+                      align = align, booktabs = TRUE) %>% 
+      kableExtra::kable_styling(latex_options = lo, font_size = fs)
+  }
+  
+  if (type == "html") {
+    k <- knitr::kable(tab, col.names = colnames, caption = cap,
+                      label = label, digits = digs,
+                      align = align) %>% 
+      kableExtra::kable_styling(
+        bootstrap_options = c("striped", "hover", "condensed"), full_width = F)
+  }
+  k
+}
+```
+
+
+```{r noData, eval=!dataPresent, results='asis'}
+cat('# Upps...\nI den valgte tidsperioden er det ikke nok data til å gi 
+    ut resultater.')
+knitr::knit_exit()
+
+```
+
+# Pasienter som er med i utvalget
+
+Her følger en oversikt over pasientene som er kvalifisert til å være med i dette utvalget (ikke de som hvor "ikke aktuelt" under NRS eller "gitt råd" under tilsyn er huket av for).
+
+
+```{r datatilpasning, warning = TRUE, message=TRUE, results='asis', eval=dataPresent}
+
+#Få med behandlertilsyn på alle før vi selekterer på spinalkateter
+
+datbeh = dat %>%
+  tidyr::gather(key = tilsynstype, value=antall, AntPasTils, AntTilsLege,
+         AntTilsSykPleier, AntTilsFysioT, AntTilsPsyk, AntTilsSosio) %>%
+  dplyr::mutate(antall = replace(antall, is.na(antall), 0), 
+         month = months(zoo::as.Date(StartdatoTO)),
+         tilsynstype=stringr::str_replace_all(tilsynstype,"AntTilsLege",
+                                              "Lege"),
+         tilsynstype=stringr::str_replace_all(tilsynstype,
+                                              "AntTilsSykPleier",
+                                              "Sykepleier"), 
+         tilsynstype=stringr::str_replace_all(tilsynstype,
+                                              "AntTilsFysioT", 
+                                              "Fysioterapeut"),
+         tilsynstype=stringr::str_replace_all(tilsynstype,
+                                              "AntTilsPsyk", 
+                                              "Psykolog"),
+         tilsynstype=stringr::str_replace_all(tilsynstype,
+                                              "AntTilsSosio", 
+                                              "Sosionom"),
+         tilsynstype=stringr::str_replace_all(tilsynstype, "AntPasTils",
+                                              "Total"))
+#Samler alt til behandlertilsyn
+datbeh = datbeh %>%
+  dplyr::group_by(tilsynstype, ForlopsID) %>% 
+  dplyr::summarise(antall = sum(antall), .groups = "drop_last") %>% 
+  tidyr::spread(tilsynstype, antall) %>%
+  dplyr::rowwise() %>% 
+  dplyr::mutate(Behandlertilsyn = sum(Fysioterapeut, Lege, Psykolog, Sosionom, 
+                                      Sykepleier))
+
+#Kun siste kolonne er relevant og legges til i hoveddata 
+#unlist pga fra tibble til vektor
+dat$behtils = datbeh %>%
+  dplyr::select(Behandlertilsyn) %>%
+  unlist(use.names = FALSE)
+
+#Lager nye variabler som skal inneholde endring i NRS, settes initielt til NA
+dat$stro <- dat$svro <- dat$stbe <- dat$svbe <-  NA
+#For de som har svart begge ganger finner vi endring i NRS. 
+#Positiv endring = nedgang i smerte, negativ endring = oppgang i smerte. 
+#99 er Vet ikke og må også fjernes
+for(i in 1:dim(dat)[1]){
+  if(!is.na(dat$StSmBev12[i]) & !is.na(dat$StSmBev21[i]) & 
+     dat$StSmBev12[i] != 99 & dat$StSmBev21[i] != 99)
+  {dat$stbe[i] <- dat$StSmBev12[i] - dat$StSmBev21[i]}
+  if(!is.na(dat$SvSmBev12[i]) & !is.na(dat$SvSmBev21[i]) &
+     dat$SvSmBev12[i] != 99 & dat$SvSmBev21[i] != 99)
+  {dat$svbe[i] <- dat$SvSmBev12[i] - dat$SvSmBev21[i]}
+  if(!is.na(dat$StSmRo12[i]) & !is.na(dat$StSmRo21[i]) &
+     dat$StSmRo12[i] != 99 & dat$StSmRo21[i] != 99)
+  {dat$stro[i] <- dat$StSmRo12[i] - dat$StSmRo21[i]}
+  if(!is.na(dat$SvSmRo12[i]) & !is.na(dat$SvSmRo21[i]) &
+     dat$SvSmRo12[i] != 99 & dat$SvSmRo21[i] != 99)
+  {dat$svro[i] <- dat$SvSmRo12[i] - dat$SvSmRo21[i]}
+}
+  
+#De som er NA må få en meningsfullverdi til tabellen som skal skrives
+dat$stbe = dat %>% dplyr::mutate(stbe = ifelse(is.na(stbe), "Mangler", stbe))
+dat$svbe = dat %>% dplyr::mutate(svbe = ifelse(is.na(svbe), "Mangler", svbe))
+dat$stro = dat %>% dplyr::mutate(stro = ifelse(is.na(stro), "Mangler", stro))
+dat$svro = dat %>% dplyr::mutate(svro = ifelse(is.na(svro), "Mangler", svro))
+
+
+
+### Ta med kun de som har hatt spinalkateter: SAB11 = 1
+datspinal <- dat[!is.na(dat$SAB11) & dat$SAB11 == 1, ]
+
+#Lager ny evaluering, denne gangen for om spinaldata er tom eller ikke
+dataSpinalPresent <- TRUE
+if(dim(datspinal)[1] < 1) {
+  dataSpinalPresent <- FALSE
+}
+```
+
+```{r noSpinalData, eval=!dataSpinalPresent, results='asis'}
+#Hvis ingen har fått spinalkateter er det ingenting å gi ut. Går videre med denne istedet for eval=dataPresent.
+
+cat('# Upps...\nI den valgte tidsperioden er det ikke nok data til å gi 
+    ut resultater for spinalkateter.')
+knitr::knit_exit()
+```
+
+
+```{r spinalgenerelt, warning = FALSE, message=FALSE, results='asis', eval=dataSpinalPresent}
+
+#Tar med relevant data og lager difftid som er tid fra henvisning til forløpets avslutning
+#as_tibble brukes for å fjerne radnummer som ellers vises i tabellen
+datspinalgen <- tibble::as_tibble(
+  datspinal %>%
+    dplyr::select(AntPasTils, behtils, StartdatoTO, PasientID, 
+                  ForlopsID, TotTid, SluttDato, 
+                  MoEkvivalens, MoEkvivalens22) %>% 
+    dplyr::mutate(
+      difftid = as.numeric(gsub("[^0-9]", "", 
+                                as.Date(datspinal$SluttDato) - 
+                                  as.Date(datspinal$StartdatoTO)))
+    )
+)
+
+#Antall forløp med spinalkateter
+antspinal <- dim(datspinal)[1]  
+
+#Gjennomsnittlig antall pasienttilsyn
+pastils_mean <- mean(datspinal$AntPasTils, na.rm = TRUE)
+
+#Til tabell
+spinaltabell <- datspinalgen[ , c(5, 1, 2, 6, 10, 8, 9)]
+
+rapbase::mst(
+  tab = spinaltabell, 
+  col_names = c("ForløpsID" ,"Pasienttilsyn", "Behandlertilsyn", "Totaltid",
+                "Følgetid", "MoEkv før", "MoEkv etter"),
+  cap = paste0("Informasjon rundt pasienter registert med spinalkateter. Totaltid gir antall timer totalt brukt på tilsyn, mens følgetid gir antall dager fra henvisning til sluttføring. MoEkv før og MoEkv etter gir antall morfinekvivalenter henholdsvis ved innleggelse og ved utskrivelse."),
+  label = "spinalkat",
+  type = params$tableFormat,
+  digs = 0,
+  align = c("l", "c", "c", "c", "c", "c", "c", "c"))
+```
+
+I den valgte tidsperioden ble spinalkateter gitt til tilsammen `r antspinal` av totalt `r dim(dat)[1]` pasienter. For disse ble det gjennomsnittlig gjort `r pastils_mean` pasienttilsyn. Tabell \@ref(tab:spinalkat) gir en oversikt over diverse informasjon angående de pasientene som har fått spinalkateter i den valgte tidsperioden.
+
+## Endring i NRS
+
+```{r spinalNRS, warning = FALSE, message=FALSE, results='asis', eval=dataSpinalPresent}
+
+# Endring i NRS fra første tilsyn til siste tilsyn
+nrsendring = tibble::as_tibble(
+  datspinal %>%
+    dplyr::select(ForlopsID, stbe, svbe, stro, svro)
+)
+
+rapbase::mst(
+  tab = nrsendring, 
+  col_names = c("ForløpsID", "Sterkeste smerte bevegelse", "Svakeste smerte bevegelse", "Sterkeste smerte ro", "Svakeste smerte ro"),
+  cap = paste0("Informasjon om endring i NRS for hver pasient som fikk spinalkateter. En endring større enn 0 betyr nedgang i smerte fra første til siste måling, mens en endring mindre enn 0 betyr økning i smerte. 0 betyr ingen endring. 'Mangler' betyr at pasienten ikke har gitt NRS, enten ved første, siste eller begge målinger."),
+  label = "spinalnrs",
+  type = params$tableFormat,
+  digs = 0,
+  align = c("l", "c", "c", "c", "c", "c"))
+```
+
+Tabell \@ref(tab:spinalnrs) gir en oversikt over endring i NRS for de pasientene som har svart ved begge målinger.
