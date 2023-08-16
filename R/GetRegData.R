@@ -411,6 +411,9 @@ SELECT
   SAB11,
   PasientID,
   TotTid,
+  Tilsett,
+  AngiNRS12,
+  AngiNRS21,
   SluttDato
 FROM
   AlleVarNum
