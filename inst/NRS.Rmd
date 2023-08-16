@@ -29,7 +29,7 @@ options(tinytex.verbose = TRUE)
 ```{r get data, include=FALSE}
 
 if (rapbase::isRapContext()) {
-  dat <- smerte::getRegDataSpinalkateter(registryName = params$registryName,
+  dat <- smerte::getRegDataNRS(registryName = params$registryName,
                                          reshId = params$reshId,
                                          userRole = params$userRole,
                                          startDate = params$startDate,
@@ -155,7 +155,6 @@ dat$stbe = dat %>% dplyr::mutate(stbe = ifelse(is.na(stbe), "Mangler", stbe))
 dat$svbe = dat %>% dplyr::mutate(svbe = ifelse(is.na(svbe), "Mangler", svbe))
 dat$stro = dat %>% dplyr::mutate(stro = ifelse(is.na(stro), "Mangler", stro))
 dat$svro = dat %>% dplyr::mutate(svro = ifelse(is.na(svro), "Mangler", svro))
-
 
 
 ### Ta med kun de som har hatt spinalkateter: SAB11 = 1
