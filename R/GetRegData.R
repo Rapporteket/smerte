@@ -383,51 +383,49 @@ WHERE
 #' @rdname getRegData
 #' @export
 getRegDataNRS <- function(registryName, reshId, userRole,
-                                    startDate, endDate, ...) {
+                          startDate, endDate, ...) {
 
   dbType <- "mysql"
 
   # special case at OUS
   deps <- .getDeps(reshId, userRole)
 
-  query <- "
+  query <- paste0("
 SELECT
-  AntPasTils,
-  AntTilsLege,
-  AntTilsSykPleier,
-  AntTilsFysioT,
-  AntTilsPsyk,
-  AntTilsSosio,
-  StartdatoTO,
-  ForlopsID,
-  StSmBev12,
-  StSmBev21,
-  SvSmBev12,
-  SvSmBev21,
-  StSmRo12,
-  StSmRo21,
-  SvSmRo12,
-  SvSmRo21,
-  SAB11,
-  PasientID,
-  TotTid,
-  Tilsett,
-  AngiNRS12,
-  AngiNRS21,
-  SluttDato
+  var.StartdatoTO,
+  var.ForlopsID,
+  var.StSmBev12,
+  var.StSmBev21,
+  var.SvSmBev12,
+  var.SvSmBev21,
+  var.StSmRo12,
+  var.StSmRo21,
+  var.SvSmRo12,
+  var.SvSmRo21,
+  var.PasientID,
+  var.TotTid,
+  var.Tilsett,
+  var.SykehusNavn,
+  var.AngiNRS12,
+  var.AngiNRS21,
+  var.RegDato11
 FROM
-  AlleVarNum
+  AlleVarNum var
 WHERE
-  AvdRESH IN ("
+  var.RegDato11>=DATE('", startDate, "') AND var.RegDato11<=DATE('", endDate, "')"
+  )
 
-  query <- paste0(query, deps, ") AND (DATE(StartdatoTO) BETWEEN '",
-                  startDate, "' AND '", endDate, "');")
+  if (isNationalReg(reshId)) {
+    query <- paste0(query, ";")
+  } else {
+    query <- paste0(query, " AND var.AvdRESH IN (", deps, ");")
+  }
 
   if ("session" %in% names(list(...))) {
     session <- list(...)[["session"]]
     if ("ShinySession" %in% attr(session, "class")) {
       rapbase::repLogger(session = session,
-                         msg = paste("Load NRS data from",
+                         msg = paste("Load opiodrapport data from",
                                      registryName, ": ", query))
     }
   }
