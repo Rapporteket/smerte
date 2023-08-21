@@ -403,7 +403,7 @@ SELECT
   var.SvSmRo12,
   var.SvSmRo21,
   var.PasientID,
-  var.TotTid,
+  var.ForlopsID,
   var.Tilsett,
   var.SykehusNavn,
   var.AngiNRS12,
