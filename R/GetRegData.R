@@ -193,7 +193,9 @@ SELECT
   var.AkseptabelSmerte12,
   var.AkseptabelSmerte21,
   var.Funksjon12,
-  var.Funksjon21
+  var.Funksjon21,
+  var.AngiNRS12,
+  var.AngiNRS21
 FROM
   AlleVarNum var
 WHERE
