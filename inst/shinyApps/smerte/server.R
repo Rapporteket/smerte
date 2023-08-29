@@ -122,11 +122,6 @@ server <- function(input, output, session) {
                               reportFileName = "LokalSpinalkateter.Rmd",
                               reportParams = reportParams)
 
-  # NRS (kvalitetsforbering)
-  smerte::defaultReportServer(id = "NRS",
-                              reportFileName = "NRS.Rmd",
-                              reportParams = reportParams)
-
   # Smertekategori
   smerte::defaultReportServer(id = "smertekategori",
                               reportFileName = "LokalSmertekategori.Rmd",

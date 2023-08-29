@@ -384,60 +384,6 @@ WHERE
 
 #' @rdname getRegData
 #' @export
-getRegDataNRS <- function(registryName, reshId, userRole,
-                          startDate, endDate, ...) {
-
-  dbType <- "mysql"
-
-  # special case at OUS
-  deps <- .getDeps(reshId, userRole)
-
-  query <- paste0("
-SELECT
-  var.StartdatoTO,
-  var.ForlopsID,
-  var.StSmBev12,
-  var.StSmBev21,
-  var.SvSmBev12,
-  var.SvSmBev21,
-  var.StSmRo12,
-  var.StSmRo21,
-  var.SvSmRo12,
-  var.SvSmRo21,
-  var.PasientID,
-  var.ForlopsID,
-  var.Tilsett,
-  var.SykehusNavn,
-  var.AngiNRS12,
-  var.AngiNRS21,
-  var.RegDato11
-FROM
-  AlleVarNum var
-WHERE
-  var.RegDato11>=DATE('", startDate, "') AND var.RegDato11<=DATE('", endDate, "')"
-  )
-
-  if (isNationalReg(reshId)) {
-    query <- paste0(query, ";")
-  } else {
-    query <- paste0(query, " AND var.AvdRESH IN (", deps, ");")
-  }
-
-  if ("session" %in% names(list(...))) {
-    session <- list(...)[["session"]]
-    if ("ShinySession" %in% attr(session, "class")) {
-      rapbase::repLogger(session = session,
-                         msg = paste("Load opiodrapport data from",
-                                     registryName, ": ", query))
-    }
-  }
-
-  rapbase::loadRegData(registryName, query, dbType)
-}
-
-
-#' @rdname getRegData
-#' @export
 getLocalYears <- function(registryName, reshId, userRole) {
 
   dbType <- "mysql"

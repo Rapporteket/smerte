@@ -107,17 +107,6 @@ ui <- shiny::tagList(
         )
       ),
       shiny::tabPanel(
-        "NRS (kvalitetsforbedring)",
-        shiny::sidebarLayout(
-          shiny::sidebarPanel(
-            smerte::defaultReportInput("NRS")
-          ),
-          shiny::mainPanel(
-            smerte::defaultReportUI("NRS")
-          )
-        )
-      ),
-      shiny::tabPanel(
         "Smertekategori",
         shiny::sidebarLayout(
           shiny::sidebarPanel(
