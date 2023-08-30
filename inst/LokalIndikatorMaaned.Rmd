@@ -819,6 +819,13 @@ Her legges midlertidig inn oversikt til bruk i kvalitetsforbedringsprosjektet ve
 
 messagefunkNRS2 <- ""
 
+dat_utvalg <- dat %>%
+  dplyr::filter(Tilsett == 1 & AngiNRS12 != 2 & AngiNRS21 != 2)
+  
+#De med nedgang i smerte for StSmBe
+  #Antall i utvalget vårt
+  ant_utvalg <- nrow(dat_utvalg)
+  
 # Klargjøre
 if (dim(dat)[1] < 1) {
   messagefunkNRS2 <- "I den valgte tidsperioden er det ikke nok data til å gi resultatet."
@@ -861,13 +868,6 @@ if (dim(dat)[1] < 1) {
   messagefunkNRS21 <- "I den valgte tidsperioden er det ikke nok data til å gi resultatet."
 } else {
   
-    #De med nedgang i smerte for StSmBe
-  dat_utvalg <- dat %>%
-    dplyr::filter(Tilsett == 1 & AngiNRS12 != 2 & AngiNRS21 != 2)
-  
-  #Antall i utvalget vårt
-  ant_utvalg <- nrow(dat_utvalg)
-
  nrsdata21 <- dat %>% 
    count(AngiNRS21) %>%
    mutate(prosent = round(100*(n/sum(n))))
@@ -899,17 +899,33 @@ Tabell \@ref(tab:tabnrsdata12) gir en oversikt over om pasientene var i stand ti
 Antall forløp som har fått tilsyn av minst én profesjon og hvor det samtidig ikke er krysset av for 'ikke aktuelt' å angi NRS (både første og siste tilsyn) er i den valgte tidpserioden `r ant_utvalg` forløp.
 
 
+```{r NRSscoreangitt, warning = FALSE, message=FALSE, results='asis'}
+
+messagefunkNRSangitt <- ""
+
+dat_utvalg2 <- dat %>%
+  dplyr::filter(Tilsett == 1 & AngiNRS12 == 1 & AngiNRS21 == 1)
+  
+#De med nedgang i smerte for StSmBe
+  #Antall i utvalget vårt
+  ant_utvalg2 <- nrow(dat_utvalg2)
+````
+`r messagefunkNRSangitt`
+
+Antall forløp som har fått tilsyn av minst én profesjon og hvor det er krysset av for at pasienten kan angi NRS (alternativ 'Ja') for både første og siste tilsyn er i den valgte tidpserioden `r ant_utvalg2` forløp.
+
+
 ```{r NRSscore12, warning = FALSE, message=FALSE, results='asis'}
 
 messagefunkNRSscore12 <- ""
 
 # Klargjøre
-if (dim(dat)[1] < 1) {
+if (dim(dat_utvalg2)[1] < 1) {
   messagefunkNRSscore12 <- "I den valgte tidsperioden er det ikke nok data til å gi resultatet."
 } else {
   
   #Score for StSmBe12
-  sb12 <- dat %>% 
+  sb12 <- dat_utvalg2 %>% 
    count(StSmBev12) %>%
    mutate(prosent = round(100*(n/sum(n))))
   #Gi navn
@@ -931,7 +947,7 @@ if (dim(dat)[1] < 1) {
 sb12 <- sb12[1:(dim(sb12)[1]-1), c(4,2,3)]
 
 #Score for StSmBe21
-  sb21 <- dat %>% 
+  sb21 <- dat_utvalg2 %>% 
    count(StSmBev21) %>%
    mutate(prosent = round(100*(n/sum(n))))
   #Gi navn
@@ -979,12 +995,12 @@ Tabell \@ref(tab:sterkbev) gir en oversikt over smertescore (antall og andel) ve
 messagefunkNRSscoresvbe12 <- ""
 
 # Klargjøre
-if (dim(dat)[1] < 1) {
+if (dim(dat_utvalg2)[1] < 1) {
   messagefunkNRSscoresvbe12 <- "I den valgte tidsperioden er det ikke nok data til å gi resultatet."
 } else {
   
   #Score for StSmBe12
-  svb12 <- dat %>% 
+  svb12 <- dat_utvalg2 %>% 
    count(SvSmBev12) %>%
    mutate(prosent = round(100*(n/sum(n))))
   #Gi navn
@@ -1006,7 +1022,7 @@ if (dim(dat)[1] < 1) {
 svb12 <- svb12[1:(dim(svb12)[1]-1), c(4,2,3)]
 
 #Score for StSmBe21
-  svb21 <- dat %>% 
+  svb21 <- dat_utvalg2 %>% 
    count(SvSmBev21) %>%
    mutate(prosent = round(100*(n/sum(n))))
   #Gi navn
@@ -1054,12 +1070,12 @@ Tabell \@ref(tab:svakbev) gir en oversikt over smertescore (antall og andel) ved
 messagefunkNRSscorestro12 <- ""
 
 # Klargjøre
-if (dim(dat)[1] < 1) {
+if (dim(dat_utvalg2)[1] < 1) {
   messagefunkNRSscorestro12 <- "I den valgte tidsperioden er det ikke nok data til å gi resultatet."
 } else {
   
   #Score for StSmBe12
-  sr12 <- dat %>% 
+  sr12 <- dat_utvalg2 %>% 
    count(StSmRo12) %>%
    mutate(prosent = round(100*(n/sum(n))))
   #Gi navn
@@ -1081,7 +1097,7 @@ if (dim(dat)[1] < 1) {
 sr12 <- sr12[1:(dim(sr12)[1]-1), c(4,2,3)]
 
 #Score for StSmBe21
-  sr21 <- dat %>% 
+  sr21 <- dat_utvalg2 %>% 
    count(StSmRo21) %>%
    mutate(prosent = round(100*(n/sum(n))))
   #Gi navn
@@ -1129,12 +1145,12 @@ Tabell \@ref(tab:sterkro) gir en oversikt over smertescore (antall og andel) ved
 messagefunkNRSscoresvro12 <- ""
 
 # Klargjøre
-if (dim(dat)[1] < 1) {
+if (dim(dat_utvalg2)[1] < 1) {
   messagefunkNRSscoresvro12 <- "I den valgte tidsperioden er det ikke nok data til å gi resultatet."
 } else {
   
   #Score for StSmBe12
-  svro12 <- dat %>% 
+  svro12 <- dat_utvalg2 %>% 
    count(SvSmRo12) %>%
    mutate(prosent = round(100*(n/sum(n))))
   #Gi navn
@@ -1156,7 +1172,7 @@ if (dim(dat)[1] < 1) {
 svro12 <- svro12[1:(dim(svro12)[1]-1), c(4,2,3)]
 
 #Score for StSmBe21
-  svro21 <- dat %>% 
+  svro21 <- dat_utvalg2 %>% 
    count(SvSmRo21) %>%
    mutate(prosent = round(100*(n/sum(n))))
   #Gi navn
