@@ -980,3 +980,86 @@ sb <- do.call("merge", c(lapply(list(sb12, sb21), data.frame, row.names=NULL),
 ````
 `r messagefunkNRSscore12`
 Tabell \@ref(tab:sterkbev) gir en oversikt over smertescore (antall og andel) ved første og siste tilsyn for sterkeste smerte i bevegelse.
+
+
+```{r NRSscoresvbe12, warning = FALSE, message=FALSE, results='asis'}
+
+messagefunkNRSscoresvbe12 <- ""
+
+# Klargjøre
+if (dim(dat)[1] < 1) {
+  messagefunkNRSscoresvbe12 <- "I den valgte tidsperioden er det ikke nok data til å gi resultatet."
+} else {
+  
+  #Score for StSmBe12
+  svb12 <- dat %>% 
+   count(SvSmBev12) %>%
+   mutate(prosent = round(100*(n/sum(n))))
+  #Gi navn
+  svb12 = svb12 %>%
+    mutate(grunnPR = case_when(SvSmBev12 == 0 ~ "0",
+                               SvSmBev12 == 1 ~ "1",
+                               SvSmBev12 == 2 ~ "2",
+                               SvSmBev12 == 3 ~ "3",
+                               SvSmBev12 == 4 ~ "4",
+                               SvSmBev12 == 5 ~ "5",
+                               SvSmBev12 == 6 ~ "6",
+                               SvSmBev12 == 7 ~ "7",
+                               SvSmBev12 == 8 ~ "8",
+                               SvSmBev12 == 9 ~ "9",
+                               SvSmBev12 == 10 ~ "10",
+                               SvSmBev12 == 99 ~ "Vet ikke"))
+ 
+#Endrer rekkefølge og tar i tilleg ved NA-raden (siste)
+svb12 <- svb12[1:(dim(svb12)[1]-1), c(4,2,3)]
+
+#Score for StSmBe21
+  svb21 <- dat %>% 
+   count(SvSmBev21) %>%
+   mutate(prosent = round(100*(n/sum(n))))
+  #Gi navn
+  svb21 = svb21 %>%
+    mutate(grunnPR = case_when(SvSmBev21 == 0 ~ "0",
+                               SvSmBev21 == 1 ~ "1",
+                               SvSmBev21 == 2 ~ "2",
+                               SvSmBev21 == 3 ~ "3",
+                               SvSmBev21 == 4 ~ "4",
+                               SvSmBev21 == 5 ~ "5",
+                               SvSmBev21 == 6 ~ "6",
+                               SvSmBev21 == 7 ~ "7",
+                               SvSmBev21 == 8 ~ "8",
+                               SvSmBev21 == 9 ~ "9",
+                               SvSmBev21 == 10 ~ "10",
+                               SvSmBev21 == 99 ~ "Vet ikke"))
+ 
+#Endrer rekkefølge og tar i tilleg ved NA-raden (siste)
+svb21 <- svb21[1:(dim(svb21)[1]-1), c(2,3)] #tar ikke med siste col pga skal binde med 12
+
+# svb <- merge(data.frame(svb12, row.names=NULL), data.frame(svb21, row.names=NULL), 
+#   by = 0, all = TRUE)[-1]
+
+svb <- do.call("merge", c(lapply(list(svb12, svb21), data.frame, row.names=NULL), 
+  by = 0, all = TRUE))[-1]
+  
+  # 
+# dat$SvSmRo12 <- as.numeric(levels(dat$SvSmRo12))[dat$SvSmRo12]
+#     dat$SvSmRo21 <- as.numeric(levels(dat$SvSmRo21))[dat$SvSmRo21]
+#     dat$StSmRo12 <- as.numeric(levels(dat$StSmRo12))[dat$StSmRo12]
+#     dat$StSmRo21 <- as.numeric(levels(dat$StSmRo21))[dat$StSmRo21]
+#     dat$SvSmBev12 <- as.numeric(levels(dat$SvSmBev12))[dat$SvSmBev12]
+#     dat$SvSmBev21 <- as.numeric(levels(dat$SvSmBev21))[dat$SvSmBev21]
+  
+  rapbase::mst(
+    tab = svb,
+    col_names = c("Score", "Antall (første tilsyn)", "Andel (første tilsyn)",
+                  "Antall (siste tilsyn)", "Andel (siste tilsyn)"),
+    label = "svakbev",
+    type = params$tableFormat,
+    cap = paste0("Oversikt over smertescore ved SVAKESTE SMERTE I BEVEGELSE."),
+    digs = 2,
+    align = c("r", "r", "r", "r", "r"))
+  
+}
+````
+`r messagefunkNRSscoresvbe12`
+Tabell \@ref(tab:svakbev) gir en oversikt over smertescore (antall og andel) ved første og siste tilsyn for svakeste smerte i bevegelse.
