@@ -952,19 +952,8 @@ sb12 <- sb12[1:(dim(sb12)[1]-1), c(4,2,3)]
 #Endrer rekkefølge og tar i tilleg ved NA-raden (siste)
 sb21 <- sb21[1:(dim(sb21)[1]-1), c(2,3)] #tar ikke med siste col pga skal binde med 12
 
-# sb <- merge(data.frame(sb12, row.names=NULL), data.frame(sb21, row.names=NULL), 
-#   by = 0, all = TRUE)[-1]
-
 sb <- do.call("merge", c(lapply(list(sb12, sb21), data.frame, row.names=NULL), 
   by = 0, all = TRUE))[-1]
-  
-  # 
-# dat$SvSmRo12 <- as.numeric(levels(dat$SvSmRo12))[dat$SvSmRo12]
-#     dat$SvSmRo21 <- as.numeric(levels(dat$SvSmRo21))[dat$SvSmRo21]
-#     dat$StSmRo12 <- as.numeric(levels(dat$StSmRo12))[dat$StSmRo12]
-#     dat$StSmRo21 <- as.numeric(levels(dat$StSmRo21))[dat$StSmRo21]
-#     dat$SvSmBev12 <- as.numeric(levels(dat$SvSmBev12))[dat$SvSmBev12]
-#     dat$SvSmBev21 <- as.numeric(levels(dat$SvSmBev21))[dat$SvSmBev21]
   
   rapbase::mst(
     tab = sb,
@@ -1035,20 +1024,9 @@ svb12 <- svb12[1:(dim(svb12)[1]-1), c(4,2,3)]
 #Endrer rekkefølge og tar i tilleg ved NA-raden (siste)
 svb21 <- svb21[1:(dim(svb21)[1]-1), c(2,3)] #tar ikke med siste col pga skal binde med 12
 
-# svb <- merge(data.frame(svb12, row.names=NULL), data.frame(svb21, row.names=NULL), 
-#   by = 0, all = TRUE)[-1]
-
 svb <- do.call("merge", c(lapply(list(svb12, svb21), data.frame, row.names=NULL), 
   by = 0, all = TRUE))[-1]
-  
-  # 
-# dat$SvSmRo12 <- as.numeric(levels(dat$SvSmRo12))[dat$SvSmRo12]
-#     dat$SvSmRo21 <- as.numeric(levels(dat$SvSmRo21))[dat$SvSmRo21]
-#     dat$StSmRo12 <- as.numeric(levels(dat$StSmRo12))[dat$StSmRo12]
-#     dat$StSmRo21 <- as.numeric(levels(dat$StSmRo21))[dat$StSmRo21]
-#     dat$SvSmBev12 <- as.numeric(levels(dat$SvSmBev12))[dat$SvSmBev12]
-#     dat$SvSmBev21 <- as.numeric(levels(dat$SvSmBev21))[dat$SvSmBev21]
-  
+
   rapbase::mst(
     tab = svb,
     col_names = c("Score", "Antall (første tilsyn)", "Andel (første tilsyn)",
@@ -1063,3 +1041,147 @@ svb <- do.call("merge", c(lapply(list(svb12, svb21), data.frame, row.names=NULL)
 ````
 `r messagefunkNRSscoresvbe12`
 Tabell \@ref(tab:svakbev) gir en oversikt over smertescore (antall og andel) ved første og siste tilsyn for svakeste smerte i bevegelse.
+
+
+```{r NRSscorerost, warning = FALSE, message=FALSE, results='asis'}
+
+messagefunkNRSscorestro12 <- ""
+
+# Klargjøre
+if (dim(dat)[1] < 1) {
+  messagefunkNRSscorestro12 <- "I den valgte tidsperioden er det ikke nok data til å gi resultatet."
+} else {
+  
+  #Score for StSmBe12
+  sr12 <- dat %>% 
+   count(StSmRo12) %>%
+   mutate(prosent = round(100*(n/sum(n))))
+  #Gi navn
+  sr12 = sr12 %>%
+    mutate(grunnPR = case_when(StSmRo12 == 0 ~ "0",
+                               StSmRo12 == 1 ~ "1",
+                               StSmRo12 == 2 ~ "2",
+                               StSmRo12 == 3 ~ "3",
+                               StSmRo12 == 4 ~ "4",
+                               StSmRo12 == 5 ~ "5",
+                               StSmRo12 == 6 ~ "6",
+                               StSmRo12 == 7 ~ "7",
+                               StSmRo12 == 8 ~ "8",
+                               StSmRo12 == 9 ~ "9",
+                               StSmRo12 == 10 ~ "10",
+                               StSmRo12 == 99 ~ "Vet ikke"))
+ 
+#Endrer rekkefølge og tar i tilleg ved NA-raden (siste)
+sr12 <- sr12[1:(dim(sr12)[1]-1), c(4,2,3)]
+
+#Score for StSmBe21
+  sr21 <- dat %>% 
+   count(StSmRo21) %>%
+   mutate(prosent = round(100*(n/sum(n))))
+  #Gi navn
+  sr21 = sr21 %>%
+    mutate(grunnPR = case_when(StSmRo21 == 0 ~ "0",
+                               StSmRo21 == 1 ~ "1",
+                               StSmRo21 == 2 ~ "2",
+                               StSmRo21 == 3 ~ "3",
+                               StSmRo21 == 4 ~ "4",
+                               StSmRo21 == 5 ~ "5",
+                               StSmRo21 == 6 ~ "6",
+                               StSmRo21 == 7 ~ "7",
+                               StSmRo21 == 8 ~ "8",
+                               StSmRo21 == 9 ~ "9",
+                               StSmRo21 == 10 ~ "10",
+                               StSmRo21 == 99 ~ "Vet ikke"))
+ 
+#Endrer rekkefølge og tar i tilleg ved NA-raden (siste)
+sr21 <- sr21[1:(dim(sr21)[1]-1), c(2,3)] #tar ikke med siste col pga skal binde med 12
+
+sr <- do.call("merge", c(lapply(list(sr12, sr21), data.frame, row.names=NULL), 
+  by = 0, all = TRUE))[-1]
+
+  rapbase::mst(
+    tab = sr,
+    col_names = c("Score", "Antall (første tilsyn)", "Andel (første tilsyn)",
+                  "Antall (siste tilsyn)", "Andel (siste tilsyn)"),
+    label = "sterkro",
+    type = params$tableFormat,
+    cap = paste0("Oversikt over smertescore ved STERKESTE SMERTE I RO."),
+    digs = 2,
+    align = c("r", "r", "r", "r", "r"))
+  
+}
+````
+`r messagefunkNRSscorestro12`
+Tabell \@ref(tab:sterkro) gir en oversikt over smertescore (antall og andel) ved første og siste tilsyn for sterkeste smerte i ro.
+
+
+```{r NRSscorerosvr, warning = FALSE, message=FALSE, results='asis'}
+
+messagefunkNRSscoresvro12 <- ""
+
+# Klargjøre
+if (dim(dat)[1] < 1) {
+  messagefunkNRSscoresvro12 <- "I den valgte tidsperioden er det ikke nok data til å gi resultatet."
+} else {
+  
+  #Score for StSmBe12
+  svro12 <- dat %>% 
+   count(SvSmRo12) %>%
+   mutate(prosent = round(100*(n/sum(n))))
+  #Gi navn
+  svro12 = svro12 %>%
+    mutate(grunnPR = case_when(SvSmRo12 == 0 ~ "0",
+                               SvSmRo12 == 1 ~ "1",
+                               SvSmRo12 == 2 ~ "2",
+                               SvSmRo12 == 3 ~ "3",
+                               SvSmRo12 == 4 ~ "4",
+                               SvSmRo12 == 5 ~ "5",
+                               SvSmRo12 == 6 ~ "6",
+                               SvSmRo12 == 7 ~ "7",
+                               SvSmRo12 == 8 ~ "8",
+                               SvSmRo12 == 9 ~ "9",
+                               SvSmRo12 == 10 ~ "10",
+                               SvSmRo12 == 99 ~ "Vet ikke"))
+ 
+#Endrer rekkefølge og tar i tilleg ved NA-raden (siste)
+svro12 <- svro12[1:(dim(svro12)[1]-1), c(4,2,3)]
+
+#Score for StSmBe21
+  svro21 <- dat %>% 
+   count(SvSmRo21) %>%
+   mutate(prosent = round(100*(n/sum(n))))
+  #Gi navn
+  svro21 = svro21 %>%
+    mutate(grunnPR = case_when(SvSmRo21 == 0 ~ "0",
+                               SvSmRo21 == 1 ~ "1",
+                               SvSmRo21 == 2 ~ "2",
+                               SvSmRo21 == 3 ~ "3",
+                               SvSmRo21 == 4 ~ "4",
+                               SvSmRo21 == 5 ~ "5",
+                               SvSmRo21 == 6 ~ "6",
+                               SvSmRo21 == 7 ~ "7",
+                               SvSmRo21 == 8 ~ "8",
+                               SvSmRo21 == 9 ~ "9",
+                               SvSmRo21 == 10 ~ "10",
+                               SvSmRo21 == 99 ~ "Vet ikke"))
+ 
+#Endrer rekkefølge og tar i tilleg ved NA-raden (siste)
+svro21 <- svro21[1:(dim(svro21)[1]-1), c(2,3)] #tar ikke med siste col pga skal binde med 12
+
+svro <- do.call("merge", c(lapply(list(svro12, svro21), data.frame, row.names=NULL), 
+  by = 0, all = TRUE))[-1]
+
+  rapbase::mst(
+    tab = svro,
+    col_names = c("Score", "Antall (første tilsyn)", "Andel (første tilsyn)",
+                  "Antall (siste tilsyn)", "Andel (siste tilsyn)"),
+    label = "sterkro",
+    type = params$tableFormat,
+    cap = paste0("Oversikt over smertescore ved SVAKESTE SMERTE I RO."),
+    digs = 2,
+    align = c("r", "r", "r", "r", "r"))
+  
+}
+````
+`r messagefunkNRSscoresvro12`
+Tabell \@ref(tab:svakro) gir en oversikt over smertescore (antall og andel) ved første og siste tilsyn for svakeste smerte i ro.
