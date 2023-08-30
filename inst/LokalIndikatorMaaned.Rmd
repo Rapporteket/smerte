@@ -954,6 +954,9 @@ sb21 <- sb21[1:(dim(sb21)[1]-1), c(2,3)] #tar ikke med siste col pga skal binde 
 
 sb <- do.call("merge", c(lapply(list(sb12, sb21), data.frame, row.names=NULL), 
   by = 0, all = TRUE))[-1]
+#Rekkefølge
+sb = sb %>% arrange(fct_relevel(word(grunnPR),'0','1','2', '3', '4',
+                                    '5', '6', '7', '8', '9', '10', 'Vet ikke'))
   
   rapbase::mst(
     tab = sb,
@@ -1026,6 +1029,9 @@ svb21 <- svb21[1:(dim(svb21)[1]-1), c(2,3)] #tar ikke med siste col pga skal bin
 
 svb <- do.call("merge", c(lapply(list(svb12, svb21), data.frame, row.names=NULL), 
   by = 0, all = TRUE))[-1]
+#Rekkefølge
+svb = svb %>% arrange(fct_relevel(word(grunnPR),'0','1','2', '3', '4',
+                                    '5', '6', '7', '8', '9', '10', 'Vet ikke'))
 
   rapbase::mst(
     tab = svb,
@@ -1098,6 +1104,9 @@ sr21 <- sr21[1:(dim(sr21)[1]-1), c(2,3)] #tar ikke med siste col pga skal binde 
 
 sr <- do.call("merge", c(lapply(list(sr12, sr21), data.frame, row.names=NULL), 
   by = 0, all = TRUE))[-1]
+#Rekkefølge
+sr = sr %>% arrange(fct_relevel(word(grunnPR),'0','1','2', '3', '4',
+                                    '5', '6', '7', '8', '9', '10', 'Vet ikke'))
 
   rapbase::mst(
     tab = sr,
@@ -1168,14 +1177,17 @@ svro12 <- svro12[1:(dim(svro12)[1]-1), c(4,2,3)]
 #Endrer rekkefølge og tar i tilleg ved NA-raden (siste)
 svro21 <- svro21[1:(dim(svro21)[1]-1), c(2,3)] #tar ikke med siste col pga skal binde med 12
 
-svro <- do.call("merge", c(lapply(list(svro12, svro21), data.frame, row.names=NULL), 
-  by = 0, all = TRUE))[-1]
+svro <- do.call("merge", c(lapply(list(svro12, svro21), data.frame, row.names=NULL), by = 0, all = TRUE))[-1]
+
+#Riktig rekkefølge
+svro = svro %>% arrange(fct_relevel(word(grunnPR),'0','1','2', '3', '4',
+                                    '5', '6', '7', '8', '9', '10', 'Vet ikke')) 
 
   rapbase::mst(
     tab = svro,
     col_names = c("Score", "Antall (første tilsyn)", "Andel (første tilsyn)",
                   "Antall (siste tilsyn)", "Andel (siste tilsyn)"),
-    label = "sterkro",
+    label = "svakro",
     type = params$tableFormat,
     cap = paste0("Oversikt over smertescore ved SVAKESTE SMERTE I RO."),
     digs = 2,
