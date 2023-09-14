@@ -1090,3 +1090,171 @@ if (dim(plotfunk)[1] < 1) {
 ```
 
 `r messageplotfunk`
+
+
+# NRS og kvalitetsforbedringsprosjektet
+Her legges midlertidig inn oversikt til bruk i kvalitetsforbedringsprosjektet vedrørende NRS.
+
+```{r NRS2-12, warning = FALSE, message=FALSE, results='asis'}
+
+messagefunkNRS2 <- ""
+
+dat_utvalg <- dat %>%
+  dplyr::filter(Tilsett == 1 & AngiNRS12 != 2 & AngiNRS21 != 2)
+  
+#De med nedgang i smerte for StSmBe
+  #Antall i utvalget vårt
+  ant_utvalg <- nrow(dat_utvalg)
+
+dat_utvalgtils <- dat %>%
+  dplyr::filter(Tilsett == 1)  
+ant_utvalgtils <- nrow(dat_utvalgtils)
+  
+# Klargjøre
+if (dim(dat)[1] < 1) {
+  messagefunkNRS2 <- "I den valgte tidsperioden er det ikke nok data til å gi resultatet."
+} else {
+  
+
+ nrsdata12 <- dat %>% 
+   count(AngiNRS12) %>%
+   mutate(prosent = round(100*(n/sum(n))))
+#Gi navn
+ nrsdata12 = nrsdata12 %>%
+   mutate(grunnPR = case_when(AngiNRS12 == 0 ~ "Nei",
+                             AngiNRS12 == 1 ~ "Ja",
+                             AngiNRS12 == 2 ~ "Ikke aktuelt",
+                             AngiNRS12 == 3 ~ "Ikke spurt"))
+#Endrer rekkefølge og tar i tilleg ved NA-raden (siste)
+nrsdata12 <- nrsdata12[1:(dim(nrsdata12)[1]-1), c(4,2,3)]
+
+#Bruker pakke kableextra
+rapbase::mst(
+  tab = nrsdata12, 
+    col_names = c("", "Antall ", "Prosent"),
+    cap = "Angi NRS (første tilsyn)",
+    label = "tabnrsdata12",
+    type = params$tableFormat,
+    digs = 0,
+    align = c("l", "r", "r", "r"))
+}
+
+
+```
+`r messagefunkNRS2`
+
+```{r NRS2-21, warning = FALSE, message=FALSE, results='asis'}
+
+messagefunkNRS21 <- ""
+
+# Klargjøre
+if (dim(dat)[1] < 1) {
+  messagefunkNRS21 <- "I den valgte tidsperioden er det ikke nok data til å gi resultatet."
+} else {
+  
+ nrsdata21 <- dat %>% 
+   count(AngiNRS21) %>%
+   mutate(prosent = round(100*(n/sum(n))))
+#Gi navn
+ nrsdata21 = nrsdata21 %>%
+   mutate(grunnPR = case_when(AngiNRS21 == 0 ~ "Nei",
+                             AngiNRS21 == 1 ~ "Ja",
+                             AngiNRS21 == 2 ~ "Ikke aktuelt",
+                             AngiNRS21 == 3 ~ "Ikke spurt"))
+#Endrer rekkefølge og tar i tilleg ved NA-raden (siste)
+nrsdata21 <- nrsdata21[1:(dim(nrsdata21)[1]-1), c(4,2,3)]
+
+#Bruker pakke kableextra
+rapbase::mst(
+  tab = nrsdata21, 
+    col_names = c("", "Antall ", "Prosent"),
+    cap = "Angi NRS (siste tilsyn)",
+    label = "tabnrsdata21",
+    type = params$tableFormat,
+    digs = 0,
+    align = c("l", "r", "r", "r"))
+  
+}
+```
+`r messagefunkNRS21`
+
+Tabell \@ref(tab:tabnrsdata12) gir en oversikt over om pasientene var i stand til å angi NRS ved første tilsyn, mens tabell \@ref(tab:tabnrsdata21) viser det samme ved siste tilsyn.
+
+Antall forløp som har fått tilsyn av minst én profesjon og hvor det samtidig _ikke_ er krysset av for 'ikke aktuelt' å angi NRS (både første og siste tilsyn) er i den valgte tidpserioden `r ant_utvalg` forløp. Totalt antall forløp med tilsyn av minst en profesjon er `r ant_utvalgtils`.
+
+
+```{r NRSscoreangitt, warning = FALSE, message=FALSE, results='asis'}
+
+messagefunkNRSangitt <- ""
+
+dat_utvalg2 <- dat %>%
+  dplyr::filter(Tilsett == 1 & AngiNRS12 == 1 & AngiNRS21 == 1)
+
+dat_utvalg21 <- dat %>%
+  dplyr::filter(Tilsett == 1 & AngiNRS12 == 1)
+  
+dat_utvalg22 <- dat %>%
+  dplyr::filter(Tilsett == 1 & AngiNRS21 == 1)
+
+#De med nedgang i smerte for StSmBe
+  #Antall i utvalget vårt
+  ant_utvalg2 <- nrow(dat_utvalg2)
+  ant_utvalg21 <- nrow(dat_utvalg21)
+  ant_utvalg22 <- nrow(dat_utvalg22)
+  
+```
+`r messagefunkNRSangitt`
+
+Antall forløp som har fått tilsyn av minst én profesjon og hvor det er krysset av for at pasienten kan angi NRS (alternativ 'Ja') for både første og siste tilsyn er i den valgte tidpserioden `r ant_utvalg2` forløp.
+
+Antall av disse forløpene hvor det er angitt NRS ved (minst) første tilsyn er `r ant_utvalg21`, mens det tilsvarende antall for (minst) siste tilsyn er `r ant_utvalg22`.
+
+Figuren under viser hvordan andelen forløp med minst ett tilsyn hvor det har blitt angitt NRS to ganger har fordelt seg i løpet av året.
+
+```{r kvalNRSfig, warning = FALSE, message=FALSE, results='asis', fig.pos= "H", out.extra = '', fig.align='center', out.width='100%'}
+
+messageplotNRSkval <- ""
+
+#Aggregate by month for plot
+dat$med <- 0
+  for(i in 1:dim(dat)[1]){
+    if(dat$Tilsett[i] == 1 & dat$AngiNRS12[i] == 1 & dat$AngiNRS21[i] == 1 & !is.na(dat$AngiNRS12[i]) & !is.na(dat$AngiNRS21[i]))
+    {dat$med[i] = 1}
+   }
+
+plotnrs<- dat %>% 
+  dplyr::group_by(SykehusNavn, monthname, med) %>%
+  dplyr::summarise(n = dplyr::n()) %>%
+  dplyr::mutate(freq = n/sum(n)) %>%
+  dplyr::filter(med == 1)
+
+if (dim(plotnrs)[1] < 1) {
+  messageplotNRSkval <- "I den valgte tidsperioden er det ikke nok data til å vise 
+  figur for denne kvalitetsindikatoren."
+} else {
+    #Plotting plotdat
+  ggplot2::ggplot(plotnrs, ggplot2::aes(monthname, freq)) +
+    ggplot2::geom_line(ggplot2::aes(group = factor(SykehusNavn), 
+                  colour=factor(SykehusNavn)), size = 0.5) +
+    ggplot2::geom_point(ggplot2::aes(group = factor(SykehusNavn), 
+                   colour=factor(SykehusNavn)), size = 1) + 
+    ggplot2::labs(x = "Måned", y = "Andel", 
+         subtitle = "Andel av de som er tilsett som kunne angi NRS ved første og siste tilsyn.", 
+         color = "Sykehus") + ggplot2::theme_classic() + 
+    ggplot2::theme(axis.text.x = ggplot2::element_text(size = 8.5), 
+          axis.text.y = ggplot2::element_text(size = 10), 
+          axis.title = ggplot2::element_text(size = 10), 
+          plot.margin = ggplot2::unit(c(1, 1, 2, 1), "cm"), 
+          legend.text = ggplot2::element_text(size = 13), 
+          axis.title.y = ggplot2::element_text(
+            margin = ggplot2::margin(t = 0, r = 10, b = 0, l = 0)
+          ), 
+          axis.title.x = ggplot2::element_text(
+            margin = ggplot2::margin(t = 10, r = 0, b = 0, l = 0)
+          )
+    )
+  
+}
+```
+
+`r messageplotNRSkval`
