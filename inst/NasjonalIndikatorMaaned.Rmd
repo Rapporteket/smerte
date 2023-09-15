@@ -54,12 +54,9 @@ if (rapbase::isRapContext()) {
 dat$SykehusNavn[dat$SykehusNavn == "Universitetssykehuset Nord-Norge HF"] = "UNN"
 dat$SykehusNavn[dat$SykehusNavn == "St. Olavs Hospital HF"] = "St. Olavs"
 dat$SykehusNavn[dat$SykehusNavn == "Oslo universitetssykehus HF"] = "OUS"
-dat$SykehusNavn[dat$SykehusNavn == "Oslo universitetssykehus HF / Smerteteam, RH"] = "OUS, RH"
-dat$SykehusNavn[dat$SykehusNavn == "Oslo universitetssykehus HF / Smerteteam, UL"] = "OUS, UL"
 dat$SykehusNavn[dat$SykehusNavn == "Helse Bergen HF"] = "HB"
 dat$SykehusNavn[dat$SykehusNavn == "Helse Møre og Romsdal HF"] = "HMR"
 dat$SykehusNavn[dat$SykehusNavn == "Vestre Viken HF"] = "VV"
-dat$SykehusNavn[dat$SykehusNavn == "Vestre Viken HF / Klinikk Bærum Sykehus"] = "VV, Bærum"
 dat$SykehusNavn[dat$SykehusNavn == "Akershus universitetssykehus HF"] = "AHUS"
 
 #Legger inn månedene i riktig rekkefølge
