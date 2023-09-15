@@ -1118,10 +1118,10 @@ if (dim(dat)[1] < 1) {
 
  nrsdata12 <- dat %>% 
    count(AngiNRS12) %>%
-   mutate(prosent = round(100*(n/sum(n))))
+   dplyr::mutate(prosent = round(100*(n/sum(n))))
 #Gi navn
  nrsdata12 = nrsdata12 %>%
-   mutate(grunnPR = case_when(AngiNRS12 == 0 ~ "Nei",
+   dplyr::mutate(grunnPR = case_when(AngiNRS12 == 0 ~ "Nei",
                              AngiNRS12 == 1 ~ "Ja",
                              AngiNRS12 == 2 ~ "Ikke aktuelt",
                              AngiNRS12 == 3 ~ "Ikke spurt"))
@@ -1154,10 +1154,10 @@ if (dim(dat)[1] < 1) {
   
  nrsdata21 <- dat %>% 
    count(AngiNRS21) %>%
-   mutate(prosent = round(100*(n/sum(n))))
+   dplyr::mutate(prosent = round(100*(n/sum(n))))
 #Gi navn
  nrsdata21 = nrsdata21 %>%
-   mutate(grunnPR = case_when(AngiNRS21 == 0 ~ "Nei",
+   dplyr::mutate(grunnPR = case_when(AngiNRS21 == 0 ~ "Nei",
                              AngiNRS21 == 1 ~ "Ja",
                              AngiNRS21 == 2 ~ "Ikke aktuelt",
                              AngiNRS21 == 3 ~ "Ikke spurt"))
