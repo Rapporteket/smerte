@@ -1017,7 +1017,7 @@ if (dim(dat)[1] < 1) {
 funfor = dat %>% 
   dplyr::filter(!is.na(Funksjon12), !is.na(Funksjon21), Funksjon12 != 9,
                 Funksjon21 != 9) %>%
-  dplyr:: mutate(bedring = (Funksjon21 - Funksjon12))
+  dplyr::mutate(bedring = (Funksjon21 - Funksjon12))
 
 funfor1 <- funfor %>%
     dplyr::mutate(bedring1 = bedring > 0) %>%
@@ -1029,7 +1029,7 @@ funfor1 <- funfor %>%
 funfor1 <- funfor1 %>%
     dplyr::select(SykehusNavn, n, ant, freq)
 
-andel_fun= sum(funfor$bedring == 0, na.rm = TRUE)
+andel_fun = sum(funfor$bedring == 0, na.rm = TRUE)
 andel_tot = length(funfor$bedring)
 andel_uendret = andel_fun/andel_tot
 
