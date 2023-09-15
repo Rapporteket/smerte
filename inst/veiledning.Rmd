@@ -15,21 +15,21 @@ Her finnes rapportene det er mulig å hente ut fra rapporteket. Etter hvert som 
 
 ## Registerets nåværende rapporter
 
-Tilsyn: informasjon om henvisninger, tilsyn (fordelt på lege, sykepleier etc.) og avdelingsoversikt for lokale data.
+**Tilsyn:** informasjon om henvisninger, tilsyn (fordelt på lege, sykepleier etc.) og avdelingsoversikt for lokale data.
 
-Dekningsgrad før reservasjon: utregning av dekningsgrad over valgfri tidsperiode for lokale data (gjelder før reservasjonsrett/til desember 2022).
+**Dekningsgrad før reservasjon:** utregning av dekningsgrad over valgfri tidsperiode for lokale data (gjelder før reservasjonsrett/til desember 2022).
 
-Dekningsgrad etter reservasjon: utregning av dekningsgrad over valgfri tidsperiode for lokale data (gjelder etter reservasjonsrett/fra desember 2022).
+**Dekningsgrad etter reservasjon:** utregning av dekningsgrad over valgfri tidsperiode for lokale data (gjelder etter reservasjonsrett/fra desember 2022).
 
-Indikatorer: Smerteregisterets resultat - og kvalitetsindikatorer for lokale eller nasjonale data. 
+**Indikatorer:** Smerteregisterets resultat - og kvalitetsindikatorer for lokale eller nasjonale data. I tillegg ligger informasjon rundt NRS for kvalitetsforbedringsprosjektet her.
 
-ePROM: oversikt over alle variablene i alle eprom-skjema for lokale eller nasjonale data.
+**ePROM:** oversikt over alle variablene i alle eprom-skjema for lokale eller nasjonale data.
 
-Spinalkateter: diverse informasjon om de pasientene som har fått spinalkateter (tilsyn, morfinekvivalenter, NRS m.m.) for lokale data.
+**Spinalkateter:** diverse informasjon om de pasientene som har fått spinalkateter (tilsyn, morfinekvivalenter, NRS m.m.) for lokale data.
 
-Smertekategori: oversikt over hovedsmertekategori, undersmertekategorier og opioidbruk ved innleggelse for lokale data.
+**Smertekategori:** oversikt over hovedsmertekategori, undersmertekategorier og opioidbruk ved innleggelse for lokale data.
 
-Opioidreduksjon: oversikt over nedgang i morfinekvivalenter.
+**Opioidreduksjon:** oversikt over nedgang i morfinekvivalenter.
 
 # Nye rapporter
 Dersom det er informasjon som er av interesse å hente ut gjentatte ganger kan det lønne seg å få laget en rapport. 
