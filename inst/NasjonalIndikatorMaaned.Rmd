@@ -1117,7 +1117,7 @@ if (dim(dat)[1] < 1) {
   
 
  nrsdata12 <- dat %>% 
-   count(AngiNRS12) %>%
+   dplyr::count(AngiNRS12) %>%
    dplyr::mutate(prosent = round(100*(n/sum(n))))
 #Gi navn
  nrsdata12 = nrsdata12 %>%
@@ -1153,7 +1153,7 @@ if (dim(dat)[1] < 1) {
 } else {
   
  nrsdata21 <- dat %>% 
-   count(AngiNRS21) %>%
+   dplyr::count(AngiNRS21) %>%
    dplyr::mutate(prosent = round(100*(n/sum(n))))
 #Gi navn
  nrsdata21 = nrsdata21 %>%
