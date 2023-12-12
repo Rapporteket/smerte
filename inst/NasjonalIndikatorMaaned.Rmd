@@ -1047,7 +1047,7 @@ andel_uendret = andel_fun/andel_tot
 
 Figuren under viser hvordan andelen har fordelt seg i løpet av året.
 
-```{r funkfig, warning = FALSE, message=FALSE, results='asis', fig.pos= "H", out.extra = '', fig.align='center', out.width='100%'}
+```{r funkfig, warning = FALSE, message=FALSE, results='asis', fig.pos= "H", out.extra = '', fig.align='center', out.width='100%', fig.width = 14, fig.asp = 0.5}
 
 messageplotfunk <- ""
 
