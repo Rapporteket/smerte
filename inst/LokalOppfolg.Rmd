@@ -50,63 +50,109 @@ if (rapbase::isRapContext()) {
 
 # Anbefalt videre oppfølging ved smerteklinikk
 
-Denne tabellen viser en oversikt over om pasientene blir anbefalt videre oppfølging ved smerteklinikk og hvordan de er fordelt mellom
+I denne rapporten ser vi en oversikt over om pasientene blir anbefalt videre oppfølging ved smerteklinikk og hvordan de er fordelt mellom
 avdelingene på sykehuset i løpet av hele tidsperioden.
 
-```{r avdelingstabell, warning = TRUE, message=TRUE, results='asis'}
-###Her klargjøres data for avdelingsoversikt
-#Antall/n er pas tils
-sum_tilsyn_avdeling <- tilsyn_full %>%
-  dplyr::group_by(tilsynstype, DEPARTMENT_SHORTNAME) %>% 
-  dplyr::summarise(antall = sum(antall), .groups = "drop_last") %>% 
-  tidyr::spread(tilsynstype, antall) %>%
-  dplyr::rowwise() %>% 
-  dplyr::mutate(behandlertilsyn = sum(Fysioterapeut, Lege, Psykolog, Sosionom,
-                                      Sykepleier))
+```{r oppfølgingstabell, warning = TRUE, message=TRUE, results='asis'}
+#Oversikt over videre oppfølging
 
-antall_pas_avdeling <- tilsyn_full %>%
-  dplyr::distinct(ForlopsID, .keep_all = TRUE) %>%
-  dplyr::count(DEPARTMENT_SHORTNAME, name = "n") 
-
-sum_tilsyn_avdeling <- cbind(sum_tilsyn_avdeling, n = antall_pas_avdeling$n) 
-
-# Finne summen av hver tilsynstype
-total_tilsyn_avdeling <- colSums(sum_tilsyn_avdeling[, -1])
-
-#Få inn navnet på den nye "avdelingen"
-sum_tilsyn_avdeling$DEPARTMENT_SHORTNAME <-
-  as.character(sum_tilsyn_avdeling$DEPARTMENT_SHORTNAME)
-
-#Ta vekk de som ikke har hatt pasienter (f.eks andre sykehus sine avdelinger)
-sum_tilsyn_avdeling <-
-  sum_tilsyn_avdeling[!is.na(sum_tilsyn_avdeling$DEPARTMENT_SHORTNAME), ]
-
-#Fra de med flest til færrest pasienter
-sum_tilsyn_avdeling <- dplyr::arrange(sum_tilsyn_avdeling, desc(n))
-#Få inn navnet på den nye raden
-
-#Legge på totalrad nederst
-sum_tilsyn_avdeling <- sum_tilsyn_avdeling %>%
-  dplyr::bind_rows(total_tilsyn_avdeling)
-
-#Legge til navn
-sum_tilsyn_avdeling[nrow(sum_tilsyn_avdeling), 1] <- "Total"
-
-# Bytte på rekkefølgen slik at behandlertilsyn kommer før pasienttilsyn
-sum_tilsyn_avdeling = sum_tilsyn_avdeling[,c(1,2,3,4,5,6,8,7,9)]
-sum_tilsyn_avdeling = sum_tilsyn_avdeling %>%
-  dplyr::mutate(DEPARTMENT_SHORTNAME =
-                  stringr::str_replace_all(DEPARTMENT_SHORTNAME, "\n", " "))
+# Data for tabell
+oppfolgdat <- dat %>%
+  #dplyr::filter(Tilsett == 1) %>% kan ta med dersom de vil
+  dplyr::count(OppfSmeKl) %>%
+  dplyr::mutate(prosent = round(100*(n/sum(n))))
+# Gi navn i stedet for tall til alternativene for tilsyn/ikke tilsyn
+oppfolgdat <- oppfolgdat %>%
+  dplyr::mutate(oppfolggrunn = 
+                  dplyr::case_when(OppfSmeKl == 0 ~ "Nei",
+                                   OppfSmeKl == 1 ~ "Ja",
+                                   OppfSmeKl == 3 ~ "Usikker",
+                                   OppfSmeKl == 9 ~ "Vet ikke",
+                                   is.na(OppfSmeKl) ~ "Mangler verdi",
+                                   FALSE ~ "Ikke angitt"))
+oppfolgdat <- oppfolgdat[ ,c(4,2,3)]
 
 rapbase::mst(
-  tab = sum_tilsyn_avdeling,
-  col_names = c("Avdeling", "Fysio", "Lege", "Psyk", "Sosio", "Sykepl",
-                "Beh tilsyn", "Pas tilsyn", "Ant pas"),
+  tab = oppfolgdat,
+  col_names = c("Anbefalt oppfølging ved smerteklinikk?", "Antall ", "Prosent"),
+  cap = paste0("Antall for hver kategori om pasienten har blitt anbefalt videre oppfølging ved smerteklinikk. Gjelder ",
+              "for perioden fra og med ", params$startDate, " til og med ",
+               params$endDate, "."),
   type = params$tableFormat,
-  cap = paste("Antall tilsyn per avdeling.",
-              "Vises i synkende rekkefølge fra flest pasienter til", 
-              "færrest."),
   digs = 0,
-  align = c("l", "r", "r", "r", "r", "r", "r", "r", "r"))
+  align = c("l", "r", "r", "r")
+)
+
+```
+
+```{r avdelingsoppfølging, warning = TRUE, message=TRUE, results='asis'}
+#Oversikt over videre oppfølging avdeling
+
+oppfolgavd <- dat %>%
+  dplyr::filter(!is.na(OppfSmeKl)) %>% 
+  dplyr::count(DEPARTMENT_SHORTNAME, OppfSmeKl) %>%
+  spread(OppfSmeKl, n, fill=0)
+
+total_avdeling <- colSums(oppfolgavd[, -1])
+
+#Legge på totalrad nederst
+oppfolgavd <- oppfolgavd %>%
+  dplyr::bind_rows(total_avdeling)
+
+#Legge til navn
+oppfolgavd[nrow(oppfolgavd), 1] <- "TOTAL"
+
+#Sum per rad
+total_per <- oppfolgavd %>% mutate(rowsum = rowSums(select_if(., is.numeric)))
+total_per <- total_per$rowsum
+
+#Legge på totalkolonne borterst
+oppfolgavd <- oppfolgavd %>%
+  dplyr::bind_rows(total_per)
+
+#Legge til totalkolonne
+oppfolgavd[1, ncol(oppfolgavd)] <- "TOTAL PER AVDELING"
+
+
+if(dim(oppfolgavd)[2] == 4){
+  rapbase::mst(
+  tab = oppfolgavd,
+  col_names = c("Avdeling", "Nei", "Ja", "Vet ikke"),
+  cap = paste0("Antall for hver kategori om pasienten har blitt anbefalt videre oppfølging ved smerteklinikk. Gjelder ",
+              "for perioden fra og med ", params$startDate, " til og med ",
+               params$endDate, "."),
+  type = params$tableFormat,
+  digs = 0,
+  align = c("l", "r", "r", "r", "r", "r")
+  )
+}
+
+if(dim(oppfolgavd)[2] == 3){
+  rapbase::mst(
+  tab = oppfolgavd,
+  col_names = c("Avdeling", "Nei", "Ja"),
+  cap = paste0("Antall for hver kategori om pasienten har blitt anbefalt videre oppfølging ved smerteklinikk. Gjelder ",
+              "for perioden fra og med ", params$startDate, " til og med ",
+               params$endDate, "."),
+  type = params$tableFormat,
+  digs = 0,
+  align = c("l", "r", "r", "r", "r", "r")
+  )
+}
+
+if(dim(oppfolgavd)[2] == 5){
+  rapbase::mst(
+  tab = oppfolgavd,
+  col_names = c("Avdeling", "Nei", "Ja", "Usikker", "Vet ikke"),
+  cap = paste0("Antall for hver kategori om pasienten har blitt anbefalt videre oppfølging ved smerteklinikk. Gjelder ",
+              "for perioden fra og med ", params$startDate, " til og med ",
+               params$endDate, "."),
+  type = params$tableFormat,
+  digs = 0,
+  align = c("l", "r", "r", "r", "r", "r")
+  )
+}
+
+
 
 ```
