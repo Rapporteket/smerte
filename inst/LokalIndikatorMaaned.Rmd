@@ -929,7 +929,7 @@ Antall forløp som har fått tilsyn av minst én profesjon og hvor det er krysse
 
 Antall av disse forløpene hvor det er angitt NRS ved (minst) første tilsyn er `r ant_utvalg21`, mens det tilsvarende antall for (minst) siste tilsyn er `r ant_utvalg22`.
 
-Figuren under viser hvordan andelen forløp med minst ett tilsyn hvor det har blitt angitt NRS to ganger har fordelt seg i løpet av året.
+Figuren under viser hvordan andelen forløp med minst ett tilsyn hvor det har blitt angitt NRS to ganger har fordelt seg i løpet av året. Tallgrunnlaget er her basert på følgende. Teller: alle forløp der NRS har blitt angitt to ganger. Nevner: alle forløp der det ikke er svart 'nei' eller 'ikke aktuelt' på å angi NRS.
 
 ```{r kvalNRSfig, warning = FALSE, message=FALSE, results='asis', fig.pos= "H", out.extra = '', fig.align='center', out.width='100%'}
 
@@ -942,7 +942,10 @@ dat$med <- 0
     {dat$med[i] = 1}
    }
 
-plotnrs<- dat %>% 
+nrsplotdat <- dat %>%
+  dplyr::filter(Tilsett == 1 & AngiNRS12 %in% c('1','3') & AngiNRS21 %in% c('1','3'))
+
+plotnrs<- nrsplotdat %>% 
   dplyr::group_by(month = monthname, med) %>%
   dplyr::summarise(n = dplyr::n()) %>%
   dplyr::mutate(freq = n/sum(n)) %>%
