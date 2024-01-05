@@ -31,7 +31,7 @@ Her finnes rapportene det er mulig å hente ut fra rapporteket. Etter hvert som 
 
 **Opioidreduksjon:** oversikt over nedgang i morfinekvivalenter.
 
-**Oppfølging:** lokal avdelingsoversikt over anbefalt oppfølging ved smerteklinikk
+**Oppfølging ved smerteklinikk:** lokal avdelingsoversikt over anbefalt oppfølging ved smerteklinikk.
 
 # Nye rapporter
 Dersom det er informasjon som er av interesse å hente ut gjentatte ganger kan det lønne seg å få laget en rapport. 
