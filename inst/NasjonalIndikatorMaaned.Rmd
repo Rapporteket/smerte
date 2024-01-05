@@ -1124,7 +1124,7 @@ if (dim(dat)[1] < 1) {
    dplyr::mutate(prosent = round(100*(n/sum(n))))
 #Gi navn
  nrsdata12 = nrsdata12 %>%
-   dplyr::mutate(grunnPR = case_when(AngiNRS12 == 0 ~ "Nei",
+   dplyr::mutate(grunnPR = dplyr::case_when(AngiNRS12 == 0 ~ "Nei",
                              AngiNRS12 == 1 ~ "Ja",
                              AngiNRS12 == 2 ~ "Ikke aktuelt",
                              AngiNRS12 == 3 ~ "Ikke spurt"))
@@ -1160,7 +1160,7 @@ if (dim(dat)[1] < 1) {
    dplyr::mutate(prosent = round(100*(n/sum(n))))
 #Gi navn
  nrsdata21 = nrsdata21 %>%
-   dplyr::mutate(grunnPR = case_when(AngiNRS21 == 0 ~ "Nei",
+   dplyr::mutate(grunnPR = dplyr::case_when(AngiNRS21 == 0 ~ "Nei",
                              AngiNRS21 == 1 ~ "Ja",
                              AngiNRS21 == 2 ~ "Ikke aktuelt",
                              AngiNRS21 == 3 ~ "Ikke spurt"))
