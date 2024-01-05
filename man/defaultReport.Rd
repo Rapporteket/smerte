@@ -11,7 +11,9 @@
 defaultReportInput(
   id,
   startDate = lubridate::today() - lubridate::years(1),
-  endDate = lubridate::today() - lubridate::weeks(1)
+  endDate = lubridate::today() - lubridate::weeks(1),
+  min = "1980-01-01",
+  max = "2100-01-01"
 )
 
 defaultReportUI(id)
