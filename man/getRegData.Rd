@@ -12,7 +12,10 @@
 \alias{getHospitalName}
 \alias{getNameReshId}
 \alias{getDataDump}
+\alias{getRegDataRapportDekningsgradReservasjon}
 \alias{getRegDataIndikator}
+\alias{getRegDataOpiodReduksjon}
+\alias{getRegDataRapportOppfolg}
 \title{Provide dataframe of registry data}
 \usage{
 getRegDataLokalTilsynsrapportMaaned(
@@ -33,7 +36,25 @@ getRegDataRapportDekningsgrad(
   ...
 )
 
+getRegDataRapportDekningsgradReservasjon(
+  registryName,
+  reshId,
+  userRole,
+  startDate,
+  endDate,
+  ...
+)
+
 getRegDataIndikator(registryName, reshId, userRole, startDate, endDate, ...)
+
+getRegDataOpiodReduksjon(
+  registryName,
+  reshId,
+  userRole,
+  startDate,
+  endDate,
+  ...
+)
 
 getSmerteDiagKatValueLab(registryName, smerteKat)
 
@@ -47,6 +68,15 @@ getRegDataSmertekategori(
 )
 
 getRegDataSpinalkateter(
+  registryName,
+  reshId,
+  userRole,
+  startDate,
+  endDate,
+  ...
+)
+
+getRegDataRapportOppfolg(
   registryName,
   reshId,
   userRole,
