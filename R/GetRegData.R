@@ -398,14 +398,20 @@ SELECT
   var.StartdatoTO,
   var.HenvistDato,
   var.SykehusNavn,
-  var.StSmBev12,
-  var.StSmBev21,
+  var.OppfSmeKl,
   var.PasientID,
   var.ForlopsID,
   var.InnlAvd,
-  var.VidereOppf
+  var.VidereOppf,
+  avd.DEPARTMENT_ID,
+  avd.DEPARTMENT_NAME,
+  avd.DEPARTMENT_SHORTNAME
 FROM
   AlleVarNum var
+LEFT JOIN
+  avdelingsoversikt avd
+ON
+  avd.DEPARTMENT_ID = var.InnlAvd
 WHERE
   var.RegDato11>=DATE('", startDate, "') AND var.RegDato11<=DATE('", endDate, "')"
   )
