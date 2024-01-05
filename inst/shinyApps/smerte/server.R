@@ -25,6 +25,7 @@ server <- function(input, output, session) {
     shiny::hideTab(inputId = "tabs", target = "Dekningsgrad etter reservasjon")
     shiny::hideTab(inputId = "tabs", target = "Spinalkateter")
     shiny::hideTab(inputId = "tabs", target = "Smertekategori")
+    shiny::hideTab(inputId = "tabs", target = "Oppfølging ved smerteklinikk")
   }
   ## tools only for SC
   if (!userRole %in% "SC") {
@@ -125,6 +126,10 @@ server <- function(input, output, session) {
   # Smertekategori
   smerte::defaultReportServer(id = "smertekategori",
                               reportFileName = "LokalSmertekategori.Rmd",
+                              reportParams = reportParams)
+  # Smertekategori
+  smerte::defaultReportServer(id = "oppfolg",
+                              reportFileName = "LokalOppfolg.Rmd",
                               reportParams = reportParams)
 
   # Definisjon av rapporter for abonnement og utsendelser
