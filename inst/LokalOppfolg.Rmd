@@ -91,7 +91,7 @@ rapbase::mst(
 oppfolgavd <- dat %>%
   dplyr::filter(!is.na(OppfSmeKl)) %>% 
   dplyr::count(DEPARTMENT_SHORTNAME, OppfSmeKl) %>%
-  spread(OppfSmeKl, n, fill=0)
+  tidyr::spread(OppfSmeKl, n, fill=0)
 
 total_avdeling <- colSums(oppfolgavd[, -1])
 
@@ -102,48 +102,15 @@ oppfolgavd <- oppfolgavd %>%
 #Legge til navn
 oppfolgavd[nrow(oppfolgavd), 1] <- "TOTAL"
 
-#Sum per rad
-total_per <- oppfolgavd %>% mutate(rowsum = rowSums(select_if(., is.numeric)))
-total_per <- total_per$rowsum
-
-#Legge på totalkolonne borterst
 oppfolgavd <- oppfolgavd %>%
-  dplyr::bind_rows(total_per)
-
-#Legge til totalkolonne
-oppfolgavd[1, ncol(oppfolgavd)] <- "TOTAL PER AVDELING"
+  dplyr::mutate(rowsum = rowSums(dplyr::select_if(., is.numeric)))
 
 
-if(dim(oppfolgavd)[2] == 4){
-  rapbase::mst(
-  tab = oppfolgavd,
-  col_names = c("Avdeling", "Nei", "Ja", "Vet ikke"),
-  cap = paste0("Antall for hver kategori om pasienten har blitt anbefalt videre oppfølging ved smerteklinikk. Gjelder ",
-              "for perioden fra og med ", params$startDate, " til og med ",
-               params$endDate, "."),
-  type = params$tableFormat,
-  digs = 0,
-  align = c("l", "r", "r", "r", "r", "r")
-  )
-}
-
-if(dim(oppfolgavd)[2] == 3){
-  rapbase::mst(
-  tab = oppfolgavd,
-  col_names = c("Avdeling", "Nei", "Ja"),
-  cap = paste0("Antall for hver kategori om pasienten har blitt anbefalt videre oppfølging ved smerteklinikk. Gjelder ",
-              "for perioden fra og med ", params$startDate, " til og med ",
-               params$endDate, "."),
-  type = params$tableFormat,
-  digs = 0,
-  align = c("l", "r", "r", "r", "r", "r")
-  )
-}
-
+###Lager tabell basert på antall ulike unike svar (ja, nei, usikker, vet ikke)
 if(dim(oppfolgavd)[2] == 5){
   rapbase::mst(
   tab = oppfolgavd,
-  col_names = c("Avdeling", "Nei", "Ja", "Usikker", "Vet ikke"),
+  col_names = c("Avdeling", "Nei", "Ja", "Vet ikke", "Sum avdeling"),
   cap = paste0("Antall for hver kategori om pasienten har blitt anbefalt videre oppfølging ved smerteklinikk. Gjelder ",
               "for perioden fra og med ", params$startDate, " til og med ",
                params$endDate, "."),
@@ -152,7 +119,31 @@ if(dim(oppfolgavd)[2] == 5){
   align = c("l", "r", "r", "r", "r", "r")
   )
 }
-
-
+# 
+if(dim(oppfolgavd)[2] == 4){
+  rapbase::mst(
+  tab = oppfolgavd,
+  col_names = c("Avdeling", "Nei", "Ja", "Sum avdeling"),
+  cap = paste0("Antall for hver kategori om pasienten har blitt anbefalt videre oppfølging ved smerteklinikk. Gjelder ",
+              "for perioden fra og med ", params$startDate, " til og med ",
+               params$endDate, "."),
+  type = params$tableFormat,
+  digs = 0,
+  align = c("l", "r", "r", "r", "r")
+  )
+}
+# 
+if(dim(oppfolgavd)[2] == 6){
+  rapbase::mst(
+  tab = oppfolgavd,
+  col_names = c("Avdeling", "Nei", "Ja", "Usikker", "Vet ikke", "Sum avdeling"),
+  cap = paste0("Antall for hver kategori om pasienten har blitt anbefalt videre oppfølging ved smerteklinikk. Gjelder ",
+              "for perioden fra og med ", params$startDate, " til og med ",
+               params$endDate, "."),
+  type = params$tableFormat,
+  digs = 0,
+  align = c("l", "r", "r", "r", "r", "r", "r")
+  )
+}
 
 ```
