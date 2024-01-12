@@ -362,6 +362,7 @@ SELECT
   SvSmRo12,
   SvSmRo21,
   SAB11,
+  SA,
   PasientID,
   TotTid,
   SluttDato
