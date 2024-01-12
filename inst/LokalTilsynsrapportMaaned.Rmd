@@ -140,10 +140,10 @@ if (!rapbase::isRapContext()) {
 #Organiserer data etter tilsynstype og måned
 tilsyn_full <- dat %>%
   dplyr::select(AntPasTils, AntTilsLege, AntTilsSykPleier, AntTilsFysioT,
-                AntTilsPsyk, AntTilsSosio, StartdatoTO, PasientID, ForlopsID,
+                AntTilsPsyk, AntTilsSosio, AntTilsKonfLege, StartdatoTO, PasientID, ForlopsID,
                 Tilsett, DEPARTMENT_NAME, DEPARTMENT_SHORTNAME, InnlAvd) %>%
   tidyr::gather(key = tilsynstype, value=antall, AntPasTils, AntTilsLege,
-                AntTilsSykPleier, AntTilsFysioT, AntTilsPsyk, AntTilsSosio) %>%
+                AntTilsSykPleier, AntTilsFysioT, AntTilsPsyk, AntTilsSosio, AntTilsKonfLege) %>%
   dplyr::mutate(antall = replace(antall, is.na(antall), 0), 
                 month = months(zoo::as.Date(StartdatoTO)),
                 tilsynstype=stringr::str_replace_all(tilsynstype,"AntTilsLege",
@@ -160,6 +160,9 @@ tilsyn_full <- dat %>%
                 tilsynstype=stringr::str_replace_all(tilsynstype,
                                                      "AntTilsSosio", 
                                                      "Sosionom"),
+                tilsynstype=stringr::str_replace_all(tilsynstype,
+                                                     "AntTilsKonfLege", 
+                                                     "KonfLege"),
                 tilsynstype=stringr::str_replace_all(tilsynstype, "AntPasTils",
                                                      "Total"),
                 yearmonth = zoo::as.yearmon(StartdatoTO))
@@ -175,7 +178,7 @@ sum_tilsyn_maned = tilsyn_full %>%
   tidyr::spread(tilsynstype, antall) %>%
   dplyr::rowwise() %>% 
   dplyr::mutate(Behandlertilsyn = sum(Fysioterapeut, Lege, Psykolog, Sosionom, 
-                                      Sykepleier))
+                                      Sykepleier, KonfLege))
 
 antall_pas_maned <- tilsyn_full %>%
   dplyr::filter(Tilsett == 1) %>%
@@ -196,17 +199,18 @@ sum_tilsyn_maned <- sum_tilsyn_maned %>%
 sum_tilsyn_maned$monthname[is.na(sum_tilsyn_maned$monthname)] <- "Total"
 
 # Bytte på rekkefølgen slik at behandlertilsyn kommer før pasienttilsyn
-sum_tilsyn_maned <- sum_tilsyn_maned[,c(1, 2, 3, 4, 5, 6, 8, 7, 9, 10)]
+sum_tilsyn_maned <- sum_tilsyn_maned[,c(1, 2, 3, 4, 5, 6, 7, 9, 9, 10, 11)]
+
 
 rapbase::mst(
   tab = sum_tilsyn_maned,
-  col_names = c("Måned", "Fysio", "Lege", "Psyk", "Sosio",
+  col_names = c("Måned", "Fysio", "Konf. lege", "Lege", "Psyk", "Sosio",
                 "Sykepl", "Beh tilsyn", "Pas tilsyn", "Ant pas",
                 "Ant henv"),
   type = params$tableFormat,
   cap = paste0("Antall tilsyn per måned for de ulike behandlergruppene."),
   digs = 0,
-  align = c("l", "r", "r", "r", "r", "r", "r", "r", "r", "r"))
+  align = c("l", "r", "r", "r", "r", "r", "r", "r", "r", "r", "r"))
 ```
 
 
@@ -224,7 +228,7 @@ sum_tilsyn_avdeling <- tilsyn_full %>%
   tidyr::spread(tilsynstype, antall) %>%
   dplyr::rowwise() %>% 
   dplyr::mutate(behandlertilsyn = sum(Fysioterapeut, Lege, Psykolog, Sosionom,
-                                      Sykepleier))
+                                      Sykepleier, KonfLege))
 
 antall_pas_avdeling <- tilsyn_full %>%
   dplyr::distinct(ForlopsID, .keep_all = TRUE) %>%
@@ -255,20 +259,21 @@ sum_tilsyn_avdeling <- sum_tilsyn_avdeling %>%
 sum_tilsyn_avdeling[nrow(sum_tilsyn_avdeling), 1] <- "Total"
 
 # Bytte på rekkefølgen slik at behandlertilsyn kommer før pasienttilsyn
-sum_tilsyn_avdeling = sum_tilsyn_avdeling[,c(1,2,3,4,5,6,8,7,9)]
+sum_tilsyn_avdeling = sum_tilsyn_avdeling[,c(1,2,3,4,5,6,7,9,8,10)]
 sum_tilsyn_avdeling = sum_tilsyn_avdeling %>%
   dplyr::mutate(DEPARTMENT_SHORTNAME =
                   stringr::str_replace_all(DEPARTMENT_SHORTNAME, "\n", " "))
 
+colnames(sum_tilsyn_avdeling)
 rapbase::mst(
   tab = sum_tilsyn_avdeling,
-  col_names = c("Avdeling", "Fysio", "Lege", "Psyk", "Sosio", "Sykepl",
+  col_names = c("Avdeling", "Fysio", "Konf. lege", "Lege", "Psyk", "Sosio", "Sykepl",
                 "Beh tilsyn", "Pas tilsyn", "Ant pas"),
   type = params$tableFormat,
   cap = paste("Antall tilsyn per avdeling.",
               "Vises i synkende rekkefølge fra flest pasienter til", 
               "færrest."),
   digs = 0,
-  align = c("l", "r", "r", "r", "r", "r", "r", "r", "r"))
+  align = c("l", "r", "r", "r", "r", "r", "r", "r", "r", "r"))
 
 ```
