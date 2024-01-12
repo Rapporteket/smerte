@@ -50,6 +50,7 @@ SELECT
   var.AntTilsFysioT,
   var.AntTilsPsyk,
   var.AntTilsSosio,
+  var.AntTilsKonfLege,
   var.AntPasTils,
   var.Tilsett,
   var.RegDato11,
