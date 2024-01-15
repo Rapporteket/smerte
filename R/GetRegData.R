@@ -68,9 +68,9 @@ LEFT JOIN
 ON
   avd.DEPARTMENT_ID = var.InnlAvd
 WHERE
-  var.RegDato11 >= DATE('"
+  var.StartdatoTO >= DATE('"
 
-  query <- paste0(query, startDate, "') AND var.RegDato11 <= DATE('",
+  query <- paste0(query, startDate, "') AND var.StartdatoTO <= DATE('",
                   endDate, "') AND var.AvdRESH IN (", deps, ");")
 
 
@@ -200,7 +200,7 @@ SELECT
 FROM
   AlleVarNum var
 WHERE
-  var.RegDato11>=DATE('", startDate, "') AND var.RegDato11<=DATE('", endDate, "')"
+  var.StartdatoTO>=DATE('", startDate, "') AND var.StartdatoTO<=DATE('", endDate, "')"
   )
 
   if (isNationalReg(reshId)) {
@@ -240,7 +240,7 @@ SELECT
 FROM
   AlleVarNum var
 WHERE
-  var.RegDato11>=DATE('", startDate, "') AND var.RegDato11<=DATE('", endDate, "')"
+  var.StartdatoTO>=DATE('", startDate, "') AND var.StartdatoTO<=DATE('", endDate, "')"
   )
 
   if (isNationalReg(reshId)) {
@@ -418,7 +418,7 @@ LEFT JOIN
 ON
   avd.DEPARTMENT_ID = var.InnlAvd
 WHERE
-  var.RegDato11>=DATE('", startDate, "') AND var.RegDato11<=DATE('", endDate, "')"
+  var.StartdatoTO>=DATE('", startDate, "') AND var.StartdatoTO<=DATE('", endDate, "')"
   )
 
   if (isNationalReg(reshId)) {
@@ -449,13 +449,13 @@ getLocalYears <- function(registryName, reshId, userRole) {
 
   query <- paste0("
 SELECT
-  YEAR(RegDato11) as year
+  YEAR(StartdatoTO) as year
 FROM
   AlleVarNum
 WHERE
   AvdRESH IN (", deps, ")
 GROUP BY
-  YEAR(RegDato11);
+  YEAR(StartdatoTO);
 ")
 
   rapbase::loadRegData(registryName, query, dbType)
@@ -469,11 +469,11 @@ getAllYears <- function(registryName, reshId, userRole) {
 
   query <- paste0("
 SELECT
-  YEAR(RegDato11) as year
+  YEAR(StartdatoTO) as year
 FROM
   AlleVarNum
 GROUP BY
-  YEAR(RegDato11);
+  YEAR(StartdatoTO);
 ")
 
   rapbase::loadRegData(registryName, query, dbType)
