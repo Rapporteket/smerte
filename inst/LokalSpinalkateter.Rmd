@@ -1,6 +1,6 @@
 ---
 params:
-  title: 'Rapport vedrørende spinalkateter '
+  title: 'Rapport rundt bruk av spinalkateter '
   author: 'Rapporteket'
   hospitalName: 'Ukjent sykehus'
   reshId: 'locallyDefined'
@@ -87,7 +87,7 @@ knitr::knit_exit()
 
 # Pasienter med spinalkateter og oversikt over relevante variabler
 
-I denne rapporten finner vi en oversikt over bruken av spinalkateter.
+I denne rapporten finnes en oversikt over bruken av spinalkateter.
 
 
 ```{r datatilpasning, warning = TRUE, message=TRUE, results='asis', eval=dataPresent}
@@ -192,8 +192,7 @@ knitr::knit_exit()
 datspinalgen <- tibble::as_tibble(
   datspinal %>%
     dplyr::select(AntPasTils, behtils, StartdatoTO, PasientID, 
-                  ForlopsID, TotTid, SluttDato, 
-                  MoEkvivalens, MoEkvivalens22) %>% 
+                  ForlopsID, TotTid, SluttDato) %>% 
     dplyr::mutate(
       difftid = as.numeric(gsub("[^0-9]", "", 
                                 as.Date(datspinal$SluttDato) - 
@@ -208,13 +207,13 @@ antspinal <- dim(datspinal)[1]
 pastils_mean <- mean(datspinal$AntPasTils, na.rm = TRUE)
 
 #Til tabell
-spinaltabell <- datspinalgen[ , c(5, 1, 2, 6, 10, 8, 9)]
+spinaltabell <- datspinalgen[ , c(5, 1, 2, 6, 8)]
 
 rapbase::mst(
   tab = spinaltabell, 
   col_names = c("ForløpsID" ,"Pasienttilsyn", "Behandlertilsyn", "Totaltid",
-                "Følgetid", "MoEkv før", "MoEkv etter"),
-  cap = paste0("Informasjon rundt pasienter registert med spinalkateter. Totaltid gir antall timer totalt brukt på tilsyn, mens følgetid gir antall dager fra henvisning til sluttføring. MoEkv før og MoEkv etter gir antall morfinekvivalenter henholdsvis ved innleggelse og ved utskrivelse."),
+                "Følgetid"),
+  cap = paste0("Informasjon rundt pasienter registert med spinalkateter. Totaltid gir antall timer totalt brukt på tilsyn, mens følgetid gir antall dager fra henvisning til sluttføring."),
   label = "spinalkat",
   type = params$tableFormat,
   digs = 0,
@@ -231,38 +230,31 @@ datmed <- tibble::as_tibble(
   datspinal %>%
     dplyr::select(ForlopsID, MoEkvivalens, MoEkvivalens22, Opbehd221d, 
                   LAbehd221d, KoAbedel221d) %>%
-    dplyr::mutate(Opioidtkst = dplyr::case_when(Opbehd221d == 0 ~ "Nei",
+    dplyr::mutate(Opbehd221d = dplyr::case_when(Opbehd221d == 0 ~ "Nei",
                                          Opbehd221d == 1 ~ "Ja",
                                          TRUE ~ "Ikke aktuelt")) %>%
-    dplyr::mutate(LAbehtkst = dplyr::case_when(LAbehd221d == 0 ~ "Nei",
+    dplyr::mutate(LAbehd221d = dplyr::case_when(LAbehd221d == 0 ~ "Nei",
                                          LAbehd221d == 1 ~ "Ja",
                                          TRUE ~ "Ikke aktuelt")) %>%
-    dplyr::mutate(KoAtkst = dplyr::case_when(KoAbedel221d == 0 ~ "Nei",
+    dplyr::mutate(KoAbedel221d = dplyr::case_when(KoAbedel221d == 0 ~ "Nei",
                                          KoAbedel221d == 1 ~ "Ja",
                                          TRUE ~ "Ikke aktuelt"))
-  )
+)
 
-colnames(datmed)
-# #Til tabell
-medtab <- datmed[ , c(1, 2, 3, 7, 8, 9)]
-
-colnames(medtab)
-str(medtab)
-
-# rapbase::mst(
-#   tab = datmed,
-#   col_names = c("ForløpsID" ,"MoEkv før", "MoEkv etter", "Opioider",
-#                 "Lokal anestesi", "Ko-analgetika"),
-#   cap = paste0("Vedrørende medikament brukt i spinalkateter for alle forløp registert med dette registert med dette. 'MoEkv før' og 'MoEkv etter' gir antall morfinekvivalenter henholdsvis ved innleggelse og ved utskrivelse."),
-#   label = "medtab",
-#   type = params$tableFormat,
-#   digs = 0,
-#   align = c("l", "c", "c", "c", "c", "c", "c"))
+rapbase::mst(
+  tab = datmed,
+  col_names = c("ForløpsID","MoEkv før", "MoEkv etter", "Opioider",
+                "Lokal anestesi", "Ko-analgetika"),
+  cap = paste0("Vedrørende medikament brukt i spinalkateter for alle forløp registert med dette registert med dette. 'MoEkv før' og 'MoEkv etter' gir antall morfinekvivalenter henholdsvis ved første tilsyn og ved siste tilsyn."),
+  label = "medtab",
+  type = params$tableFormat,
+  digs = 0,
+  align = c("l", "c", "c", "c", "c", "c", "c"))
 ```
 
 Tabell \@ref(tab:medtab) gir en oversikt over medikament i spinalkateter for de pasientene som har fått dette i den valgte tidsperioden.
 
-## Endring i NRS
+## NRS
 
 ```{r spinalNRSBEV, warning = FALSE, message=FALSE, results='asis', eval=dataSpinalPresent}
 
