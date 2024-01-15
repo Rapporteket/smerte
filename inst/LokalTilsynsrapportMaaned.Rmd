@@ -26,8 +26,6 @@ options(knitr.table.format = params$tableFormat)
 options(tinytex.verbose = TRUE)
 
 #FIX: Må det legges inn noe som avjgør lokasjon
-#FIX3: bytte fra RegDato11 til StartdatoTO? (spør LJ/Stefanie)
-
 ```
 
 ```{r get data, warning = TRUE, message=TRUE}
