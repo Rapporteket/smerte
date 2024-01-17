@@ -262,7 +262,6 @@ sum_tilsyn_avdeling = sum_tilsyn_avdeling %>%
   dplyr::mutate(DEPARTMENT_SHORTNAME =
                   stringr::str_replace_all(DEPARTMENT_SHORTNAME, "\n", " "))
 
-colnames(sum_tilsyn_avdeling)
 rapbase::mst(
   tab = sum_tilsyn_avdeling,
   col_names = c("Avdeling", "Fysio", "Konf. lege", "Lege", "Psyk", "Sosio", "Sykepl",
