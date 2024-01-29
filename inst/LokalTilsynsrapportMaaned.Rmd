@@ -112,6 +112,33 @@ rapbase::mst(
 ```
 
 
+```{r rådtabell, warning=TRUE, message=TRUE, results='asis'}
+###Her klargjøres data for tilsynstabell
+
+# Data for tabell over gitt råd
+raad <- tilsyn_full <- dat %>%
+  dplyr::select(Tilsett, StartdatoTO) %>%
+  dplyr::mutate(month = months(zoo::as.Date(StartdatoTO)),
+                yearmonth = zoo::as.yearmon(StartdatoTO))
+raad <- raad %>%
+  dplyr::mutate(monthname = .data$yearmonth) 
+
+#Summerer antall gitt råd per måned
+sum_raad_maned = raad %>%
+  dplyr::filter(Tilsett == 4) %>%
+  dplyr::count(monthname, name = "n_pas") 
+
+#Tabell
+rapbase::mst(
+  tab = sum_raad_maned,
+  col_names = c("Måned", "Antall (gitt råd)"),
+  type = params$tableFormat,
+  cap = paste0("Månedsfordeling for svaralternativet 'Gitt råd' i tilsynstabellen."),
+  digs = 0,
+  align = c("l", "r", "r"))
+
+```
+
 # Behandlertilsyn og pasienttilsyn per måned
 
 Denne tabellen viser hvor mange som har fått tilsyn av de ulike
