@@ -232,7 +232,7 @@ antall_pas_avdeling <- tilsyn_full %>%
   dplyr::distinct(ForlopsID, .keep_all = TRUE) %>%
   dplyr::count(DEPARTMENT_SHORTNAME, name = "n") 
 
-sum_tilsyn_avdeling <- cbind(sum_tilsyn_avdeling, n = antall_pas_avdeling$n) 
+sum_tilsyn_avdeling <- merge(sum_tilsyn_avdeling, antall_pas_avdeling, by = "DEPARTMENT_SHORTNAME") 
 
 # Finne summen av hver tilsynstype
 total_tilsyn_avdeling <- colSums(sum_tilsyn_avdeling[, -1])
@@ -265,7 +265,7 @@ sum_tilsyn_avdeling = sum_tilsyn_avdeling %>%
 rapbase::mst(
   tab = sum_tilsyn_avdeling,
   col_names = c("Avdeling", "Fysio", "Konf. lege", "Lege", "Psyk", "Sosio", "Sykepl",
-                "Beh tilsyn", "Pas tilsyn", "Ant pas"),
+                "Beh tilsyn", "Pas tilsyn", "Ant henv"),
   type = params$tableFormat,
   cap = paste("Antall tilsyn per avdeling.",
               "Vises i synkende rekkefølge fra flest pasienter til", 
