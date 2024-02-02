@@ -82,7 +82,6 @@ grunnen for at det ikke ble gitt tilsyn i disse tilfellene.
 
 ```{r tilsynstabell, warning=TRUE, message=TRUE, results='asis'}
 ###Her klargjøres data for tilsynstabell
-
 # Data for tabell over tilsyn
 tilsynsdata <- dat %>% dplyr::count(Tilsett) %>%
   dplyr::mutate(prosent = round(100*(n/sum(n))))
@@ -94,6 +93,7 @@ tilsynsdata <- tilsynsdata %>%
                                    Tilsett == 3 ~ "Nei, ikke kapasitet",
                                    Tilsett == 4 ~ "Nei, men gitt råd",
                                    Tilsett == 5 ~ "Nei, annen grunn",
+                                   Tilsett == 6 ~ "Mangler verdi",
                                    is.na(Tilsett) ~ "Mangler verdi",
                                    FALSE ~ "Ikke angitt"))
 tilsynsdata <- tilsynsdata[ ,c(4,2,3)]
@@ -126,16 +126,12 @@ raad <- raad %>%
 #Summerer antall gitt råd per måned
 sum_raad_maned = raad %>%
   dplyr::select(Tilsett, monthname) %>%
-  tidyr::drop_na(Tilsett) %>%
   tidyr::gather(Tilsett, monthname) %>%
   dplyr::group_by(Tilsett, monthname) %>%
   dplyr::count() %>%
   dplyr::ungroup() %>%
   tidyr::spread(Tilsett, n) %>%
-  tidyr::replace_na(list(0))
-  
-colnames(sum_raad_maned)
-sum_raad_maned[1:5,]
+  replace(is.na(.), 0)
 
 #Tabell
 rapbase::mst(
