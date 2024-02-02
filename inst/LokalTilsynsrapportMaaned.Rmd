@@ -125,17 +125,26 @@ raad <- raad %>%
 
 #Summerer antall gitt råd per måned
 sum_raad_maned = raad %>%
-  dplyr::filter(Tilsett == 4) %>%
-  dplyr::count(monthname, name = "n_pas") 
+  dplyr::select(Tilsett, monthname) %>%
+  tidyr::drop_na(Tilsett) %>%
+  tidyr::gather(Tilsett, monthname) %>%
+  dplyr::group_by(Tilsett, monthname) %>%
+  dplyr::count() %>%
+  dplyr::ungroup() %>%
+  tidyr::spread(Tilsett, n) %>%
+  tidyr::replace_na(0)
+  
+colnames(sum_raad_maned)
+sum_raad_maned[1:5,]
 
 #Tabell
 rapbase::mst(
   tab = sum_raad_maned,
-  col_names = c("Måned", "Antall (gitt råd)"),
+  col_names = c("Måned", "1", "2", "3", "4", "5", "6"),
   type = params$tableFormat,
   cap = paste0("Månedsfordeling for svaralternativet 'Gitt råd' i tilsynstabellen."),
   digs = 0,
-  align = c("l", "r", "r"))
+  align = c("l", "r", "r", "r", "r", "r", "r", "r"))
 
 ```
 
@@ -209,6 +218,7 @@ antall_pas_maned <- tilsyn_full %>%
   dplyr::filter(Tilsett == 1) %>%
   dplyr::distinct(PasientID, .keep_all = TRUE) %>%
   dplyr::count(monthname, name = "n_pas") 
+
 antall_henv_maned <- tilsyn_full %>%
   dplyr::distinct(ForlopsID, .keep_all = TRUE) %>%
   dplyr::count(monthname, name = "n_henv")
