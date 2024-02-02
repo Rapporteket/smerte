@@ -132,7 +132,7 @@ sum_raad_maned = raad %>%
   dplyr::count() %>%
   dplyr::ungroup() %>%
   tidyr::spread(Tilsett, n) %>%
-  tidyr::replace_na(0)
+  tidyr::replace_na(list(0))
   
 colnames(sum_raad_maned)
 sum_raad_maned[1:5,]
@@ -140,7 +140,7 @@ sum_raad_maned[1:5,]
 #Tabell
 rapbase::mst(
   tab = sum_raad_maned,
-  col_names = c("Måned", "1", "2", "3", "4", "5", "6"),
+  col_names = c("Måned", "Ja", "Ikke behov", "Ikke kapasitet", "Gitt råd", "Annen grunn", "Mangler verdi"),
   type = params$tableFormat,
   cap = paste0("Månedsfordeling for svaralternativet 'Gitt råd' i tilsynstabellen."),
   digs = 0,
