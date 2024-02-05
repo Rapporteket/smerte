@@ -126,6 +126,9 @@ raad <- tilsyn_full <- dat %>%
 raad <- raad %>%
   dplyr::mutate(monthname = .data$yearmonth) 
 
+raad <- raad %>%
+   dplyr::filter(Tilsett != '6')
+
 #Summerer antall gitt råd per måned
 sum_raad_maned = raad %>%
   dplyr::select(Tilsett, monthname) %>%
@@ -136,14 +139,14 @@ sum_raad_maned = raad %>%
   tidyr::spread(Tilsett, n) %>%
   replace(is.na(.), 0)
 
-#Tabell
+# #Tabell
 rapbase::mst(
   tab = sum_raad_maned,
-  col_names = c("Måned", "Ja", "Ikke behov", "Ikke kapasitet", "Gitt råd", "Annen grunn", "Mangler verdi"),
+  col_names = c("Måned", "Ja", "Ikke behov", "Ikke kapasitet", "Gitt råd", "Annen grunn"),
   type = params$tableFormat,
-  cap = paste0("Månedsfordeling for svaralternativet 'Gitt råd' i tilsynstabellen."),
+  cap = paste0("Månedsfordeling for tilsynstabellen."),
   digs = 0,
-  align = c("l", "r", "r", "r", "r", "r", "r", "r"))
+  align = c("l", "r", "r", "r", "r", "r", "r"))
 
 ```
 
