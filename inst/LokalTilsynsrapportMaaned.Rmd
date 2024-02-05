@@ -98,6 +98,9 @@ tilsynsdata <- tilsynsdata %>%
                                    FALSE ~ "Ikke angitt"))
 tilsynsdata <- tilsynsdata[ ,c(4,2,3)]
 
+tilsynsdata <- tilsynsdata %>%
+  dplyr::filter(tilsynAarsak != 'Mangler verdi')
+
 rapbase::mst(
   tab = tilsynsdata,
   col_names = c("Har pasienten fått tilsyn?", "Antall ", "Prosent"),
