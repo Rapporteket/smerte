@@ -98,8 +98,9 @@ tilsynsdata <- tilsynsdata %>%
                                    FALSE ~ "Ikke angitt"))
 tilsynsdata <- tilsynsdata[ ,c(4,2,3)]
 
-tilsynsdata <- tilsynsdata %>%
-  dplyr::filter(tilsynAarsak != 'Mangler verdi')
+#Hvis den skal fjernes en gang
+# tilsynsdata <- tilsynsdata %>%
+#   dplyr::filter(tilsynAarsak != 'Mangler verdi')
 
 rapbase::mst(
   tab = tilsynsdata,
@@ -126,8 +127,9 @@ raad <- tilsyn_full <- dat %>%
 raad <- raad %>%
   dplyr::mutate(monthname = .data$yearmonth) 
 
-raad <- raad %>%
-   dplyr::filter(Tilsett != '6')
+#Hvis den skal fjernes en gang
+# raad <- raad %>%
+#    dplyr::filter(Tilsett != '6')
 
 #Summerer antall gitt råd per måned
 sum_raad_maned = raad %>%
@@ -142,11 +144,11 @@ sum_raad_maned = raad %>%
 # #Tabell
 rapbase::mst(
   tab = sum_raad_maned,
-  col_names = c("Måned", "Ja", "Ikke behov", "Ikke kapasitet", "Gitt råd", "Annen grunn"),
+  col_names = c("Måned", "Ja", "Ikke behov", "Ikke kapasitet", "Gitt råd", "Annen grunn", "Mangler verdi"),
   type = params$tableFormat,
   cap = paste0("Månedsfordeling for tilsynstabellen."),
   digs = 0,
-  align = c("l", "r", "r", "r", "r", "r", "r"))
+  align = c("l", "r", "r", "r", "r", "r", "r", "r"))
 
 ```
 
