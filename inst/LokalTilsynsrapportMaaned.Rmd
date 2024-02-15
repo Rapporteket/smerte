@@ -144,11 +144,11 @@ sum_raad_maned = raad %>%
 # #Tabell
 rapbase::mst(
   tab = sum_raad_maned,
-  col_names = c("Måned", "Ja", "Ikke behov", "Ikke kapasitet", "Gitt råd", "Annen grunn", "Mangler verdi"),
+  col_names = c("Måned", "Ja", "Ikke behov", "Ikke kapasitet", "Gitt råd", "Annen grunn", "Mangler verdi")[c(1,as.numeric(names(sum_raad_maned)[-1])+1)],
   type = params$tableFormat,
   cap = paste0("Månedsfordeling for tilsynstabellen."),
   digs = 0,
-  align = c("l", "r", "r", "r", "r", "r", "r", "r"))
+  align = c("l", "r", "r", "r", "r", "r", "r", "r")[c(1,as.numeric(names(sum_raad_maned)[-1])+1)])
 
 ```
 
@@ -211,6 +211,7 @@ tilsyn_full <- tilsyn_full %>%
   dplyr::mutate(monthname = .data$yearmonth) 
 
 sum_tilsyn_maned = tilsyn_full %>%
+  dplyr::filter(Tilsett == 1) %>%
   dplyr::group_by(tilsynstype, monthname) %>% 
   dplyr::summarise(antall = sum(antall), .groups = "drop_last") %>% 
   tidyr::spread(tilsynstype, antall) %>%
@@ -224,6 +225,7 @@ antall_pas_maned <- tilsyn_full %>%
   dplyr::count(monthname, name = "n_pas") 
 
 antall_henv_maned <- tilsyn_full %>%
+  dplyr::filter(Tilsett == 1) %>%
   dplyr::distinct(ForlopsID, .keep_all = TRUE) %>%
   dplyr::count(monthname, name = "n_henv")
 sum_tilsyn_maned$n_pas <- antall_pas_maned$n_pas
