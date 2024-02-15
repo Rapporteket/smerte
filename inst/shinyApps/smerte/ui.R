@@ -116,8 +116,19 @@ ui <- shiny::tagList(
             smerte::defaultReportUI("smertekategori")
           )
         )
+      ),
+      shiny::tabPanel(
+        "Oppfølging ved smerteklinikk",
+        shiny::sidebarLayout(
+          shiny::sidebarPanel(
+            smerte::defaultReportInput("oppfolg")
+          ),
+          shiny::mainPanel(
+            smerte::defaultReportUI("oppfolg")
+          )
+        )
       )
-    ),
+     ),
     shiny::tabPanel(
       "Abonnement",
       shiny::sidebarLayout(

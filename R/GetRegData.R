@@ -50,6 +50,7 @@ SELECT
   var.AntTilsFysioT,
   var.AntTilsPsyk,
   var.AntTilsSosio,
+  var.AntTilsKonfLege,
   var.AntPasTils,
   var.Tilsett,
   var.RegDato11,
@@ -67,9 +68,9 @@ LEFT JOIN
 ON
   avd.DEPARTMENT_ID = var.InnlAvd
 WHERE
-  var.RegDato11 >= DATE('"
+  var.StartdatoTO >= DATE('"
 
-  query <- paste0(query, startDate, "') AND var.RegDato11 <= DATE('",
+  query <- paste0(query, startDate, "') AND var.StartdatoTO <= DATE('",
                   endDate, "') AND var.AvdRESH IN (", deps, ");")
 
 
@@ -199,7 +200,7 @@ SELECT
 FROM
   AlleVarNum var
 WHERE
-  var.RegDato11>=DATE('", startDate, "') AND var.RegDato11<=DATE('", endDate, "')"
+  var.StartdatoTO>=DATE('", startDate, "') AND var.StartdatoTO<=DATE('", endDate, "')"
   )
 
   if (isNationalReg(reshId)) {
@@ -239,7 +240,7 @@ SELECT
 FROM
   AlleVarNum var
 WHERE
-  var.RegDato11>=DATE('", startDate, "') AND var.RegDato11<=DATE('", endDate, "')"
+  var.StartdatoTO>=DATE('", startDate, "') AND var.StartdatoTO<=DATE('", endDate, "')"
   )
 
   if (isNationalReg(reshId)) {
@@ -341,6 +342,9 @@ getRegDataSpinalkateter <- function(registryName, reshId, userRole,
 SELECT
   MoEkvivalens,
   MoEkvivalens22,
+  Opbehd221d,
+  LAbehd221d,
+  KoAbedel221d,
   AntPasTils,
   AntTilsLege,
   AntTilsSykPleier,
@@ -358,6 +362,7 @@ SELECT
   SvSmRo12,
   SvSmRo21,
   SAB11,
+  SA,
   PasientID,
   TotTid,
   SluttDato
@@ -381,6 +386,58 @@ WHERE
   rapbase::loadRegData(registryName, query, dbType)
 }
 
+#' @rdname getRegData
+#' @export
+getRegDataRapportOppfolg <- function(registryName, reshId, userRole,
+                                startDate, endDate, ...) {
+
+  dbType <- "mysql"
+
+  # special case at OUS
+  deps <- .getDeps(reshId, userRole)
+
+  query <- paste0("
+SELECT
+  var.Tilsett,
+  var.RegDato11,
+  var.StartdatoTO,
+  var.HenvistDato,
+  var.SykehusNavn,
+  var.OppfSmeKl,
+  var.PasientID,
+  var.ForlopsID,
+  var.InnlAvd,
+  var.VidereOppf,
+  avd.DEPARTMENT_ID,
+  avd.DEPARTMENT_NAME,
+  avd.DEPARTMENT_SHORTNAME
+FROM
+  AlleVarNum var
+LEFT JOIN
+  avdelingsoversikt avd
+ON
+  avd.DEPARTMENT_ID = var.InnlAvd
+WHERE
+  var.StartdatoTO>=DATE('", startDate, "') AND var.StartdatoTO<=DATE('", endDate, "')"
+  )
+
+  if (isNationalReg(reshId)) {
+    query <- paste0(query, ";")
+  } else {
+    query <- paste0(query, " AND var.AvdRESH IN (", deps, ");")
+  }
+
+  if ("session" %in% names(list(...))) {
+    session <- list(...)[["session"]]
+    if ("ShinySession" %in% attr(session, "class")) {
+      rapbase::repLogger(session = session,
+                         msg = paste("Load indikatorrapport data from",
+                                     registryName, ": ", query))
+    }
+  }
+
+  rapbase::loadRegData(registryName, query, dbType)
+}
 
 #' @rdname getRegData
 #' @export
@@ -392,13 +449,13 @@ getLocalYears <- function(registryName, reshId, userRole) {
 
   query <- paste0("
 SELECT
-  YEAR(RegDato11) as year
+  YEAR(StartdatoTO) as year
 FROM
   AlleVarNum
 WHERE
   AvdRESH IN (", deps, ")
 GROUP BY
-  YEAR(RegDato11);
+  YEAR(StartdatoTO);
 ")
 
   rapbase::loadRegData(registryName, query, dbType)
@@ -412,11 +469,11 @@ getAllYears <- function(registryName, reshId, userRole) {
 
   query <- paste0("
 SELECT
-  YEAR(RegDato11) as year
+  YEAR(StartdatoTO) as year
 FROM
   AlleVarNum
 GROUP BY
-  YEAR(RegDato11);
+  YEAR(StartdatoTO);
 ")
 
   rapbase::loadRegData(registryName, query, dbType)

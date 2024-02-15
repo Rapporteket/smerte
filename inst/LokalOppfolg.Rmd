@@ -1,0 +1,149 @@
+---
+params:
+  title: 'Oppfølging ved smerteklinikk'
+  author: 'Rapporteket'
+  hospitalName: 'Ukjent sykehus'
+  reshId: 'locallyDefined'
+  userRole: 'MyRole'
+  userFullName: 'Ukjent bruker'
+  startDate: '2017-01-01'
+  endDate: '2017-12-31'
+  year: '2016'
+  tableFormat: 'html'
+  registryName: 'rapbase'
+  shinySession: list()
+title: '`r paste(params$title, params$hospitalName, " i perioden fra ", params$startDate, " til ", params$endDate)`'
+author: '`r params$author`'
+date: '`r format(Sys.time(), "%d\\. %B, %Y")`'
+reglogo: '`r system.file("www/logoSmerte.png", package = "smerte")`'
+regtext: '`r readLines(system.file("registryShortDescription.txt", package = "smerte"))`'
+registryName: Smerteregisteret
+userFullName: '`r params$userFullName`'
+---
+```{r set options and load packages, include = FALSE}
+knitr::opts_chunk$set(echo=FALSE)
+options(knitr.table.format = params$tableFormat)
+options(tinytex.verbose = TRUE)
+```
+
+```{r get data, include=FALSE}
+
+if (rapbase::isRapContext()) {
+  dat <- smerte::getRegDataRapportOppfolg(
+    registryName = params$registryName,
+    reshId = params$reshId,
+    userRole = params$userRole,
+    startDate = params$startDate,
+    endDate = params$endDate,
+    session = params$shinySession
+  )
+} else {
+  #Dataimport: skal hente lokale data for hvert sykehus (tar vekk sti, og erstatter med lokal filB)
+  path <- read.csv(file = "H:/path.csv", header = FALSE, sep = ";")
+  path <- as.data.frame(lapply(path, as.character), stringsAsFactors=FALSE)
+  path <- path$V1
+  dat <- read.csv(file = path, header = TRUE, sep = ";")
+}
+
+
+```
+
+# Anbefalt videre oppfølging ved smerteklinikk
+
+I denne rapporten ser vi en oversikt over om pasientene blir anbefalt videre oppfølging ved smerteklinikk og hvordan de er fordelt mellom
+avdelingene på sykehuset i løpet av hele tidsperioden.
+
+```{r oppfølgingstabell, warning = TRUE, message=TRUE, results='asis'}
+#Oversikt over videre oppfølging
+
+# Data for tabell
+oppfolgdat <- dat %>%
+  #dplyr::filter(Tilsett == 1) %>% kan ta med dersom de vil
+  dplyr::count(OppfSmeKl) %>%
+  dplyr::mutate(prosent = round(100*(n/sum(n))))
+# Gi navn i stedet for tall til alternativene for tilsyn/ikke tilsyn
+oppfolgdat <- oppfolgdat %>%
+  dplyr::mutate(oppfolggrunn = 
+                  dplyr::case_when(OppfSmeKl == 0 ~ "Nei",
+                                   OppfSmeKl == 1 ~ "Ja",
+                                   OppfSmeKl == 3 ~ "Usikker",
+                                   OppfSmeKl == 9 ~ "Vet ikke",
+                                   is.na(OppfSmeKl) ~ "Mangler verdi",
+                                   FALSE ~ "Ikke angitt"))
+oppfolgdat <- oppfolgdat[ ,c(4,2,3)]
+
+rapbase::mst(
+  tab = oppfolgdat,
+  col_names = c("Anbefalt oppfølging ved smerteklinikk?", "Antall ", "Prosent"),
+  cap = paste0("Antall for hver kategori om pasienten har blitt anbefalt videre oppfølging ved smerteklinikk. Gjelder ",
+              "for perioden fra og med ", params$startDate, " til og med ",
+               params$endDate, "."),
+  type = params$tableFormat,
+  digs = 0,
+  align = c("l", "r", "r", "r")
+)
+
+```
+
+```{r avdelingsoppfølging, warning = TRUE, message=TRUE, results='asis'}
+#Oversikt over videre oppfølging avdeling
+
+oppfolgavd <- dat %>%
+  dplyr::filter(!is.na(OppfSmeKl)) %>% 
+  dplyr::count(DEPARTMENT_SHORTNAME, OppfSmeKl) %>%
+  tidyr::spread(OppfSmeKl, n, fill=0)
+
+total_avdeling <- colSums(oppfolgavd[, -1])
+
+#Legge på totalrad nederst
+oppfolgavd <- oppfolgavd %>%
+  dplyr::bind_rows(total_avdeling)
+
+#Legge til navn
+oppfolgavd[nrow(oppfolgavd), 1] <- "TOTAL"
+
+oppfolgavd <- oppfolgavd %>%
+  dplyr::mutate(rowsum = rowSums(dplyr::select_if(., is.numeric)))
+
+
+###Lager tabell basert på antall ulike unike svar (ja, nei, usikker, vet ikke)
+if(dim(oppfolgavd)[2] == 5){
+  rapbase::mst(
+  tab = oppfolgavd,
+  col_names = c("Avdeling", "Nei", "Ja", "Vet ikke", "Sum avdeling"),
+  cap = paste0("Antall for hver kategori om pasienten har blitt anbefalt videre oppfølging ved smerteklinikk. Gjelder ",
+              "for perioden fra og med ", params$startDate, " til og med ",
+               params$endDate, "."),
+  type = params$tableFormat,
+  digs = 0,
+  align = c("l", "r", "r", "r", "r", "r")
+  )
+}
+# 
+if(dim(oppfolgavd)[2] == 4){
+  rapbase::mst(
+  tab = oppfolgavd,
+  col_names = c("Avdeling", "Nei", "Ja", "Sum avdeling"),
+  cap = paste0("Antall for hver kategori om pasienten har blitt anbefalt videre oppfølging ved smerteklinikk. Gjelder ",
+              "for perioden fra og med ", params$startDate, " til og med ",
+               params$endDate, "."),
+  type = params$tableFormat,
+  digs = 0,
+  align = c("l", "r", "r", "r", "r")
+  )
+}
+# 
+if(dim(oppfolgavd)[2] == 6){
+  rapbase::mst(
+  tab = oppfolgavd,
+  col_names = c("Avdeling", "Nei", "Ja", "Usikker", "Vet ikke", "Sum avdeling"),
+  cap = paste0("Antall for hver kategori om pasienten har blitt anbefalt videre oppfølging ved smerteklinikk. Gjelder ",
+              "for perioden fra og med ", params$startDate, " til og med ",
+               params$endDate, "."),
+  type = params$tableFormat,
+  digs = 0,
+  align = c("l", "r", "r", "r", "r", "r", "r")
+  )
+}
+
+```
