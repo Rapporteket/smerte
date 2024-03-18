@@ -141,6 +141,18 @@ sum_raad_maned = raad %>%
   tidyr::spread(Tilsett, n) %>%
   replace(is.na(.), 0)
 
+#Totalsum per kolonne
+total_raad_maned <- colSums(sum_raad_maned[, -1])
+
+#Legger sammen 
+sum_raad_maned <- sum_raad_maned %>%
+  dplyr::bind_rows(total_raad_maned) %>%
+  dplyr::mutate(monthname = as.character(monthname))
+
+
+sum_raad_maned[nrow(sum_raad_maned), 1] <- "Total"
+
+
 # #Tabell
 rapbase::mst(
   tab = sum_raad_maned,
