@@ -223,7 +223,7 @@ tilsyn_full <- tilsyn_full %>%
   dplyr::mutate(monthname = .data$yearmonth) 
 
 sum_tilsyn_maned = tilsyn_full %>%
-  dplyr::filter(Tilsett == 1) %>%
+  #dplyr::filter(Tilsett == 1) %>%
   dplyr::group_by(tilsynstype, monthname) %>% 
   dplyr::summarise(antall = sum(antall), .groups = "drop_last") %>% 
   tidyr::spread(tilsynstype, antall) %>%
@@ -232,12 +232,12 @@ sum_tilsyn_maned = tilsyn_full %>%
                                       Sykepleier, KonfLege))
 
 antall_pas_maned <- tilsyn_full %>%
-  dplyr::filter(Tilsett == 1) %>%
+  #dplyr::filter(Tilsett == 1) %>%
   dplyr::distinct(PasientID, .keep_all = TRUE) %>%
   dplyr::count(monthname, name = "n_pas") 
 
 antall_henv_maned <- tilsyn_full %>%
-  dplyr::filter(Tilsett == 1) %>%
+  #dplyr::filter(Tilsett == 1) %>%
   dplyr::distinct(ForlopsID, .keep_all = TRUE) %>%
   dplyr::count(monthname, name = "n_henv")
 sum_tilsyn_maned$n_pas <- antall_pas_maned$n_pas
