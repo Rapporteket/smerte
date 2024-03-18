@@ -102,7 +102,7 @@ if (dim(dat)[1] < 1) {
     message <- paste0(message, "\n\n## Tallgrunnlag og utvalg  \n",
                       " I utvalget er det ", nEvent, " forløp", patientTxt,
                       " For forløp der inklusjonskriteriene er oppfylt er ", antReserv,
-                      " registrert med reservasjon, mens det totalt er ", antReservTOT, " forløp med reservasjon. Det er totalt ", nNoIncl, " forløp som oppfyller ikke inklusjonskriteriene.")
+                      " registrert med reservasjon, mens det totalt er ", antReservTOT, " forløp med reservasjon. Det er totalt ", nNoIncl, " forløp som ikke oppfyller inklusjonskriteriene.")
   }
   
 }
