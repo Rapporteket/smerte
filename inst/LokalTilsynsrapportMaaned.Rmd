@@ -229,7 +229,7 @@ sum_tilsyn_maned = tilsyn_full %>%
   tidyr::spread(tilsynstype, antall) %>%
   dplyr::rowwise() %>% 
   dplyr::mutate(Behandlertilsyn = sum(Fysioterapeut, Lege, Psykolog, Sosionom, 
-                                      Sykepleier, KonfLege))
+                                      Sykepleier))
 
 antall_pas_maned <- tilsyn_full %>%
   #dplyr::filter(Tilsett == 1) %>%
