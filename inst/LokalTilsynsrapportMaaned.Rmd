@@ -254,8 +254,6 @@ sum_tilsyn_maned$monthname[is.na(sum_tilsyn_maned$monthname)] <- "Total"
 # Bytte på rekkefølgen slik at behandlertilsyn kommer før pasienttilsyn
 sum_tilsyn_maned <- sum_tilsyn_maned[,c(1, 2, 3, 4, 5, 6, 7, 9, 8, 10, 11)]
 
-colnames(sum_tilsyn_maned)
-
 rapbase::mst(
   tab = sum_tilsyn_maned,
   col_names = c("Måned", "Fysio", "Konf. lege", "Lege", "Psyk", "Sosio",
