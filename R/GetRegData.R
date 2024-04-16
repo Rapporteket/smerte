@@ -388,6 +388,37 @@ WHERE
 
 #' @rdname getRegData
 #' @export
+getRegDataLokalEpidural <- function(registryName, reshId, userRole,
+                                          startDate, endDate, ...) {
+  dbType <- "mysql"
+
+  deps <- .getDeps(reshId, userRole)
+
+  query <- "
+SELECT
+  PasientID,
+  ForlopsID,
+  alder,
+  EDAB11,
+  EDA
+FROM
+  AlleVarNum
+WHERE
+  AvdRESH IN ("
+
+  query <- paste0(query, deps, ") AND (DATE(StartdatoTO) BETWEEN '",
+                  startDate, "' AND '", endDate, "');")
+
+  if ("session" %in% names(list(...))) {
+    rapbase::repLogger(session = list(...)[["session"]],
+                       msg = paste0("Load data from ", registryName, ":", query))
+  }
+
+  rapbase::loadRegData(registryName, query, dbType)
+}
+
+#' @rdname getRegData
+#' @export
 getRegDataRapportOppfolg <- function(registryName, reshId, userRole,
                                 startDate, endDate, ...) {
 
