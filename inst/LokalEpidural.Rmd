@@ -57,28 +57,28 @@ if (rapbase::isRapContext()) {
 dat <- dat %>%
   dplyr::mutate(monthname = zoo::as.Date(zoo::as.yearmon(StartdatoTO)))
 
+#Tar bare med barn (< 18 år)
+bdat <- dat[dat$alder < 18, ]
+
 ```
 
-# Oversikt
-Denne rapporten gir en oversikt over antall epiduraler der pasienten var under 18 år.
+# Oversikt: epidural for pasienter under 18 år
+
+Denne rapporten gir en oversikt over antall epiduraler gitt til barn (i selvvalgt tidsperiode).
 
 
 ```{r lagdata, warning = FALSE, message=FALSE, results='asis'}
 
 messageepi<- ""
 
-# Klargjøre variabler for behandlertilsyn her
-if (dim(dat)[1] < 1) {
+# Klargjøre
+if (dim(bdat)[1] < 1) {
   messageepi <- "I den valgte tidsperioden er det ikke nok data til å gi ut resultater."
 } else {
-  #Tar bare med barn (< 18 år)
-  bdat <- dat[(dat$alder < 18), ]
-  
  
   #Verdier som skal vises i tabell for denne indikatoren
-  ant <- sum(bdat$EDA == 1)
+  antepi <- sum(bdat$EDA == 1, na.rm = TRUE)
   
-  ant
   # totant <- sum(behdat$behtils == 1) + sum(behdat$behtils == 0)
   # and <- sum(behdat$behtils == 1) / (sum(behdat$behtils == 1) + sum(behdat$behtils == 0))
   # antikketils <- sum(dat$AntPasTils == 0 | is.na(dat$AntPasTils)) #antall som ikke har hatt noe tilsyn
@@ -96,3 +96,4 @@ if (dim(dat)[1] < 1) {
 }
 ```
 `r messageepi`
+I den valgte tidsperioden fikk tilsammen `r antepi` av totalt `r dim(bdat)[1]` pasienter under 18 år epidural.
