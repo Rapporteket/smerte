@@ -400,7 +400,8 @@ SELECT
   ForlopsID,
   alder,
   EDAB11,
-  EDA
+  EDA,
+  StartdatoTO
 FROM
   AlleVarNum
 WHERE

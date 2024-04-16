@@ -1,0 +1,98 @@
+---
+params:
+  title: ': Epiduraler for barn under 18 år '
+  author: 'Rapporteket'
+  hospitalName: 'Ukjent sykehus'
+  reshId: 'locallyDefined'
+  userRole: 'MyRole'
+  userFullName: 'Ukjent bruker'
+  startDate: !r lubridate::today() - lubridate::years(1)
+  endDate: !r lubridate::today() - lubridate::weeks(1)
+  year: '2016'
+  tableFormat: 'html'
+  registryName: 'rapbase'
+  shinySession: list()
+title: '`r paste0("Smerteregisteret ", params$hospitalName, params$title, params$startDate, " til ", params$endDate)`'
+author: '`r params$author`'
+date: '`r format(Sys.time(), "%d\\. %B, %Y")`'
+reglogo: '`r system.file("www/logoSmerte.png", package = "smerte")`'
+regtext: '`r readLines(system.file("registryShortDescription.txt", package = "smerte"))`'
+registryName: Smerteregisteret
+userFullName: '`r params$userFullName`'
+---
+```{r set options and load packages, include = FALSE}
+knitr::opts_chunk$set(echo=FALSE)
+options(knitr.table.format = params$tableFormat)
+options(tinytex.verbose = TRUE)
+options(scipen = 1, digits = 2) #set to two decimal 
+
+library(ggplot2)
+library(tidyverse)
+library(dplyr)
+library(zoo)
+
+```
+
+```{r get data, warning = FALSE, message=TRUE}
+
+if (rapbase::isRapContext()) {
+  dat <- smerte::getRegDataLokalEpidural(registryName = params$registryName,
+                                     reshId = params$reshId,
+                                     userRole=params$userRole,
+                                     startDate = params$startDate,
+                                     endDate = params$endDate,
+                                     session = params$shinySession)
+} else {
+  #Dataimport: skal hente lokale data for hvert sykehus (tar vekk sti, og erstatter med lokal filB)
+  path <- read.csv(file = "H:/path.csv", header = FALSE, sep = ";")
+  path <- as.data.frame(lapply(path, as.character), stringsAsFactors=FALSE)
+  path <- path$V1
+  dat <- read.csv(file = path, header = TRUE, sep = ";")
+}
+
+#Forkorter sykehusnavn
+#dat$SykehusNavn[dat$SykehusNavn == "Helse Bergen HF"] = "HB"
+
+#Legger inn månedene i riktig rekkefølge
+dat <- dat %>%
+  dplyr::mutate(monthname = zoo::as.Date(zoo::as.yearmon(StartdatoTO)))
+
+```
+
+# Oversikt
+Denne rapporten gir en oversikt over antall epiduraler der pasienten var under 18 år.
+
+
+```{r lagdata, warning = FALSE, message=FALSE, results='asis'}
+
+messageepi<- ""
+
+# Klargjøre variabler for behandlertilsyn her
+if (dim(dat)[1] < 1) {
+  messageepi <- "I den valgte tidsperioden er det ikke nok data til å gi ut resultater."
+} else {
+  #Tar bare med barn (< 18 år)
+  bdat <- dat[(dat$alder < 18), ]
+  
+ 
+  #Verdier som skal vises i tabell for denne indikatoren
+  ant <- sum(bdat$EDA == 1)
+  
+  ant
+  # totant <- sum(behdat$behtils == 1) + sum(behdat$behtils == 0)
+  # and <- sum(behdat$behtils == 1) / (sum(behdat$behtils == 1) + sum(behdat$behtils == 0))
+  # antikketils <- sum(dat$AntPasTils == 0 | is.na(dat$AntPasTils)) #antall som ikke har hatt noe tilsyn
+  # 
+  # tabto <- cbind(ant, totant, and)
+  # 
+  # rapbase::mst(
+  #   tab = tabto,
+  #   col_names = c("Antall", "Totalt antall", "Andel"),
+  #   type = params$tableFormat,
+  #   cap = paste0("Oversikt over andel pasienter som har hatt tilsyn av to eller flere behandlergrupper. Det var samtidig ", antikketils, " pasienter som hadde 0 tilsyn. Disse er ikke med i beregningen."),
+  #   digs = 2,
+  #   align = c("r", "r", "r")
+  # )
+}
+```
+`r messageepi`
