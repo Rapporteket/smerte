@@ -31,6 +31,8 @@ Her finnes rapportene det er mulig å hente ut fra rapporteket. Etter hvert som 
 
 **Opioidreduksjon:** oversikt over nedgang i morfinekvivalenter.
 
+**Epidural (barn):** oversikt antall barn som fikk epidural og aldersfordeling.
+
 **Oppfølging ved smerteklinikk:** lokal avdelingsoversikt over anbefalt oppfølging ved smerteklinikk.
 
 # Nye rapporter
