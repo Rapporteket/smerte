@@ -158,7 +158,7 @@ rapbase::mst(
   tab = sum_raad_maned,
   col_names = c("Måned", "Ja", "Ikke behov", "Ikke kapasitet", "Gitt råd", "Annen grunn", "Mangler verdi")[c(1,as.numeric(names(sum_raad_maned)[-1])+1)],
   type = params$tableFormat,
-  cap = paste0("Månedsfordeling for tilsynstabellen."),
+  cap = paste0("Månedsfordeling for tilsynstabellen. Merk at kun de alternativene som har minst ett forløp vises i tabellen."),
   digs = 0,
   align = c("l", "r", "r", "r", "r", "r", "r", "r")[c(1,as.numeric(names(sum_raad_maned)[-1])+1)])
 
