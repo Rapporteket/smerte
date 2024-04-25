@@ -68,32 +68,16 @@ Denne rapporten gir en oversikt over antall barn som har fått epidural under in
 
 ## Resultater
 ```{r lagdata, warning = FALSE, message=FALSE, results='asis'}
-
 messageepi<- ""
 
 # Klargjøre
 if (dim(bdat)[1] < 1) {
   messageepi <- "I den valgte tidsperioden er det ikke nok data til å gi ut resultater."
-} else {
- 
-  #Verdier som skal vises i tabell for denne indikatoren
-  antepi <- sum(bdat$EDA == 1, na.rm = TRUE)
-  
-  # totant <- sum(behdat$behtils == 1) + sum(behdat$behtils == 0)
-  # and <- sum(behdat$behtils == 1) / (sum(behdat$behtils == 1) + sum(behdat$behtils == 0))
-  # antikketils <- sum(dat$AntPasTils == 0 | is.na(dat$AntPasTils)) #antall som ikke har hatt noe tilsyn
-  # 
-  # tabto <- cbind(ant, totant, and)
-  # 
-  # rapbase::mst(
-  #   tab = tabto,
-  #   col_names = c("Antall", "Totalt antall", "Andel"),
-  #   type = params$tableFormat,
-  #   cap = paste0("Oversikt over andel pasienter som har hatt tilsyn av to eller flere behandlergrupper. Det var samtidig ", antikketils, " pasienter som hadde 0 tilsyn. Disse er ikke med i beregningen."),
-  #   digs = 2,
-  #   align = c("r", "r", "r")
-  # )
-}
+  antepi <- 0
+  } else {
+    #Verdier som skal vises i tabell for denne indikatoren
+    antepi <- sum(bdat$EDA == 1, na.rm = TRUE)
+    }
 ```
 `r messageepi`
 I den valgte tidsperioden fikk tilsammen `r antepi` av totalt `r dim(bdat)[1]` pasienter under 18 år epidural.
