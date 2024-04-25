@@ -232,21 +232,46 @@ sum_tilsyn_maned = tilsyn_full %>%
                                       Sykepleier))
 
 antall_pas_maned <- tilsyn_full %>%
-  #dplyr::filter(Tilsett == 1) %>%
+  dplyr::group_by(monthname) %>%
   dplyr::distinct(PasientID, .keep_all = TRUE) %>%
-  dplyr::count(monthname, name = "n_pas") 
+  dplyr::count(monthname, name = "n_pas")
 
 antall_henv_maned <- tilsyn_full %>%
-  #dplyr::filter(Tilsett == 1) %>%
   dplyr::distinct(ForlopsID, .keep_all = TRUE) %>%
   dplyr::count(monthname, name = "n_henv")
+# 
+# rapbase::mst(
+#   tab = sum_tilsyn_maned,
+#   col_names = c("Måned", "Fysio", "Konf. lege", "Lege", "Psyk", "Sosio",
+#                 "Sykepl", "Beh tilsyn", "Pas tilsyn"),
+#   type = params$tableFormat,
+#   cap = paste0("Antall tilsyn per måned for de ulike behandlergruppene."),
+#   digs = 0,
+#   align = c("l", "r", "r", "r", "r", "r", "r", "r", "r"))
+# 
+# rapbase::mst(
+#   tab = antall_pas_maned,
+#   col_names = c("Måned", "Ant Pas"),
+#   type = params$tableFormat,
+#   cap = paste0("Antall tilsyn per måned for de ulike behandlergruppene."),
+#   digs = 0,
+#   align = c("l", "r", "r"))
+# 
+# rapbase::mst(
+#   tab = antall_henv_maned,
+#   col_names = c("Måned", "Ant Henv"),
+#   type = params$tableFormat,
+#   cap = paste0("Antall tilsyn per måned for de ulike behandlergruppene."),
+#   digs = 0,
+#   align = c("l", "r", "r"))
+
 sum_tilsyn_maned$n_pas <- antall_pas_maned$n_pas
 sum_tilsyn_maned$n_henv <- antall_henv_maned$n_henv
 # Finne summen av hver tilsynstype
 total_tilsyn_maned <- colSums(sum_tilsyn_maned[, -1])
 
 sum_tilsyn_maned <- sum_tilsyn_maned %>%
-  dplyr::bind_rows(total_tilsyn_maned) %>% 
+  dplyr::bind_rows(total_tilsyn_maned) %>%
   dplyr::mutate(monthname = as.character(monthname))
 
 sum_tilsyn_maned$monthname[is.na(sum_tilsyn_maned$monthname)] <- "Total"
