@@ -155,7 +155,7 @@ sum_raad_maned[nrow(sum_raad_maned), 1] <- "Total"
 
 #For å evaluere om data er tilstedef for alle verdier brukt eller ikke
 allDataPresent <- TRUE
-if(dim(sum_raad_maned)[1] < 7) {
+if(dim(sum_raad_maned)[1] == 6) {
   allDataPresent <- FALSE
 }
 ```
