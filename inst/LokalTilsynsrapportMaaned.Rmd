@@ -153,10 +153,9 @@ sum_raad_maned <- sum_raad_maned %>%
 
 sum_raad_maned[nrow(sum_raad_maned), 1] <- "Total"
 
-colnames(sum_raad_maned)
 
-
-#Tabell
+if(any(colnames(sum_raad_maned) != "2")){
+#Tabell når "Ikke behov" mangler
 rapbase::mst(
   tab = sum_raad_maned,
   col_names = c("Måned", "Ja", "Ikke kapasitet", "Gitt råd", "Annen grunn", "Mangler verdi"),
@@ -164,18 +163,73 @@ rapbase::mst(
   cap = paste0("Månedsfordeling for tilsynstabellen. Merk at kun de alternativene som har minst ett forløp vises i tabellen."),
   digs = 0,
   align = c("l", "r", "r", "r", "r", "r", "r"))
+}else if(any(colnames(sum_raad_maned) != "1")){
+#Tabell når "Ja" mangler
+rapbase::mst(
+  tab = sum_raad_maned,
+  col_names = c("Måned", "Ikke behov", "Ikke kapasitet", "Gitt råd", "Annen grunn", "Mangler verdi"),
+  type = params$tableFormat,
+  cap = paste0("Månedsfordeling for tilsynstabellen. Merk at kun de alternativene som har minst ett forløp vises i tabellen."),
+  digs = 0,
+  align = c("l", "r", "r", "r", "r", "r", "r"))
+}else if(any(colnames(sum_raad_maned) != "3")){
+#Tabell når "Ikke kapasitet" mangler
+rapbase::mst(
+  tab = sum_raad_maned,
+  col_names = c("Måned", "Ja", "Ikke behov", "Gitt råd", "Annen grunn", "Mangler verdi"),
+  type = params$tableFormat,
+  cap = paste0("Månedsfordeling for tilsynstabellen. Merk at kun de alternativene som har minst ett forløp vises i tabellen."),
+  digs = 0,
+  align = c("l", "r", "r", "r", "r", "r", "r"))
+}else if(any(colnames(sum_raad_maned) != "4")){
+#Tabell når "Gitt råd" mangler
+rapbase::mst(
+  tab = sum_raad_maned,
+  col_names = c("Måned", "Ja", "Ikke behov", "Ikke kapasitet", "Annen grunn", "Mangler verdi"),
+  type = params$tableFormat,
+  cap = paste0("Månedsfordeling for tilsynstabellen. Merk at kun de alternativene som har minst ett forløp vises i tabellen."),
+  digs = 0,
+  align = c("l", "r", "r", "r", "r", "r", "r"))
+}else if(any(colnames(sum_raad_maned) != "5")){
+#Tabell når "Annnen grunn" mangler
+rapbase::mst(
+  tab = sum_raad_maned,
+  col_names = c("Måned", "Ja", "Ikke behov", "Ikke kapasitet", "Gitt råd", "Mangler verdi"),
+  type = params$tableFormat,
+  cap = paste0("Månedsfordeling for tilsynstabellen. Merk at kun de alternativene som har minst ett forløp vises i tabellen."),
+  digs = 0,
+  align = c("l", "r", "r", "r", "r", "r", "r"))
+}else if(any(colnames(sum_raad_maned) != "6")){
+#Tabell når "Mangler verdi" mangler
+rapbase::mst(
+  tab = sum_raad_maned,
+  col_names = c("Måned", "Ja", "Ikke behov", "Ikke kapasitet", "Gitt råd", "Annen grunn"),
+  type = params$tableFormat,
+  cap = paste0("Månedsfordeling for tilsynstabellen. Merk at kun de alternativene som har minst ett forløp vises i tabellen."),
+  digs = 0,
+  align = c("l", "r", "r", "r", "r", "r", "r"))
+}ifelse(colnames(sum_raad_maned) == "montname", colnames(sum_raad_maned) == "1", colnames(sum_raad_maned) == "2", colnames(sum_raad_maned) == "3", colnames(sum_raad_maned) == "4", colnames(sum_raad_maned) == "5", colnames(sum_raad_maned) == "6"){
+  #Tabell når alt er på plass
+  rapbase::mst(
+    tab = sum_raad_maned,
+    col_names = c("Måned", "Ja", "Ikke behov", "Ikke kapasitet", "Gitt råd", "Annen grunn", "Mangler verdi")[c(1,as.numeric(names(sum_raad_maned)[-1])+1)],
+    type = params$tableFormat,
+    cap = paste0("Månedsfordeling for tilsynstabellen. Merk at kun de alternativene som har minst ett forløp vises i tabellen."),
+    digs = 0,
+    align = c("l", "r", "r", "r", "r", "r", "r", "r")[c(1,as.numeric(names(sum_raad_maned)[-1])+1)])
+}
 
 
-#Hvis ikke alle verdier er brukt i Tilsett i perioden
-
-# #Tabell
-# rapbase::mst(
-#   tab = sum_raad_maned,
-#   col_names = c("Måned", "Ja", "Ikke behov", "Ikke kapasitet", "Gitt råd", "Annen grunn", "Mangler verdi")[c(1,as.numeric(names(sum_raad_maned)[-1])+1)],
-#   type = params$tableFormat,
-#   cap = paste0("Månedsfordeling for tilsynstabellen. Merk at kun de alternativene som har minst ett forløp vises i tabellen."),
-#   digs = 0,
-#   align = c("l", "r", "r", "r", "r", "r", "r", "r")[c(1,as.numeric(names(sum_raad_maned)[-1])+1)])
+# else{
+#   #Tabell når alt er på plass
+#   rapbase::mst(
+#     tab = sum_raad_maned,
+#     col_names = c("Måned", "Ja", "Ikke behov", "Ikke kapasitet", "Gitt råd", "Annen grunn", "Mangler verdi")[c(1,as.numeric(names(sum_raad_maned)[-1])+1)],
+#     type = params$tableFormat,
+#     cap = paste0("Månedsfordeling for tilsynstabellen. Merk at kun de alternativene som har minst ett forløp vises i tabellen."),
+#     digs = 0,
+#     align = c("l", "r", "r", "r", "r", "r", "r", "r")[c(1,as.numeric(names(sum_raad_maned)[-1])+1)])
+# }
 
 ```
 
