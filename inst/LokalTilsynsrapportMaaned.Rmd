@@ -87,6 +87,7 @@ tilsynsdata <- dat %>% dplyr::count(Tilsett) %>%
   dplyr::mutate(prosent = round(100*(n/sum(n))))
 # Gi navn i stedet for tall til alternativene for tilsyn/ikke tilsyn
 tilsynsdata <- tilsynsdata %>%
+  dplyr::filter(!is.na(Tilsett)) %>%
   dplyr::mutate(tilsynAarsak = 
                   dplyr::case_when(Tilsett == 1 ~ "Ja",
                                    Tilsett == 2 ~ "Nei, ikke behov",
@@ -94,7 +95,6 @@ tilsynsdata <- tilsynsdata %>%
                                    Tilsett == 4 ~ "Nei, men gitt råd",
                                    Tilsett == 5 ~ "Nei, annen grunn",
                                    Tilsett == 6 ~ "Mangler verdi",
-                                   is.na(Tilsett) ~ "Mangler verdi",
                                    FALSE ~ "Ikke angitt"))
 tilsynsdata <- tilsynsdata[ ,c(4,2,3)]
 
@@ -121,6 +121,7 @@ rapbase::mst(
 
 # Data for tabell over gitt råd
 raad <- tilsyn_full <- dat %>%
+  dplyr::filter(!is.na(Tilsett)) %>%
   dplyr::select(Tilsett, StartdatoTO) %>%
   dplyr::mutate(month = months(zoo::as.Date(StartdatoTO)),
                 yearmonth = zoo::as.yearmon(StartdatoTO))
@@ -152,15 +153,29 @@ sum_raad_maned <- sum_raad_maned %>%
 
 sum_raad_maned[nrow(sum_raad_maned), 1] <- "Total"
 
+colnames(sum_raad_maned)
 
-# #Tabell
+
+#Tabell
 rapbase::mst(
   tab = sum_raad_maned,
-  col_names = c("Måned", "Ja", "Ikke behov", "Ikke kapasitet", "Gitt råd", "Annen grunn", "Mangler verdi")[c(1,as.numeric(names(sum_raad_maned)[-1])+1)],
+  col_names = c("Måned", "Ja", "Ikke kapasitet", "Gitt råd", "Annen grunn", "Mangler verdi"),
   type = params$tableFormat,
   cap = paste0("Månedsfordeling for tilsynstabellen. Merk at kun de alternativene som har minst ett forløp vises i tabellen."),
   digs = 0,
-  align = c("l", "r", "r", "r", "r", "r", "r", "r")[c(1,as.numeric(names(sum_raad_maned)[-1])+1)])
+  align = c("l", "r", "r", "r", "r", "r", "r"))
+
+
+#Hvis ikke alle verdier er brukt i Tilsett i perioden
+
+# #Tabell
+# rapbase::mst(
+#   tab = sum_raad_maned,
+#   col_names = c("Måned", "Ja", "Ikke behov", "Ikke kapasitet", "Gitt råd", "Annen grunn", "Mangler verdi")[c(1,as.numeric(names(sum_raad_maned)[-1])+1)],
+#   type = params$tableFormat,
+#   cap = paste0("Månedsfordeling for tilsynstabellen. Merk at kun de alternativene som har minst ett forløp vises i tabellen."),
+#   digs = 0,
+#   align = c("l", "r", "r", "r", "r", "r", "r", "r")[c(1,as.numeric(names(sum_raad_maned)[-1])+1)])
 
 ```
 
