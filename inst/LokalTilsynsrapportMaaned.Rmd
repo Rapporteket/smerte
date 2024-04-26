@@ -153,7 +153,27 @@ sum_raad_maned <- sum_raad_maned %>%
 
 sum_raad_maned[nrow(sum_raad_maned), 1] <- "Total"
 
+#For å evaluere om data er tilstedef for alle verdier brukt eller ikke
+allDataPresent <- TRUE
+if(dim(sum_raad_maned)[1] < 7) {
+  allDataPresent <- FALSE
+}
+```
 
+```{r fulldata, eval=allDataPresent, warning=TRUE, message=TRUE, results='asis'}
+#Tabell når alt er på plass
+rapbase::mst(
+  tab = sum_raad_maned,
+  col_names = c("Måned", "Ja", "Ikke behov", "Ikke kapasitet", "Gitt råd", "Annen grunn", "Mangler verdi")[c(1,as.numeric(names(sum_raad_maned)[-1])+1)],
+  type = params$tableFormat,
+  cap = paste0("Månedsfordeling for tilsynstabellen. Merk at kun de alternativene som har minst ett forløp vises i tabellen."),
+  digs = 0,
+  align = c("l", "r", "r", "r", "r", "r", "r", "r")[c(1,as.numeric(names(sum_raad_maned)[-1])+1)])
+
+```
+
+```{r LessThanFullData, eval=!allDataPresent, warning=TRUE, message=TRUE, results='asis'}
+############ Ulike tabeller basert på vilke verdier av variabelen som er brukt
 if(any(colnames(sum_raad_maned) != "2")){
 #Tabell når "Ikke behov" mangler
 rapbase::mst(
@@ -208,19 +228,9 @@ rapbase::mst(
   cap = paste0("Månedsfordeling for tilsynstabellen. Merk at kun de alternativene som har minst ett forløp vises i tabellen."),
   digs = 0,
   align = c("l", "r", "r", "r", "r", "r", "r"))
-}ifelse(colnames(sum_raad_maned) == "montname", colnames(sum_raad_maned) == "1", colnames(sum_raad_maned) == "2", colnames(sum_raad_maned) == "3", colnames(sum_raad_maned) == "4", colnames(sum_raad_maned) == "5", colnames(sum_raad_maned) == "6"){
-  #Tabell når alt er på plass
-  rapbase::mst(
-    tab = sum_raad_maned,
-    col_names = c("Måned", "Ja", "Ikke behov", "Ikke kapasitet", "Gitt råd", "Annen grunn", "Mangler verdi")[c(1,as.numeric(names(sum_raad_maned)[-1])+1)],
-    type = params$tableFormat,
-    cap = paste0("Månedsfordeling for tilsynstabellen. Merk at kun de alternativene som har minst ett forløp vises i tabellen."),
-    digs = 0,
-    align = c("l", "r", "r", "r", "r", "r", "r", "r")[c(1,as.numeric(names(sum_raad_maned)[-1])+1)])
-}
+ }
 
-
-# else{
+# # else{
 #   #Tabell når alt er på plass
 #   rapbase::mst(
 #     tab = sum_raad_maned,
@@ -230,6 +240,7 @@ rapbase::mst(
 #     digs = 0,
 #     align = c("l", "r", "r", "r", "r", "r", "r", "r")[c(1,as.numeric(names(sum_raad_maned)[-1])+1)])
 # }
+
 
 ```
 
