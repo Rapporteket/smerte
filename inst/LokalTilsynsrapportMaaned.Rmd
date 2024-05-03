@@ -46,27 +46,6 @@ if (rapbase::isRapContext()) {
   path <- as.data.frame(lapply(path, as.character), stringsAsFactors=FALSE)
   path <- path$V1
   dat <- read.csv(file = path, header = TRUE, sep = ";")
-  
-  avdpath <- read.csv(file = "H:/avdelingpath.csv", header = FALSE, sep = ";")
-  avdpath <- as.data.frame(lapply(avdpath, as.character),
-                           stringsAsFactors=FALSE)
-  avdpath <- avdpath$V1
-  avd <- read.csv(file = avdpath, header = TRUE, sep = ";", encoding = "UTF-8")
-  #Endrer navn til å matche rapporteket
-  avd <- avd %>%
-    dplyr::rename(DEPARTMENT_ID = AvdID, DEPARTMENT_NAME = AvdNavn,
-                  DEPARTMENT_SHORTNAME = AvdNavnKort)
-
-  #Samler datasettene vha InnlAvd i allevarnum og departmentID i
-  # avdelingsoversikt
-  dat <- dplyr::merge(x = dat, y = avd, by.x = c("InnlAvd"),
-                      by.y = c("DEPARTMENT_ID"))
-
-  #Må kunne laste inn data for de ulike årene
-  aar <- params$year
-  dat = dat %>% filter(year(date(StartdatoTO)) == aar) #year #denne virker? Er
-  # ikke alle registert på regdato?
-
 }
 
 
@@ -170,11 +149,16 @@ sum_raad_maned[nrow(sum_raad_maned), 1] <- "Total"
 
 #For å evaluere om data er tilstedef for alle verdier brukt eller ikke
 allDataPresent <- TRUE
-if(dim(sum_raad_maned)[1] == 6) {
+if(dim(sum_raad_maned)[2] == 0) {
   allDataPresent <- FALSE
 }
 ```
 
+```{r noDatathistable, eval=!allDataPresent, results='asis'}
+cat('# OBS...\nI den valgte tidsperioden er det ikke nok data til å gi 
+    ut resultater for Tabell 1 vist per måned. Et tips er å prøve med en lenger tidsperiode.')
+knitr::knit_exit()
+```
 
 ```{r fulldata, eval=allDataPresent, warning=TRUE, message=TRUE, results='asis'}
 #Tabell når alt er på plass
