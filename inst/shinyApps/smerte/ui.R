@@ -117,6 +117,17 @@ ui <- shiny::tagList(
           )
         )
       ),
+        shiny::tabPanel(
+          "Epidural (barn)",
+          shiny::sidebarLayout(
+            shiny::sidebarPanel(
+              smerte::defaultReportInput("lokalepi")
+            ),
+            shiny::mainPanel(
+              smerte::defaultReportUI("lokalepi")
+            )
+          )
+        ),
       shiny::tabPanel(
         "Oppfølging ved smerteklinikk",
         shiny::sidebarLayout(
