@@ -521,15 +521,13 @@ getHospitalName <- function(registryName, reshId, userRole) {
   deps <- .getDeps(reshId, userRole)
 
   query <- paste0("
-SELECT
+SELECT DISTINCT
   LOCATION_SHORTNAME AS ln
 FROM
   avdelingsoversikt
 WHERE
   DEPARTMENT_CENTREID IN (", deps, ") AND
-  DEPARTMENT_ACTIVE = 1
-GROUP BY
-  LOCATION_SHORTNAME;")
+  DEPARTMENT_ACTIVE = 1;")
 
 
 
@@ -542,8 +540,8 @@ GROUP BY
     n <- dim(df)[1]
     hVec <- df[1:n, 1]
     if (n > 1) {
-      hStr <- paste(hVec[1:n-1], sep = ", ")
-      hStr <- paste(hStr, hVec[n], sep = " og ")
+      hStr <- paste(hVec[1:n-1], collapse = ", ")
+      hStr <- paste0(hStr, " og ", hVec[n])
     } else {
       hStr <- paste(hVec)
     }
