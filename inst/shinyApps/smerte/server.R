@@ -27,18 +27,29 @@ server <- function(input, output, session) {
     shiny::hideTab(inputId = "tabs", target = "Smertekategori")
     shiny::hideTab(inputId = "tabs", target = "Oppfølging ved smerteklinikk")
     shiny::hideTab(inputId = "tabs", target = "Epidural (barn)")
-    }
+  }
   ## tools only for SC
   if (!userRole %in% "SC") {
     shiny::hideTab(inputId = "tabs", target = "Verktøy")
   }
 
 
-  contentDump <- function(file, type) {
+  contentDump <- function(file, type, userRole = "LU") {
     d <- smerte::getDataDump(registryName,input$dumpDataSet,
-                            fromDate = input$dumpDateRange[1],
-                            toDate = input$dumpDateRange[2],
-                            session = session)
+                             fromDate = input$dumpDateRange[1],
+                             toDate = input$dumpDateRange[2],
+                             session = session)
+    if (userRole == "LU") {
+      if (input$dumpDataSet %in% c("SmerteDiagnoser", "SmerteDiagnoserNum")) {
+        ForlopsOversikt <- rapbase::loadRegData(
+          registryName,
+          "SELECT ForlopsID, AvdRESH FROM ForlopsOversikt")
+        d <- merge(d, ForlopsOversikt, by = "ForlopsID")
+      }
+      if (input$dumpDataSet != "avdelingsoversikt") {
+        d <- d %>% dplyr::filter(AvdRESH == reshId)
+      }
+    }
     if (type == "xlsx-csv") {
       readr::write_excel_csv2(d, file)
     } else {
@@ -252,7 +263,7 @@ server <- function(input, output, session) {
                         fileext = ".csv"))
     },
     content = function(file) {
-      contentDump(file, input$dumpFormat)
+      contentDump(file, input$dumpFormat, userRole = userRole)
     }
   )
 
