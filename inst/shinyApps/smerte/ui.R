@@ -129,6 +129,17 @@ ui <- shiny::tagList(
           )
         ),
       shiny::tabPanel(
+        "Tid til død",
+        shiny::sidebarLayout(
+          shiny::sidebarPanel(
+            smerte::defaultReportInput("timetodeath")
+          ),
+          shiny::mainPanel(
+            smerte::defaultReportUI("timetodeath")
+          )
+        )
+      ),
+      shiny::tabPanel(
         "Oppfølging ved smerteklinikk",
         shiny::sidebarLayout(
           shiny::sidebarPanel(
