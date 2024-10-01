@@ -128,6 +128,12 @@ server <- function(input, output, session) {
   smerte::defaultReportServer(id = "smertekategori",
                               reportFileName = "LokalSmertekategori.Rmd",
                               reportParams = reportParams)
+
+  # Tid til død
+  smerte::defaultReportServer(id = "timetodeath",
+                              reportFileName = "timetodeath.Rmd",
+                              reportParams = reportParams)
+
   # Oppfølging ved smerteklinikk
   smerte::defaultReportServer(id = "oppfolg",
                               reportFileName = "LokalOppfolg.Rmd",
