@@ -129,7 +129,7 @@ ui <- shiny::tagList(
           )
         ),
       shiny::tabPanel(
-        "Tid til død",
+        "Tid til død etter utskrivelse",
         shiny::sidebarLayout(
           shiny::sidebarPanel(
             smerte::defaultReportInput("timetodeath")

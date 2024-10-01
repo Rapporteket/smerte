@@ -338,12 +338,16 @@ getRegDataTimetodeath <- function(registryName, reshId, userRole,
 
   query <- "
 SELECT
-  diag.ForlopsID,
-  fo.Ddato,
+ diag.ForlopsID,
+  fo.HovedDato,
   diag.SmerteDiagID,
   diag.SmerteKat,
+  var.AkuttLang,
+  var.Ddato,
+  var.Tilsett,
   var.SluttDato,
   diag.DiagKat,
+  var.Opioid4a
 FROM
   SmerteDiagnoserNum AS diag
 LEFT JOIN
