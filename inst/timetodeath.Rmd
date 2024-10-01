@@ -114,14 +114,69 @@ dat$timeafter <- factor(dat$timeafter,
                                    "3-6 måneder", "6-12 måneder", "Over 1 år"))
 
 
+dat <- dat %>% 
+  mutate(Smertekategori = 
+                case_when(SmerteKat == 1 ~ 'Akutt',
+                          SmerteKat == 2 ~ 'Langvarig',
+                          SmerteKat == 2 ~ 'Palliativ',
+                          SmerteKat == 4 ~'Annet'))
+
+
 #Creating data set with only those who died
 datd <- dat %>%
   filter(!is.na(dat$timeafter))
 
+
+#######Working with pain diagonse
+#SmerteKat.x = 1 er akutt smerte (se SmerteKat.y)
+akutt = fulldat %>% 
+  dplyr::filter(!is.na(SmerteKat)) %>% 
+  dplyr::distinct(ForlopsID, .keep_all = TRUE) %>% 
+  dplyr::summarise(antall_ja = sum(SmerteKat == 1),
+            nevner = dplyr::n(),
+            ind = antall_ja/nevner) %>% 
+  dplyr::ungroup()
+
+#SmerteKat.x = 2 er langvarig smerte (se SmerteKat.y)
+langvarig = fulldat %>% 
+  dplyr::filter(!is.na(SmerteKat)) %>% 
+  dplyr::distinct(ForlopsID, .keep_all = TRUE) %>% 
+  dplyr::summarise(antall_ja = sum(SmerteKat == 2),
+                   nevner = dplyr::n(),
+                   ind = antall_ja/nevner) %>% 
+  dplyr::ungroup()
+
+#SmerteKat.x = 3 er palliativ smerte (se SmerteKat.y)
+palliativ = fulldat %>% 
+  dplyr::filter(!is.na(SmerteKat)) %>% 
+  dplyr::distinct(ForlopsID, .keep_all = TRUE) %>% 
+  dplyr::summarise(antall_ja = sum(SmerteKat == 3),
+                   nevner = dplyr::n(),
+                   ind = antall_ja/nevner) %>% 
+  dplyr::ungroup()
+
+#Underdiagnose for de forløp med hoveddiagnose akutt smerte
+underdiag = fulldat %>% 
+  dplyr::filter(SmerteKat == 1) %>% 
+  dplyr::distinct(ForlopsID, .keep_all = TRUE) %>% 
+  dplyr::count(DiagKat) %>%
+  dplyr::mutate(pro = n/sum(n)) %>%
+  dplyr::mutate(
+    DiagKat = dplyr::recode(
+      DiagKat,
+      !!!smerte::getSmerteDiagKatValueLab(params$registryName, smerteKat = 1)
+    )
+  )
+
+#Setter sammen
+tot_smertekat <- dplyr::bind_rows(akutt, langvarig, palliativ)
+rownames(tot_smertekat) = c("Akutt smerte", "Langvarig smerte", "Palliativ")
+
+
 ```
 
 Figuren viser hvor fordelingen over hvor lang tid det var fra sluttdato (registert i registeret) til dødsdato. Overlevende vises ikke her.
-```{r barplot, eval=dataPresent, results='asis'}
+```{r barplot, eval=dataPresent, results='asis', fig.pos= "H", out.extra = '', fig.align='center', out.width='100%'}
 
 ggplot(datd, aes(x = timeafter)) +
   geom_bar(stat="count", width=0.7, fill="steelblue") +
@@ -129,4 +184,51 @@ ggplot(datd, aes(x = timeafter)) +
   scale_y_continuous(name = "Antall") +
   theme_minimal() +
   theme(text = element_text(size = 15)) 
+```
+
+Videre er pasientene delt inn i følgende smertekategorier:
+```{r smertekat, eval=dataPresent, results='asis'}
+
+#Smertekategori
+rapbase::mst(
+  tab = tot_smertekat, 
+  col_names = c( "Antall ja" ,"Antall totalt", "Andel"),
+  cap = paste0("Tabellen viser hvordan pasientenes hovedkategori (smerte) fordeler seg mellom akutt, langvarig eller palliativ smerte."),
+  label = "smertekattab",
+  type = params$tableFormat,
+  digs = 2,
+  align = c("l", "c", "c", "c")
+)
+```
+
+
+```{r datawrangl2, eval=dataPresent, include = FALSE}
+
+dat_stacked <- datd %>%
+  filter(!is.na(Smertekategori)) %>%
+  group_by(timeafter, Smertekategori) %>%
+  summarise(n_timekat = n())
+
+```
+
+Fordelingen mellom tid til død og de ulike smertekategoriene finner vi både i tabellen og figuren under:
+```{r barplot2, eval=dataPresent, results='asis', fig.pos= "H", out.extra = '', fig.align='center', out.width='100%'}
+
+rapbase::mst(
+  tab = dat_stacked, 
+  col_names = c( "Tid til død" ,"Smertekategori", "Antall"),
+  cap = paste0("Fordeling mellom gruppene."),
+  label = "tidogkat",
+  type = params$tableFormat,
+  digs = 2,
+  align = c("l", "c", "c", "c")
+)
+
+ggplot(dat_stacked, aes(fill = Smertekategori, y = n_timekat, x = timeafter)) + 
+  geom_bar(position = "stack", width=0.7, stat = "identity") +
+  scale_x_discrete(name ="Tid til død etter sluttføring") +
+  scale_y_continuous(name = "Antall") +
+  theme_minimal() +
+  theme(text = element_text(size = 15)) 
+
 ```
