@@ -121,6 +121,10 @@ dat <- dat %>%
                           SmerteKat == 2 ~ 'Palliativ',
                           SmerteKat == 4 ~'Annet'))
 
+dat$Smertekategori <- factor(dat$Smertekategori, 
+                        levels = c("Akutt", "Langvarig",
+                                   "Annet"))
+
 
 #Creating data set with only those who died
 datd <- dat %>%
@@ -176,7 +180,7 @@ rownames(tot_smertekat) = c("Akutt smerte", "Langvarig smerte", "Palliativ")
 ```
 
 Figuren viser hvor fordelingen over hvor lang tid det var fra sluttdato (registert i registeret) til dødsdato. Overlevende vises ikke her.
-```{r barplot, eval=dataPresent, results='asis', fig.pos= "H", out.extra = '', fig.align='center', out.width='100%'}
+```{r barplot, eval=dataPresent, results='asis'}
 
 ggplot(datd, aes(x = timeafter)) +
   geom_bar(stat="count", width=0.7, fill="steelblue") +
@@ -212,7 +216,7 @@ dat_stacked <- datd %>%
 ```
 
 Fordelingen mellom tid til død og de ulike smertekategoriene finner vi både i tabellen og figuren under:
-```{r barplot2, eval=dataPresent, results='asis', fig.pos= "H", out.extra = '', fig.align='center', out.width='100%'}
+```{r barplot2, eval=dataPresent, results='asis', fig.width = 10}
 
 rapbase::mst(
   tab = dat_stacked, 
