@@ -85,7 +85,9 @@ cat('# Upps...\nI den valgte tidsperioden er det ikke nok data til å gi
 knitr::knit_exit()
 
 ```
+# Tid til død etter utskrivelse
 
+I denne rapporten er kun de som har minst ett tilsyn med (ettersom det ellers manglet mange sluttføringsdatoer).
 
 ```{r datawrangl, eval=dataPresent, include = FALSE}
 #Sluttdato mangler noen, men tror det blir riktig
@@ -179,7 +181,7 @@ rownames(tot_smertekat) = c("Akutt smerte", "Langvarig smerte", "Palliativ")
 
 ```
 
-Figuren viser hvor fordelingen over hvor lang tid det var fra sluttdato (registert i registeret) til dødsdato. Overlevende vises ikke her.
+### Figuren under viser fordelingen over hvor lang tid det var fra sluttføringsdato (registert i registeret) til dødsdato. Overlevende er ikke med i datagrunnlaget her.
 ```{r barplot, eval=dataPresent, results='asis'}
 
 ggplot(datd, aes(x = timeafter)) +
@@ -190,7 +192,7 @@ ggplot(datd, aes(x = timeafter)) +
   theme(text = element_text(size = 15)) 
 ```
 
-Videre er pasientene delt inn i følgende smertekategorier:
+### Videre er pasientene registrert med følgende smertekategorier under forløpet:
 ```{r smertekat, eval=dataPresent, results='asis'}
 
 #Smertekategori
@@ -215,9 +217,10 @@ dat_stacked <- datd %>%
 
 ```
 
-Fordelingen mellom tid til død og de ulike smertekategoriene finner vi både i tabellen og figuren under:
-```{r barplot2, eval=dataPresent, results='asis', fig.width = 10}
+### Fordelingen mellom tid til død og de ulike smertekategoriene registrert under forløpet finner vi først i tabellen
+```{r tab2, eval=dataPresent, results='asis'}
 
+#Tabelloversikt
 rapbase::mst(
   tab = dat_stacked, 
   col_names = c( "Tid til død" ,"Smertekategori", "Antall"),
@@ -227,7 +230,11 @@ rapbase::mst(
   digs = 2,
   align = c("l", "c", "c", "c")
 )
+```
 
+### og deretter i figuren under:
+```{r barplot2, eval=dataPresent, results='asis', fig.width = 10}
+#Plot
 ggplot(dat_stacked, aes(fill = Smertekategori, y = n_timekat, x = timeafter)) + 
   geom_bar(position = "stack", width=0.7, stat = "identity") +
   scale_x_discrete(name ="Tid til død etter sluttføring") +
