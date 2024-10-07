@@ -18,7 +18,7 @@
 #' getRegDataRapportDekningsgrad getRegDataSmertekategori
 #' getSmerteDiagKatValueLab
 #' getRegDataSpinalkateter getLocalYears getAllYears getHospitalName
-#' getNameReshId getDataDump
+#' getNameReshId getDataDump getRegDataVariabeloversikt
 NULL
 
 
@@ -631,4 +631,41 @@ WHERE
                       msg = paste("Smerte data dump:\n", query))
   }
   rapbase::loadRegData(registryName, query)
+}
+
+#' @rdname getRegData
+#' @export
+GetRegDataVariabeloversikt <- function(registryName, reshId, userRole,
+                                       startDate, endDate, ...) {
+
+  dbType <- "mysql"
+
+  # special case at OUS
+  deps <- .getDeps(reshId, userRole)
+
+  query <- paste0("
+SELECT
+  *
+FROM
+  AlleVarNum var
+WHERE
+  var.StartdatoTO>=DATE('", startDate, "') AND var.StartdatoTO<=DATE('", endDate, "')"
+  )
+
+  if (isNationalReg(reshId)) {
+    query <- paste0(query, ";")
+  } else {
+    query <- paste0(query, " AND var.AvdRESH IN (", deps, ");")
+  }
+
+  if ("session" %in% names(list(...))) {
+    session <- list(...)[["session"]]
+    if ("ShinySession" %in% attr(session, "class")) {
+      rapbase::repLogger(session = session,
+                         msg = paste("Load indikatorrapport data from",
+                                     registryName, ": ", query))
+    }
+  }
+
+  rapbase::loadRegData(registryName, query, dbType)
 }

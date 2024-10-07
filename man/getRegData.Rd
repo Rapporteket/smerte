@@ -12,10 +12,13 @@
 \alias{getHospitalName}
 \alias{getNameReshId}
 \alias{getDataDump}
+\alias{getRegDataVariabeloversikt}
 \alias{getRegDataRapportDekningsgradReservasjon}
 \alias{getRegDataIndikator}
 \alias{getRegDataOpiodReduksjon}
+\alias{getRegDataLokalEpidural}
 \alias{getRegDataRapportOppfolg}
+\alias{GetRegDataVariabeloversikt}
 \title{Provide dataframe of registry data}
 \usage{
 getRegDataLokalTilsynsrapportMaaned(
@@ -76,6 +79,15 @@ getRegDataSpinalkateter(
   ...
 )
 
+getRegDataLokalEpidural(
+  registryName,
+  reshId,
+  userRole,
+  startDate,
+  endDate,
+  ...
+)
+
 getRegDataRapportOppfolg(
   registryName,
   reshId,
@@ -94,6 +106,15 @@ getHospitalName(registryName, reshId, userRole)
 getNameReshId(registryName, asNamedList = FALSE)
 
 getDataDump(registryName, tableName, fromDate, toDate, ...)
+
+GetRegDataVariabeloversikt(
+  registryName,
+  reshId,
+  userRole,
+  startDate,
+  endDate,
+  ...
+)
 }
 \arguments{
 \item{registryName}{String providing the current registryName}

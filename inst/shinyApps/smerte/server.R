@@ -119,6 +119,11 @@ server <- function(input, output, session) {
                               reportFileName = "lokalEprom.Rmd",
                               reportParams = reportParams)
 
+  # Variabeloversikt
+  smerte::defaultReportServer(id = "variabeloversikt",
+                              reportFileName = "Variabeloversikt.Rmd",
+                              reportParams = reportParams)
+
   # Spinalkateter
   smerte::defaultReportServer(id = "spinalkateter",
                               reportFileName = "LokalSpinalkateter.Rmd",
@@ -147,6 +152,17 @@ server <- function(input, output, session) {
                      "author", "orgName", "orgId",
                      "registryName", "userFullName"),
       paramValues = c("nasjonalIndikator", "pdf", "Kvalitetsindikatorer",
+                      "Smerteregisteret", hospitalName, reshId,
+                      registryName, userFullName)
+    ),
+    `Variabeloversikt - alle enheter` = list(
+      synopsis = paste0("Variabeloversikt for Smerteregisteret",
+                        "(alle enheter)"),
+      fun = "reportProcessor",
+      paramNames = c("report", "outputType", "title",
+                     "author", "orgName", "orgId",
+                     "registryName", "userFullName"),
+      paramValues = c("Variabeloversikt", "pdf", "Variabeloversikt",
                       "Smerteregisteret", hospitalName, reshId,
                       registryName, userFullName)
     )

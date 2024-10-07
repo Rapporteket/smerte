@@ -96,6 +96,17 @@ ui <- shiny::tagList(
         )
       ),
       shiny::tabPanel(
+        "Variabeloversikt",
+        shiny::sidebarLayout(
+          shiny::sidebarPanel(
+            smerte::defaultReportInput("variabeloversikt")
+          ),
+          shiny::mainPanel(
+            smerte::defaultReportUI("variabeloversikt")
+          )
+        )
+      ),
+      shiny::tabPanel(
         "Spinalkateter",
         shiny::sidebarLayout(
           shiny::sidebarPanel(

@@ -132,6 +132,22 @@ reportProcessor <- function(report,
     )
   }
 
+  if (report == "variabeloversikt") {
+    filePath <- rapbase::renderRmd(
+      system.file("Variabeloversikt.Rmd", package = "smerte"),
+      outputType = outputType,
+      params = list(
+        author = author,
+        hospitalName = "",
+        tableFormat = outputType,
+        reshId = 0L,
+        registryName = registryName,
+        userFullName = userFullName,
+        userRole = userRole
+      )
+    )
+  }
+
   if (report == "spinalkateter") {
     filePath <- rapbase::renderRmd(
       system.file("LokalSpinalkateter.Rmd", package = "smerte"),

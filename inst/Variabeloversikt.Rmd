@@ -1,0 +1,111 @@
+---
+params:
+  title: ': Variabeloversikt'
+  author: 'Rapporteket'
+  hospitalName: 'Ukjent sykehus'
+  reshId: 'locallyDefined'
+  userRole: 'MyRole'
+  userFullName: 'Ukjent bruker'
+  startDate: !r lubridate::today() - lubridate::years(1)
+  endDate: !r lubridate::today() - lubridate::weeks(1)
+  year: '2016'
+  tableFormat: 'html'
+  registryName: 'rapbase'
+  shinySession: list()
+title: '`r paste0("Smerteregisteret ", params$hospitalName, params$title)`'
+author: '`r params$author`'
+date: '`r format(Sys.time(), "%d\\. %B, %Y")`'
+reglogo: '`r system.file("www/logoSmerte.png", package = "smerte")`'
+regtext: 'SmerteReg er et nasjonalt kvalitetsregister som registrer alleinneliggende pasienter som henvises for tilsyn fra akutt smerteteam. Formålet med SmerteReg er å bedre kvaliteten på tjenesten akutt smerteteam yter til smertepasienter på norske sykehus samt å danne grunnlag for forskning.'
+registryName: Smerteregisteret
+userFullName: '`r params$userFullName`'
+---
+
+```{r set options and load packages, include = FALSE}
+knitr::opts_chunk$set(echo=FALSE)
+options(knitr.table.format = params$tableFormat)
+options(tinytex.verbose = TRUE)
+options(scipen = 1, digits = 2) #set to two decimal 
+
+```
+
+```{r get data, warning = FALSE, message=TRUE}
+
+if (rapbase::isRapContext()) {
+  dat <- smerte::GetRegDataVariabeloversikt(registryName = params$registryName,
+                                     reshId = params$reshId,
+                                     userRole=params$userRole,
+                                     startDate = params$startDate,
+                                     endDate = params$endDate,
+                                     session = params$shinySession)
+  print("Fikk lastet inn data")
+} else {
+  print("Fikk ikke til å laste data")
+  
+  #Dataimport: skal hente lokale data for hvert sykehus (tar vekk sti, og erstatter med lokal fil)
+  #path <- read.csv(file = "H:/pathnasjonal.csv", header = FALSE, sep = ";")
+  #path <- as.data.frame(lapply(path, as.character), stringsAsFactors=FALSE)
+  #path <- path$V1
+  #dat <- read.csv(file = path, header = TRUE, sep = ";")
+
+  #Må kunne laste inn data for de ulike årene
+ # aar <- params$year
+  #dat = dat %>% filter(year(date(StartdatoTO)) == aar) #year
+}
+
+#Forkorter sykehusnavn
+dat$SykehusNavn[dat$SykehusNavn == "Universitetssykehuset Nord-Norge HF"] = "UNN"
+dat$SykehusNavn[dat$SykehusNavn == "St. Olavs Hospital HF"] = "St. Olavs"
+dat$SykehusNavn[dat$SykehusNavn == "Oslo universitetssykehus HF"] = "OUS"
+dat$SykehusNavn[dat$SykehusNavn == "Oslo universitetssykehus HF / Smerteteam, RH"] = "OUS, RH"
+dat$SykehusNavn[dat$SykehusNavn == "Oslo universitetssykehus HF / Smerteteam, UL"] = "OUS, UL"
+dat$SykehusNavn[dat$SykehusNavn == "Helse Bergen HF"] = "HB"
+dat$SykehusNavn[dat$SykehusNavn == "Helse Møre og Romsdal HF"] = "HMR"
+dat$SykehusNavn[dat$SykehusNavn == "Vestre Viken HF"] = "VV"
+dat$SykehusNavn[dat$SykehusNavn == "Vestre Viken HF / Klinikk Bærum Sykehus"] = "VV, Bærum"
+dat$SykehusNavn[dat$SykehusNavn == "Akershus universitetssykehus HF"] = "AHUS"
+
+#Legger inn månedene i riktig rekkefølge
+dat <- dat %>%
+  dplyr::mutate(monthname = zoo::as.Date(zoo::as.yearmon(StartdatoTO)))
+
+```
+
+# Variabeloversikt
+ 
+
+```{r, print-dat, echo = FALSE}
+
+dat_min = head(dat, n = 50)
+
+dat_min_utvalg = dat_min %>%
+  janitor::remove_empty("cols")
+
+```
+```{r, fig-fordeling}
+
+fig_fordeling = DataExplorer::plot_intro(dat_min_utvalg, 
+                                         ggtheme = theme_minimal())
+```
+
+```{r, fig-missing, fig.height=20}
+fig_missing = DataExplorer::plot_missing(dat_min_utvalg,
+                                         missing_only = TRUE,
+                                         ggtheme = theme_minimal(), 
+                                         title = "Andel manglende registreringer")
+```
+
+```{r, fig-bars}
+fig_bars = DataExplorer::plot_bar(dat_min_utvalg, 
+                                  ggtheme = theme_minimal(),
+                                  nrow = 2,
+                                  ncol = 2)
+```
+
+```{r, fig-hist}
+fig_hist = DataExplorer::plot_histogram(dat_min_utvalg, 
+                                        ggtheme = theme_minimal(), 
+                                        nrow = 2, 
+                                        ncol = 2)
+```
+
