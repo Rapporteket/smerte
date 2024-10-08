@@ -135,7 +135,7 @@ datd <- dat %>%
 
 #######Working with pain diagonse
 #SmerteKat.x = 1 er akutt smerte (se SmerteKat.y)
-akutt = fulldat %>% 
+akutt = datd %>% 
   dplyr::filter(!is.na(SmerteKat)) %>% 
   dplyr::distinct(ForlopsID, .keep_all = TRUE) %>% 
   dplyr::summarise(antall_ja = sum(SmerteKat == 1),
@@ -144,7 +144,7 @@ akutt = fulldat %>%
   dplyr::ungroup()
 
 #SmerteKat.x = 2 er langvarig smerte (se SmerteKat.y)
-langvarig = fulldat %>% 
+langvarig = datd %>% 
   dplyr::filter(!is.na(SmerteKat)) %>% 
   dplyr::distinct(ForlopsID, .keep_all = TRUE) %>% 
   dplyr::summarise(antall_ja = sum(SmerteKat == 2),
@@ -153,7 +153,7 @@ langvarig = fulldat %>%
   dplyr::ungroup()
 
 #SmerteKat.x = 3 er palliativ smerte (se SmerteKat.y)
-palliativ = fulldat %>% 
+palliativ = datd %>% 
   dplyr::filter(!is.na(SmerteKat)) %>% 
   dplyr::distinct(ForlopsID, .keep_all = TRUE) %>% 
   dplyr::summarise(antall_ja = sum(SmerteKat == 3),
@@ -162,7 +162,7 @@ palliativ = fulldat %>%
   dplyr::ungroup()
 
 #SmerteKat.x = 4 er annet smerte (se SmerteKat.y)
-annet = fulldat %>% 
+annet = datd %>% 
   dplyr::filter(!is.na(SmerteKat)) %>% 
   dplyr::distinct(ForlopsID, .keep_all = TRUE) %>% 
   dplyr::summarise(antall_ja = sum(SmerteKat == 4),
@@ -171,7 +171,7 @@ annet = fulldat %>%
   dplyr::ungroup()
 
 #Underdiagnose for de forløp med hoveddiagnose akutt smerte
-underdiag = fulldat %>% 
+underdiag = datd %>% 
   dplyr::filter(SmerteKat == 1) %>% 
   dplyr::distinct(ForlopsID, .keep_all = TRUE) %>% 
   dplyr::count(DiagKat) %>%
@@ -201,19 +201,18 @@ ggplot(datd, aes(x = timeafter)) +
   theme(text = element_text(size = 15)) 
 ```
 
-### Videre er pasientene registrert med følgende smertekategorier under forløpet:
 ```{r smertekat, eval=dataPresent, results='asis'}
 
 #Smertekategori
-rapbase::mst(
-  tab = tot_smertekat, 
-  col_names = c( "Antall ja" ,"Antall totalt", "Andel"),
-  cap = paste0("Tabellen viser hvordan pasientenes hovedkategori (smerte) fordeler seg mellom akutt, langvarig eller palliativ smerte."),
-  label = "smertekattab",
-  type = params$tableFormat,
-  digs = 2,
-  align = c("l", "c", "c", "c")
-)
+# rapbase::mst(
+#   tab = tot_smertekat, 
+#   col_names = c( "Antall ja" ,"Antall totalt", "Andel"),
+#   cap = paste0("Tabellen viser hvordan pasientenes hovedkategori (smerte) fordeler seg mellom akutt, langvarig eller palliativ smerte."),
+#   label = "smertekattab",
+#   type = params$tableFormat,
+#   digs = 2,
+#   align = c("l", "c", "c", "c")
+# )
 ```
 
 
