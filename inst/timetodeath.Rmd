@@ -120,12 +120,12 @@ dat <- dat %>%
   mutate(Smertekategori = 
                 case_when(SmerteKat == 1 ~ 'Akutt',
                           SmerteKat == 2 ~ 'Langvarig',
-                          SmerteKat == 2 ~ 'Palliativ',
+                          SmerteKat == 3 ~ 'Palliativ',
                           SmerteKat == 4 ~'Annet'))
 
 dat$Smertekategori <- factor(dat$Smertekategori, 
-                        levels = c("Akutt", "Langvarig",
-                                   "Annet"))
+                        levels = c("Akutt", "Langvarig", 
+                                   "Palliativ", "Annet"))
 
 
 #Creating data set with only those who died
@@ -161,6 +161,15 @@ palliativ = fulldat %>%
                    ind = antall_ja/nevner) %>% 
   dplyr::ungroup()
 
+#SmerteKat.x = 4 er annet smerte (se SmerteKat.y)
+annet = fulldat %>% 
+  dplyr::filter(!is.na(SmerteKat)) %>% 
+  dplyr::distinct(ForlopsID, .keep_all = TRUE) %>% 
+  dplyr::summarise(antall_ja = sum(SmerteKat == 4),
+                   nevner = dplyr::n(),
+                   ind = antall_ja/nevner) %>% 
+  dplyr::ungroup()
+
 #Underdiagnose for de forløp med hoveddiagnose akutt smerte
 underdiag = fulldat %>% 
   dplyr::filter(SmerteKat == 1) %>% 
@@ -175,8 +184,8 @@ underdiag = fulldat %>%
   )
 
 #Setter sammen
-tot_smertekat <- dplyr::bind_rows(akutt, langvarig, palliativ)
-rownames(tot_smertekat) = c("Akutt smerte", "Langvarig smerte", "Palliativ")
+tot_smertekat <- dplyr::bind_rows(akutt, langvarig, palliativ, annet)
+rownames(tot_smertekat) = c("Akutt smerte", "Langvarig smerte", "Palliativ", "Annet")
 
 
 ```
