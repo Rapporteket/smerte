@@ -3,7 +3,6 @@
 \name{variabelOversiktRapport}
 \alias{variabelOversiktRapport}
 \alias{variabeloversiktInput}
-\alias{variabeloversiktServer}
 \title{Module for VariabeloversiktRapport}
 \usage{
 variabeloversiktInput(
@@ -13,8 +12,6 @@ variabeloversiktInput(
   min = "1980-01-01",
   max = "2100-01-01"
 )
-
-variabeloversiktServer(registryName = registryName)
 }
 \arguments{
 \item{id}{Character string with module id (namespace).}
