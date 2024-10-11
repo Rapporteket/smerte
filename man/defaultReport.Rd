@@ -6,6 +6,7 @@
 \alias{defaultReportUI}
 \alias{defaultReportServer}
 \alias{defaultReportApp}
+\alias{defaultReportServerReactive}
 \title{Shiny modules for Smertereg at Rapportket}
 \usage{
 defaultReportInput(
@@ -19,6 +20,8 @@ defaultReportInput(
 defaultReportUI(id)
 
 defaultReportServer(id, reportFileName, reportParams)
+
+defaultReportServerReactive(id, reportFileName, reportParamsReactive)
 
 defaultReportApp()
 }

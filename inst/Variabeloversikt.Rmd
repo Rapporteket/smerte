@@ -4,6 +4,8 @@ params:
   author: 'Rapporteket'
   hospitalName: 'Ukjent sykehus'
   reshId: 'locallyDefined'
+  avdValg: 'Nasjonalt'
+  Data: NA
   userRole: 'MyRole'
   userFullName: 'Ukjent bruker'
   startDate: !r lubridate::today() - lubridate::years(1)
@@ -29,83 +31,92 @@ options(scipen = 1, digits = 2) #set to two decimal
 
 ```
 
-```{r get data, warning = FALSE, message=TRUE}
+```{r get-data, warning = FALSE, message=TRUE}
 
-if (rapbase::isRapContext()) {
-  dat <- smerte::GetRegDataVariabeloversikt(registryName = params$registryName,
-                                     reshId = params$reshId,
-                                     userRole=params$userRole,
-                                     startDate = params$startDate,
-                                     endDate = params$endDate,
-                                     session = params$shinySession)
-  print("Fikk lastet inn data")
-} else {
-  print("Fikk ikke til å laste data")
-  
-  #Dataimport: skal hente lokale data for hvert sykehus (tar vekk sti, og erstatter med lokal fil)
-  #path <- read.csv(file = "H:/pathnasjonal.csv", header = FALSE, sep = ";")
-  #path <- as.data.frame(lapply(path, as.character), stringsAsFactors=FALSE)
-  #path <- path$V1
-  #dat <- read.csv(file = path, header = TRUE, sep = ";")
+ if (rapbase::isRapContext()) {
+   
+   dat <- smerte::GetRegDataVariabeloversikt(registryName = params$registryName,
+                                        tableName = "AlleVarNum",
+                                        reshId = params$reshId,
+                                        userRole=params$userRole,
+                                        startDate = params$startDate,
+                                        endDate = params$endDate,
+                                        session = params$shinySession)
+ } else { print("fikk ikke inn data")}
 
-  #Må kunne laste inn data for de ulike årene
- # aar <- params$year
-  #dat = dat %>% filter(year(date(StartdatoTO)) == aar) #year
-}
+  if(params$avdValg == "Nasjonalt") {
+    dat_variabeloversikt = dat
+  } else{
+    dat_variabeloversikt = dat %>% 
+      dplyr::filter(SykehusNavn == params$avdValg)
+  }
+
 
 #Forkorter sykehusnavn
-dat$SykehusNavn[dat$SykehusNavn == "Universitetssykehuset Nord-Norge HF"] = "UNN"
-dat$SykehusNavn[dat$SykehusNavn == "St. Olavs Hospital HF"] = "St. Olavs"
-dat$SykehusNavn[dat$SykehusNavn == "Oslo universitetssykehus HF"] = "OUS"
-dat$SykehusNavn[dat$SykehusNavn == "Oslo universitetssykehus HF / Smerteteam, RH"] = "OUS, RH"
-dat$SykehusNavn[dat$SykehusNavn == "Oslo universitetssykehus HF / Smerteteam, UL"] = "OUS, UL"
-dat$SykehusNavn[dat$SykehusNavn == "Helse Bergen HF"] = "HB"
-dat$SykehusNavn[dat$SykehusNavn == "Helse Møre og Romsdal HF"] = "HMR"
-dat$SykehusNavn[dat$SykehusNavn == "Vestre Viken HF"] = "VV"
-dat$SykehusNavn[dat$SykehusNavn == "Vestre Viken HF / Klinikk Bærum Sykehus"] = "VV, Bærum"
-dat$SykehusNavn[dat$SykehusNavn == "Akershus universitetssykehus HF"] = "AHUS"
+# dat$SykehusNavn_kort[dat$SykehusNavn == "Universitetssykehuset Nord-Norge HF"] = "UNN"
+# dat$SykehusNavn_kort[dat$SykehusNavn == "St. Olavs Hospital HF"] = "St. Olavs"
+# dat$SykehusNavn_kort[dat$SykehusNavn == "Oslo universitetssykehus HF"] = "OUS"
+# dat$SykehusNavn_kort[dat$SykehusNavn == "Oslo universitetssykehus HF / Smerteteam, RH"] = "OUS, RH"
+# dat$SykehusNavn_kort[dat$SykehusNavn == "Oslo universitetssykehus HF / Smerteteam, UL"] = "OUS, UL"
+# dat$SykehusNavn_kort[dat$SykehusNavn == "Helse Bergen HF"] = "HB"
+# dat$SykehusNavn_kort[dat$SykehusNavn == "Helse Møre og Romsdal HF"] = "HMR"
+# dat$SykehusNavn_kort[dat$SykehusNavn == "Vestre Viken HF"] = "VV"
+# dat$SykehusNavn_kort[dat$SykehusNavn == "Vestre Viken HF / Klinikk Bærum Sykehus"] = "VV, Bærum"
+# dat$SykehusNavn_kort[dat$SykehusNavn == "Akershus universitetssykehus HF"] = "AHUS"
+
 
 #Legger inn månedene i riktig rekkefølge
-dat <- dat %>%
-  dplyr::mutate(monthname = zoo::as.Date(zoo::as.yearmon(StartdatoTO)))
+# dat <- dat %>%
+#   dplyr::mutate(monthname = zoo::as.Date(zoo::as.yearmon(StartdatoTO)))
 
 ```
 
-# Variabeloversikt
- 
+# Variabeloversikt - `r params$avdValg`
 
-```{r, print-dat, echo = FALSE}
+Datagrunnlag: `r params$avdValg`   <br>
+StartDato:    `r params$startDate` <br>
+SluttDato:    `r params$endDate`
 
-dat_min = head(dat, n = 50)
+```{r, vaske-data, echo = FALSE}
 
-dat_min_utvalg = dat_min %>%
+# variabler av liten interesse
+  vars_drop = c("AvdRESH", "SykehusNavn", "ForlopsID", 
+                "PasientID")
+
+dat_rapport = dat_variabeloversikt %>% 
+  dplyr::select(-vars_drop) %>% 
+  janitor::remove_constant() %>% 
   janitor::remove_empty("cols")
-
-```
-```{r, fig-fordeling}
-
-fig_fordeling = DataExplorer::plot_intro(dat_min_utvalg, 
-                                         ggtheme = theme_minimal())
+  
 ```
 
-```{r, fig-missing, fig.height=20}
-fig_missing = DataExplorer::plot_missing(dat_min_utvalg,
+
+```{r, fig-fordeling, eval = FALSE}
+
+fig_fordeling = DataExplorer::plot_intro(dat_rapport, 
+                                         ggtheme = ggplot2::theme_minimal())
+```
+
+```{r, fig-missing, fig.height=20, eval=FALSE}
+fig_missing = DataExplorer::plot_missing(dat_rapport,
                                          missing_only = TRUE,
-                                         ggtheme = theme_minimal(), 
+                                         ggtheme = ggplot2::theme_minimal(), 
                                          title = "Andel manglende registreringer")
 ```
 
-```{r, fig-bars}
-fig_bars = DataExplorer::plot_bar(dat_min_utvalg, 
-                                  ggtheme = theme_minimal(),
-                                  nrow = 2,
+# Fordeling av diskrete verdier
+```{r, fig-bars, eval=TRUE, echo = FALSE, message=FALSE}
+fig_bars = DataExplorer::plot_bar(dat_rapport, 
+                                  ggtheme = ggplot2::theme_minimal(),
+                                  nrow = 3,
                                   ncol = 2)
 ```
 
-```{r, fig-hist}
-fig_hist = DataExplorer::plot_histogram(dat_min_utvalg, 
-                                        ggtheme = theme_minimal(), 
-                                        nrow = 2, 
+# Fordeling av kontinuerlige verdier
+```{r, fig-hist, eval = TRUE}
+fig_hist = DataExplorer::plot_histogram(dat_rapport, 
+                                        ggtheme = ggplot2::theme_minimal(), 
+                                        nrow = 3, 
                                         ncol = 2)
 ```
 

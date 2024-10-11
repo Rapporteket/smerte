@@ -99,7 +99,7 @@ ui <- shiny::tagList(
         "Variabeloversikt",
         shiny::sidebarLayout(
           shiny::sidebarPanel(
-            smerte::defaultReportInput("variabeloversikt")
+            smerte::variabeloversiktInput("variabeloversikt")
           ),
           shiny::mainPanel(
             smerte::defaultReportUI("variabeloversikt")

@@ -14,7 +14,7 @@
 #' @return Shiny object
 #' @name defaultReport
 #' @aliases defaultReportInput defaultReportUI defaultReportServer
-#' defaultReportApp
+#' defaultReportApp defaultReportServerReactive
 NULL
 
 #' @rdname defaultReport
@@ -88,6 +88,68 @@ defaultReportServer <- function(id, reportFileName, reportParams) {
           params = reportParams
         )
         file.rename(fn, file)
+      }
+    )
+  })
+}
+
+#' @rdname defaultReport
+#' @export
+defaultReportServerReactive <- function(id, reportFileName, reportParamsReactive) {
+  shiny::moduleServer(id, function(input, output, session) {
+
+    output$report <- shiny::renderUI({
+      req(input$dateRange)
+      params <- reportParamsReactive()
+      params$startDate <- input$dateRange[1]
+      params$endDate <- input$dateRange[2]
+
+      tryCatch({
+        reportPath <- system.file(reportFileName, package = "smerte")
+        if (reportPath == "") {
+          stop("Report file not found in the 'smerte' package")
+        }
+        rapbase::renderRmd(
+          sourceFile = reportPath,
+          outputType = "html_fragment",
+          params = params
+        )
+      }, error = function(e) {
+        shiny::showNotification(paste("Error rendering report:", e$message), type = "error")
+        NULL
+      })
+    })
+
+    output$downloadReport <- shiny::downloadHandler(
+      filename = function() {
+        paste0(
+          sub(pattern = "(.*?)\\..*$", replacement = "\\1", basename(reportFileName)),
+          "_",
+          format(Sys.Date(), "%Y%m%d"),
+          ".",
+          input$format
+        )
+      },
+      content = function(file) {
+        params <- reportParamsReactive()
+        params$startDate <- input$dateRange[1]
+        params$endDate <- input$dateRange[2]
+        params$tableFormat <- input$format
+
+        tryCatch({
+          reportPath <- system.file(reportFileName, package = "smerte")
+          if (reportPath == "") {
+            stop("Report file not found in the 'smerte' package")
+          }
+          fn <- rapbase::renderRmd(
+            sourceFile = reportPath,
+            outputType = input$format,
+            params = params
+          )
+          file.rename(fn, file)
+        }, error = function(e) {
+          shiny::showNotification(paste("Error downloading report:", e$message), type = "error")
+        })
       }
     )
   })

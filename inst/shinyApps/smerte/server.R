@@ -31,7 +31,20 @@ server <- function(input, output, session) {
   ## tools only for SC
   if (!userRole %in% "SC") {
     shiny::hideTab(inputId = "tabs", target = "Verktøy")
+    shiny::hideTab(inputId = "tabs", target = "Variabeloversikt")
+
   }
+
+  # Liste med sykehusnavn for selectInput og filtrering
+  d_alleVarNum = smerte::getDataDump(registryName,
+                                tableName = "AlleVarNum",
+                                fromDate = "1980-01-01",
+                                toDate = "2024-10-01")
+
+
+  # SelectInput for variabeloversiktrapport
+  updateSelectInput(session, "avdValg",
+                    choices = c("Nasjonalt", unique(d_alleVarNum$SykehusNavn)))
 
 
   contentDump <- function(file, type) {
@@ -71,6 +84,7 @@ server <- function(input, output, session) {
     )
   })
 
+  # Report parameters
   reportParams <- list(
     hospitalName = hospitalName,
     reshId = reshId,
@@ -79,6 +93,17 @@ server <- function(input, output, session) {
     userFullName = userFullName,
     shinySession = session
   )
+
+  # Parameters including reactive inputs
+  reportParamsVariabeloversikt = reactive(list(
+    hospitalName = hospitalName,
+    reshId = reshId,
+    registryName = registryName,
+    userRole = userRole,
+    userFullName = userFullName,
+    shinySession = session,
+    avdValg = input$avdValg
+  ))
 
   # Tilsynsrapport
   smerte::defaultReportServer(id = "tilsyn",
@@ -120,9 +145,9 @@ server <- function(input, output, session) {
                               reportParams = reportParams)
 
   # Variabeloversikt
-  smerte::defaultReportServer(id = "variabeloversikt",
-                              reportFileName = "Variabeloversikt.Rmd",
-                              reportParams = reportParams)
+  smerte::defaultReportServerReactive(id = "variabeloversikt",
+                                      reportFileName = "Variabeloversikt.Rmd",
+                                      reportParamsReactive = reportParamsVariabeloversikt)
 
   # Spinalkateter
   smerte::defaultReportServer(id = "spinalkateter",

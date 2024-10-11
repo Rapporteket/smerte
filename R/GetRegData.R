@@ -662,7 +662,7 @@ WHERE
     session <- list(...)[["session"]]
     if ("ShinySession" %in% attr(session, "class")) {
       rapbase::repLogger(session = session,
-                         msg = paste("Load indikatorrapport data from",
+                         msg = paste("Load variabeloversikt data from",
                                      registryName, ": ", query))
     }
   }
