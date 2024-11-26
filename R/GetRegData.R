@@ -567,12 +567,16 @@ getHospitalName <- function(registryName, reshId, userRole) {
 
   query <- paste0("
 SELECT DISTINCT
-  LOCATION_SHORTNAME AS ln
+  avd.LOCATION_SHORTNAME AS ln
 FROM
-  avdelingsoversikt
+  avdelingsoversikt avd
+INNER JOIN
+  AlleVarNum var
+ON
+  avd.DEPARTMENT_ID = var.InnlAvd
 WHERE
-  DEPARTMENT_CENTREID IN (", deps, ") AND
-  DEPARTMENT_ACTIVE = 1;")
+  avd.DEPARTMENT_CENTREID IN (", deps, ") AND
+  avd.DEPARTMENT_ACTIVE = 1;")
 
 
 
