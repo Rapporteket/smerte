@@ -47,7 +47,7 @@ server <- function(input, output, session) {
         d <- merge(d, ForlopsOversikt, by = "ForlopsID")
       }
       if (input$dumpDataSet != "avdelingsoversikt") {
-        d <- d %>% dplyr::filter(AvdRESH == reshId)
+        d <- dplyr::filter(d, AvdRESH == reshId)
       }
     }
     if (type == "xlsx-csv") {
