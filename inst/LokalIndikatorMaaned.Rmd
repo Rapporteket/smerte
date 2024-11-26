@@ -662,23 +662,34 @@ if (dim(dat)[1] < 1) {
   kvalitetsindikatoren."
 } else {
   
-  #Verdier som skal vises i tabell for denne indikatoren
-  ant <- sum(dat$AkseptabelSmerte21 == 1, na.rm = TRUE)
+   aksept <- dat %>%
+    dplyr::filter(!is.na(AkseptabelSmerte21), AkseptabelSmerte21 != 9) %>%
+    dplyr::group_by(AkseptabelSmerte21) %>%
+    dplyr::summarise(n = dplyr::n()) %>%
+    dplyr::mutate( ant = sum(n), freq = n/sum(n)) %>%
+    dplyr::filter(AkseptabelSmerte21 == 1)
   
-  totant <- sum(!is.na(dat$AkseptabelSmerte21))
+  #Tar bort kolonne  
+  aksept <- aksept %>%
+    dplyr::select(n, ant, freq)
   
-  and <- ant/totant
-  
-  #Før, for sammenligning men ikke indikator
-  antfoer <- sum(dat$AkseptabelSmerte12 == 1, na.rm = TRUE)
-  
-  totantfoer <- sum(!is.na(dat$AkseptabelSmerte12))
-  
-  andfoer <- antfoer/totantfoer
+  # #Verdier som skal vises i tabell for denne indikatoren
+  # ant <- sum(dat$AkseptabelSmerte21 == 1, na.rm = TRUE)
   # 
-  #Tabell for siste tilsyn
-  tabaks <- cbind(ant, totant, and)
-  
+  # totant <- sum(!is.na(dat$AkseptabelSmerte21))
+  # 
+  # and <- ant/totant
+  # 
+  # #Før, for sammenligning men ikke indikator
+  # antfoer <- sum(dat$AkseptabelSmerte12 == 1, na.rm = TRUE)
+  # 
+  # totantfoer <- sum(!is.na(dat$AkseptabelSmerte12))
+  # 
+  # andfoer <- antfoer/totantfoer
+  # # 
+  # #Tabell for siste tilsyn
+  # tabaks <- cbind(ant, totant, and)
+  # 
   rapbase::mst(
     tab = tabaks,
     col_names = c("Antall", "Totalt antall", "Andel"),
