@@ -35,6 +35,8 @@ Her finnes rapportene det er mulig å hente ut fra rapporteket. Etter hvert som 
 
 **Oppfølging ved smerteklinikk:** lokal avdelingsoversikt over anbefalt oppfølging ved smerteklinikk.
 
+**Tid til død etter utskrivelse:** oversikt inkludert fordeling blant de ulike smertekategoriene (hoved).
+
 # Nye rapporter
 Dersom det er informasjon som er av interesse å hente ut gjentatte ganger kan det lønne seg å få laget en rapport. 
 

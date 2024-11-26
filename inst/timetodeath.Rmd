@@ -1,0 +1,253 @@
+---
+params:
+  title: 'Tid til død etter utskrivelse'
+  author: 'Rapporteket'
+  hospitalName: 'Ukjent sykehus'
+  reshId: 'locallyDefined'
+  userRole: 'MyRole'
+  userFullName: 'Ukjent bruker'
+  startDate: !r lubridate::today() - lubridate::years(1)
+  endDate: !r lubridate::today() - lubridate::weeks(1)
+  year: '2016'
+  tableFormat: 'html'
+  registryName: 'rapbase'
+  shinySession: list()
+title: '`r paste(params$title, params$hospitalName, " i perioden fra ", params$startDate, " til ", params$endDate)`'
+author: '`r params$author`'
+date: '`r format(Sys.time(), "%d\\. %B, %Y")`'
+reglogo: '`r system.file("www/logoSmerte.png", package = "smerte")`'
+regtext: '`r readLines(system.file("registryShortDescription.txt", package = "smerte"))`'
+registryName: Smerteregisteret
+userFullName: '`r params$userFullName`'
+---
+```{r set options and load packages, include = FALSE}
+knitr::opts_chunk$set(echo=FALSE)
+options(knitr.table.format = params$tableFormat)
+options(tinytex.verbose = TRUE)
+
+library(lubridate)
+library(tidyverse)
+library(ggplot2)
+```
+
+```{r get data, include=FALSE}
+
+if (rapbase::isRapContext()) {
+  fulldat <- smerte::getRegDataTimetodeath(
+    registryName = params$registryName,
+    reshId = params$reshId,
+    userRole = params$userRole,
+    startDate = params$startDate,
+    endDate = params$endDate,
+    session = params$shinySession
+  )
+} else {
+  
+  #Dataimport: skal hente lokale data for hvert sykehus (tar vekk sti, og erstatter med lokal fil)
+  
+  #AlleVarNum
+  path <- read.csv(file = "H:/path.csv", header = FALSE, sep = ";")
+  path <- as.data.frame(lapply(path, as.character), stringsAsFactors=FALSE)
+  path <- path$V1
+  dat <- read.csv(file = path, header = TRUE, sep = ";")
+  
+  #Diagnosefil numerisk
+  pathd <- read.csv(file = "H:/pathdiag.csv", header = FALSE, sep = ";")
+  pathd <- as.data.frame(lapply(pathd, as.character), stringsAsFactors=FALSE)
+  pathd <- pathd$V1
+  diagnum <- read.csv(file = pathd, header = TRUE, sep = ";")
+  
+  #Diagnosefil
+  pathdt <- read.csv(file = "H:/pathdiagtekst.csv", header = FALSE, sep = ";", encoding = "UTF-8")
+  pathdt <- as.data.frame(lapply(pathdt, as.character), stringsAsFactors=FALSE)
+  pathdt <- pathdt$V1
+  diag <- read.csv(file = pathdt, header = TRUE, sep = ";", encoding = "UTF-8")
+  
+  #Joiner diagnose numerisk og diagnosetekst
+  diagfull = diagnum %>% left_join(diag, by = c("ForlopsID", "HovedDato", "SmerteDiagID"))
+  #Joiner så AlleVarNum med diagnose_full
+  fulldat = left_join(dat, diagfull, by = "ForlopsID")
+  
+}
+
+#Funksjon som skal evaluere om dataframe er tom eller ikke
+dataPresent <- TRUE
+if(dim(fulldat)[1] < 1) {
+  dataPresent <- FALSE
+}
+```
+
+
+
+```{r noData, eval=!dataPresent, results='asis'}
+cat('# Upps...\nI den valgte tidsperioden er det ikke nok data til å gi 
+    ut resultater.')
+knitr::knit_exit()
+
+```
+# Tid til død etter utskrivelse
+
+I denne rapporten er kun de som har minst ett tilsyn med (ettersom det ellers manglet mange sluttføringsdatoer).
+
+```{r datawrangl, eval=dataPresent, include = FALSE}
+#Sluttdato mangler noen, men tror det blir riktig
+fulldat$enddate <- as.Date(fulldat$SluttDato)
+fulldat$deathd <- as.Date(fulldat$Ddato)
+
+#Only those who were seen (and changing name from fulldat to dat)
+dat <- fulldat %>%
+  filter(Tilsett == 1)
+
+#Finner uker mellom utskrivelse og eventuell død
+dat$diff <- difftime(dat$deathd, dat$enddate, units = "weeks")
+
+#Lager variabel timeafter som kategorieserer inn i måneder av ulik lengde
+dat <- dat %>% 
+  mutate(timeafter = 
+                case_when(diff <= 4 ~ 'Innen 1 måned',
+                          diff > 4 & diff <= 12 ~ '1-3 måneder',
+                          diff > 12 & diff <= 24 ~ '3-6 måneder',
+                          diff > 24 & diff <= 52 ~'6-12 måneder',
+                          diff > 52 ~ 'Over 1 år'))
+
+#Gjør til faktor med riktig levels
+dat$timeafter <- factor(dat$timeafter, 
+                        levels = c("Innen 1 måned", "1-3 måneder",
+                                   "3-6 måneder", "6-12 måneder", "Over 1 år"))
+
+
+dat <- dat %>% 
+  mutate(Smertekategori = 
+                case_when(SmerteKat == 1 ~ 'Akutt',
+                          SmerteKat == 2 ~ 'Langvarig',
+                          SmerteKat == 3 ~ 'Palliativ',
+                          SmerteKat == 4 ~'Annet'))
+
+dat$Smertekategori <- factor(dat$Smertekategori, 
+                        levels = c("Akutt", "Langvarig", 
+                                   "Palliativ", "Annet"))
+
+
+#Creating data set with only those who died
+datd <- dat %>%
+  filter(!is.na(dat$timeafter))
+
+
+#######Working with pain diagonse
+#SmerteKat.x = 1 er akutt smerte (se SmerteKat.y)
+akutt = datd %>% 
+  dplyr::filter(!is.na(SmerteKat)) %>% 
+  dplyr::distinct(ForlopsID, .keep_all = TRUE) %>% 
+  dplyr::summarise(antall_ja = sum(SmerteKat == 1),
+            nevner = dplyr::n(),
+            ind = antall_ja/nevner) %>% 
+  dplyr::ungroup()
+
+#SmerteKat.x = 2 er langvarig smerte (se SmerteKat.y)
+langvarig = datd %>% 
+  dplyr::filter(!is.na(SmerteKat)) %>% 
+  dplyr::distinct(ForlopsID, .keep_all = TRUE) %>% 
+  dplyr::summarise(antall_ja = sum(SmerteKat == 2),
+                   nevner = dplyr::n(),
+                   ind = antall_ja/nevner) %>% 
+  dplyr::ungroup()
+
+#SmerteKat.x = 3 er palliativ smerte (se SmerteKat.y)
+palliativ = datd %>% 
+  dplyr::filter(!is.na(SmerteKat)) %>% 
+  dplyr::distinct(ForlopsID, .keep_all = TRUE) %>% 
+  dplyr::summarise(antall_ja = sum(SmerteKat == 3),
+                   nevner = dplyr::n(),
+                   ind = antall_ja/nevner) %>% 
+  dplyr::ungroup()
+
+#SmerteKat.x = 4 er annet smerte (se SmerteKat.y)
+annet = datd %>% 
+  dplyr::filter(!is.na(SmerteKat)) %>% 
+  dplyr::distinct(ForlopsID, .keep_all = TRUE) %>% 
+  dplyr::summarise(antall_ja = sum(SmerteKat == 4),
+                   nevner = dplyr::n(),
+                   ind = antall_ja/nevner) %>% 
+  dplyr::ungroup()
+
+#Underdiagnose for de forløp med hoveddiagnose akutt smerte
+underdiag = datd %>% 
+  dplyr::filter(SmerteKat == 1) %>% 
+  dplyr::distinct(ForlopsID, .keep_all = TRUE) %>% 
+  dplyr::count(DiagKat) %>%
+  dplyr::mutate(pro = n/sum(n)) %>%
+  dplyr::mutate(
+    DiagKat = dplyr::recode(
+      DiagKat,
+      !!!smerte::getSmerteDiagKatValueLab(params$registryName, smerteKat = 1)
+    )
+  )
+
+#Setter sammen
+tot_smertekat <- dplyr::bind_rows(akutt, langvarig, palliativ, annet)
+rownames(tot_smertekat) = c("Akutt smerte", "Langvarig smerte", "Palliativ", "Annet")
+
+
+```
+
+### Figuren under viser fordelingen over hvor lang tid det var fra sluttføringsdato (registert i registeret) til dødsdato. Overlevende er ikke med i datagrunnlaget her.
+```{r barplot, eval=dataPresent, results='asis'}
+
+ggplot(datd, aes(x = timeafter)) +
+  geom_bar(stat="count", width=0.7, fill="steelblue") +
+  scale_x_discrete(name ="Tid til død etter sluttføring") +
+  scale_y_continuous(name = "Antall") +
+  theme_minimal() +
+  theme(text = element_text(size = 15)) 
+```
+
+```{r smertekat, eval=dataPresent, results='asis'}
+
+#Smertekategori
+# rapbase::mst(
+#   tab = tot_smertekat, 
+#   col_names = c( "Antall ja" ,"Antall totalt", "Andel"),
+#   cap = paste0("Tabellen viser hvordan pasientenes hovedkategori (smerte) fordeler seg mellom akutt, langvarig eller palliativ smerte."),
+#   label = "smertekattab",
+#   type = params$tableFormat,
+#   digs = 2,
+#   align = c("l", "c", "c", "c")
+# )
+```
+
+
+```{r datawrangl2, eval=dataPresent, include = FALSE}
+
+dat_stacked <- datd %>%
+  filter(!is.na(Smertekategori)) %>%
+  group_by(timeafter, Smertekategori) %>%
+  summarise(n_timekat = n())
+
+```
+
+### Fordelingen mellom tid til død og de ulike smertekategoriene registrert under forløpet finner vi først i tabellen
+```{r tab2, eval=dataPresent, results='asis'}
+
+#Tabelloversikt
+rapbase::mst(
+  tab = dat_stacked, 
+  col_names = c( "Tid til død" ,"Smertekategori", "Antall"),
+  cap = paste0("Fordeling mellom gruppene."),
+  label = "tidogkat",
+  type = params$tableFormat,
+  digs = 2,
+  align = c("l", "c", "c", "c")
+)
+```
+
+### og deretter i figuren under:
+```{r barplot2, eval=dataPresent, results='asis', fig.width = 10}
+#Plot
+ggplot(dat_stacked, aes(fill = Smertekategori, y = n_timekat, x = timeafter)) + 
+  geom_bar(position = "stack", width=0.7, stat = "identity") +
+  scale_x_discrete(name ="Tid til død etter sluttføring") +
+  scale_y_continuous(name = "Antall") +
+  theme_minimal() +
+  theme(text = element_text(size = 15)) 
+
+```
