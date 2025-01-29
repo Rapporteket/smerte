@@ -629,7 +629,7 @@ GROUP BY
 getDataDump <- function(registryName, tableName, fromDate, toDate, ...) {
 
   # dummy query returning empty data set
-  query <- "SELECT * FROM friendlynamestable WHERE 1=0;"
+  query <- "SELECT * FROM avdelingsoversikt WHERE 1=0;"
 
   if (tableName %in% c("friendlynamestable", "change_log_variables",
                        "avdelingsoversikt", "Brukerliste")) {
@@ -642,7 +642,8 @@ FROM
   }
 
   if (tableName %in% c("SkjemaOversikt", "SmerteDiagnoser",
-                       "SmerteDiagnoserNum", "AlleVar", "AlleVarNum")) {
++   "SmerteDiagnoserNum", "AlleVar", "AlleVarNum", tolower(c("SkjemaOversikt",
+    "SmerteDiagnoser", "SmerteDiagnoserNum", "AlleVar", "AlleVarNum")))) {
     query <- paste0("
 SELECT
   fo.HovedDato,
@@ -660,7 +661,7 @@ WHERE
 ")
   }
 
-  if (tableName %in% c("ForlopsOversikt")) {
+  if (tableName %in% c("ForlopsOversikt", forlopsoversikt)) {
     query <- paste0("
 SELECT
   *
