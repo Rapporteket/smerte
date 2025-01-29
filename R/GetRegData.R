@@ -62,7 +62,7 @@ SELECT
   avd.DEPARTMENT_NAME,
   avd.DEPARTMENT_SHORTNAME
 FROM
-  AlleVarNum var
+  allevarnum var
 LEFT JOIN
   avdelingsoversikt avd
 ON
@@ -104,7 +104,7 @@ SELECT
   Reservasjonsstatus,
   InklusjonStatus
 FROM
-  AlleVarNum
+  allevarnum
 WHERE
   AvdRESH IN ("
 
@@ -136,7 +136,7 @@ SELECT
   Reservasjonsstatus,
   InklusjonStatus
 FROM
-  AlleVarNum
+  allevarnum
 WHERE
   AvdRESH IN ("
 
@@ -198,7 +198,7 @@ SELECT
   var.AngiNRS12,
   var.AngiNRS21
 FROM
-  AlleVarNum var
+  allevarnum var
 WHERE
   var.StartdatoTO>=DATE('", startDate, "') AND var.StartdatoTO<=DATE('", endDate, "')"
   )
@@ -238,7 +238,7 @@ SELECT
   var.StartdatoTO,
   var.RegDato11
 FROM
-  AlleVarNum var
+  allevarnum var
 WHERE
   var.StartdatoTO>=DATE('", startDate, "') AND var.StartdatoTO<=DATE('", endDate, "')"
   )
@@ -271,9 +271,9 @@ SELECT
   val.DiagKat AS value,
   lab.DiagKat AS lable
 FROM
-  SmerteDiagnoserNum AS val
+  smertediagnosernum AS val
 LEFT JOIN
-  SmerteDiagnoser AS lab ON val.SmerteDiagID = lab.SmerteDiagID
+  smertediagnoser AS lab ON val.SmerteDiagID = lab.SmerteDiagID
 WHERE
   val.SmerteKat = ", smerteKat, "
 GROUP BY
@@ -304,13 +304,13 @@ SELECT
   diag.DiagKat,
   var.Opioid4a
 FROM
-  SmerteDiagnoserNum AS diag
+  smertediagnosernum AS diag
 LEFT JOIN
-  AlleVarNum AS var
+  allevarnum AS var
 ON
   diag.ForlopsID = var.ForlopsID
 LEFT JOIN
-  ForlopsOversikt AS fo
+  forlopsoversikt AS fo
 ON
   diag.ForlopsID = fo.ForlopsID
 WHERE
@@ -349,13 +349,13 @@ SELECT
   diag.DiagKat,
   var.Opioid4a
 FROM
-  SmerteDiagnoserNum AS diag
+  smertediagnosernum AS diag
 LEFT JOIN
-  AlleVarNum AS var
+  allevarnum AS var
 ON
   diag.ForlopsID = var.ForlopsID
 LEFT JOIN
-  ForlopsOversikt AS fo
+  forlopsoversikt AS fo
 ON
   diag.ForlopsID = fo.ForlopsID
 WHERE
@@ -412,7 +412,7 @@ SELECT
   TotTid,
   SluttDato
 FROM
-  AlleVarNum
+  allevarnum
 WHERE
   AvdRESH IN ("
 
@@ -448,7 +448,7 @@ SELECT
   EDA,
   StartdatoTO
 FROM
-  AlleVarNum
+  allevarnum
 WHERE
   AvdRESH IN ("
 
@@ -489,7 +489,7 @@ SELECT
   avd.DEPARTMENT_NAME,
   avd.DEPARTMENT_SHORTNAME
 FROM
-  AlleVarNum var
+  allevarnum var
 LEFT JOIN
   avdelingsoversikt avd
 ON
@@ -528,7 +528,7 @@ getLocalYears <- function(registryName, reshId, userRole) {
 SELECT
   YEAR(StartdatoTO) as year
 FROM
-  AlleVarNum
+  allevarnum
 WHERE
   AvdRESH IN (", deps, ")
 GROUP BY
@@ -548,7 +548,7 @@ getAllYears <- function(registryName, reshId, userRole) {
 SELECT
   YEAR(StartdatoTO) as year
 FROM
-  AlleVarNum
+  allevarnum
 GROUP BY
   YEAR(StartdatoTO);
 ")
@@ -571,7 +571,7 @@ SELECT DISTINCT
 FROM
   avdelingsoversikt avd
 INNER JOIN
-  AlleVarNum var
+  allevarnum var
 ON
   avd.DEPARTMENT_ID = var.InnlAvd
 WHERE
@@ -608,7 +608,7 @@ SELECT
   SykehusNavn AS name,
   AvdRESH AS id
 FROM
-  AlleVar
+  allevar
 GROUP BY
   SykehusNavn,
   AvdRESH;"
@@ -641,8 +641,8 @@ FROM
   ")
   }
 
-  if (tableName %in% c("SkjemaOversikt", "SmerteDiagnoser",
-                       "SmerteDiagnoserNum", "AlleVar", "AlleVarNum")) {
+  if (tableName %in% c("skjemaoversikt", "smertediagnoser",
+                       "smertediagnosernum", "allevar", "allevarnum")) {
     query <- paste0("
 SELECT
   fo.HovedDato,
@@ -650,7 +650,7 @@ SELECT
 FROM
   ", tableName, " AS d
 LEFT JOIN
-  ForlopsOversikt fo
+  forlopsoversikt fo
 ON
   d.ForlopsID = fo.ForlopsID
 WHERE
@@ -660,7 +660,7 @@ WHERE
 ")
   }
 
-  if (tableName %in% c("ForlopsOversikt")) {
+  if (tableName %in% c("forlopsoversikt")) {
     query <- paste0("
 SELECT
   *

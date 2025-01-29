@@ -15,6 +15,8 @@
 \alias{getRegDataRapportDekningsgradReservasjon}
 \alias{getRegDataIndikator}
 \alias{getRegDataOpiodReduksjon}
+\alias{getRegDataTimetodeath}
+\alias{getRegDataLokalEpidural}
 \alias{getRegDataRapportOppfolg}
 \title{Provide dataframe of registry data}
 \usage{
@@ -67,7 +69,18 @@ getRegDataSmertekategori(
   ...
 )
 
+getRegDataTimetodeath(registryName, reshId, userRole, startDate, endDate, ...)
+
 getRegDataSpinalkateter(
+  registryName,
+  reshId,
+  userRole,
+  startDate,
+  endDate,
+  ...
+)
+
+getRegDataLokalEpidural(
   registryName,
   reshId,
   userRole,
