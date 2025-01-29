@@ -629,7 +629,7 @@ GROUP BY
 getDataDump <- function(registryName, tableName, fromDate, toDate, ...) {
 
   # dummy query returning empty data set
-  # query <- "SELECT * FROM avdelingsoversikt WHERE 1=0;"
+  query <- "SELECT * FROM avdelingsoversikt WHERE 1=0;"
 
   if (tableName %in% c("friendlynamestable", "change_log_variables",
                        "avdelingsoversikt", "Brukerliste")) {
