@@ -279,7 +279,7 @@ WHERE
 
 #' @rdname getRegData
 #' @export
-getSmerteDiagKatValueLab <- function(registryName, smerteKat) {
+getSmerteDiagKatValueLab <- function(registryName, reshId, smerteKat) {
 
   query <- paste0("
 SELECT
@@ -653,7 +653,7 @@ WHERE
 
 #' @rdname getRegData
 #' @export
-getNameReshId <- function(registryName, asNamedList = FALSE) {
+getNameReshId <- function(registryName, reshId, asNamedList = FALSE) {
 
   query <- "
 SELECT
@@ -682,7 +682,7 @@ GROUP BY
 
 #' @rdname getRegData
 #' @export
-getDataDump <- function(registryName, tableName, fromDate, toDate, ...) {
+getDataDump <- function(registryName, reshId, tableName, fromDate, toDate, ...) {
 
   # dummy query returning empty data set
   query <- "SELECT * FROM avdelingsoversikt WHERE 1=0;"
