@@ -15,6 +15,8 @@
 \alias{getRegDataRapportDekningsgradReservasjon}
 \alias{getRegDataIndikator}
 \alias{getRegDataOpiodReduksjon}
+\alias{getRegDataTimetodeath}
+\alias{getRegDataLokalEpidural}
 \alias{getRegDataRapportOppfolg}
 \title{Provide dataframe of registry data}
 \usage{
@@ -56,7 +58,7 @@ getRegDataOpiodReduksjon(
   ...
 )
 
-getSmerteDiagKatValueLab(registryName, smerteKat)
+getSmerteDiagKatValueLab(registryName, reshId, smerteKat)
 
 getRegDataSmertekategori(
   registryName,
@@ -67,7 +69,18 @@ getRegDataSmertekategori(
   ...
 )
 
+getRegDataTimetodeath(registryName, reshId, userRole, startDate, endDate, ...)
+
 getRegDataSpinalkateter(
+  registryName,
+  reshId,
+  userRole,
+  startDate,
+  endDate,
+  ...
+)
+
+getRegDataLokalEpidural(
   registryName,
   reshId,
   userRole,
@@ -91,9 +104,9 @@ getAllYears(registryName, reshId, userRole)
 
 getHospitalName(registryName, reshId, userRole)
 
-getNameReshId(registryName, asNamedList = FALSE)
+getNameReshId(registryName, reshId, asNamedList = FALSE)
 
-getDataDump(registryName, tableName, fromDate, toDate, ...)
+getDataDump(registryName, reshId, tableName, fromDate, toDate, ...)
 }
 \arguments{
 \item{registryName}{String providing the current registryName}

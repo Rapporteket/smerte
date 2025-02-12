@@ -35,6 +35,7 @@ library(magrittr)
 
 if (rapbase::isRapContext()) {
   dat <- smerte::getDataDump(registryName = params$registryName,
+                             reshId = params$reshId,
                              tableName = "AlleVarNum",
                              fromDate = params$startDate,
                              toDate = params$endDate,

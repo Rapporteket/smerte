@@ -137,7 +137,7 @@ underdiag = fulldat %>%
   dplyr::mutate(
     DiagKat = dplyr::recode(
       DiagKat,
-      !!!smerte::getSmerteDiagKatValueLab(params$registryName, smerteKat = 1)
+      !!!smerte::getSmerteDiagKatValueLab(params$registryName, reshId = reshId, smerteKat = 1)
     )
   )
 

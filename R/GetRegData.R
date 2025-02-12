@@ -62,13 +62,18 @@ SELECT
   avd.DEPARTMENT_NAME,
   avd.DEPARTMENT_SHORTNAME
 FROM
-  AlleVarNum var
+  allevarnum var
 LEFT JOIN
   avdelingsoversikt avd
 ON
   avd.DEPARTMENT_ID = var.InnlAvd
 WHERE
   var.StartdatoTO >= DATE('"
+
+  if (isNationalReg(reshId)) {
+    query <- gsub("allevarnum", "allevarnumnasjonal", query)
+    # query <- gsub("avdelingsoversikt", "avdelingsoversiktnasjonal", query)
+  }
 
   query <- paste0(query, startDate, "') AND var.StartdatoTO <= DATE('",
                   endDate, "') AND var.AvdRESH IN (", deps, ");")
@@ -104,16 +109,20 @@ SELECT
   Reservasjonsstatus,
   InklusjonStatus
 FROM
-  AlleVarNum
+  allevarnum
 WHERE
   AvdRESH IN ("
+
+  if (isNationalReg(reshId)) {
+    query <- gsub("allevarnum", "allevarnumnasjonal", query)
+  }
 
   query <- paste0(query, deps, ") AND (DATE(StartdatoTO) BETWEEN '",
                   startDate, "' AND '", endDate, "');")
 
   if ("session" %in% names(list(...))) {
     rapbase::repLogger(session = list(...)[["session"]],
-                      msg = paste0("Load data from ", registryName, ":", query))
+                       msg = paste0("Load data from ", registryName, ":", query))
   }
 
   rapbase::loadRegData(registryName, query, dbType)
@@ -122,7 +131,7 @@ WHERE
 #' @rdname getRegData
 #' @export
 getRegDataRapportDekningsgradReservasjon <- function(registryName, reshId, userRole,
-                                          startDate, endDate, ...) {
+                                                     startDate, endDate, ...) {
   dbType <- "mysql"
 
   deps <- .getDeps(reshId, userRole)
@@ -136,9 +145,13 @@ SELECT
   Reservasjonsstatus,
   InklusjonStatus
 FROM
-  AlleVarNum
+  allevarnum
 WHERE
   AvdRESH IN ("
+
+  if (isNationalReg(reshId)) {
+    query <- gsub("allevarnum", "allevarnumnasjonal", query)
+  }
 
   query <- paste0(query, deps, ") AND (DATE(StartdatoTO) BETWEEN '",
                   startDate, "' AND '", endDate, "');")
@@ -198,12 +211,13 @@ SELECT
   var.AngiNRS12,
   var.AngiNRS21
 FROM
-  AlleVarNum var
+  allevarnum var
 WHERE
   var.StartdatoTO>=DATE('", startDate, "') AND var.StartdatoTO<=DATE('", endDate, "')"
   )
 
   if (isNationalReg(reshId)) {
+    query <- gsub("allevarnum", "allevarnumnasjonal", query)
     query <- paste0(query, ";")
   } else {
     query <- paste0(query, " AND var.AvdRESH IN (", deps, ");")
@@ -224,7 +238,7 @@ WHERE
 #' @rdname getRegData
 #' @export
 getRegDataOpiodReduksjon <- function(registryName, reshId, userRole,
-                                startDate, endDate, ...) {
+                                     startDate, endDate, ...) {
 
   dbType <- "mysql"
 
@@ -238,12 +252,13 @@ SELECT
   var.StartdatoTO,
   var.RegDato11
 FROM
-  AlleVarNum var
+  allevarnum var
 WHERE
   var.StartdatoTO>=DATE('", startDate, "') AND var.StartdatoTO<=DATE('", endDate, "')"
   )
 
   if (isNationalReg(reshId)) {
+    query <- gsub("allevarnum", "allevarnumnasjonal", query)
     query <- paste0(query, ";")
   } else {
     query <- paste0(query, " AND var.AvdRESH IN (", deps, ");")
@@ -264,22 +279,27 @@ WHERE
 
 #' @rdname getRegData
 #' @export
-getSmerteDiagKatValueLab <- function(registryName, smerteKat) {
+getSmerteDiagKatValueLab <- function(registryName, reshId, smerteKat) {
 
   query <- paste0("
 SELECT
   val.DiagKat AS value,
   lab.DiagKat AS lable
 FROM
-  SmerteDiagnoserNum AS val
+  smertediagnosernum AS val
 LEFT JOIN
-  SmerteDiagnoser AS lab ON val.SmerteDiagID = lab.SmerteDiagID
+  smertediagnoser AS lab ON val.SmerteDiagID = lab.SmerteDiagID
 WHERE
   val.SmerteKat = ", smerteKat, "
 GROUP BY
   val.DiagKat,
   lab.DiagKat;"
   )
+
+  if (isNationalReg(reshId)) {
+    query <- gsub("smertediagnosernum", "smertediagnosernumnasjonal", query)
+    query <- gsub("smertediagnoser", "smertediagnosernasjonal", query)
+  }
 
   res <- rapbase::loadRegData(registryName, query)
 
@@ -304,17 +324,23 @@ SELECT
   diag.DiagKat,
   var.Opioid4a
 FROM
-  SmerteDiagnoserNum AS diag
+  smertediagnosernum AS diag
 LEFT JOIN
-  AlleVarNum AS var
+  allevarnum AS var
 ON
   diag.ForlopsID = var.ForlopsID
 LEFT JOIN
-  ForlopsOversikt AS fo
+  forlopsoversikt AS fo
 ON
   diag.ForlopsID = fo.ForlopsID
 WHERE
   var.AvdRESH IN ("
+
+  if (isNationalReg(reshId)) {
+    query <- gsub("smertediagnosernum", "smertediagnosernumnasjonal", query)
+    query <- gsub("allevarnum", "allevarnumnasjonal", query)
+    query <- gsub("forlopsoversikt", "forlopsoversiktnasjonal", query)
+  }
 
   query <- paste0(query, deps, ") AND (DATE(StartdatoTO) BETWEEN '",
                   startDate, "' AND '", endDate, "');")
@@ -331,7 +357,7 @@ WHERE
 #' @rdname getRegData
 #' @export
 getRegDataTimetodeath <- function(registryName, reshId, userRole,
-                                     startDate, endDate, ...) {
+                                  startDate, endDate, ...) {
   dbType <- "mysql"
 
   deps <- .getDeps(reshId, userRole)
@@ -349,17 +375,23 @@ SELECT
   diag.DiagKat,
   var.Opioid4a
 FROM
-  SmerteDiagnoserNum AS diag
+  smertediagnosernum AS diag
 LEFT JOIN
-  AlleVarNum AS var
+  allevarnum AS var
 ON
   diag.ForlopsID = var.ForlopsID
 LEFT JOIN
-  ForlopsOversikt AS fo
+  forlopsoversikt AS fo
 ON
   diag.ForlopsID = fo.ForlopsID
 WHERE
   var.AvdRESH IN ("
+
+  if (isNationalReg(reshId)) {
+    query <- gsub("smertediagnosernum", "smertediagnosernumnasjonal", query)
+    query <- gsub("allevarnum", "allevarnumnasjonal", query)
+    query <- gsub("forlopsoversikt", "forlopsoversiktnasjonal", query)
+  }
 
   query <- paste0(query, deps, ") AND (DATE(StartdatoTO) BETWEEN '",
                   startDate, "' AND '", endDate, "');")
@@ -412,9 +444,13 @@ SELECT
   TotTid,
   SluttDato
 FROM
-  AlleVarNum
+  allevarnum
 WHERE
   AvdRESH IN ("
+
+  if (isNationalReg(reshId)) {
+    query <- gsub("allevarnum", "allevarnumnasjonal", query)
+  }
 
   query <- paste0(query, deps, ") AND (DATE(StartdatoTO) BETWEEN '",
                   startDate, "' AND '", endDate, "');")
@@ -434,7 +470,7 @@ WHERE
 #' @rdname getRegData
 #' @export
 getRegDataLokalEpidural <- function(registryName, reshId, userRole,
-                                          startDate, endDate, ...) {
+                                    startDate, endDate, ...) {
   dbType <- "mysql"
 
   deps <- .getDeps(reshId, userRole)
@@ -448,9 +484,13 @@ SELECT
   EDA,
   StartdatoTO
 FROM
-  AlleVarNum
+  allevarnum
 WHERE
   AvdRESH IN ("
+
+  if (isNationalReg(reshId)) {
+    query <- gsub("allevarnum", "allevarnumnasjonal", query)
+  }
 
   query <- paste0(query, deps, ") AND (DATE(StartdatoTO) BETWEEN '",
                   startDate, "' AND '", endDate, "');")
@@ -466,7 +506,7 @@ WHERE
 #' @rdname getRegData
 #' @export
 getRegDataRapportOppfolg <- function(registryName, reshId, userRole,
-                                startDate, endDate, ...) {
+                                     startDate, endDate, ...) {
 
   dbType <- "mysql"
 
@@ -489,7 +529,7 @@ SELECT
   avd.DEPARTMENT_NAME,
   avd.DEPARTMENT_SHORTNAME
 FROM
-  AlleVarNum var
+  allevarnum var
 LEFT JOIN
   avdelingsoversikt avd
 ON
@@ -499,6 +539,7 @@ WHERE
   )
 
   if (isNationalReg(reshId)) {
+    query <- gsub("allevarnum", "allevarnumnasjonal", query)
     query <- paste0(query, ";")
   } else {
     query <- paste0(query, " AND var.AvdRESH IN (", deps, ");")
@@ -528,12 +569,16 @@ getLocalYears <- function(registryName, reshId, userRole) {
 SELECT
   YEAR(StartdatoTO) as year
 FROM
-  AlleVarNum
+  allevarnum
 WHERE
   AvdRESH IN (", deps, ")
 GROUP BY
   YEAR(StartdatoTO);
 ")
+
+  if (isNationalReg(reshId)) {
+    query <- gsub("allevarnum", "allevarnumnasjonal", query)
+  }
 
   rapbase::loadRegData(registryName, query, dbType)
 }
@@ -548,10 +593,14 @@ getAllYears <- function(registryName, reshId, userRole) {
 SELECT
   YEAR(StartdatoTO) as year
 FROM
-  AlleVarNum
+  allevarnum
 GROUP BY
   YEAR(StartdatoTO);
 ")
+
+  if (isNationalReg(reshId)) {
+    query <- gsub("allevarnum", "allevarnumnasjonal", query)
+  }
 
   rapbase::loadRegData(registryName, query, dbType)
 }
@@ -571,13 +620,16 @@ SELECT DISTINCT
 FROM
   avdelingsoversikt avd
 INNER JOIN
-  AlleVarNum var
+  allevarnum var
 ON
   avd.DEPARTMENT_ID = var.InnlAvd
 WHERE
   avd.DEPARTMENT_CENTREID IN (", deps, ") AND
   avd.DEPARTMENT_ACTIVE = 1;")
 
+  if (isNationalReg(reshId)) {
+    query <- gsub("allevarnum", "allevarnumnasjonal", query)
+  }
 
 
   # no hospital name for national registry
@@ -601,17 +653,21 @@ WHERE
 
 #' @rdname getRegData
 #' @export
-getNameReshId <- function(registryName, asNamedList = FALSE) {
+getNameReshId <- function(registryName, reshId, asNamedList = FALSE) {
 
   query <- "
 SELECT
   SykehusNavn AS name,
   AvdRESH AS id
 FROM
-  AlleVar
+  allevar
 GROUP BY
   SykehusNavn,
   AvdRESH;"
+
+  if (isNationalReg(reshId)) {
+    query <- gsub("allevar", "allevarnasjonal", query)
+  }
 
   res <- rapbase::loadRegData(registryName, query)
 
@@ -626,10 +682,10 @@ GROUP BY
 
 #' @rdname getRegData
 #' @export
-getDataDump <- function(registryName, tableName, fromDate, toDate, ...) {
+getDataDump <- function(registryName, reshId, tableName, fromDate, toDate, ...) {
 
   # dummy query returning empty data set
-  query <- "SELECT * FROM friendlynamestable WHERE 1=0;"
+  query <- "SELECT * FROM avdelingsoversikt WHERE 1=0;"
 
   if (tableName %in% c("friendlynamestable", "change_log_variables",
                        "avdelingsoversikt", "Brukerliste")) {
@@ -641,8 +697,11 @@ FROM
   ")
   }
 
-  if (tableName %in% c("SkjemaOversikt", "SmerteDiagnoser",
-                       "SmerteDiagnoserNum", "AlleVar", "AlleVarNum")) {
+  if (tableName %in% c("skjemaoversikt", "smertediagnoser",
+                       "smertediagnosernum", "allevar", "allevarnum",
+                       "smertediagnosernumnasjonal", "allevarnasjonal",
+                       "allevarnumnasjonal"
+                       )) {
     query <- paste0("
 SELECT
   fo.HovedDato,
@@ -650,7 +709,7 @@ SELECT
 FROM
   ", tableName, " AS d
 LEFT JOIN
-  ForlopsOversikt fo
+  forlopsoversikt fo
 ON
   d.ForlopsID = fo.ForlopsID
 WHERE
@@ -660,7 +719,11 @@ WHERE
 ")
   }
 
-  if (tableName %in% c("ForlopsOversikt")) {
+  if (isNationalReg(reshId)) {
+    query <- gsub("forlopsoversikt", "forlopsoversiktnasjonal", query)
+  }
+
+  if (tableName %in% c("forlopsoversikt", "forlopsoversiktnasjonal")) {
     query <- paste0("
 SELECT
   *
@@ -675,7 +738,7 @@ WHERE
 
   if ("session" %in% names(list(...))) {
     rapbase::repLogger(session = list(...)[["session"]],
-                      msg = paste("Smerte data dump:\n", query))
+                       msg = paste("Smerte data dump:\n", query))
   }
   rapbase::loadRegData(registryName, query)
 }
