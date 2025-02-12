@@ -70,7 +70,7 @@ ON
 WHERE
   var.StartdatoTO >= DATE('"
 
-  if (isNationalReg(reshID)) {
+  if (isNationalReg(reshId)) {
     query <- gsub("allevarnum", "allevarnumnasjonal", query)
     # query <- gsub("avdelingsoversikt", "avdelingsoversiktnasjonal", query)
   }
@@ -113,7 +113,7 @@ FROM
 WHERE
   AvdRESH IN ("
 
-  if (isNationalReg(reshID)) {
+  if (isNationalReg(reshId)) {
     query <- gsub("allevarnum", "allevarnumnasjonal", query)
   }
 
@@ -149,7 +149,7 @@ FROM
 WHERE
   AvdRESH IN ("
 
-  if (isNationalReg(reshID)) {
+  if (isNationalReg(reshId)) {
     query <- gsub("allevarnum", "allevarnumnasjonal", query)
   }
 

@@ -58,7 +58,7 @@ getRegDataOpiodReduksjon(
   ...
 )
 
-getSmerteDiagKatValueLab(registryName, smerteKat)
+getSmerteDiagKatValueLab(registryName, reshId, smerteKat)
 
 getRegDataSmertekategori(
   registryName,
@@ -104,9 +104,9 @@ getAllYears(registryName, reshId, userRole)
 
 getHospitalName(registryName, reshId, userRole)
 
-getNameReshId(registryName, asNamedList = FALSE)
+getNameReshId(registryName, reshId, asNamedList = FALSE)
 
-getDataDump(registryName, tableName, fromDate, toDate, ...)
+getDataDump(registryName, reshId, tableName, fromDate, toDate, ...)
 }
 \arguments{
 \item{registryName}{String providing the current registryName}
