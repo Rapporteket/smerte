@@ -12,14 +12,15 @@ ui <- shiny::tagList(
     theme = "rap/bootstrap.css",
     id = "tabs",
 
-    shiny::tabPanel("Veiledning",
-      shinyalert::useShinyalert(),
+    shiny::tabPanel(
+      "Veiledning",
+      rapbase::navbarWidgetInput("navbar-widget", selectOrganization = TRUE),
       shiny::mainPanel(width = 12,
-        shiny::htmlOutput("veiledning", inline = TRUE),
-        rapbase::appNavbarUserWidget(user = uiOutput("appUserName"),
-                                     organization = uiOutput("appOrgName"),
-                                     addUserInfo = TRUE),
-        shiny::tags$head(tags$link(rel="shortcut icon", href="rap/favicon.ico"))
+        shiny::htmlOutput("veiledning", inline = TRUE)#,
+        # rapbase::appNavbarUserWidget(user = uiOutput("appUserName"),
+        #                              organization = uiOutput("appOrgName"),
+        #                              addUserInfo = TRUE),
+        # shiny::tags$head(tags$link(rel="shortcut icon", href="rap/favicon.ico"))
       )
     ),
     shiny::navbarMenu(
@@ -202,22 +203,22 @@ ui <- shiny::tagList(
           shiny::mainPanel(htmlOutput("metaData"))
         )
       ),
-      shiny::tabPanel(
-        "Utsendelser",
-        shiny::sidebarLayout(
-          shiny::sidebarPanel(
-            rapbase::autoReportFormatInput("smerteDispatchment"),
-            rapbase::autoReportOrgInput("smerteDispatchment"),
-            shiny::HTML(
-              "NB Dobbeltsjekk at rapporten er gitt riktig datakilde!<br/><br/>"
-            ),
-            rapbase::autoReportInput("smerteDispatchment")
-          ),
-          shiny::mainPanel(
-            rapbase::autoReportUI("smerteDispatchment")
-          )
-        )
-      ),
+      # shiny::tabPanel(
+      #   "Utsendelser",
+      #   shiny::sidebarLayout(
+      #     shiny::sidebarPanel(
+      #       rapbase::autoReportFormatInput("smerteDispatchment"),
+      #       rapbase::autoReportOrgInput("smerteDispatchment"),
+      #       shiny::HTML(
+      #         "NB Dobbeltsjekk at rapporten er gitt riktig datakilde!<br/><br/>"
+      #       ),
+      #       rapbase::autoReportInput("smerteDispatchment")
+      #     ),
+      #     shiny::mainPanel(
+      #       rapbase::autoReportUI("smerteDispatchment")
+      #     )
+      #   )
+      # ),
       shiny::tabPanel(
         "Eksport",
         shiny::sidebarLayout(

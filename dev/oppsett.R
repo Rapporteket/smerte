@@ -3,16 +3,35 @@ devtools::install(upgrade = FALSE, dependencies = FALSE)
 
 Sys.setenv(R_RAP_INSTANCE="QAC")
 Sys.setenv(R_RAP_CONFIG_PATH="/home/rstudio/mydata")
+Sys.setenv(FALK_EXTENDED_USER_RIGHTS="[{\"A\":101,\"R\":\"LU\",\"U\":0},{\"A\":101,\"R\":\"SC\",\"U\":0},{\"A\":101,\"R\":\"SC\",\"U\":100089},{\"A\":101,\"R\":\"LU\",\"U\":100082}]")
 
 norgast::norgastApp()
 
 # rapbase::runAutoReport()
 # Rscript -e "Sys.setenv(R_RAP_INSTANCE=\"QAC\")" -e "rapbase::runAutoReport(dato = Sys.Date()+1, dryRun = TRUE)"
 
-RegData <- rapbase::loadRegData(
-  registryName = "data",
-  query="SELECT * FROM eq5dlformdatacontract",
-  dbType="mysql")
+d <- smerte::getDataDump("smertereportdatastaging",
+                         reshId = "100082",
+                         tableName = "allevarnum",
+                         fromDate = "2020-01-01",
+                         toDate = "2025-01-01")
+
+smerte::getHospitalName("smertereportdatastaging",
+                        reshId = "100082",
+                        userRole = "LU")
+
+
+# angiopcivardel1 <- rapbase::loadRegData(
+#   registryName = "NORICReportDataStagingBergen",
+#   query="SELECT * FROM angiopcivardel1",
+#   dbType="mysql")
+# angiopcivardel2 <- rapbase::loadRegData(
+#   registryName = "NORICReportDataStagingBergen",
+#   query="SELECT * FROM angiopcivardel2",
+#   dbType="mysql")
+# angiopcivardel <- merge(angiopcivardel1,
+#                         angiopcivardel2,
+#                         by = c("ForlopsID", "PasientID", "AvdRESH"))
 
 tmp_yml <- yaml::read_yaml("./dev/test.yml")
 tmp_json <- jsonlite::serializeJSON(tmp_yml)

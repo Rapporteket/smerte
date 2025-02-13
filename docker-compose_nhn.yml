@@ -46,7 +46,7 @@ services:
   #     - ./data-raw/config:/app/R
   #   environment:
   #     R_RAP_CONFIG_PATH: /app/R
-  #     FALK_EXTENDED_USER_RIGHTS: "[{\"A\":101,\"R\":\"LU\",\"U\":601225},{\"A\":101,\"R\":\"SC\",\"U\":601225},{\"A\":101,\"R\":\"SC\",\"U\":700922},{\"A\":101,\"R\":\"LU\",\"U\":700922}]"
+  #     FALK_EXTENDED_USER_RIGHTS: "[{\"A\":101,\"R\":\"LU\",\"U\":0},{\"A\":101,\"R\":\"SC\",\"U\":0},{\"A\":101,\"R\":\"SC\",\"U\":700922},{\"A\":101,\"R\":\"LU\",\"U\":100082}]"
   #     R_RAP_INSTANCE: "QAC"
   #     << : *environment
 
@@ -67,7 +67,7 @@ services:
       << : *environment
       DISABLE_AUTH: "true"
       R_RAP_CONFIG_PATH: /home/rstudio/mydata
-      FALK_EXTENDED_USER_RIGHTS: "[{\\\"A\\\":101,\\\"R\\\":\\\"LU\\\",\\\"U\\\":601225},{\\\"A\\\":101,\\\"R\\\":\\\"SC\\\",\\\"U\\\":601225},{\\\"A\\\":101,\\\"R\\\":\\\"SC\\\",\\\"U\\\":700922},{\\\"A\\\":101,\\\"R\\\":\\\"LU\\\",\\\"U\\\":700922}]"
+      FALK_EXTENDED_USER_RIGHTS: "[{\\\"A\\\":101,\\\"R\\\":\\\"LU\\\",\\\"U\\\":0},{\\\"A\\\":101,\\\"R\\\":\\\"SC\\\",\\\"U\\\":0},{\\\"A\\\":101,\\\"R\\\":\\\"SC\\\",\\\"U\\\":700922},{\\\"A\\\":101,\\\"R\\\":\\\"LU\\\",\\\"U\\\":100082}]"
       R_RAP_INSTANCE: "QAC"
 
   adminer:
