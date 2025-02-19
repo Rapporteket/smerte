@@ -139,9 +139,9 @@ server <- function(input, output, session) {
   # Opiodreduksjon
   reportTemplate2 <- "LokalOpioidReduksjon.Rmd"
   observe(
-  if (smerte::isNationalReg(user$org())) {
-    reportTemplate2 <- "NasjonalOpioidReduksjon.Rmd"
-  })
+    if (smerte::isNationalReg(user$org())) {
+      reportTemplate2 <- "NasjonalOpioidReduksjon.Rmd"
+    })
   smerte::defaultReportServer(id = "opioid",
                               reportFileName = reportTemplate2,
                               reportParams = reportParams())
@@ -160,12 +160,12 @@ server <- function(input, output, session) {
   # Smertekategori
   smerte::defaultReportServer(id = "smertekategori",
                               reportFileName = "LokalSmertekategori.Rmd",
-                              reportParams = reportParams)
+                              reportParams = reportParams())
 
   # Tid til død
   smerte::defaultReportServer(id = "timetodeath",
                               reportFileName = "timetodeath.Rmd",
-                              reportParams = reportParams)
+                              reportParams = reportParams())
 
   # Oppfølging ved smerteklinikk
   smerte::defaultReportServer(id = "oppfolg",
@@ -175,90 +175,123 @@ server <- function(input, output, session) {
   smerte::defaultReportServer(id = "lokalepi",
                               reportFileName = "LokalEpidural.Rmd",
                               reportParams = reportParams())
-  #
-  # # Definisjon av rapporter for abonnement og utsendelser
-  # nationalReports <- list(
-  #   `Kvalitetsindikatorer - alle enheter`= list(
-  #     synopsis = paste("Kvalitetsindikatorer fra Smerteregisteret",
-  #                      "(alle enheter)"),
-  #     fun = "reportProcessor",
-  #     paramNames = c("report", "outputType", "title",
-  #                    "author", "orgName", "orgId",
-  #                    "registryName", "userFullName"),
-  #     paramValues = c("nasjonalIndikator", "pdf", "Kvalitetsindikatorer",
-  #                     "Smerteregisteret", hospitalName(), user$org(),
-  #                     registryName(), userFullName)
-  #   )
-  # )
-  #
-  # localReports <- list(
-  #   `Tilsyn - lokal enhet` = list(
-  #     synopsis = paste("Smerteregisteret: månedlig oppsummering av tilsyn",
-  #                      "siste år (lokal enhet)"),
-  #     fun = "reportProcessor",
-  #     paramNames = c("report", "outputType", "title", "author",
-  #                    "orgName", "orgId", "registryName", "userFullName",
-  #                    "userRole"),
-  #     paramValues = c("tilsyn", "pdf", "Tilsyn", "Smerteregisteret",
-  #                     hospitalName(), user$org(), registryName(), userFullName,
-  #                     user$role())
-  #   ),
-  #   `Kvalitetsindikatorer - lokal enhet` = list(
-  #     synopsis = paste("Kvalitetsindikatorer fra Smerteregisteret",
-  #                      "(lokal enhet)"),
-  #     fun = "reportProcessor",
-  #     paramNames = c("report", "outputType", "title",
-  #                    "author", "orgName", "orgId",
-  #                    "userFullName", "userRole", "registryName"),
-  #     paramValues = c("indikator", "pdf", "Kvalitetsindikatorer",
-  #                     "Smerteregisteret", hospitalName(), user$org(),
-  #                     userFullName, user$role(), registryName())
-  #   ),
-  #   `Spinalkateter - lokal enhet` = list(
-  #     synopsis = paste("Smerteregisteret: bruk av spinalkateter inneværende",
-  #                      "år (lokal enhet)"),
-  #     fun = "reportProcessor",
-  #     paramNames = c("report", "outputType", "title",
-  #                    "author", "orgId", "userFullName", "userRole",
-  #                    "registryName", "orgName"),
-  #     paramValues = c("spinalkateter", "pdf", "Spinalkateter",
-  #                     "Smerteregisteret", user$org(), userFullName, user$role(),
-  #                     registryName(), hospitalName())
-  #   )
-  # )
-  #
-  # orgs <- smerte::getNameReshId(registryName = registryName(),
-  #                               reshId = user$org(),
-  #                               asNamedList = TRUE)
-  #
-  # if (smerte::isNationalReg(user$org())) {
-  #   orgs <- c(list(`Alle nasjonale data` = "0"), orgs)
-  #   subReports <- nationalReports
-  #   disReports <- c(nationalReports)
-  # } else {
-  #   subReports <- localReports
-  #   disReports <- localReports
-  # }
-  #
-  # # Abonnement
-  # rapbase::autoReportServer("smerteSubscription", registryName = "smerte",
-  #                           type = "subscription", reports = subReports,
-  #                           orgs = orgs)
-  #
+
+  # Definisjon av rapporter for abonnement og utsendelser
+
+  rapporter <-
+    shiny::reactive(
+      if (smerte::isNationalReg(user$org())) {
+        list(
+          `Kvalitetsindikatorer - alle enheter`= list(
+            synopsis = paste("Kvalitetsindikatorer fra Smerteregisteret",
+                             "(alle enheter)"),
+            fun = "reportProcessor",
+            paramNames = c("report", "outputType", "title",
+                           "author", "orgName", "orgId",
+                           "registryName", "userFullName"),
+            paramValues = c("nasjonalIndikator", "pdf", "Kvalitetsindikatorer",
+                            "Smerteregisteret", hospitalName(), user$org(),
+                            registryName(), userFullName)
+          )
+        )
+      } else {
+        list(
+          `Tilsyn - lokal enhet` = list(
+            synopsis = paste("Smerteregisteret: månedlig oppsummering av tilsyn",
+                             "siste år (lokal enhet)"),
+            fun = "reportProcessor",
+            paramNames = c("report", "outputType", "title", "author",
+                           "orgName", "orgId", "registryName", "userFullName",
+                           "userRole"),
+            paramValues = c("tilsyn", "pdf", "Tilsyn", "Smerteregisteret",
+                            hospitalName(), user$org(), registryName(), userFullName,
+                            user$role())
+          ),
+          `Kvalitetsindikatorer - lokal enhet` = list(
+            synopsis = paste("Kvalitetsindikatorer fra Smerteregisteret",
+                             "(lokal enhet)"),
+            fun = "reportProcessor",
+            paramNames = c("report", "outputType", "title",
+                           "author", "orgName", "orgId",
+                           "userFullName", "userRole", "registryName"),
+            paramValues = c("indikator", "pdf", "Kvalitetsindikatorer",
+                            "Smerteregisteret", hospitalName(), user$org(),
+                            userFullName, user$role(), registryName())
+          ),
+          `Spinalkateter - lokal enhet` = list(
+            synopsis = paste("Smerteregisteret: bruk av spinalkateter inneværende",
+                             "år (lokal enhet)"),
+            fun = "reportProcessor",
+            paramNames = c("report", "outputType", "title",
+                           "author", "orgId", "userFullName", "userRole",
+                           "registryName", "orgName"),
+            paramValues = c("spinalkateter", "pdf", "Spinalkateter",
+                            "Smerteregisteret", user$org(), userFullName, user$role(),
+                            registryName(), hospitalName())
+          )
+        )
+      }
+    )
+
+  orgs <- shiny::reactive(
+    if (smerte::isNationalReg(user$org())) {
+      c(list(`Alle nasjonale data` = "0"),
+        smerte::getNameReshId(registryName = registryName(),
+                              reshId = user$org(),
+                              asNamedList = TRUE))
+    } else {
+      smerte::getNameReshId(registryName = registryName(),
+                            reshId = user$org(),
+                            asNamedList = TRUE)
+    }
+  )
+
+  observe(
+    print(orgs())
+  )
+
+
+
+  # Abonnement
+  observe(
+    rapbase::autoReportServer2(
+      "smerteSubscription",
+      registryName = "smerte",
+      type = "subscription",
+      reports = shiny::req(rapporter()),
+      orgs = shiny::req(orgs()),
+      eligible = TRUE,
+      freq = "quarter",
+      user = user
+    )
+  )
+
   # # Utsendelser
-  # format <- rapbase::autoReportFormatServer("smerteDispatchment")
-  # org <- rapbase::autoReportOrgServer("smerteDispatchment", orgs)
-  #
-  # ## set reactive parameters overriding those in the reports list
+  format <- rapbase::autoReportFormatServer("smerteDispatchment")
+
+  # observeEvent(orgs(), {
+    org <- rapbase::autoReportOrgServer("smerteDispatchment", orgs())
+  # })
+
+
+  ## set reactive parameters overriding those in the reports list
   # paramNames <- shiny::reactive(c("orgName", "orgId", "outputType"))
   # paramValues <- shiny::reactive(c(org$name(), org$value(), format()))
   #
-  # rapbase::autoReportServer(
-  #   "smerteDispatchment", registryName = "smerte", type = "dispatchment",
-  #   org = org$value, paramNames = paramNames, paramValues = paramValues,
-  #   reports = disReports, orgs = orgs, eligible = (user$role() == "SC")
-  # )
-  #
+  observe(
+    rapbase::autoReportServer2(
+      "smerteDispatchment",
+      registryName = "smerte",
+      type = "dispatchment",
+      org = reactiveVal(c("")),
+      reports = shiny::req(rapporter()),
+      orgs = orgs(),
+      eligible = (user$role() == "SC"),
+      freq = "quarter",
+      user = user
+    )
+  )
+
   # Metadata
   meta <- shiny::reactive({
     rapbase::describeRegistryDb(registryName())
