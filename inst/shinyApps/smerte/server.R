@@ -24,7 +24,6 @@ server <- function(input, output, session) {
   if (rapbase::isRapContext()) {
     registryName <- reactive(map_db_resh$orgname[map_db_resh$UnitId == user$org()])
     userFullName <- Sys.getenv("FALK_USER_FULLNAME")
-    # shiny::observe(
     hospitalName <- reactive(smerte::getHospitalName(
       registryName(),
       user$org(),
@@ -35,7 +34,7 @@ server <- function(input, output, session) {
   # Hide tabs depending on context
   ## do not show local reports in national context
   shiny::observeEvent(user$org(), {
-    if (smerte::isNationalReg(user$org())) {
+    if (smerte::isNationalReg(shiny::req(user$org()))) {
       shiny::hideTab(inputId = "tabs", target = "Tilsyn")
       shiny::hideTab(inputId = "tabs", target = "Dekningsgrad før reservasjon")
       shiny::hideTab(inputId = "tabs", target = "Dekningsgrad etter reservasjon")
@@ -44,7 +43,7 @@ server <- function(input, output, session) {
       shiny::hideTab(inputId = "tabs", target = "Oppfølging ved smerteklinikk")
       shiny::hideTab(inputId = "tabs", target = "Epidural (barn)")
     }
-    if (!(smerte::isNationalReg(user$org()))) {
+    if (!(smerte::isNationalReg(shiny::req(user$org())))) {
       shiny::showTab(inputId = "tabs", target = "Tilsyn")
       shiny::showTab(inputId = "tabs", target = "Dekningsgrad før reservasjon")
       shiny::showTab(inputId = "tabs", target = "Dekningsgrad etter reservasjon")
@@ -58,10 +57,10 @@ server <- function(input, output, session) {
 
   ## tools only for SC
   observe({
-    if (!user$role() %in% "SC") {
+    if (!shiny::req(user$role()) %in% "SC") {
       shiny::hideTab(inputId = "tabs", target = "Verktøy")
     }
-    if (user$role() %in% "SC") {
+    if (shiny::req(user$role()) %in% "SC") {
       shiny::showTab(inputId = "tabs", target = "Verktøy")
     }
   }
@@ -81,7 +80,7 @@ server <- function(input, output, session) {
         d <- merge(d, ForlopsOversikt, by = "ForlopsID")
       }
       if (input$dumpDataSet != "avdelingsoversikt") {
-        d <- dplyr::filter(d, AvdRESH == user$org())
+        d <- dplyr::filter(d, AvdRESH == shiny::req(user$org()))
       }
     }
     if (type == "xlsx-csv") {
@@ -328,7 +327,7 @@ server <- function(input, output, session) {
   ## brukerkontroller
   shiny::observe(
     rapbase::exportUCServer("smerteExport", registryName = registryName(),
-                            repoName = "smerte", eligible = (user$role() == "SC"))
+                            repoName = "smerte", eligible = (shiny::req(user$role()) == "SC"))
   )
   ## veileding
   shiny::observe(
@@ -337,6 +336,6 @@ server <- function(input, output, session) {
   # Bruksstatistikk
   shiny::observe(
     rapbase::statsServer("smerteStats", registryName = "smerte",
-                         eligible = (user$role() == "SC")))
+                         eligible = (shiny::req(user$role()) == "SC")))
   rapbase::statsGuideServer("smerteStats", registryName = "smerte")
 }
