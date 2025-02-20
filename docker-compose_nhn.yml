@@ -30,25 +30,19 @@ services:
     ports:
       - 3306:3306
 
-  # app:
-  #   depends_on:
-  #     - db
-  #   image: rapporteket/smerte:main
-  #   deploy:
-  #     resources:
-  #       limits:
-  #         memory: 1000M
-  #       reservations:
-  #         memory: 1000M
-  #   ports:
-  #     - 3838:3838
-  #   volumes:
-  #     - ./data-raw/config:/app/R
-  #   environment:
-  #     R_RAP_CONFIG_PATH: /app/R
-  #     FALK_EXTENDED_USER_RIGHTS: "[{\"A\":101,\"R\":\"LU\",\"U\":0},{\"A\":101,\"R\":\"SC\",\"U\":0},{\"A\":101,\"R\":\"SC\",\"U\":100089},{\"A\":101,\"R\":\"LU\",\"U\":100082}]"
-  #     R_RAP_INSTANCE: "QAC"
-  #     << : *environment
+  app:
+    depends_on:
+      - db
+    image: rapporteket/smerte:main
+    ports:
+      - 3838:3838
+    volumes:
+      - /home/rstudio/mydata:/app/R
+    environment:
+      R_RAP_CONFIG_PATH: /app/R
+      FALK_EXTENDED_USER_RIGHTS: "[{\"A\":101,\"R\":\"LU\",\"U\":0},{\"A\":101,\"R\":\"SC\",\"U\":0},{\"A\":101,\"R\":\"SC\",\"U\":100089},{\"A\":101,\"R\":\"LU\",\"U\":100082}]"
+      R_RAP_INSTANCE: "QAC"
+      << : *environment
 
   dev:
     depends_on:
