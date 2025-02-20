@@ -3,11 +3,11 @@ server <- function(input, output, session) {
   # rapbase::logShinyInputChanges(input)
 
   map_db_resh <-
-    rapbase::getConfig("rapbaseConfig.yml")$reg$smerte$databases %>%
-    unlist() %>%
-    matrix(nrow=2) %>%
-    t() %>%
-    as.data.frame() %>%
+    rapbase::getConfig("rapbaseConfig.yml")$reg$smerte$databases |>
+    unlist() |>
+    matrix(nrow=2) |>
+    t() |>
+    as.data.frame() |>
     dplyr::rename(orgname = V1, UnitId = V2)
 
   user <- rapbase::navbarWidgetServer2(
