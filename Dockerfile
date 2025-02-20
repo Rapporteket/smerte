@@ -1,7 +1,7 @@
 FROM rapporteket/base-r:main
 
-LABEL maintainer = "Kevin Thon <kevin.otto.thon@helse-nord.no>"
-LABEL no.rapporteket.cd.enable = "true"
+LABEL maintainer="Kevin Thon <kevin.otto.thon@helse-nord.no>"
+LABEL no.rapporteket.cd.enable="true"
 
 WORKDIR /app/R
 

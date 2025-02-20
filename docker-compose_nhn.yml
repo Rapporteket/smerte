@@ -33,7 +33,7 @@ services:
   app:
     depends_on:
       - db
-    image: rapporteket/smerte:main
+    image: lokal #rapporteket/smerte:main
     ports:
       - 3838:3838
     volumes:
