@@ -246,12 +246,6 @@ server <- function(input, output, session) {
     }
   )
 
-  observe(
-    print(orgs())
-  )
-
-
-
   # Abonnement
   observe(
     rapbase::autoReportServer2(
