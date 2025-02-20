@@ -18,5 +18,5 @@ RUN adduser --uid "1000" --disabled-password rapporteket && \
     chmod -R 755 /app/R
 USER rapporteket
 
-CMD ["R", "-e", "options(shiny.port = 3838, shiny.host = \"0.0.0.0\"); shiny::runApp(system.file("shinyApps/smerte", package = "smerte"))"]
+CMD ["R", "-e", "options(shiny.port = 3838, shiny.host = \"0.0.0.0\"); shiny::runApp(system.file('shinyApps/smerte', package = 'smerte'))"]
 
