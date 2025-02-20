@@ -5,7 +5,9 @@ Sys.setenv(R_RAP_INSTANCE="QAC")
 Sys.setenv(R_RAP_CONFIG_PATH="/home/rstudio/mydata")
 Sys.setenv(FALK_EXTENDED_USER_RIGHTS="[{\"A\":101,\"R\":\"LU\",\"U\":0},{\"A\":101,\"R\":\"SC\",\"U\":0},{\"A\":101,\"R\":\"SC\",\"U\":100089},{\"A\":101,\"R\":\"LU\",\"U\":100082}]")
 
-norgast::norgastApp()
+shiny::runApp('inst/shinyApps/smerte')
+
+shiny::runApp(system.file("shinyApps/smerte", package = "smerte"))
 
 # rapbase::runAutoReport()
 # Rscript -e "Sys.setenv(R_RAP_INSTANCE=\"QAC\")" -e "rapbase::runAutoReport(dato = Sys.Date()+1, dryRun = TRUE)"

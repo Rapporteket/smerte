@@ -203,22 +203,22 @@ ui <- shiny::tagList(
           shiny::mainPanel(htmlOutput("metaData"))
         )
       ),
-      # shiny::tabPanel(
-      #   "Utsendelser",
-      #   shiny::sidebarLayout(
-      #     shiny::sidebarPanel(
-      #       rapbase::autoReportFormatInput("smerteDispatchment"),
-      #       rapbase::autoReportOrgInput("smerteDispatchment"),
-      #       shiny::HTML(
-      #         "NB Dobbeltsjekk at rapporten er gitt riktig datakilde!<br/><br/>"
-      #       ),
-      #       rapbase::autoReportInput("smerteDispatchment")
-      #     ),
-      #     shiny::mainPanel(
-      #       rapbase::autoReportUI("smerteDispatchment")
-      #     )
-      #   )
-      # ),
+      shiny::tabPanel(
+        "Utsendelser",
+        shiny::sidebarLayout(
+          shiny::sidebarPanel(
+            rapbase::autoReportFormatInput("smerteDispatchment"),
+            rapbase::autoReportOrgInput("smerteDispatchment"),
+            shiny::HTML(
+              "NB Dobbeltsjekk at rapporten er gitt riktig datakilde!<br/><br/>"
+            ),
+            rapbase::autoReportInput("smerteDispatchment")
+          ),
+          shiny::mainPanel(
+            rapbase::autoReportUI("smerteDispatchment")
+          )
+        )
+      ),
       shiny::tabPanel(
         "Eksport",
         shiny::sidebarLayout(
