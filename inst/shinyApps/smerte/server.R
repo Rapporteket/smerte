@@ -22,7 +22,8 @@ server <- function(input, output, session) {
   # Parameters that may change depending on the role and org of user
   ## setting values that do depend on a Rapporteket context
   if (rapbase::isRapContext()) {
-    registryName <- reactive(map_db_resh$orgname[map_db_resh$UnitId == user$org()])
+    registryName <- reactive(
+      map_db_resh$orgname[map_db_resh$UnitId == user$org()])
     userFullName <- Sys.getenv("FALK_USER_FULLNAME")
     hospitalName <- reactive(smerte::getHospitalName(
       registryName(),
@@ -42,6 +43,8 @@ server <- function(input, output, session) {
       shiny::hideTab(inputId = "tabs", target = "Smertekategori")
       shiny::hideTab(inputId = "tabs", target = "Oppfølging ved smerteklinikk")
       shiny::hideTab(inputId = "tabs", target = "Epidural (barn)")
+      shiny::hideTab(inputId = "tabs", target = "Abonnement lokal")
+      shiny::showTab(inputId = "tabs", target = "Abonnement nasjonal")
     }
     if (!(smerte::isNationalReg(shiny::req(user$org())))) {
       shiny::showTab(inputId = "tabs", target = "Tilsyn")
@@ -50,18 +53,27 @@ server <- function(input, output, session) {
       shiny::showTab(inputId = "tabs", target = "Spinalkateter")
       shiny::showTab(inputId = "tabs", target = "Smertekategori")
       shiny::showTab(inputId = "tabs", target = "Oppfølging ved smerteklinikk")
-      shiny::showTab(inputId = "tabs", target = "Epidural (barn)")
+      shiny::showTab(inputId = "tabs", target = "Abonnement lokal")
+      shiny::hideTab(inputId = "tabs", target = "Abonnement nasjonal")
     }
   }
   )
 
   ## tools only for SC
-  observe({
+  observeEvent(list(user$role(), user$org()), {
     if (!shiny::req(user$role()) %in% "SC") {
       shiny::hideTab(inputId = "tabs", target = "Verktøy")
     }
     if (shiny::req(user$role()) %in% "SC") {
       shiny::showTab(inputId = "tabs", target = "Verktøy")
+      if (smerte::isNationalReg(shiny::req(user$org()))) {
+        shiny::showTab(inputId = "tabs", target = "Utsendelser nasjonal")
+        shiny::hideTab(inputId = "tabs", target = "Utsendelser")
+      } else {
+        shiny::showTab(inputId = "tabs", target = "Utsendelser")
+        shiny::hideTab(inputId = "tabs", target = "Utsendelser nasjonal")
+      }
+
     }
   }
   )
@@ -177,113 +189,150 @@ server <- function(input, output, session) {
 
   # Definisjon av rapporter for abonnement og utsendelser
 
-  rapporter <-
-    shiny::reactive(
-      if (smerte::isNationalReg(user$org())) {
-        list(
-          `Kvalitetsindikatorer - alle enheter`= list(
-            synopsis = paste("Kvalitetsindikatorer fra Smerteregisteret",
-                             "(alle enheter)"),
-            fun = "reportProcessor",
-            paramNames = c("report", "outputType", "title",
-                           "author", "orgName", "orgId",
-                           "registryName", "userFullName"),
-            paramValues = c("nasjonalIndikator", "pdf", "Kvalitetsindikatorer",
-                            "Smerteregisteret", hospitalName(), user$org(),
-                            registryName(), userFullName)
-          )
-        )
-      } else {
-        list(
-          `Tilsyn - lokal enhet` = list(
-            synopsis = paste("Smerteregisteret: månedlig oppsummering av tilsyn",
-                             "siste år (lokal enhet)"),
-            fun = "reportProcessor",
-            paramNames = c("report", "outputType", "title", "author",
-                           "orgName", "orgId", "registryName", "userFullName",
-                           "userRole"),
-            paramValues = c("tilsyn", "pdf", "Tilsyn", "Smerteregisteret",
-                            hospitalName(), user$org(), registryName(), userFullName,
-                            user$role())
-          ),
-          `Kvalitetsindikatorer - lokal enhet` = list(
-            synopsis = paste("Kvalitetsindikatorer fra Smerteregisteret",
-                             "(lokal enhet)"),
-            fun = "reportProcessor",
-            paramNames = c("report", "outputType", "title",
-                           "author", "orgName", "orgId",
-                           "userFullName", "userRole", "registryName"),
-            paramValues = c("indikator", "pdf", "Kvalitetsindikatorer",
-                            "Smerteregisteret", hospitalName(), user$org(),
-                            userFullName, user$role(), registryName())
-          ),
-          `Spinalkateter - lokal enhet` = list(
-            synopsis = paste("Smerteregisteret: bruk av spinalkateter inneværende",
-                             "år (lokal enhet)"),
-            fun = "reportProcessor",
-            paramNames = c("report", "outputType", "title",
-                           "author", "orgId", "userFullName", "userRole",
-                           "registryName", "orgName"),
-            paramValues = c("spinalkateter", "pdf", "Spinalkateter",
-                            "Smerteregisteret", user$org(), userFullName, user$role(),
-                            registryName(), hospitalName())
-          )
-        )
-      }
+  nationalReports <- list(
+    `Kvalitetsindikatorer - alle enheter`= list(
+      synopsis = paste("Kvalitetsindikatorer fra Smerteregisteret",
+                       "(alle enheter)"),
+      fun = "reportProcessor",
+      paramNames = c("report", "outputType", "title",
+                     "author", "orgName", "orgId",
+                     "registryName", "userFullName"),
+      paramValues = c("nasjonalIndikator", "pdf", "Kvalitetsindikatorer",
+                      "Smerteregisteret", "sykehus", 99999,
+                      "smertedata", userFullName)
     )
-
-  orgs <- shiny::reactive(
-    if (smerte::isNationalReg(user$org())) {
-      c(list(`Alle nasjonale data` = "0"),
-        smerte::getNameReshId(registryName = registryName(),
-                              reshId = user$org(),
-                              asNamedList = TRUE))
-    } else {
-      smerte::getNameReshId(registryName = registryName(),
-                            reshId = user$org(),
-                            asNamedList = TRUE)
-    }
+  )
+  localReports <- list(
+    `Tilsyn - lokal enhet` = list(
+      synopsis = paste("Smerteregisteret: månedlig oppsummering av tilsyn",
+                       "siste år (lokal enhet)"),
+      fun = "reportProcessor",
+      paramNames = c("report", "outputType", "title", "author",
+                     "orgName", "orgId", "registryName", "userFullName",
+                     "userRole"),
+      paramValues = c("tilsyn", "pdf", "Tilsyn", "Smerteregisteret",
+                      "sykehus", 99999, "smertedata", userFullName,
+                      "LU")
+    ),
+    `Kvalitetsindikatorer - lokal enhet` = list(
+      synopsis = paste("Kvalitetsindikatorer fra Smerteregisteret",
+                       "(lokal enhet)"),
+      fun = "reportProcessor",
+      paramNames = c("report", "outputType", "title",
+                     "author", "orgName", "orgId",
+                     "userFullName", "userRole", "registryName"),
+      paramValues = c("indikator", "pdf", "Kvalitetsindikatorer",
+                      "Smerteregisteret", "sykehus", 99999,
+                      userFullName, "LU", "smertedata")
+    ),
+    `Spinalkateter - lokal enhet` = list(
+      synopsis = paste("Smerteregisteret: bruk av spinalkateter inneværende",
+                       "år (lokal enhet)"),
+      fun = "reportProcessor",
+      paramNames = c("report", "outputType", "title",
+                     "author", "orgId", "userFullName", "userRole",
+                     "registryName", "orgName"),
+      paramValues = c("spinalkateter", "pdf", "Spinalkateter",
+                      "Smerteregisteret", 99999, userFullName, "LU",
+                      "smertedata", "sykehus")
+    )
   )
 
+  ## set reactive parameters overriding those in the reports list
+  subParamNames <- shiny::reactive(c("registryName", "orgName", "orgId",
+                                     "userRole"))
+  subParamValues <- shiny::reactive(c(registryName(), hospitalName(), user$org(),
+                                      user$role()))
+
   # Abonnement
-  observe(
-    rapbase::autoReportServer2(
-      "smerteSubscription",
-      registryName = "smerte",
-      type = "subscription",
-      reports = shiny::req(rapporter()),
-      orgs = shiny::req(orgs()),
-      eligible = TRUE,
-      freq = "quarter",
-      user = user
-    )
+
+  rapbase::autoReportServer(
+    "smerteSubscription",
+    registryName = "smerte",
+    type = "subscription",
+    paramNames = subParamNames,
+    paramValues = subParamValues,
+    reports = localReports,
+    freq = "quarter",
+    user = user
+  )
+
+  rapbase::autoReportServer(
+    "smerteSubscriptionNational",
+    registryName = "smerte",
+    type = "subscription",
+    paramNames = subParamNames,
+    paramValues = subParamValues,
+    reports = nationalReports,
+    freq = "quarter",
+    user = user
   )
 
   # # Utsendelser
   format <- rapbase::autoReportFormatServer("smerteDispatchment")
+  format2 <- rapbase::autoReportFormatServer("smerteDispatchmentNasjonal")
 
-  # observeEvent(orgs(), {
-    org <- rapbase::autoReportOrgServer("smerteDispatchment", orgs())
-  # })
+  orgs <- c(list(`Alle nasjonale data` = "0"),
+            smerte::getNameReshId(
+              registryName = map_db_resh$orgname[map_db_resh$UnitId == 0],
+              reshId = 0,
+              asNamedList = TRUE))
 
-
-  ## set reactive parameters overriding those in the reports list
-  # paramNames <- shiny::reactive(c("orgName", "orgId", "outputType"))
-  # paramValues <- shiny::reactive(c(org$name(), org$value(), format()))
-  #
-  observe(
-    rapbase::autoReportServer2(
+  org <- rapbase::autoReportOrgServer(
+    "smerteDispatchment",
+    smerte::getNameReshId(registryName = shiny::req(registryName()),
+                          reshId = shiny::req(user$org()),
+                          asNamedList = TRUE))
+  shiny::observeEvent(user$org(), {
+    org <- rapbase::autoReportOrgServer(
       "smerteDispatchment",
-      registryName = "smerte",
-      type = "dispatchment",
-      org = reactiveVal(c("")),
-      reports = shiny::req(rapporter()),
-      orgs = orgs(),
-      eligible = (user$role() == "SC"),
-      freq = "quarter",
-      user = user
-    )
+      smerte::getNameReshId(registryName = shiny::req(registryName()),
+                            reshId = shiny::req(user$org()),
+                            asNamedList = TRUE))
+  }
   )
+  org2 <- rapbase::autoReportOrgServer("smerteDispatchmentNasjonal", orgs)
+
+  vis_rapp <- reactiveVal(FALSE)
+  observeEvent(user$role(), {
+    vis_rapp(user$role() == "SC")
+  })
+  ## set reactive parameters overriding those in the reports list
+  disParamNames <- shiny::reactive(c("registryName", "orgName", "orgId",
+                                     "userRole", "outputType"))
+  disParamValues <- shiny::reactive(c(registryName(), hospitalName(), org$value(),
+                                      user$role(), format()))
+  disParamValues2 <- shiny::reactive(c(registryName(), hospitalName(), org2$value(),
+                                       user$role(), format2()))
+
+  rapbase::autoReportServer(
+    "smerteDispatchment",
+    registryName = "smerte",
+    type = "dispatchment",
+    org = org$value,
+    paramNames = disParamNames,
+    paramValues = disParamValues,
+    reports = localReports,
+    orgs = orgs,
+    eligible = vis_rapp,
+    freq = "quarter",
+    user = user
+  )
+
+  rapbase::autoReportServer(
+    "smerteDispatchmentNasjonal",
+    registryName = "smerte",
+    type = "dispatchment",
+    org = org2$value,
+    paramNames = disParamNames,
+    paramValues = disParamValues2,
+    reports = nationalReports,
+    orgs = orgs,
+    eligible = vis_rapp,
+    freq = "quarter",
+    user = user
+  )
+
 
   # Metadata
   meta <- shiny::reactive({
