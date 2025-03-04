@@ -153,7 +153,7 @@ ui <- shiny::tagList(
       )
      ),
     shiny::tabPanel(
-      "Abonnement",
+      "Abonnement lokal",
       shiny::sidebarLayout(
         shiny::sidebarPanel(
           rapbase::autoReportFormatInput("smerteSubscription"),
@@ -161,6 +161,18 @@ ui <- shiny::tagList(
         ),
         shiny::mainPanel(
           rapbase::autoReportUI("smerteSubscription")
+        )
+      )
+    ),
+    shiny::tabPanel(
+      "Abonnement nasjonal",
+      shiny::sidebarLayout(
+        shiny::sidebarPanel(
+          rapbase::autoReportFormatInput("smerteSubscriptionNational"),
+          rapbase::autoReportInput("smerteSubscriptionNational")
+        ),
+        shiny::mainPanel(
+          rapbase::autoReportUI("smerteSubscriptionNational")
         )
       )
     ),
@@ -216,6 +228,22 @@ ui <- shiny::tagList(
           ),
           shiny::mainPanel(
             rapbase::autoReportUI("smerteDispatchment")
+          )
+        )
+      ),
+      shiny::tabPanel(
+        "Utsendelser nasjonal",
+        shiny::sidebarLayout(
+          shiny::sidebarPanel(
+            rapbase::autoReportFormatInput("smerteDispatchmentNasjonal"),
+            rapbase::autoReportOrgInput("smerteDispatchmentNasjonal"),
+            shiny::HTML(
+              "NB Dobbeltsjekk at rapporten er gitt riktig datakilde!<br/><br/>"
+            ),
+            rapbase::autoReportInput("smerteDispatchmentNasjonal")
+          ),
+          shiny::mainPanel(
+            rapbase::autoReportUI("smerteDispatchmentNasjonal")
           )
         )
       ),
