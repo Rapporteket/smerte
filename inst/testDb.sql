@@ -847,8 +847,8 @@ CREATE TABLE `skjemaoversikt` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_danish_ci;
 
 
-DROP TABLE IF EXISTS `SmerteDiagnoser`;
-CREATE TABLE `SmerteDiagnoser` (
+DROP TABLE IF EXISTS `smertediagnoser`;
+CREATE TABLE `smertediagnoser` (
   `SmerteDiagID` int(9) NOT NULL,
   `ForlopsID` int(10) unsigned DEFAULT NULL,
   `SmerteKat` varchar(100) COLLATE utf8_danish_ci DEFAULT NULL,

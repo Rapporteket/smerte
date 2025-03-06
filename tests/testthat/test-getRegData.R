@@ -160,7 +160,7 @@ test_that("tables can be dumped", {
     getDataDump("testReg", "skjemaoversikt", Sys.Date(), Sys.Date())
   ), "data.frame")
   expect_equal(class(
-    getDataDump("testReg", "SmerteDiagnoser", Sys.Date(), Sys.Date())
+    getDataDump("testReg", "smertediagnoser", Sys.Date(), Sys.Date())
   ), "data.frame")
   expect_equal(class(
     getDataDump("testReg", "smertediagnosernum", Sys.Date(), Sys.Date())
