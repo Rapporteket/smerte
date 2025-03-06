@@ -112,7 +112,7 @@ server <- function(input, output, session) {
     )
   })
 
-  reportParams <- reactive(
+  reportParams <- shiny::reactive(
     list(
       hospitalName = hospitalName(),
       reshId = user$org(),
@@ -120,72 +120,95 @@ server <- function(input, output, session) {
       userRole = user$role(),
       userFullName = userFullName,
       shinySession = session
-    ))
+    )
+  )
 
   # # Tilsynsrapport
-  smerte::defaultReportServer(id = "tilsyn",
-                              reportFileName = "LokalTilsynsrapportMaaned.Rmd",
-                              reportParams = reportParams()
+  smerte::defaultReportServer2(
+    id = "tilsyn",
+    reportFileName = reactiveVal("LokalTilsynsrapportMaaned.Rmd"),
+    reportParams = reportParams
   )
 
   # Dekningsgrad gammel
-  smerte::defaultReportServer(id = "dekningsgrad",
-                              reportFileName = "LokalDekningsgradrapport.Rmd",
-                              reportParams = reportParams())
+  smerte::defaultReportServer2(
+    id = "dekningsgrad",
+    reportFileName = reactiveVal("LokalDekningsgradrapport.Rmd"),
+    reportParams = reportParams)
   # Dekningsgrad ny
-  smerte::defaultReportServer(id = "dekningsgradReserv",
-                              reportFileName = "LokalDekningsgradrapportReservasjon.Rmd",
-                              reportParams = reportParams())
+  smerte::defaultReportServer2(
+    id = "dekningsgradReserv",
+    reportFileName = reactiveVal("LokalDekningsgradrapportReservasjon.Rmd"),
+    reportParams = reportParams)
 
   # Indikatorrapport
-  reportTemplate <- "LokalIndikatorMaaned.Rmd"
-  observe(
+  reportTemplate <- shiny::reactiveVal()
+  observeEvent(user$org(), {
     if (smerte::isNationalReg(user$org())) {
-      reportTemplate <- "NasjonalIndikatorMaaned.Rmd"
-    })
-  smerte::defaultReportServer(id = "indikator",
-                              reportFileName = reportTemplate,
-                              reportParams = reportParams())
+      reportTemplate("NasjonalIndikatorMaaned.Rmd")
+    } else {
+      reportTemplate("LokalIndikatorMaaned.Rmd")
+    }
+  }
+  )
+
+  smerte::defaultReportServer2(
+    id = "indikator",
+    reportFileName = reportTemplate,
+    reportParams = reportParams)
 
   # Opiodreduksjon
-  reportTemplate2 <- "LokalOpioidReduksjon.Rmd"
-  observe(
+
+  reportTemplate2 <- shiny::reactiveVal()
+  observeEvent(user$org(), {
     if (smerte::isNationalReg(user$org())) {
-      reportTemplate2 <- "NasjonalOpioidReduksjon.Rmd"
-    })
-  smerte::defaultReportServer(id = "opioid",
-                              reportFileName = reportTemplate2,
-                              reportParams = reportParams())
+      reportTemplate2("NasjonalOpioidReduksjon.Rmd")
+    } else {
+      reportTemplate2("LokalOpioidReduksjon.Rmd")
+    }
+  }
+  )
+
+  smerte::defaultReportServer2(
+    id = "opioid",
+    reportFileName = reportTemplate2,
+    reportParams = reportParams)
 
 
   # eProm
-  smerte::defaultReportServer(id = "eprom",
-                              reportFileName = "lokalEprom.Rmd",
-                              reportParams = reportParams())
+  smerte::defaultReportServer2(
+    id = "eprom",
+    reportFileName = reactiveVal("lokalEprom.Rmd"),
+    reportParams = reportParams)
 
   # Spinalkateter
-  smerte::defaultReportServer(id = "spinalkateter",
-                              reportFileName = "LokalSpinalkateter.Rmd",
-                              reportParams = reportParams())
+  smerte::defaultReportServer2(
+    id = "spinalkateter",
+    reportFileName = reactiveVal("LokalSpinalkateter.Rmd"),
+    reportParams = reportParams)
 
   # Smertekategori
-  smerte::defaultReportServer(id = "smertekategori",
-                              reportFileName = "LokalSmertekategori.Rmd",
-                              reportParams = reportParams())
+  smerte::defaultReportServer2(
+    id = "smertekategori",
+    reportFileName = reactiveVal("LokalSmertekategori.Rmd"),
+    reportParams = reportParams)
 
   # Tid til død
-  smerte::defaultReportServer(id = "timetodeath",
-                              reportFileName = "timetodeath.Rmd",
-                              reportParams = reportParams())
+  smerte::defaultReportServer2(
+    id = "timetodeath",
+    reportFileName = reactiveVal("timetodeath.Rmd"),
+    reportParams = reportParams)
 
   # Oppfølging ved smerteklinikk
-  smerte::defaultReportServer(id = "oppfolg",
-                              reportFileName = "LokalOppfolg.Rmd",
-                              reportParams = reportParams())
+  smerte::defaultReportServer2(
+    id = "oppfolg",
+    reportFileName = reactiveVal("LokalOppfolg.Rmd"),
+    reportParams = reportParams)
   # Epidural hos barn
-  smerte::defaultReportServer(id = "lokalepi",
-                              reportFileName = "LokalEpidural.Rmd",
-                              reportParams = reportParams())
+  smerte::defaultReportServer2(
+    id = "lokalepi",
+    reportFileName = reactiveVal("LokalEpidural.Rmd"),
+    reportParams = reportParams)
 
   # Definisjon av rapporter for abonnement og utsendelser
 
