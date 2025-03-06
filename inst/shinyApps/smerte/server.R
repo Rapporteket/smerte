@@ -36,6 +36,7 @@ server <- function(input, output, session) {
 
   contentDump <- function(file, type, userRole = "LU") {
     d <- smerte::getDataDump(registryName,input$dumpDataSet,
+                             reshId = reshId,
                              fromDate = input$dumpDateRange[1],
                              toDate = input$dumpDateRange[2],
                              session = session)
@@ -205,7 +206,9 @@ server <- function(input, output, session) {
     )
   )
 
-  orgs <- smerte::getNameReshId(registryName = registryName, asNamedList = TRUE)
+  orgs <- smerte::getNameReshId(registryName = registryName,
+                                reshId = reshId,
+                                asNamedList = TRUE)
 
   if (smerte::isNationalReg(reshId)) {
     orgs <- c(list(`Alle nasjonale data` = "0"), orgs)
