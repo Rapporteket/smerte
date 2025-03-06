@@ -93,6 +93,48 @@ defaultReportServer <- function(id, reportFileName, reportParams) {
   })
 }
 
+#' @rdname defaultReport
+#' @export
+defaultReportServer2 <- function(id, reportFileName, reportParams) {
+  shiny::moduleServer(id, function(input, output, session) {
+
+    output$report <- shiny::renderUI({
+      reportParams_list <- reportParams()
+      reportParams_list$startDate <- input$dateRange[1]
+      reportParams_list$endDate <- input$dateRange[2]
+      rapbase::renderRmd(
+        sourceFile = system.file(reportFileName(), package = "smerte"),
+        outputType = "html_fragment",
+        params = reportParams_list
+      )
+    })
+
+    output$downloadReport <- shiny::downloadHandler(
+      filename = function() {
+        basename(
+          tempfile(
+            pattern = sub(pattern = "(.*?)\\..*$", replacement = "\\1",
+                          basename(reportFileName())),
+            fileext = paste0(".", input$format)
+          )
+        )
+      },
+      content = function(file) {
+        reportParams_list <- reportParams()
+        reportParams_list$startDate <- input$dateRange[1]
+        reportParams_list$endDate <- input$dateRange[2]
+        reportParams_list$tableFormat <- input$format
+        fn <- rapbase::renderRmd(
+          sourceFile = system.file(reportFileName(), package = "smerte"),
+          outputType = input$format,
+          params = reportParams_list
+        )
+        file.rename(fn, file)
+      }
+    )
+  })
+}
+
 
 #' @rdname defaultReport
 #' @export
