@@ -34,19 +34,20 @@ library(magrittr)
 ```{r get data, include=FALSE}
 
 if (rapbase::isRapContext()) {
-  dat <- smerte::getDataDump(registryName = params$registryName,
-                             reshId = params$reshId,
-                             tableName = "AlleVarNum",
-                             fromDate = params$startDate,
-                             toDate = params$endDate,
-                             session = params$shinySession)
+  dat <- smerte::getDataDump(
+    registryName = params$registryName,
+    reshId = params$reshId,
+    tableName = if (smerte::isNationalReg(params$reshId)) "allevarnumnasjonal" else "allevarnum",
+    fromDate = params$startDate,
+    toDate = params$endDate,
+    session = params$shinySession)
 } else {
   #Dataimport: skal hente lokale data for hvert sykehus (tar vekk sti, og erstatter med lokal filB)
   path <- read.csv(file = "H:/path.csv", header = FALSE, sep = ";")
   path <- as.data.frame(lapply(path, as.character), stringsAsFactors=FALSE)
   path <- path$V1
   dat <- read.csv(file = path, header = TRUE, sep = ";")
- }
+}
 
 dataPresent <- TRUE
 if(dim(dat)[1] < 1) {
@@ -76,7 +77,7 @@ knitr::knit_exit()
 
 ```{r pasreg, warning = TRUE, message=TRUE, results='asis', eval=dataPresent}
 ###Dette er oversikten for pasregskjemaet
-  
+
 #Antall som har fått tilsendt skjema
 antUtsendt <- sum(!is.na(dat$PasDelUfylPR))
 #Antall som ikke har fått tilsendt skjema
@@ -117,12 +118,12 @@ pasreg <- pasreg[1:(dim(pasreg)[1]-1), c(4,2,3)]
 #Bruker pakke kableextra
 rapbase::mst(
   tab = pasreg, 
-    col_names = c("", "Antall ", "Prosent"),
-    cap = "Årsak til manglende utfylling",
-    label = "tabPR",
-    type = params$tableFormat,
-    digs = 0,
-    align = c("l", "r", "r", "r"))
+  col_names = c("", "Antall ", "Prosent"),
+  cap = "Årsak til manglende utfylling",
+  label = "tabPR",
+  type = params$tableFormat,
+  digs = 0,
+  align = c("l", "r", "r", "r"))
 ```
 
 
@@ -149,12 +150,12 @@ pr1 <- pr1[ , c(4, 2, 3)]
 
 rapbase::mst(
   tab = pr1,
-     col_names = c("", "Antall ", "Prosent"),
-     cap = paste0("Søvnproblemer før innleggelse"),
-     label = "prspm1",
-     type = params$tableFormat,
-     digs = 0,
-     align = c("l", "r", "r", "r"))
+  col_names = c("", "Antall ", "Prosent"),
+  cap = paste0("Søvnproblemer før innleggelse"),
+  label = "prspm1",
+  type = params$tableFormat,
+  digs = 0,
+  align = c("l", "r", "r", "r"))
 ```
 
 Tabell \@ref(tab:prspm1) viser oversikten over søvnproblemer før innleggelse for de `r dim(datpr1)[1]` pasientene som besvarte spørsmålet.
@@ -178,12 +179,12 @@ pr2 = pr2 %>%
 pr2 <- pr2[ , c(4, 2, 3)]
 
 rapbase::mst(tab = pr2,
-     col_names = c("", "Antall ", "Prosent"),
-     cap = paste0("Søvnproblemer etter innleggelse"),
-     label = "prspm2",
-     type = params$tableFormat,
-     digs = 0,
-     align = c("l", "r", "r", "r"))
+             col_names = c("", "Antall ", "Prosent"),
+             cap = paste0("Søvnproblemer etter innleggelse"),
+             label = "prspm2",
+             type = params$tableFormat,
+             digs = 0,
+             align = c("l", "r", "r", "r"))
 ```
 Tabell \@ref(tab:prspm2) viser oversikten over søvnproblemer etter innleggelse for de `r dim(datpr2)[1]` pasientene som besvarte spørsmålet.
 
@@ -197,7 +198,7 @@ datpr3 <- dat[!is.na(dat$PRSpm3), ]
 #Bruker her pakkene dplyr og magrittr og ggplot
 ggplot(datpr3, aes(x=PRSpm3)) +
   geom_histogram(binwidth=10, boundary=0, fill = "darkgrey", closed="left") +
-    scale_x_continuous(minor_breaks = 2) +
+  scale_x_continuous(minor_breaks = 2) +
   xlab("Antall kontakter") + ylab("Antall pasienter")
 ```
 
@@ -221,13 +222,13 @@ pr4 = pr4 %>%
 pr4 <- pr4[ , c(4, 2, 3)]
 
 rapbase::mst(tab = pr4,
-     col_names = c("", "Antall ", "Prosent"),
-     cap = paste0("Har tidligere opplevd belastninger som har krevd ",
-                  "behandling av psykolog/psykiater"),
-     label = "prsmp4",
-     type = params$tableFormat,
-     digs = 0,
-     align = c("l", "r", "r", "r"))
+             col_names = c("", "Antall ", "Prosent"),
+             cap = paste0("Har tidligere opplevd belastninger som har krevd ",
+                          "behandling av psykolog/psykiater"),
+             label = "prsmp4",
+             type = params$tableFormat,
+             digs = 0,
+             align = c("l", "r", "r", "r"))
 ```
 Tabell \@ref(tab:prsmp4) viser oversikten over hvor mange av pasientene som tidligere har opplevd belastninger som har krevd behandling av psykolog/psykiater eller liknende for de `r dim(datpr4)[1]` pasientene som besvarte spørsmålet.
 
@@ -255,13 +256,13 @@ pr5 = pr5 %>%
 pr5 <- pr5[ , c(4, 2, 3)]
 
 rapbase::mst(tab = pr5,
-     col_names = c("", "Antall ", "Prosent"),
-     cap = paste0("Svar på spørsmålet: ... er det forferdelig, og jeg føler ",
-                  "at det aldri kommer til å bli bedre"),
-     label = "prspm5",
-     type = params$tableFormat,
-     digs = 0,
-     align = c("l", "r", "r", "r"))
+             col_names = c("", "Antall ", "Prosent"),
+             cap = paste0("Svar på spørsmålet: ... er det forferdelig, og jeg føler ",
+                          "at det aldri kommer til å bli bedre"),
+             label = "prspm5",
+             type = params$tableFormat,
+             digs = 0,
+             align = c("l", "r", "r", "r"))
 ```
 Tabell \@ref(tab:prspm5) viser oversikten over hvor ofte pasientene føler '... det er forferdelig, og jeg at det aldri kommer til å bli bedre'. `r dim(datpr5)[1]` pasienter besvarte spørsmålet.
 
@@ -289,12 +290,12 @@ pr6 = pr6 %>%
 pr6 <- pr6[ , c(4, 2, 3)]
 
 rapbase::mst(tab = pr6, col_names = c("", "Antall ", "Prosent"),
-     cap = paste0("Svar på spørsmålet: ... føles det som om jeg ikke holder ",
-                  "ut"),
-     label = "prspm6",
-     type = params$tableFormat,
-     digs = 0,
-     align = c("l", "r", "r", "r"))
+             cap = paste0("Svar på spørsmålet: ... føles det som om jeg ikke holder ",
+                          "ut"),
+             label = "prspm6",
+             type = params$tableFormat,
+             digs = 0,
+             align = c("l", "r", "r", "r"))
 ```
 Tabell \@ref(tab:prspm6) viser oversikten over hvor ofte pasientene føler '... det er som om jeg ikke holder ut'. `r dim(datpr6)[1]` pasienter besvarte spørsmålet.
 
@@ -302,7 +303,7 @@ Tabell \@ref(tab:prspm6) viser oversikten over hvor ofte pasientene føler '... 
 # ePROM: HADS
 
 ```{r hads, warning = FALSE, eval=dataPresent, message=FALSE, results='asis'}
-  
+
 #Antall som har fått tilsendt skjema
 antUtsendt <- sum(dat$PasDelUtf == 1, na.rm = TRUE) + sum(dat$PasDelUtf == 0, na.rm = TRUE)
 #Antall som ikke har fått tilsendt skjema
@@ -337,11 +338,11 @@ hads = hads %>%
 hads <- hads[1:(dim(hads)[1]-1), c(4, 2, 3)]
 
 rapbase::mst(tab = hads, col_names = c("", "Antall ", "Prosent"),
-     cap = paste0("Grunn manglende utfylling HADS"),
-     label = "hadsspm",
-     type = params$tableFormat,
-     digs = 0,
-     align = c("l", "r", "r", "r"))
+             cap = paste0("Grunn manglende utfylling HADS"),
+             label = "hadsspm",
+             type = params$tableFormat,
+             digs = 0,
+             align = c("l", "r", "r", "r"))
 
 
 #Tabeller som viser oversiktene over score
@@ -350,22 +351,22 @@ tabdep <- dat %>%
   count(HADSScoreDepresjon) %>% group_by(HADSScoreDepresjon)
 
 rapbase::mst(tab = tabdep, col_names = c("Score ", "Antall"),
-     cap = paste0("Resultatfordeling for HADS depresjon"),
-     label = "deptab",
-     type = params$tableFormat,
-     digs = 0,
-     align = c("l", "r", "r"))
+             cap = paste0("Resultatfordeling for HADS depresjon"),
+             label = "deptab",
+             type = params$tableFormat,
+             digs = 0,
+             align = c("l", "r", "r"))
 
 tabangst <- dat %>%
   filter(!is.na(HADSScoreAngst)) %>%
   count(HADSScoreAngst) %>% group_by(HADSScoreAngst)
 
 rapbase::mst(tab = tabangst, col_names = c("Score ", "Antall"),
-     cap = paste0("Resultatfordeling for HADS angst"),
-     label = "angsttab",
-     type = params$tableFormat,
-     digs = 0,
-     align = c("l", "r", "r"))
+             cap = paste0("Resultatfordeling for HADS angst"),
+             label = "angsttab",
+             type = params$tableFormat,
+             digs = 0,
+             align = c("l", "r", "r"))
 ```
 I den valgte tidsperioden fikk tilsammen `r antUtsendt` pasienter av totalt `r dim(dat)[1]` tilsendt ePROM-skjema for HADS. Av de som fikk tilsendt skjema var det `r antsvar` pasienter som sendte inn en besvarelse. Dette gir en svarandel på `r round(andsvar, digits = 2)`. Tabell \@ref(tab:hadsspm) gir en oversikt over registrerte årsaker til manglende besvarelse for de `r antiksvar` som ikke har svart.
 
@@ -385,11 +386,11 @@ depplot = depplot = ggplot(dep, aes(x=HADSScoreDepresjon)) +
   scale_x_continuous(minor_breaks = 2) +
   xlab("HADS: Depresjonsscore")+ylab("Antall\nforløp") +
   geom_vline(xintercept = 11, linetype="dotted", 
-                color = "darkgreen", size=1) + 
+             color = "darkgreen", size=1) + 
   geom_vline(xintercept = 14, linetype="dotted", 
-                color = "orange", size=1) + 
+             color = "orange", size=1) + 
   geom_vline(xintercept = 17, linetype="dotted", 
-                color = "red", size=1)
+             color = "red", size=1)
 #Figur for angstscore
 angst = dat %>%
   select(HADSScoreAngst) %>%
@@ -400,11 +401,11 @@ angstplot = ggplot(angst, aes(x=HADSScoreAngst)) +
   scale_x_continuous(minor_breaks = 2) +
   xlab("HADS: Angstscore")+ylab("Antall\nforløp") +
   geom_vline(xintercept = 11, linetype="dotted", 
-                color = "darkgreen", size=1) + 
+             color = "darkgreen", size=1) + 
   geom_vline(xintercept = 14, linetype="dotted", 
-                color = "orange", size=1) + 
+             color = "orange", size=1) + 
   geom_vline(xintercept = 17, linetype="dotted", 
-                color = "red", size=1) 
+             color = "red", size=1) 
 
 grid.arrange(depplot, angstplot, ncol=2)
 ```
@@ -456,11 +457,11 @@ evalu = evalu %>%
 evalu <- evalu[1:(dim(evalu)[1]-1), c(4, 2, 3)]
 
 rapbase::mst(tab = evalu, col_names = c("", "Antall ", "Prosent"),
-     cap = paste0("Grunn manglende utfylling Eval"),
-     label = "evalspmtab",
-     type = params$tableFormat,
-     digs = 0,
-     align = c("l", "r", "r", "r"))
+             cap = paste0("Grunn manglende utfylling Eval"),
+             label = "evalspmtab",
+             type = params$tableFormat,
+             digs = 0,
+             align = c("l", "r", "r", "r"))
 
 #Huskersmerteteam
 husk <- sum(datE$HuskerSmerteteam == 1, na.rm = TRUE)
@@ -492,12 +493,12 @@ eval1 = eval1 %>%
 eval1 <- eval1[1:(dim(eval1)[1]-1), c(4, 2, 3)]
 
 rapbase::mst(tab = eval1, col_names = c("", "Antall ", "Prosent"),
-     cap = paste0("Siden oppstart av behandling fra Smerteteamet, er min ",
-                  "smertetilstand blitt"),
-     label = "evalspm1",
-     type = params$tableFormat,
-     digs = 0,
-     align = c("l", "r", "r", "r"))
+             cap = paste0("Siden oppstart av behandling fra Smerteteamet, er min ",
+                          "smertetilstand blitt"),
+             label = "evalspm1",
+             type = params$tableFormat,
+             digs = 0,
+             align = c("l", "r", "r", "r"))
 
 
 ```
@@ -523,13 +524,13 @@ eval2 = eval2 %>%
 eval2 <- eval2[1:(dim(eval2)[1]-1), c(4, 2, 3)]
 
 rapbase::mst(tab = eval2,
-     col_names = c("", "Antall ", "Prosent"),
-     cap = paste0("Siden oppstart av behandling fra Smerteteamet, er min ",
-                  "generelle tilstand blitt"),
-     label = "evalspm2",
-     type = params$tableFormat,
-     digs = 0,
-     align = c("l", "r", "r", "r"))
+             col_names = c("", "Antall ", "Prosent"),
+             cap = paste0("Siden oppstart av behandling fra Smerteteamet, er min ",
+                          "generelle tilstand blitt"),
+             label = "evalspm2",
+             type = params$tableFormat,
+             digs = 0,
+             align = c("l", "r", "r", "r"))
 ```
 Tabell \@ref(tab:evalspm2) viser oversikten over det andre spørsmålet i Eval: 'Siden oppstart av behandling fra Smerteteamet, er min generelle tilstand blitt ...'.
 
@@ -551,12 +552,12 @@ eval3 = eval3 %>%
 eval3 <- eval3[1:(dim(eval3)[1]-1), c(4, 2, 3)]
 
 rapbase::mst(tab = eval3,
-     col_names = c("", "Antall ", "Prosent"),
-     cap = paste0("Hvor fornøyd er du med ivaretakelsen fra Smerteteamet?"),
-     label = "evalspm3",
-     type = params$tableFormat,
-     digs = 0,
-     align = c("l", "r", "r", "r"))
+             col_names = c("", "Antall ", "Prosent"),
+             cap = paste0("Hvor fornøyd er du med ivaretakelsen fra Smerteteamet?"),
+             label = "evalspm3",
+             type = params$tableFormat,
+             digs = 0,
+             align = c("l", "r", "r", "r"))
 ```
 Tabell \@ref(tab:evalspm3) viser oversikten over det tredje spørsmålet i Eval: 'Hvor fornøyd er du med ivaretakelsen fra Smerteteamet?'.
 
@@ -578,12 +579,12 @@ eval4 = eval4 %>%
 eval4 <- eval4[1:(dim(eval4)[1]-1), c(4, 2, 3)]
 
 rapbase::mst(tab = eval4,
-     col_names = c("", "Antall ", "Prosent"),
-     cap = paste0("Snakket behandlerne i smerteteamet til deg slik at du forsto dem?"),
-     label = "evalspm4",
-     type = params$tableFormat,
-     digs = 0,
-     align = c("l", "r", "r", "r"))
+             col_names = c("", "Antall ", "Prosent"),
+             cap = paste0("Snakket behandlerne i smerteteamet til deg slik at du forsto dem?"),
+             label = "evalspm4",
+             type = params$tableFormat,
+             digs = 0,
+             align = c("l", "r", "r", "r"))
 ```
 Tabell \@ref(tab:evalspm4) viser oversikten over det fjerde spørsmålet i Eval: 'Snakket behandlerne i smerteteamet til deg slik at du forsto dem?'.
 
@@ -605,12 +606,12 @@ eval5 <- eval5 %>%
 eval5 <- eval5[1:(dim(eval5)[1]-1), c(4, 2, 3)]
 
 rapbase::mst(tab = eval5,
-     col_names = c("", "Antall ", "Prosent"),
-     cap = paste0("Har du tillit til smerteteamets faglige dyktighet?"),
-     label = "evalspm5",
-     type = params$tableFormat,
-     digs = 0,
-     align = c("l", "r", "r", "r"))
+             col_names = c("", "Antall ", "Prosent"),
+             cap = paste0("Har du tillit til smerteteamets faglige dyktighet?"),
+             label = "evalspm5",
+             type = params$tableFormat,
+             digs = 0,
+             align = c("l", "r", "r", "r"))
 ```
 Tabell \@ref(tab:evalspm5) viser oversikten over det femte spørsmålet i Eval: 'Har du tillit til smerteteamets faglige dyktighet?'.
 
@@ -632,13 +633,13 @@ eval6 = eval6 %>%
 eval6 <- eval6[1:(dim(eval6)[1]-1), c(4, 2, 3)]
 
 rapbase::mst(tab = eval6,
-     col_names = c("", "Antall ", "Prosent"),
-     cap = paste0("Fikk du tilstrekkelig informasjon og forklaring om din ",
-                  "smertetilstand?"),
-     label = "evalspm6",
-     type = params$tableFormat,
-     digs = 0,
-     align = c("l", "r", "r", "r"))
+             col_names = c("", "Antall ", "Prosent"),
+             cap = paste0("Fikk du tilstrekkelig informasjon og forklaring om din ",
+                          "smertetilstand?"),
+             label = "evalspm6",
+             type = params$tableFormat,
+             digs = 0,
+             align = c("l", "r", "r", "r"))
 ```
 Tabell \@ref(tab:evalspm6) viser oversikten over det sjette spørsmålet i Eval: 'Fikk du tilstrekkelig informasjon og forklaring om din smertetilstand?'.
 
@@ -660,13 +661,13 @@ eval7 = eval7 %>%
 eval7 <- eval7[1:(dim(eval7)[1]-1), c(4, 2, 3)]
 
 rapbase::mst(tab = eval7,
-     col_names = c("", "Antall ", "Prosent"),
-     cap = paste0("Opplevde du at smertebehandlingen var tilpasset din ",
-                  "situasjon?"),
-     label = "evalspm7",
-     type = params$tableFormat,
-     digs = 0,
-     align = c("l", "r", "r", "r"))
+             col_names = c("", "Antall ", "Prosent"),
+             cap = paste0("Opplevde du at smertebehandlingen var tilpasset din ",
+                          "situasjon?"),
+             label = "evalspm7",
+             type = params$tableFormat,
+             digs = 0,
+             align = c("l", "r", "r", "r"))
 ```
 Tabell \@ref(tab:evalspm7) viser oversikten over det syvende spørsmålet i Eval: 'Opplevde du at smertebehandlingen var tilpasset din situasjon?'.
 
@@ -688,13 +689,13 @@ eval8 = eval8 %>%
 eval8 <- eval8[1:(dim(eval8)[1]-1), c(4, 2, 3)]
 
 rapbase::mst(tab = eval8,
-     col_names = c("", "Antall ", "Prosent"),
-     cap = paste0("Var du involvert i avgjørelser som angikk din ",
-                  "smertebehandling?"),
-     label = "evalspm8",
-     type = params$tableFormat,
-     digs = 0,
-     align = c("l", "r", "r", "r"))
+             col_names = c("", "Antall ", "Prosent"),
+             cap = paste0("Var du involvert i avgjørelser som angikk din ",
+                          "smertebehandling?"),
+             label = "evalspm8",
+             type = params$tableFormat,
+             digs = 0,
+             align = c("l", "r", "r", "r"))
 ```
 Tabell \@ref(tab:evalspm8) viser oversikten over det åttende spørsmålet i Eval: 'Var du involvert i avgjørelser som angikk din smertebehandling?'.
 
@@ -716,12 +717,12 @@ eval9 = eval9 %>%
 eval9 <- eval9[1:(dim(eval9)[1]-1), c(4, 2, 3)]
 
 rapbase::mst(tab = eval9,
-     col_names = c("", "Antall ", "Prosent"),
-     cap = paste0("Opplevde du at smerteteamets arbeid var godt organisert?"),
-     label = "evalspm9",
-     type = params$tableFormat,
-     digs = 0,
-     align = c("l", "r", "r", "r"))
+             col_names = c("", "Antall ", "Prosent"),
+             cap = paste0("Opplevde du at smerteteamets arbeid var godt organisert?"),
+             label = "evalspm9",
+             type = params$tableFormat,
+             digs = 0,
+             align = c("l", "r", "r", "r"))
 
 messagee9 <- paste0("For det niende spørsmålet i Eval: 'Opplevde du 
                     at smerteteamets arbeid var godt organisert?' finner vi 
@@ -747,13 +748,13 @@ eval10 = eval10 %>%
 eval10 <- eval10[1:(dim(eval10)[1]-1), c(4, 2, 3)]
 
 rapbase::mst(tab = eval10,
-     col_names = c("", "Antall ", "Prosent"),
-     cap = paste0("Var hjelpen og behandlingen du fikk av smerteteamet, alt i ",
-                  "alt, tilfredsstillende?"),
-     label = "evalspm10",
-     type = params$tableFormat,
-     digs = 0,
-     align = c("l", "r", "r", "r"))
+             col_names = c("", "Antall ", "Prosent"),
+             cap = paste0("Var hjelpen og behandlingen du fikk av smerteteamet, alt i ",
+                          "alt, tilfredsstillende?"),
+             label = "evalspm10",
+             type = params$tableFormat,
+             digs = 0,
+             align = c("l", "r", "r", "r"))
 ```
 Tabell \@ref(tab:evalspm10) viser oversikten over det tiende spørsmålet i Eval: 'Var hjelpen og behandlingen du fikk av smerteteamet, alt i alt, tilfredsstillende?'.
 
@@ -775,13 +776,13 @@ eval11 = eval11 %>%
 eval11 <- eval11[1:(dim(eval11)[1]-1), c(4, 2, 3)]
 
 rapbase::mst(tab = eval11,
-     col_names = c("", "Antall ", "Prosent"),
-     cap = paste0("Mener du at du på noen måte ble feilbehandlet av ",
-                  "smerteteamet?"),
-     label = "evalspm11",
-     type = params$tableFormat,
-     digs = 0,
-     align = c("l", "r", "r", "r"))
+             col_names = c("", "Antall ", "Prosent"),
+             cap = paste0("Mener du at du på noen måte ble feilbehandlet av ",
+                          "smerteteamet?"),
+             label = "evalspm11",
+             type = params$tableFormat,
+             digs = 0,
+             align = c("l", "r", "r", "r"))
 ```
 Tabell \@ref(tab:evalspm11) viser oversikten over det ellevte spørsmålet i Eval: 'Mener du at du på noen måte ble feilbehandlet av smerteteamet (etter det du selv kan bedømme)?'.
 
@@ -827,12 +828,12 @@ opio = opio %>%
 opio <- opio[1:(dim(opio)[1]-1), c(4, 2, 3)]
 
 rapbase::mst(tab = opio,
-     col_names = c("", "Antall ", "Prosent"),
-     cap = paste0("Grunn manglende utfylling Opioid"),
-     label = "opiospmtab",
-     type = params$tableFormat,
-     digs = 0,
-     align = c("l", "r", "r", "r"))
+             col_names = c("", "Antall ", "Prosent"),
+             cap = paste0("Grunn manglende utfylling Opioid"),
+             label = "opiospmtab",
+             type = params$tableFormat,
+             digs = 0,
+             align = c("l", "r", "r", "r"))
 ```
 I den valgte tidsperioden fikk tilsammen `r antUtsendt` pasienter av totalt `r dim(dat)[1]` tilsendt ePROM-skjema for Opioid. Av de som fikk tilsendt skjema var det `r antsvar` pasienter som sendte inn en besvarelse. Dette gir en svarandel på `r round(andsvar, digits = 2)`. Tabell \@ref(tab:opiospmtab) gir en oversikt over registrerte årsaker til manglende besvarelse for de `r antiksvar` som ikke har svart.
 
@@ -916,12 +917,12 @@ datmed <- bind_rows(DolcontinMalfin, FentanylplDurogesicpl, Metadon, Morfin,
   set_colnames(c("Antall ja"))
 
 rapbase::mst(tab = datmed,
-     col_names = c("Antall ja"),
-     cap = paste0("Medikamenter i bruk siden utskrivelse."),
-     label = "medtab",
-     type = params$tableFormat,
-     digs = 0,
-     align = c("r", "r"))
+             col_names = c("Antall ja"),
+             cap = paste0("Medikamenter i bruk siden utskrivelse."),
+             label = "medtab",
+             type = params$tableFormat,
+             digs = 0,
+             align = c("r", "r"))
 
 #Bruker fortsatt noe
 bruk <- datO %>%
@@ -937,12 +938,12 @@ bruk = bruk %>%
 bruk <- bruk[1:(dim(bruk)[1]-1), c(4, 2, 3)]
 
 rapbase::mst(tab = bruk,
-     col_names = c("", "Antall ", "Prosent"),
-     cap = paste0("Bruker du fortsatt noen av disse medikamentene?"),
-     label = "medforts",
-     type = params$tableFormat,
-     digs = 0,
-     align = c("l", "r", "r", "r"))
+             col_names = c("", "Antall ", "Prosent"),
+             cap = paste0("Bruker du fortsatt noen av disse medikamentene?"),
+             label = "medforts",
+             type = params$tableFormat,
+             digs = 0,
+             align = c("l", "r", "r", "r"))
 ```
 Tabell \@ref(tab:medtab) viser en oversikt over hvilke medikamenter som har blitt brukt av pasientene etter utskrivelse, mens tabell \@ref(tab:medforts) viser hvor mange som fortsatt bruker disse medikamentene når de besvarer spørsmålet.
 
@@ -960,13 +961,13 @@ nedtr = nedtr %>%
 nedtr <- nedtr[1:(dim(nedtr)[1]-1), c(4, 2, 3)]
 
 rapbase::mst(tab = nedtr,
-     col_names = c("", "Antall ", "Prosent"),
-     cap = paste0("Fikk du informasjon om nedtrapping av sterke smertestillende ",
-                  "medikamenter?"),
-     label = "infonedtab",
-     type = params$tableFormat,
-     digs = 0,
-     align = c("l", "r", "r", "r"))
+             col_names = c("", "Antall ", "Prosent"),
+             cap = paste0("Fikk du informasjon om nedtrapping av sterke smertestillende ",
+                          "medikamenter?"),
+             label = "infonedtab",
+             type = params$tableFormat,
+             digs = 0,
+             align = c("l", "r", "r", "r"))
 
 #Info hvem
 hvem <- datO %>%
@@ -982,13 +983,13 @@ hvem <- hvem %>%
 hvem <- hvem[1:(dim(hvem)[1]-1), c(4, 2, 3)]
 
 rapbase::mst(tab = hvem,
-     col_names = c("", "Antall ", "Prosent"),
-     cap = paste0("Av hvem fikk du informasjon om nedtrapping av sterke ",
-                  "smertestillende medikamenter?"),
-     label = "nedtrhvem",
-     type = params$tableFormat,
-     digs = 0,
-     align = c("l", "r", "r", "r"))
+             col_names = c("", "Antall ", "Prosent"),
+             cap = paste0("Av hvem fikk du informasjon om nedtrapping av sterke ",
+                          "smertestillende medikamenter?"),
+             label = "nedtrhvem",
+             type = params$tableFormat,
+             digs = 0,
+             align = c("l", "r", "r", "r"))
 ```
 Tabell \@ref(tab:infonedtab) viser om pasienten har fått informasjon om nedtrapping av sterke smertestillende medikamenter, mens tabell \@ref(tab:nedtrhvem) viser hvem som har formidlet informasjonen.
 
@@ -1019,13 +1020,13 @@ fulgt <- fulgt %>%
 fulgt <- fulgt[1:(dim(fulgt)[1]-1), c(4, 2, 3)]
 
 rapbase::mst(tab = fulgt,
-     col_names = c("", "Antall ", "Prosent"),
-     cap = paste0("Klarte du å følge anbefalingene for bruk og nedtrapping av ",
-                  "medikamentene?"),
-     label = "nedrfulgtplan",
-     type = params$tableFormat,
-     digs = 0,
-     align = c("l", "r", "r", "r"))
+             col_names = c("", "Antall ", "Prosent"),
+             cap = paste0("Klarte du å følge anbefalingene for bruk og nedtrapping av ",
+                          "medikamentene?"),
+             label = "nedrfulgtplan",
+             type = params$tableFormat,
+             digs = 0,
+             align = c("l", "r", "r", "r"))
 ```
 Det er `r munt` pasienter som har fått muntlig informasjon om nedtrapping, mens `r ikmunt` pasienter svarte at de ikke har fått det. Samtidig svarer `r skri` pasienter at de har fått skriftlig nedtrappingsplan, mens `r ikskri` svarer nei på dette. I tillegg svarer `r brosj` pasienter at de fikk utdelt infobrosjyre om nedtrapping, mens `r ikbrosj` svarer at de ikke fikk den utdelt.
 
@@ -1045,13 +1046,13 @@ absti <- absti %>%
 absti <- absti[1:(dim(absti)[1]-1), c(4, 2, 3)]
 
 rapbase::mst(tab = absti,
-     col_names = c("", "Antall ","Prosent"),
-     cap = paste0("Opplevde du plagsomme abstinenssymptomer etter ",
-                  "utskrivelse?"),
-     label = "abstietter",
-     type = params$tableFormat,
-     digs = 0,
-     align = c("l", "r", "r", "r"))
+             col_names = c("", "Antall ","Prosent"),
+             cap = paste0("Opplevde du plagsomme abstinenssymptomer etter ",
+                          "utskrivelse?"),
+             label = "abstietter",
+             type = params$tableFormat,
+             digs = 0,
+             align = c("l", "r", "r", "r"))
 
 #Info forstod forstodabstinenser
 forstoabsti <- datO %>%
@@ -1066,12 +1067,12 @@ forstoabsti <- forstoabsti %>%
 forstoabsti <- forstoabsti[1:(dim(forstoabsti)[1]-1), c(4, 2, 3)]
 
 rapbase::mst(tab = forstoabsti,
-     col_names = c("", "Antall ", "Prosent"),
-     cap = paste0("Forstod du at det var abstinenssymptomer?"),
-     label = "abstiforstod",
-     type = params$tableFormat,
-     digs = 0,
-     align = c("l", "r", "r", "r"))
+             col_names = c("", "Antall ", "Prosent"),
+             cap = paste0("Forstod du at det var abstinenssymptomer?"),
+             label = "abstiforstod",
+             type = params$tableFormat,
+             digs = 0,
+             align = c("l", "r", "r", "r"))
 
 #Info løsning
 losn <- datO %>%
@@ -1086,12 +1087,12 @@ losn <- losn %>%
 losn <- losn[1:(dim(losn)[1]-1), c(4, 2, 3)]
 
 rapbase::mst(tab = losn,
-     col_names = c("", "Antall ", "Prosent"),
-     cap = paste0("Visste du hva du kunne gjøre med problemet?"),
-     label = "abstilosn",
-     type = params$tableFormat,
-     digs = 0,
-     align = c("l", "r", "r", "r"))
+             col_names = c("", "Antall ", "Prosent"),
+             cap = paste0("Visste du hva du kunne gjøre med problemet?"),
+             label = "abstilosn",
+             type = params$tableFormat,
+             digs = 0,
+             align = c("l", "r", "r", "r"))
 ```
 Tabell \@ref(tab:abstietter) viser en oversikt over om pasienten har opplevd  abstinenssymptomer (svetting/frysing, uro, smerter, diaré, rennende nese) etter utskrivelse, mens tabell \@ref(tab:abstiforstod) viser om pasienten forstod at det var abstinenssymptomer eller ikke. Tabell \@ref(tab:abstilosn) viser om pasienten visste hva den kunne gjøre med problemet.
 
@@ -1110,13 +1111,13 @@ trett <- trett[1:(dim(trett)[1]-1), c(4, 2, 3)]
 
 #tretter pakke kablextra
 rapbase::mst(tab = trett,
-     col_names = c("", "Antall ", "Prosent"),
-     cap = paste0("Opplevde du plagsom tretthet eller følelse av å være ",
-                  "medikamentpåvirket etter at du ble skrevet ut fra sykehuset?"),
-     label = "tretth",
-     type = params$tableFormat,
-     digs = 0,
-     align = c("l", "r", "r", "r"))
+             col_names = c("", "Antall ", "Prosent"),
+             cap = paste0("Opplevde du plagsom tretthet eller følelse av å være ",
+                          "medikamentpåvirket etter at du ble skrevet ut fra sykehuset?"),
+             label = "tretth",
+             type = params$tableFormat,
+             digs = 0,
+             align = c("l", "r", "r", "r"))
 
 #Info trettloshet
 trettlos <- datO %>%
@@ -1131,12 +1132,12 @@ trettlos <- trettlos %>%
 trettlos <- trettlos[1:(dim(trettlos)[1]-1), c(4, 2, 3)]
 
 rapbase::mst(tab = trettlos,
-     col_names = c("", "Antall ", "Prosent"),
-     cap = paste0("Visste du hva du kunne gjøre med problemet?"),
-     label = "trettvisste",
-     type = params$tableFormat,
-     digs = 0,
-     align = c("l", "r", "r", "r"))
+             col_names = c("", "Antall ", "Prosent"),
+             cap = paste0("Visste du hva du kunne gjøre med problemet?"),
+             label = "trettvisste",
+             type = params$tableFormat,
+             digs = 0,
+             align = c("l", "r", "r", "r"))
 ```
 Tabell \@ref(tab:tretth) viser en oversikt over spørsmålet "Opplevde du plagsom tretthet eller følelse av å være medikamentpåvirket etter at du ble skrevet ut fra sykehuset?", mens tabell \@ref(tab:trettvisste) viser om pasienten visste hva å gjøre hvis den opplevde dette.
 
@@ -1155,13 +1156,13 @@ bil <- bil[1:(dim(bil)[1]-1), c(4, 2, 3)]
 
 #biler pakke kablextra
 rapbase::mst(tab = bil,
-     col_names = c("", "Antall ", "Prosent"),
-     cap = paste0("Fikk du informasjon om sterke smertestillende medikamenter ",
-                  "og bilkjøring?"),
-     label = "sterkbil",
-     type = params$tableFormat,
-     digs = 0,
-     align = c("l", "r", "r", "r"))
+             col_names = c("", "Antall ", "Prosent"),
+             cap = paste0("Fikk du informasjon om sterke smertestillende medikamenter ",
+                          "og bilkjøring?"),
+             label = "sterkbil",
+             type = params$tableFormat,
+             digs = 0,
+             align = c("l", "r", "r", "r"))
 
 #Info hvembil
 hvembil <- datO %>%
@@ -1177,13 +1178,13 @@ hvembil <- hvembil %>%
 hvembil <- hvembil[1:(dim(hvembil)[1]-1), c(4, 2, 3)]
 
 rapbase::mst(tab = hvembil,
-     col_names = c("", "Antall ", "Prosent"),
-     cap = paste0("Av hvem fikk du informasjon om sterke smertestillende ",
-                  "medikamenter og bilkjøring?"),
-     label = "hveminfobil",
-     type = params$tableFormat,
-     digs = 0,
-     align = c("l", "r", "r", "r"))
+             col_names = c("", "Antall ", "Prosent"),
+             cap = paste0("Av hvem fikk du informasjon om sterke smertestillende ",
+                          "medikamenter og bilkjøring?"),
+             label = "hveminfobil",
+             type = params$tableFormat,
+             digs = 0,
+             align = c("l", "r", "r", "r"))
 
 #Beskjedbil
 #Skriftlig og muntlig beskjed
@@ -1211,12 +1212,12 @@ hvorinfo <- hvorinfo %>%
 hvorinfo <- hvorinfo[1:(dim(hvorinfo)[1]-1), c(4, 2, 3)]
 
 rapbase::mst(tab = hvorinfo,
-     col_names = c("", "Antall ", "Prosent"),
-     cap = paste0("Visste du hvor du kunne henvende deg ved spørsmål om bruk ",
-                  "av de smertestillende medikamentene?"),
-     type = params$tableFormat,
-     digs = 0,
-     align = c("l", "r", "r", "r"))
+             col_names = c("", "Antall ", "Prosent"),
+             cap = paste0("Visste du hvor du kunne henvende deg ved spørsmål om bruk ",
+                          "av de smertestillende medikamentene?"),
+             type = params$tableFormat,
+             digs = 0,
+             align = c("l", "r", "r", "r"))
 
 
 ```
