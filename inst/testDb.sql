@@ -3,8 +3,8 @@ SET time_zone = '+00:00';
 SET foreign_key_checks = 0;
 SET sql_mode = 'NO_AUTO_VALUE_ON_ZERO';
 
-DROP TABLE IF EXISTS `AlleVar`;
-CREATE TABLE `AlleVar` (
+DROP TABLE IF EXISTS `allevar`;
+CREATE TABLE `allevar` (
   `PasientID` int(10) unsigned DEFAULT NULL,
   `AvdRESH` varchar(30) COLLATE utf8_danish_ci DEFAULT NULL,
   `SykehusNavn` varchar(100) COLLATE utf8_danish_ci DEFAULT NULL,
@@ -388,8 +388,8 @@ CREATE TABLE `AlleVar` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_danish_ci;
 
 
-DROP TABLE IF EXISTS `AlleVarNum`;
-CREATE TABLE `AlleVarNum` (
+DROP TABLE IF EXISTS `allevarnum`;
+CREATE TABLE `allevarnum` (
   `PasientID` int(10) unsigned DEFAULT NULL,
   `AvdRESH` varchar(30) COLLATE utf8_danish_ci DEFAULT NULL,
   `SykehusNavn` varchar(100) COLLATE utf8_danish_ci DEFAULT NULL,
@@ -791,8 +791,8 @@ CREATE TABLE `avdelingsoversikt` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_danish_ci;
 
 
-DROP TABLE IF EXISTS `ForlopsOversikt`;
-CREATE TABLE `ForlopsOversikt` (
+DROP TABLE IF EXISTS `forlopsoversikt`;
+CREATE TABLE `forlopsoversikt` (
   `AvdRESH` varchar(30) COLLATE utf8_danish_ci DEFAULT NULL,
   `SykehusNavn` varchar(100) COLLATE utf8_danish_ci DEFAULT NULL,
   `PasientID` varchar(10) COLLATE utf8_danish_ci DEFAULT NULL,
@@ -825,12 +825,12 @@ CREATE TABLE `ForlopsOversikt` (
   `OppflgStatus` varchar(30) COLLATE utf8_danish_ci DEFAULT NULL,
   `OppflgSekNr` varchar(6) COLLATE utf8_danish_ci DEFAULT NULL,
   PRIMARY KEY (`ForlopsID`),
-  KEY `idx_ForlopsOversikt` (`AvdRESH`,`HovedDato`)
+  KEY `idx_forlopsoversikt` (`AvdRESH`,`HovedDato`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_danish_ci;
 
 
-DROP TABLE IF EXISTS `SkjemaOversikt`;
-CREATE TABLE `SkjemaOversikt` (
+DROP TABLE IF EXISTS `skjemaoversikt`;
+CREATE TABLE `skjemaoversikt` (
   `Skjemanavn` varchar(20) COLLATE utf8_danish_ci NOT NULL,
   `SkjemaStatus` varchar(3) COLLATE utf8_danish_ci DEFAULT NULL,
   `ForlopsID` varchar(10) COLLATE utf8_danish_ci NOT NULL,
@@ -843,12 +843,12 @@ CREATE TABLE `SkjemaOversikt` (
   `AvdRESH` varchar(30) COLLATE utf8_danish_ci DEFAULT NULL,
   `SkjemaRekkeflg` varchar(2) COLLATE utf8_danish_ci DEFAULT NULL,
   PRIMARY KEY (`ForlopsID`,`Skjemanavn`),
-  KEY `idx_SkjemaOversikt` (`AvdRESH`,`HovedDato`)
+  KEY `idx_skjemaoversikt` (`AvdRESH`,`HovedDato`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_danish_ci;
 
 
-DROP TABLE IF EXISTS `SmerteDiagnoser`;
-CREATE TABLE `SmerteDiagnoser` (
+DROP TABLE IF EXISTS `smertediagnoser`;
+CREATE TABLE `smertediagnoser` (
   `SmerteDiagID` int(9) NOT NULL,
   `ForlopsID` int(10) unsigned DEFAULT NULL,
   `SmerteKat` varchar(100) COLLATE utf8_danish_ci DEFAULT NULL,
@@ -863,8 +863,8 @@ CREATE TABLE `SmerteDiagnoser` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_danish_ci;
 
 
-DROP TABLE IF EXISTS `SmerteDiagnoserNum`;
-CREATE TABLE `SmerteDiagnoserNum` (
+DROP TABLE IF EXISTS `smertediagnosernum`;
+CREATE TABLE `smertediagnosernum` (
   `SmerteDiagID` int(9) NOT NULL,
   `ForlopsID` int(10) unsigned DEFAULT NULL,
   `SmerteKat` tinyint(3) DEFAULT NULL,
