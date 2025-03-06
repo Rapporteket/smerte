@@ -1,4 +1,4 @@
-# devtools::install("../rapbase/.")
+devtools::install("../rapbase/.")
 # devtools::install(upgrade = FALSE, dependencies = FALSE)
 #
 # Sys.setenv(R_RAP_INSTANCE="QAC")

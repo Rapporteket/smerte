@@ -41,7 +41,7 @@ if (rapbase::isRapContext()) {
   
   #Dataimport: skal hente lokale data for hvert sykehus (tar vekk sti, og erstatter med lokal fil)
   
-  #AlleVarNum
+  #allevarnum
   path <- read.csv(file = "H:/path.csv", header = FALSE, sep = ";")
   path <- as.data.frame(lapply(path, as.character), stringsAsFactors=FALSE)
   path <- path$V1
@@ -61,7 +61,7 @@ if (rapbase::isRapContext()) {
   
   #Joiner diagnose numerisk og diagnosetekst
   diagfull = diagnum %>% left_join(diag, by = c("ForlopsID", "HovedDato", "SmerteDiagID"))
-  #Joiner så AlleVarNum med diagnose_full
+  #Joiner så allevarnum med diagnose_full
   fulldat = left_join(dat, diagfull, by = "ForlopsID")
   
 }
@@ -137,7 +137,11 @@ underdiag = fulldat %>%
   dplyr::mutate(
     DiagKat = dplyr::recode(
       DiagKat,
-      !!!smerte::getSmerteDiagKatValueLab(params$registryName, reshId = reshId, smerteKat = 1)
+      # !!!smerte::getSmerteDiagKatValueLab(params$registryName, reshId = params$reshId, smerteKat = 1)
+      "1" = "På grunn av kirurgi", 
+      "2" = "På grunn av skade/traume", 
+      "3" = "På grunn av sykdom", 
+      "9" = "Annet"
     )
   )
 

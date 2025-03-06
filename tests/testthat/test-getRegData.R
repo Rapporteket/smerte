@@ -145,25 +145,25 @@ test_that("tables can be dumped", {
   check_db()
   con <- rapbase::rapOpenDbConnection("testReg")$con
   expect_equal(class(
-    getDataDump("testReg", "AlleVar", Sys.Date(), Sys.Date())
+    getDataDump("testReg", "allevar", Sys.Date(), Sys.Date())
   ), "data.frame")
   expect_equal(class(
-    getDataDump("testReg", "AlleVarNum", Sys.Date(), Sys.Date())
+    getDataDump("testReg", "allevarnum", Sys.Date(), Sys.Date())
   ), "data.frame")
   expect_equal(class(
     getDataDump("testReg", "avdelingsoversikt", Sys.Date(), Sys.Date())
   ), "data.frame")
   expect_equal(class(
-    getDataDump("testReg", "ForlopsOversikt", Sys.Date(), Sys.Date())
+    getDataDump("testReg", "forlopsoversikt", Sys.Date(), Sys.Date())
   ), "data.frame")
   expect_equal(class(
-    getDataDump("testReg", "SkjemaOversikt", Sys.Date(), Sys.Date())
+    getDataDump("testReg", "skjemaoversikt", Sys.Date(), Sys.Date())
   ), "data.frame")
   expect_equal(class(
     getDataDump("testReg", "SmerteDiagnoser", Sys.Date(), Sys.Date())
   ), "data.frame")
   expect_equal(class(
-    getDataDump("testReg", "SmerteDiagnoserNum", Sys.Date(), Sys.Date())
+    getDataDump("testReg", "smertediagnosernum", Sys.Date(), Sys.Date())
   ), "data.frame")
   rapbase::rapCloseDbConnection(con)
 })

@@ -45,7 +45,7 @@ if (rapbase::isRapContext()) {
   
   #Dataimport: skal hente lokale data for hvert sykehus (tar vekk sti, og erstatter med lokal fil)
   
-  #AlleVarNum
+  #allevarnum
   path <- read.csv(file = "H:/path.csv", header = FALSE, sep = ";")
   path <- as.data.frame(lapply(path, as.character), stringsAsFactors=FALSE)
   path <- path$V1
@@ -65,7 +65,7 @@ if (rapbase::isRapContext()) {
   
   #Joiner diagnose numerisk og diagnosetekst
   diagfull = diagnum %>% left_join(diag, by = c("ForlopsID", "HovedDato", "SmerteDiagID"))
-  #Joiner så AlleVarNum med diagnose_full
+  #Joiner så allevarnum med diagnose_full
   fulldat = left_join(dat, diagfull, by = "ForlopsID")
   
 }
@@ -104,11 +104,11 @@ dat$diff <- difftime(dat$deathd, dat$enddate, units = "weeks")
 #Lager variabel timeafter som kategorieserer inn i måneder av ulik lengde
 dat <- dat %>% 
   mutate(timeafter = 
-                case_when(diff <= 4 ~ 'Innen 1 måned',
-                          diff > 4 & diff <= 12 ~ '1-3 måneder',
-                          diff > 12 & diff <= 24 ~ '3-6 måneder',
-                          diff > 24 & diff <= 52 ~'6-12 måneder',
-                          diff > 52 ~ 'Over 1 år'))
+           case_when(diff <= 4 ~ 'Innen 1 måned',
+                     diff > 4 & diff <= 12 ~ '1-3 måneder',
+                     diff > 12 & diff <= 24 ~ '3-6 måneder',
+                     diff > 24 & diff <= 52 ~'6-12 måneder',
+                     diff > 52 ~ 'Over 1 år'))
 
 #Gjør til faktor med riktig levels
 dat$timeafter <- factor(dat$timeafter, 
@@ -118,14 +118,14 @@ dat$timeafter <- factor(dat$timeafter,
 
 dat <- dat %>% 
   mutate(Smertekategori = 
-                case_when(SmerteKat == 1 ~ 'Akutt',
-                          SmerteKat == 2 ~ 'Langvarig',
-                          SmerteKat == 3 ~ 'Palliativ',
-                          SmerteKat == 4 ~'Annet'))
+           case_when(SmerteKat == 1 ~ 'Akutt',
+                     SmerteKat == 2 ~ 'Langvarig',
+                     SmerteKat == 3 ~ 'Palliativ',
+                     SmerteKat == 4 ~'Annet'))
 
 dat$Smertekategori <- factor(dat$Smertekategori, 
-                        levels = c("Akutt", "Langvarig", 
-                                   "Palliativ", "Annet"))
+                             levels = c("Akutt", "Langvarig", 
+                                        "Palliativ", "Annet"))
 
 
 #Creating data set with only those who died
@@ -139,8 +139,8 @@ akutt = datd %>%
   dplyr::filter(!is.na(SmerteKat)) %>% 
   dplyr::distinct(ForlopsID, .keep_all = TRUE) %>% 
   dplyr::summarise(antall_ja = sum(SmerteKat == 1),
-            nevner = dplyr::n(),
-            ind = antall_ja/nevner) %>% 
+                   nevner = dplyr::n(),
+                   ind = antall_ja/nevner) %>% 
   dplyr::ungroup()
 
 #SmerteKat.x = 2 er langvarig smerte (se SmerteKat.y)
@@ -179,7 +179,11 @@ underdiag = datd %>%
   dplyr::mutate(
     DiagKat = dplyr::recode(
       DiagKat,
-      !!!smerte::getSmerteDiagKatValueLab(params$registryName, reshId = reshId, smerteKat = 1)
+      # !!!smerte::getSmerteDiagKatValueLab(params$registryName, reshId = params$reshId, smerteKat = 1)
+      "1" = "På grunn av kirurgi", 
+      "2" = "På grunn av skade/traume", 
+      "3" = "På grunn av sykdom", 
+      "9" = "Annet"
     )
   )
 

@@ -395,6 +395,9 @@ WHERE
 
   query <- paste0(query, deps, ") AND (DATE(StartdatoTO) BETWEEN '",
                   startDate, "' AND '", endDate, "');")
+  if (isNationalReg(reshId)) {
+    query <- gsub("var.AvdRESH IN (0) AND", "", query, fixed = TRUE)
+  }
 
   if ("session" %in% names(list(...))) {
     rapbase::repLogger(session = list(...)[["session"]],

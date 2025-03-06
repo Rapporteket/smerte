@@ -85,11 +85,11 @@ server <- function(input, output, session) {
                              toDate = input$dumpDateRange[2],
                              session = session)
     if (userRole == "LU") {
-      if (input$dumpDataSet %in% c("SmerteDiagnoser", "SmerteDiagnoserNum")) {
-        ForlopsOversikt <- rapbase::loadRegData(
+      if (input$dumpDataSet %in% c("SmerteDiagnoser", "smertediagnosernum")) {
+        forlopsoversikt <- rapbase::loadRegData(
           registryName(),
-          "SELECT ForlopsID, AvdRESH FROM ForlopsOversikt")
-        d <- merge(d, ForlopsOversikt, by = "ForlopsID")
+          "SELECT ForlopsID, AvdRESH FROM forlopsoversikt")
+        d <- merge(d, forlopsoversikt, by = "ForlopsID")
       }
       if (input$dumpDataSet != "avdelingsoversikt") {
         d <- dplyr::filter(d, AvdRESH == shiny::req(user$org()))
@@ -397,17 +397,15 @@ server <- function(input, output, session) {
 
   # Eksport
   ## brukerkontroller
-  shiny::observe(
-    rapbase::exportUCServer("smerteExport", registryName = registryName(),
-                            repoName = "smerte", eligible = (shiny::req(user$role()) == "SC"))
-  )
+  rapbase::exportUCServer2(
+    "smerteExport", registryName = registryName,
+    repoName = "smerte", eligible = shiny::req(vis_rapp))
+
   ## veileding
-  shiny::observe(
-    rapbase::exportGuideServer("smerteExportGuide", registryName()))
+  rapbase::exportGuideServer2("smerteExportGuide", registryName)
 
   # Bruksstatistikk
-  shiny::observe(
-    rapbase::statsServer("smerteStats", registryName = "smerte",
-                         eligible = (shiny::req(user$role()) == "SC")))
+  rapbase::statsServer2("smerteStats", registryName = "smerte",
+                        eligible = shiny::req(vis_rapp))
   rapbase::statsGuideServer("smerteStats", registryName = "smerte")
 }
