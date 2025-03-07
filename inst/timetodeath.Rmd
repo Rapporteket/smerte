@@ -179,7 +179,10 @@ underdiag = datd %>%
   dplyr::mutate(
     DiagKat = dplyr::recode(
       DiagKat,
-      !!!smerte::getSmerteDiagKatValueLab(params$registryName, reshId = reshId, smerteKat = 1)
+      "1" = "På grunn av kirurgi", 
+      "2" = "På grunn av skade/traume", 
+      "3" = "På grunn av sykdom", 
+      "9" = "Annet"
     )
   )
 

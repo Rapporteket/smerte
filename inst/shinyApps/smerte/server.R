@@ -41,11 +41,11 @@ server <- function(input, output, session) {
                              toDate = input$dumpDateRange[2],
                              session = session)
     if (userRole == "LU") {
-      if (input$dumpDataSet %in% c("SmerteDiagnoser", "SmerteDiagnoserNum")) {
-        ForlopsOversikt <- rapbase::loadRegData(
+      if (input$dumpDataSet %in% c("smertediagnoser", "smertediagnosernum")) {
+        forlopsoversikt <- rapbase::loadRegData(
           registryName,
-          "SELECT ForlopsID, AvdRESH FROM ForlopsOversikt")
-        d <- merge(d, ForlopsOversikt, by = "ForlopsID")
+          "SELECT ForlopsID, AvdRESH FROM forlopsoversikt")
+        d <- merge(d, forlopsoversikt, by = "ForlopsID")
       }
       if (input$dumpDataSet != "avdelingsoversikt") {
         d <- dplyr::filter(d, AvdRESH == reshId)
