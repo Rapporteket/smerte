@@ -66,7 +66,6 @@ cat('# OBS...\nI den valgte tidsperioden er det ikke nok data til å gi
 knitr::knit_exit()
 ```
 
-
 # Antall tilsyn og årsak til ikke tilsyn
 
 Denne tabellen viser hvor mange som har fått tilsyn av smerteteamet totalt i
@@ -172,66 +171,16 @@ rapbase::mst(
 
 ```
 
-```{r LessThanFullData, eval=!allDataPresent, warning=TRUE, message=TRUE, results='asis'}
 
-# ############ Ulike tabeller basert på vilke verdier av variabelen som er brukt
-# if(any(colnames(sum_raad_maned) != "2")){
-# #Tabell når "Ikke behov" mangler
-# rapbase::mst(
-#   tab = sum_raad_maned,
-#   col_names = c("Måned", "Ja", "Ikke kapasitet", "Gitt råd", "Annen grunn", "Mangler verdi"),
-#   type = params$tableFormat,
-#   cap = paste0("Månedsfordeling for tilsynstabellen. Merk at kun de alternativene som har minst ett forløp vises i tabellen."),
-#   digs = 0,
-#   align = c("l", "r", "r", "r", "r", "r", "r"))
-# }else if(any(colnames(sum_raad_maned) != "1")){
-# #Tabell når "Ja" mangler
-# rapbase::mst(
-#   tab = sum_raad_maned,
-#   col_names = c("Måned", "Ikke behov", "Ikke kapasitet", "Gitt råd", "Annen grunn", "Mangler verdi"),
-#   type = params$tableFormat,
-#   cap = paste0("Månedsfordeling for tilsynstabellen. Merk at kun de alternativene som har minst ett forløp vises i tabellen."),
-#   digs = 0,
-#   align = c("l", "r", "r", "r", "r", "r", "r"))
-# }else if(any(colnames(sum_raad_maned) != "3")){
-# #Tabell når "Ikke kapasitet" mangler
-# rapbase::mst(
-#   tab = sum_raad_maned,
-#   col_names = c("Måned", "Ja", "Ikke behov", "Gitt råd", "Annen grunn", "Mangler verdi"),
-#   type = params$tableFormat,
-#   cap = paste0("Månedsfordeling for tilsynstabellen. Merk at kun de alternativene som har minst ett forløp vises i tabellen."),
-#   digs = 0,
-#   align = c("l", "r", "r", "r", "r", "r", "r"))
-# }else if(any(colnames(sum_raad_maned) != "4")){
-# #Tabell når "Gitt råd" mangler
-# rapbase::mst(
-#   tab = sum_raad_maned,
-#   col_names = c("Måned", "Ja", "Ikke behov", "Ikke kapasitet", "Annen grunn", "Mangler verdi"),
-#   type = params$tableFormat,
-#   cap = paste0("Månedsfordeling for tilsynstabellen. Merk at kun de alternativene som har minst ett forløp vises i tabellen."),
-#   digs = 0,
-#   align = c("l", "r", "r", "r", "r", "r", "r"))
-# }else if(any(colnames(sum_raad_maned) != "5")){
-# #Tabell når "Annnen grunn" mangler
-# rapbase::mst(
-#   tab = sum_raad_maned,
-#   col_names = c("Måned", "Ja", "Ikke behov", "Ikke kapasitet", "Gitt råd", "Mangler verdi"),
-#   type = params$tableFormat,
-#   cap = paste0("Månedsfordeling for tilsynstabellen. Merk at kun de alternativene som har minst ett forløp vises i tabellen."),
-#   digs = 0,
-#   align = c("l", "r", "r", "r", "r", "r", "r"))
-# }else if(any(colnames(sum_raad_maned) != "6")){
-# #Tabell når "Mangler verdi" mangler
-# rapbase::mst(
-#   tab = sum_raad_maned,
-#   col_names = c("Måned", "Ja", "Ikke behov", "Ikke kapasitet", "Gitt råd", "Annen grunn"),
-#   type = params$tableFormat,
-#   cap = paste0("Månedsfordeling for tilsynstabellen. Merk at kun de alternativene som har minst ett forløp vises i tabellen."),
-#   digs = 0,
-#   align = c("l", "r", "r", "r", "r", "r", "r"))
-#  }
+# Antall unike pasienter
+```{r unikpas, warning=TRUE, message=TRUE, results='asis'}
+#Ser på hvor mange unike pasienter (altså uavhengig om de har hatt flere forløp) 
+#som er henvist i tidsperioden
+unik_henv <- dat %>% dplyr::distinct(PasientID) %>% dplyr::count()
 
 ```
+
+I den valgte tidsperioden var det `r unik_henv` unike pasienter som ble henvist.
 
 # Behandlertilsyn og pasienttilsyn per måned
 
