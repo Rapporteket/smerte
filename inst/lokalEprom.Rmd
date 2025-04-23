@@ -433,7 +433,7 @@ antiksvar <- sum(dat$PasdelUtfylEval == 0, na.rm =TRUE)
 #Finner svarandel, men tar høyde for at vi ikke kan dele på 0 (aka ingen skjema sendt ut)
 andsvar <- NA
 if(antUtsendt != 0){
-  andsvar <- antsvar/antUtsendt
+  andsvar <- (antsvar/antUtsendt)*100
 }else{andsvar <- paste0("ikke mulig å angi andel grunnet ingen utsendte skjema.")}
 
 #Fjerner først de som ikke har fått tilsendt (null) 3 = null
@@ -463,12 +463,16 @@ rapbase::mst(tab = evalu, col_names = c("", "Antall ", "Prosent"),
              digs = 0,
              align = c("l", "r", "r", "r"))
 
+#Lager ny datE som kun tar med de som har svart i prosentandelen
+
+datE <- datE %>% dplyr::filter(PasdelUtfylEval == 1)
+
 #Huskersmerteteam
 husk <- sum(datE$HuskerSmerteteam == 1, na.rm = TRUE)
 huskik <- sum(datE$HuskerSmerteteam == 2, na.rm = TRUE)
 huskna <- sum(is.na(datE$HuskerSmerteteam))
 ```
-I den valgte tidsperioden fikk tilsammen `r antUtsendt` pasienter av totalt `r dim(dat)[1]` tilsendt ePROM-skjema for Eval. Av de som fikk tilsendt skjema var det `r antsvar` pasienter som sendte inn en besvarelse. Dette gir en svarandel på `r round(andsvar, digits = 2)`. Tabell \@ref(tab:evalspmtab) gir en oversikt over registrerte årsaker til manglende besvarelse for de `r antiksvar` som ikke har svart.
+I den valgte tidsperioden fikk tilsammen `r antUtsendt` pasienter av totalt `r dim(dat)[1]` tilsendt ePROM-skjema for Eval. Av de som fikk tilsendt skjema var det `r antsvar` pasienter som sendte inn en besvarelse. Dette gir en svarprosent på `r round(andsvar, digits = 1)`. Tabell \@ref(tab:evalspmtab) gir en oversikt over registrerte årsaker til manglende besvarelse for de `r antiksvar` som ikke har svart.
 
 På spørsmålet 'Husker du at du nylig har vært i kontakt med og fått behandling av sykehusets smerteteam?' var det `r husk` pasienter som svarte ja og `r huskik` pasienter som svarte nei.
 
@@ -804,7 +808,7 @@ antiksvar <- sum(dat$PasdelUtfylOpioid == 0, na.rm =TRUE)
 #Finner svarandel, men tar høyde for at vi ikke kan dele på 0 (aka ingen skjema sendt ut)
 andsvar <- NA
 if(antUtsendt != 0) {
-  andsvar <- antsvar/antUtsendt
+  andsvar <- (antsvar/antUtsendt)*100
 } else {
   andsvar <- paste0("ikke mulig å angi andel grunnet ingen utsendte skjema.")
 }
@@ -834,8 +838,12 @@ rapbase::mst(tab = opio,
              type = params$tableFormat,
              digs = 0,
              align = c("l", "r", "r", "r"))
+
+#Lager datasett kun for de som faktisk har svart på skjema
+datO <- datO %>% dplyr::filter(PasdelUtfylOpioid == 1)
+
 ```
-I den valgte tidsperioden fikk tilsammen `r antUtsendt` pasienter av totalt `r dim(dat)[1]` tilsendt ePROM-skjema for Opioid. Av de som fikk tilsendt skjema var det `r antsvar` pasienter som sendte inn en besvarelse. Dette gir en svarandel på `r round(andsvar, digits = 2)`. Tabell \@ref(tab:opiospmtab) gir en oversikt over registrerte årsaker til manglende besvarelse for de `r antiksvar` som ikke har svart.
+I den valgte tidsperioden fikk tilsammen `r antUtsendt` pasienter av totalt `r dim(dat)[1]` tilsendt ePROM-skjema for Opioid. Av de som fikk tilsendt skjema var det `r antsvar` pasienter som sendte inn en besvarelse. Dette gir en svarprosent på `r round(andsvar, digits = 1)`. Tabell \@ref(tab:opiospmtab) gir en oversikt over registrerte årsaker til manglende besvarelse for de `r antiksvar` som ikke har svart.
 
 ```{r utskr, warning = FALSE, message=FALSE, results='asis', eval=dataPresent}
 
@@ -948,6 +956,10 @@ rapbase::mst(tab = bruk,
 Tabell \@ref(tab:medtab) viser en oversikt over hvilke medikamenter som har blitt brukt av pasientene etter utskrivelse, mens tabell \@ref(tab:medforts) viser hvor mange som fortsatt bruker disse medikamentene når de besvarer spørsmålet.
 
 ```{r nedtrapp, warning = FALSE, message=FALSE, results='asis', eval=dataPresent}
+
+#Lager ny df med kun de som har svar
+
+
 #Info nedtrapping
 #nedtrer her pakkene dplyr og magrittr
 nedtr <- datO %>%
