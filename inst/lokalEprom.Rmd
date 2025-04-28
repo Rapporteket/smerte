@@ -438,6 +438,10 @@ if(antUtsendt != 0){
 
 #Fjerner først de som ikke har fått tilsendt (null) 3 = null
 datE <- dat[!is.na(dat$PasdelUtfylEval), ]
+
+#De må også har vært tilsett (1)
+datE <- datE[datE$Tilsett == 1, ]
+
 #Bruker her pakkene dplyr og magrittr
 evalu <- datE %>%
   count(AarsakmanglUfylEval) %>%
@@ -841,6 +845,9 @@ rapbase::mst(tab = opio,
 
 #Lager datasett kun for de som faktisk har svart på skjema
 datO <- datO %>% dplyr::filter(PasdelUtfylOpioid == 1)
+
+#Kun de som faktisk er tilsett fra nå av
+datO <- datO %>% dplyr::filter(Tilsett == 1)
 
 ```
 I den valgte tidsperioden fikk tilsammen `r antUtsendt` pasienter av totalt `r dim(dat)[1]` tilsendt ePROM-skjema for Opioid. Av de som fikk tilsendt skjema var det `r antsvar` pasienter som sendte inn en besvarelse. Dette gir en svarprosent på `r round(andsvar, digits = 1)`. Tabell \@ref(tab:opiospmtab) gir en oversikt over registrerte årsaker til manglende besvarelse for de `r antiksvar` som ikke har svart.
