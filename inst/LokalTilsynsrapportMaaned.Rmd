@@ -176,11 +176,13 @@ rapbase::mst(
 ```{r unikpas, warning=TRUE, message=TRUE, results='asis'}
 #Ser på hvor mange unike pasienter (altså uavhengig om de har hatt flere forløp) 
 #som er henvist i tidsperioden
-unik_henv <- dat %>% dplyr::distinct(PasientID) %>% dplyr::count()
+unik_henv_pas <- dat %>% dplyr::distinct(PasientID) %>% dplyr::count()
+
+unik_henv <- dat %>% dplyr::distinct(ForlopsID) %>% dplyr::count()
 
 ```
 
-I den valgte tidsperioden var det `r unik_henv` unike pasienter som ble henvist.
+I den valgte tidsperioden var det `r unik_henv_pas` unike pasienter som ble henvist, mens det var `r unik_henv` unike henvisninger.
 
 # Behandlertilsyn og pasienttilsyn per måned
 
