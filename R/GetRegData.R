@@ -663,13 +663,13 @@ SELECT
   SykehusNavn AS name,
   AvdRESH AS id
 FROM
-  allevar
+  allevarnum
 GROUP BY
   SykehusNavn,
   AvdRESH;"
 
   if (isNationalReg(reshId)) {
-    query <- gsub("allevar", "allevarnasjonal", query)
+    query <- gsub("allevarnum", "allevarnumnasjonal", query)
   }
 
   res <- rapbase::loadRegData(registryName, query)
@@ -701,8 +701,8 @@ FROM
   }
 
   if (tableName %in% c("skjemaoversikt", "smertediagnoser",
-                       "smertediagnosernum", "allevar", "allevarnum",
-                       "smertediagnosernumnasjonal", "allevarnasjonal",
+                       "smertediagnosernum", "allevarnum",
+                       "smertediagnosernumnasjonal",
                        "allevarnumnasjonal"
                        )) {
     query <- paste0("
