@@ -1,7 +1,7 @@
 Package: smerte
 Type: Package
 Title: R-pakke for smerteregisteret
-Version: 2.0.8
+Version: 2.0.9
 Authors@R: c(
     person(given = "Janne",
            family = "Mannseth",
@@ -35,7 +35,7 @@ Imports:
     zoo,
     tidyverse
 Remotes:
-    Rapporteket/rapbase@*release
+    Rapporteket/rapbase@main
 Suggests: 
     covr,
     lintr,

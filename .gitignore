@@ -8,3 +8,4 @@ inst/*.md
 inst/*.log
 inst/*.aux
 docs/
+.Rprofile
