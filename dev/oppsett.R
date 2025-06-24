@@ -1,32 +1,36 @@
-devtools::install("../rapbase/.")
-# devtools::install(upgrade = FALSE, dependencies = FALSE)
-#
-# Sys.setenv(R_RAP_INSTANCE="QAC")
-# Sys.setenv(R_RAP_CONFIG_PATH="/home/rstudio/mydata")
-# Sys.setenv(FALK_EXTENDED_USER_RIGHTS="[{\"A\":101,\"R\":\"LU\",\"U\":0},{\"A\":101,\"R\":\"SC\",\"U\":0},{\"A\":101,\"R\":\"SC\",\"U\":100089},{\"A\":101,\"R\":\"LU\",\"U\":100082}]")
+#################################
+## Oppsett som kjører hos SKDE ##
+## --------------------------- ##
+## HV må ha noe annet oppsett  ##
+#################################
 
-shiny::runApp('inst/shinyApps/smerte')
+# Dekrypter en gjeng med databasedumper
+# Få ut liste med `ls -tr` i bash når man står i Downloads-mappa
+tarfiles <- c(
+  "smerte_unn13f226394.sql.gz__20250624_150656.tar.gz",
+  "smerte_nasjonal13635fd5.sql.gz__20250624_150712.tar.gz",
+  "smerte_ahus12871168c.sql.gz__20250624_150728.tar.gz",
+  "smerte_stolavs17bfc01a8.sql.gz__20250624_150748.tar.gz",
+  "smerte_vestreviken159863cbd.sql.gz__20250624_150821.tar.gz",
+  "smerte_bergen137d9dae7.sql.gz__20250624_150838.tar.gz",
+  "smerte_levanger13d5be292.sql.gz__20250624_150851.tar.gz",
+  "smerte_moreromsdal1b631f95.sql.gz__20250624_150903.tar.gz",
+  "smerte_ous1155a0ec3.sql.gz__20250624_150915.tar.gz"
+)
+for (i in tarfiles) {
+  sship::dec(
+    paste0("c://Users/ast046/Downloads/", i),
+    keyfile = "p://.ssh/id_rsa",
+    target_dir = "c://Users/ast046/Downloads/."
+  )
+}
 
-# shiny::runApp(system.file("shinyApps/smerte", package = "smerte"))
 
-# rapbase::runAutoReport()
-# Rscript -e "Sys.setenv(R_RAP_INSTANCE=\"QAC\")" -e "rapbase::runAutoReport(dato = Sys.Date()+1, dryRun = TRUE)"
+devtools::install("../rapbase/.", upgrade = FALSE)
+devtools::install(upgrade = FALSE)
 
-# d <- smerte::getDataDump("smertereportdatastaging",
-#                          reshId = "100082",
-#                          tableName = "allevarnum",
-#                          fromDate = "2020-01-01",
-#                          toDate = "2025-01-01")
-#
-# smerte::getHospitalName("smertereportdatastaging",
-#                         reshId = "100082",
-#                         userRole = "LU")
-#
-#
-# tmp_yml <- yaml::read_yaml("./dev/test.yml")
-# tmp_json <- jsonlite::serializeJSON(tmp_yml)
-# query <- paste0("INSERT INTO `autoreport` VALUES ('", tmp_json, "');")
-#
-# con <- rapbase::rapOpenDbConnection("autoreport")$con
-# DBI::dbExecute(con, query)
-# rapbase::rapCloseDbConnection(con)
+
+source("dev/Renv.R")
+shiny::runApp('inst/shinyApps/smerte', launch.browser = TRUE)
+
+
