@@ -28,7 +28,7 @@ options(tinytex.verbose = TRUE)
 #FIX: Må det legges inn noe som avjgør lokasjon
 ```
 
-```{r get data, warning = TRUE, message=TRUE}
+```{r get data, warning = TRUE, message = FALSE}
 
 if (rapbase::isRapContext()) {
   dat <- smerte::getRegDataLokalTilsynsrapportMaaned(
