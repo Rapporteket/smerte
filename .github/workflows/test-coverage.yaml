@@ -49,7 +49,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: testthat-output
-          path: /tmp/Rtmp*/R_LIBS*/smerte/smerte-tests/*
+          path: /tmp/Rtmp*/R_LIBS*/smerte/smerte-tests
       - name: List test output files
         if: failure()
         run: |
