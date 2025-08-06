@@ -44,13 +44,15 @@ jobs:
       - name: Test coverage
         run: covr::codecov(token = "${{ secrets.CODECOV_TOKEN }}")
         shell: Rscript {0}
-      - name: List test output files
-        run: |
-          ls -lR smerte/smerte-tests
-          ls -lR testthat
       - name: Upload testthat output if tests fail
         if: failure()
         uses: actions/upload-artifact@v4
         with:
           name: testthat-output
-          path: smerte/smerte-tests/*
+          path: ${{ runner.temp }}/smerte/smerte-tests/*
+      - name: List test output files
+        if: failure()
+        run: |
+          ls -lR smerte/smerte-tests
+          ls -lR testthat
+          ls -lR ${{ runner.temp }}
