@@ -2,11 +2,9 @@ on:
   push:
     branches:
       - main
-      - master
   pull_request:
     branches:
       - main
-      - master
 
 name: test-coverage
 
@@ -23,6 +21,7 @@ jobs:
       MYSQL_HOST: "localhost"
       MYSQL_USER: "root"
       MYSQL_PASSWORD: "root"
+      MYSQL_DB_DATA: "testdb"
     steps:
       - uses: actions/checkout@v4
 
@@ -32,12 +31,14 @@ jobs:
         with:
           extra-packages: any::covr, any::xml2
           needs: coverage
-  
+
       - uses: r-lib/actions/setup-pandoc@v2
       - uses: r-lib/actions/setup-tinytex@v2
       - name: Set up MySQL, ubuntu only
         run: |
-          sudo /etc/init.d/mysql start
+          sudo apt-get update
+          sudo apt-get install -y mysql-server
+          sudo service mysql start
           mysql -e 'CREATE DATABASE IF NOT EXISTS testdb;' -uroot -proot
 
       - name: Test coverage
