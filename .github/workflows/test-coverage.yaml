@@ -49,4 +49,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: testthat-output
-          path: smerte/smerte-tests/testthat.Rout.fail
+          path: testthat.Rout*
