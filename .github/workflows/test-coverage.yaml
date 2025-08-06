@@ -49,10 +49,8 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: testthat-output
-          path: ${{ runner.temp }}/smerte/smerte-tests/*
+          path: /tmp/Rtmp*/R_LIBS*/smerte/smerte-tests/*
       - name: List test output files
         if: failure()
         run: |
-          ls -lR smerte/smerte-tests
-          ls -lR testthat
           ls -lR ${{ runner.temp }}
