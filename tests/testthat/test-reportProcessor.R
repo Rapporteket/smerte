@@ -28,17 +28,17 @@ config_path <- Sys.getenv("R_RAP_CONFIG_PATH")
 
 test_that("env vars needed for testing is present", {
   check_db()
-  expect_true("DB_HOST" %in% names(Sys.getenv()))
-  expect_true("DB_USER" %in% names(Sys.getenv()))
-  expect_true("DB_PASS" %in% names(Sys.getenv()))
+  expect_true("MYSQL_HOST" %in% names(Sys.getenv()))
+  expect_true("MYSQL_USER" %in% names(Sys.getenv()))
+  expect_true("MYSQL_PASSWORD" %in% names(Sys.getenv()))
 })
 
 # prep db for testing
 if (is.null(check_db(is_test_that = FALSE))) {
   con <- RMariaDB::dbConnect(RMariaDB::MariaDB(),
-                             host = Sys.getenv("DB_HOST"),
-                             user = Sys.getenv("DB_USER"),
-                             password = Sys.getenv("DB_PASS"),
+                             host = Sys.getenv("MYSQL_HOST"),
+                             user = Sys.getenv("MYSQL_USER"),
+                             password = Sys.getenv("MYSQL_PASSWORD"),
                              bigint = "integer"
   )
   RMariaDB::dbExecute(con, "CREATE DATABASE testDb;")
@@ -46,18 +46,7 @@ if (is.null(check_db(is_test_that = FALSE))) {
 }
 
 # make temporary config
-test_config <- paste0(
-  "testReg:",
-  "\n  host : ", Sys.getenv("DB_HOST"),
-  "\n  name : testDb",
-  "\n  user : ", Sys.getenv("DB_USER"),
-  "\n  pass : ", Sys.getenv("DB_PASS"),
-  "\n  disp : ephemaralUnitTesting\n"
-)
 Sys.setenv(R_RAP_CONFIG_PATH = tempdir())
-cf <- file(file.path(Sys.getenv("R_RAP_CONFIG_PATH"), "dbConfig.yml"))
-writeLines(test_config, cf)
-close(cf)
 
 test_config <- paste0(
   "reg:",
@@ -86,7 +75,7 @@ queries <- strsplit(sql, ";")[[1]]
 
 test_that("relevant test database and tables can be made", {
   check_db()
-  con <- rapbase::rapOpenDbConnection("testReg")$con
+  con <- rapbase::rapOpenDbConnection("testDb")$con
   for (i in seq_len(length(queries))) {
     expect_equal(class(RMariaDB::dbExecute(con, queries[i])), "integer")
 
@@ -104,39 +93,39 @@ test_that("tilsyn report can be produced as file", {
   #check_db()
   testthat::skip("This report do not handle empty data. Please fix!")
   expect_true(file.exists(reportProcessor("tilsyn", title = "Test",
-                                          registryName = "testReg")))
+                                          registryName = "testDb")))
 })
 
 test_that("indikator report can be produced as file", {
   #check_db()
   testthat::skip("This report do not handle empty data. Please fix!")
   expect_true(file.exists(reportProcessor("indikator", title = "Test",
-                                          registryName = "testReg")))
+                                          registryName = "testDb")))
 })
 
 test_that("nasjonalIndikator report can be produced as file", {
   check_db()
   testthat::skip("This report does not run in ci env. Please fix!")
   expect_true(file.exists(reportProcessor("nasjonalIndikator", title = "Test",
-                                          registryName = "testReg")))
+                                          registryName = "testDb")))
 })
 
 test_that("spinalkateter report can be produced as file", {
   check_db()
   testthat::skip("This report does not run in ci env. Please fix!")
   expect_true(file.exists(reportProcessor("spinalkateter", title = "Test",
-                                          registryName = "testReg")))
+                                          registryName = "testDb")))
 })
 
 test_that("unknown report can be produced error", {
   check_db()
   expect_error(reportProcessor("noneExistingReport", title = "Test",
-                               registryName = "testReg"))
+                               registryName = "testDb"))
 })
 
 # remove test db
 if (is.null(check_db(is_test_that = FALSE))) {
-  con <- rapbase::rapOpenDbConnection("testReg")$con
+  con <- rapbase::rapOpenDbConnection("testDb")$con
   RMariaDB::dbExecute(con, "DROP DATABASE testDb;")
   rapbase::rapCloseDbConnection(con)
 }
