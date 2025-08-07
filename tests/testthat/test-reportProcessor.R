@@ -86,18 +86,19 @@ test_that("relevant test database and tables can be made", {
 # onto main testing
 test_that("veiledning report can be produced as file", {
   check_db()
+  if (Sys.getenv("CI") == "true") testthat::skip("Skip LaTeX tests in CI")
   expect_true(file.exists(reportProcessor("veiledning", title = "Test")))
 })
 
 test_that("tilsyn report can be produced as file", {
-  #check_db()
+  check_db()
   testthat::skip("This report do not handle empty data. Please fix!")
   expect_true(file.exists(reportProcessor("tilsyn", title = "Test",
                                           registryName = "testDb")))
 })
 
 test_that("indikator report can be produced as file", {
-  #check_db()
+  check_db()
   testthat::skip("This report do not handle empty data. Please fix!")
   expect_true(file.exists(reportProcessor("indikator", title = "Test",
                                           registryName = "testDb")))
@@ -112,7 +113,7 @@ test_that("nasjonalIndikator report can be produced as file", {
 
 test_that("spinalkateter report can be produced as file", {
   check_db()
-  testthat::skip("This report does not run in ci env. Please fix!")
+  if (Sys.getenv("CI") == "true") testthat::skip("Skip LaTeX tests in CI")
   expect_true(file.exists(reportProcessor("spinalkateter", title = "Test",
                                           registryName = "testDb")))
 })
