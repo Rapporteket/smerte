@@ -175,7 +175,7 @@ test_that("data for indikator can be queried", {
 test_that("data for SmerteDiagKatValueLab can be queried", {
   check_db()
   expect_equal(class(getSmerteDiagKatValueLab(
-    "testDb", 1)),
+    "testDb", 1, 2)),
     "list"
   )
 })
