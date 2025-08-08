@@ -1,10 +1,10 @@
-# For help debugging build failures open an issue on the RStudio community with the 'github-actions' tag.
-# https://community.rstudio.com/new-topic?category=Package%20development&tags=github-actions
 on:
   push:
-    branches: [main, master]
+    branches:
+      - main
   pull_request:
-    branches: [main, master]
+    branches:
+      - main
 
 name: R-CMD-check
 
@@ -39,23 +39,34 @@ jobs:
           r-version: ${{ matrix.config.r }}
 
       - uses: r-lib/actions/setup-pandoc@v2
-
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
           extra-packages: any::rcmdcheck
           needs: check
 
-      - name: Check
-        env:
-          _R_CHECK_CRAN_INCOMING_REMOTE_: false
+      - name: Db unit tests in ubuntu/linux only
+        if: runner.os != 'Windows'
         run: |
-          options(crayon.enabled = TRUE)
-          rcmdcheck::rcmdcheck(args = c("--no-manual", "--as-cran"), error_on = "error", check_dir = "check")
-        shell: Rscript {0}
+          if [[ ${{ runner.os }} == Linux ]]; then
+            echo "GITHUB_ACTIONS_RUN_DB_UNIT_TESTS=true" >> $GITHUB_ENV
+            echo "MYSQL_HOST=localhost" >> $GITHUB_ENV
+            echo "MYSQL_DB_DATA=testDb" >> $GITHUB_ENV
+            echo "MYSQL_USER=root" >> $GITHUB_ENV
+            echo "MYSQL_PASSWORD=root" >> $GITHUB_ENV
+          else
+            echo "GITHUB_ACTIONS_RUN_DB_UNIT_TESTS=false" >> $GITHUB_ENV
+          fi
 
-      - name: Upload check results
-        if: failure()
-        uses: actions/upload-artifact@v4
+      - name: Set up MySQL, ubuntu only
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y mysql-server
+          sudo service mysql start
+          mysql -e 'CREATE DATABASE IF NOT EXISTS testdb;' -uroot -proot
+
+
+      - name: Check
+        uses: r-lib/actions/check-r-package@v2
         with:
-          name: ${{ runner.os }}-r${{ matrix.config.r }}-results
-          path: check
+          error-on: '"error"'
