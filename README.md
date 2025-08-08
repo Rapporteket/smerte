@@ -2,7 +2,7 @@
 
 <!-- badges: start -->
 [![Version](https://img.shields.io/github/v/release/rapporteket/smerte?sort=semver)](https://github.com/rapporteket/smerte/releases)
-[![Codecov test coverage](https://codecov.io/gh/Rapporteket/smerte/branch/rel/graph/badge.svg)](https://codecov.io/gh/Rapporteket/smerte?branch=rel)
+[![Codecov test coverage](https://codecov.io/gh/Rapporteket/smerte/branch/main/graph/badge.svg)](https://codecov.io/gh/Rapporteket/smerte?branch=main)
 [![Lifecycle: maturing](https://img.shields.io/badge/lifecycle-maturing-blue.svg)](https://www.tidyverse.org/lifecycle/#maturing)
 [![R build status](https://github.com/rapporteket/smerte/workflows/R-CMD-check/badge.svg)](https://github.com/rapporteket/smerte/actions)
 [![GitHub open issues](https://img.shields.io/github/issues/rapporteket/smerte.svg)](https://github.com/rapporteket/smerte/issues)
