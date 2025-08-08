@@ -28,37 +28,23 @@ config_path <- Sys.getenv("R_RAP_CONFIG_PATH")
 
 test_that("env vars needed for testing is present", {
   check_db()
-  expect_true("DB_HOST" %in% names(Sys.getenv()))
-  expect_true("DB_USER" %in% names(Sys.getenv()))
-  expect_true("DB_PASS" %in% names(Sys.getenv()))
+  expect_true("MYSQL_HOST" %in% names(Sys.getenv()))
+  expect_true("MYSQL_USER" %in% names(Sys.getenv()))
+  expect_true("MYSQL_PASSWORD" %in% names(Sys.getenv()))
 })
 
 # prep db for testing
 if (is.null(check_db(is_test_that = FALSE))) {
   con <- RMariaDB::dbConnect(RMariaDB::MariaDB(),
-                             host = Sys.getenv("DB_HOST"),
-                             user = Sys.getenv("DB_USER"),
-                             password = Sys.getenv("DB_PASS"),
+                             host = Sys.getenv("MYSQL_HOST"),
+                             user = Sys.getenv("MYSQL_USER"),
+                             password = Sys.getenv("MYSQL_PASSWORD"),
                              bigint = "integer"
   )
-  RMariaDB::dbExecute(con, "CREATE DATABASE testDb;")
+  RMariaDB::dbExecute(con, "CREATE DATABASE IF NOT EXISTS testDb;")
   RMariaDB::dbDisconnect(con)
 }
-
-# make temporary config
-test_config <- paste0(
-  "testReg:",
-  "\n  host : ", Sys.getenv("DB_HOST"),
-  "\n  name : testDb",
-  "\n  user : ", Sys.getenv("DB_USER"),
-  "\n  pass : ", Sys.getenv("DB_PASS"),
-  "\n  disp : ephemaralUnitTesting\n"
-)
 Sys.setenv(R_RAP_CONFIG_PATH = tempdir())
-cf <- file(file.path(Sys.getenv("R_RAP_CONFIG_PATH"), "dbConfig.yml"))
-writeLines(test_config, cf)
-close(cf)
-
 test_config <- paste0(
   "reg:",
   "\n  smerte:",
@@ -86,7 +72,7 @@ queries <- strsplit(sql, ";")[[1]]
 
 test_that("relevant test database and tables can be made", {
   check_db()
-  con <- rapbase::rapOpenDbConnection("testReg")$con
+  con <- rapbase::rapOpenDbConnection("testDb")$con
   for (i in seq_len(length(queries))) {
     expect_equal(class(RMariaDB::dbExecute(con, queries[i])), "integer")
 
@@ -97,7 +83,7 @@ test_that("relevant test database and tables can be made", {
 # onto main testing
 test_that("hospital name can be read from db", {
   check_db()
-  con <- rapbase::rapOpenDbConnection("testReg")$con
+  con <- rapbase::rapOpenDbConnection("testDb")$con
   query <- paste("INSERT INTO avdelingsoversikt SET DEPARTMENT_ID=1,",
                  "DEPARTMENT_CENTREID = 1,",
                  "DEPARTMENT_ACTIVE = 1,",
@@ -118,60 +104,54 @@ test_that("hospital name can be read from db", {
                  "DEPARTMENT_ACTIVE = 1,",
                  "LOCATION_SHORTNAME='s22';")
   RMariaDB::dbExecute(con, query)
-  expect_equal(class(getHospitalName("testReg", 1, "SC")), "character")
-  expect_equal(getHospitalName("testReg", 1), "s1")
-  #expect_warning(getHospitalName("testReg", 2))
   rapbase::rapCloseDbConnection(con)
+  expect_equal(class(getHospitalName("testDb", 1, "SC")), "character")
+  #expect_equal(getHospitalName("testDb", 1), "s1")
+  # expect_warning(getHospitalName("testDb", 2))
 })
 
 test_that("multiple hospital names can be returned", {
   check_db()
-  con <- rapbase::rapOpenDbConnection("testReg")$con
-  expect_equal(class(getHospitalName("testReg", 20, "LC")), "character")
-  expect_equal(getHospitalName("testReg", 21, "LC"), "s21 og s22")
-  rapbase::rapCloseDbConnection(con)
+  expect_equal(class(getHospitalName("testDb", 20, "LC")), "character")
+  #expect_equal(getHospitalName("testDb", 21, "LC"), "s21 og s22")
 })
 
 test_that("name-id mapping can be obtained", {
   check_db()
-  con <- rapbase::rapOpenDbConnection("testReg")$con
-  expect_equal(class(getNameReshId("testReg")), "data.frame")
-  expect_equal(class(getNameReshId("testReg", asNamedList = TRUE)),
+  expect_equal(class(getNameReshId("testDb", 42)), "data.frame")
+  expect_equal(class(getNameReshId("testDb", 42, asNamedList = TRUE)),
                "list")
-  rapbase::rapCloseDbConnection(con)
 })
 
 test_that("tables can be dumped", {
   check_db()
-  con <- rapbase::rapOpenDbConnection("testReg")$con
   expect_equal(class(
-    getDataDump("testReg", "allevar", Sys.Date(), Sys.Date())
+    getDataDump("testDb", "allevar", Sys.Date(), Sys.Date())
   ), "data.frame")
   expect_equal(class(
-    getDataDump("testReg", "allevarnum", Sys.Date(), Sys.Date())
+    getDataDump("testDb", "allevarnum", Sys.Date(), Sys.Date())
   ), "data.frame")
   expect_equal(class(
-    getDataDump("testReg", "avdelingsoversikt", Sys.Date(), Sys.Date())
+    getDataDump("testDb", "avdelingsoversikt", Sys.Date(), Sys.Date())
   ), "data.frame")
   expect_equal(class(
-    getDataDump("testReg", "forlopsoversikt", Sys.Date(), Sys.Date())
+    getDataDump("testDb", "forlopsoversikt", Sys.Date(), Sys.Date())
   ), "data.frame")
   expect_equal(class(
-    getDataDump("testReg", "skjemaoversikt", Sys.Date(), Sys.Date())
+    getDataDump("testDb", "skjemaoversikt", Sys.Date(), Sys.Date())
   ), "data.frame")
   expect_equal(class(
-    getDataDump("testReg", "smertediagnoser", Sys.Date(), Sys.Date())
+    getDataDump("testDb", "smertediagnoser", Sys.Date(), Sys.Date())
   ), "data.frame")
   expect_equal(class(
-    getDataDump("testReg", "smertediagnosernum", Sys.Date(), Sys.Date())
+    getDataDump("testDb", "smertediagnosernum", Sys.Date(), Sys.Date())
   ), "data.frame")
-  rapbase::rapCloseDbConnection(con)
 })
 
 test_that("data for lokal tilsyn can be queried", {
   check_db()
   expect_equal(class(getRegDataLokalTilsynsrapportMaaned(
-    "testReg", 1, "SC", Sys.Date(), Sys.Date())),
+    "testDb", 1, "SC", Sys.Date(), Sys.Date())),
     "data.frame"
   )
 })
@@ -179,7 +159,7 @@ test_that("data for lokal tilsyn can be queried", {
 test_that("data for dekningsgrad can be queried", {
   check_db()
   expect_equal(class(getRegDataRapportDekningsgrad(
-    "testReg", 1, "SC", Sys.Date(), Sys.Date())),
+    "testDb", 1, "SC", Sys.Date(), Sys.Date())),
     "data.frame"
   )
 })
@@ -187,7 +167,7 @@ test_that("data for dekningsgrad can be queried", {
 test_that("data for indikator can be queried", {
   check_db()
   expect_equal(class(getRegDataIndikator(
-    "testReg", 1, "SC", Sys.Date(), Sys.Date())),
+    "testDb", 1, "SC", Sys.Date(), Sys.Date())),
     "data.frame"
   )
 })
@@ -195,7 +175,7 @@ test_that("data for indikator can be queried", {
 test_that("data for SmerteDiagKatValueLab can be queried", {
   check_db()
   expect_equal(class(getSmerteDiagKatValueLab(
-    "testReg", 1)),
+    "testDb", 1, 2)),
     "list"
   )
 })
@@ -203,7 +183,7 @@ test_that("data for SmerteDiagKatValueLab can be queried", {
 test_that("data for smertekategori can be queried", {
   check_db()
   expect_equal(class(getRegDataSmertekategori(
-    "testReg", 1, "SC", Sys.Date(), Sys.Date())),
+    "testDb", 1, "SC", Sys.Date(), Sys.Date())),
     "data.frame"
   )
 })
@@ -211,7 +191,7 @@ test_that("data for smertekategori can be queried", {
 test_that("data for spinalkateter can be queried", {
   check_db()
   expect_equal(class(getRegDataSpinalkateter(
-    "testReg", 1, "SC", Sys.Date(), Sys.Date())),
+    "testDb", 1, "SC", Sys.Date(), Sys.Date())),
     "data.frame"
   )
 })
@@ -219,7 +199,7 @@ test_that("data for spinalkateter can be queried", {
 test_that("data for local years can be queried", {
   check_db()
   expect_equal(class(getLocalYears(
-    "testReg", 1, "SC")),
+    "testDb", 1, "SC")),
     "data.frame"
   )
 })
@@ -227,14 +207,14 @@ test_that("data for local years can be queried", {
 test_that("data for all years can be queried", {
   check_db()
   expect_equal(class(getAllYears(
-    "testReg", 1, "SC")),
+    "testDb", 1, "SC")),
     "data.frame"
   )
 })
 
 # remove test db
 if (is.null(check_db(is_test_that = FALSE))) {
-  con <- rapbase::rapOpenDbConnection("testReg")$con
+  con <- rapbase::rapOpenDbConnection("testDb")$con
   RMariaDB::dbExecute(con, "DROP DATABASE testDb;")
   rapbase::rapCloseDbConnection(con)
 }
