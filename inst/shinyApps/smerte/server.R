@@ -407,6 +407,7 @@ server <- function(input, output, session) {
 
   # Bruksstatistikk
   rapbase::statsServer2("smerteStats", registryName = "smerte",
+                        app_id = Sys.getenv("FALK_APP_ID"),
                         eligible = shiny::req(vis_rapp))
   rapbase::statsGuideServer("smerteStats", registryName = "smerte")
 }
