@@ -1,0 +1,110 @@
+---
+params:
+  title: ': Variabeloversikt'
+  author: 'Rapporteket'
+  hospitalName: 'Ukjent sykehus'
+  reshId: 'locallyDefined'
+  avdValg: 'Nasjonal'
+  Data: NA
+  userRole: 'MyRole'
+  userFullName: 'Ukjent bruker'
+  startDate: !r lubridate::today() - lubridate::years(1)
+  endDate: !r lubridate::today() - lubridate::weeks(1)
+  year: '2016'
+  tableFormat: 'html'
+  registryName: 'rapbase'
+  shinySession: list()
+title: '`r paste0("Smerteregisteret ", params$hospitalName, params$title)`'
+author: '`r params$author`'
+date: '`r format(Sys.time(), "%d\\. %B, %Y")`'
+reglogo: '`r system.file("www/logoSmerte.png", package = "smerte")`'
+regtext: 'SmerteReg er et nasjonalt kvalitetsregister som registrer alleinneliggende pasienter som henvises for tilsyn fra akutt smerteteam. Formålet med SmerteReg er å bedre kvaliteten på tjenesten akutt smerteteam yter til smertepasienter på norske sykehus samt å danne grunnlag for forskning.'
+registryName: Smerteregisteret
+userFullName: '`r params$userFullName`'
+---
+
+```{r set options and load packages, include = FALSE}
+knitr::opts_chunk$set(echo=FALSE)
+options(knitr.table.format = params$tableFormat)
+options(tinytex.verbose = TRUE)
+options(scipen = 1, digits = 2) #set to two decimal 
+
+```
+
+```{r get-data, warning = FALSE, message=TRUE, echo=FALSE}
+
+ if (rapbase::isRapContext()) {
+  
+   dat <- smerte::GetRegDataVariabeloversikt(registryName = params$registryName,
+                                     reshId = params$reshId,
+                                     userRole=params$userRole,
+                                     startDate = params$startDate,
+                                     endDate = params$endDate,
+                                     session = params$shinySession)
+  
+ } else { print("fikk ikke inn data")}
+
+  if(params$avdValg == "Nasjonal") {
+    dat_variabeloversikt = dat
+  } else{
+    dat_variabeloversikt = dat %>% 
+      dplyr::filter(AvdRESH == map_orgname$UnitId[map_orgname$orgname == params$avdValg])
+  }
+```
+
+# Variabeloversikt - `r params$avdValg`
+
+Datagrunnlag: `r params$avdValg`   <br>
+StartDato:    `r params$startDate` <br>
+SluttDato:    `r params$endDate`
+
+```{r, vaske-data, echo = FALSE}
+
+# variabler av liten interesse
+  vars_drop = c("SykehusNavn", "ForlopsID", 
+                "PasientID")
+
+dat_rapport = dat_variabeloversikt %>% 
+  dplyr::select(-vars_drop)#  %>% 
+  # janitor::remove_constant() %>% 
+  # janitor::remove_empty("cols")
+  
+```
+
+# Plot Intro
+```{r, fig-fordeling, eval = TRUE, echo = FALSE, message = FALSE}
+fig_fordeling = DataExplorer::plot_intro(dat_rapport, 
+                                         ggtheme = ggplot2::theme_minimal())
+```
+
+```{r, fig-missing, fig.height=20, eval=TRUE, echo = FALSE, message = FALSE}
+
+# fig_missing = DataExplorer::plot_missing(dat_rapport,
+#                                          missing_only = TRUE,
+#                                          ggtheme = ggplot2::theme_minimal(),
+#                                          title = "Andel manglende registreringer")
+```
+
+# Fordeling av diskrete verdier
+
+```{r, fig-bars, eval=TRUE, echo = FALSE, message=FALSE}
+
+vars_utelatt = c("AvdRESH", "DatoSamtykke", "DatoinhSamt", "InklusjonStatus")
+
+fig_bars = DataExplorer::plot_bar(dat_rapport %>%
+                                    dplyr::select(-vars_utelatt) %>%
+                                    janitor::remove_constant() %>%
+                                    janitor::remove_empty(),
+                                  ggtheme = ggplot2::theme_minimal(),
+                                  nrow = 3,
+                                  ncol = 2)
+```
+
+# Fordeling av kontinuerlige verdier
+```{r, fig-hist, eval = TRUE}
+fig_hist = DataExplorer::plot_histogram(dat_rapport,
+                                        ggtheme = ggplot2::theme_minimal(),
+                                        nrow = 3,
+                                        ncol = 2)
+```
+
