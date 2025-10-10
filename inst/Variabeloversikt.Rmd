@@ -1,11 +1,10 @@
 ---
 params:
-  title: ': Variabeloversikt'
+  title: 'Variabeloversikt'
   author: 'Rapporteket'
   hospitalName: 'Ukjent sykehus'
   reshId: 'locallyDefined'
   avdValg: 'Nasjonal'
-  Data: NA
   userRole: 'MyRole'
   userFullName: 'Ukjent bruker'
   startDate: !r lubridate::today() - lubridate::years(1)
@@ -14,7 +13,7 @@ params:
   tableFormat: 'html'
   registryName: 'rapbase'
   shinySession: list()
-title: '`r paste0("Smerteregisteret ", params$hospitalName, params$title)`'
+title: '`r paste0(params$title, " - Smerteregisteret")`'
 author: '`r params$author`'
 date: '`r format(Sys.time(), "%d\\. %B, %Y")`'
 reglogo: '`r system.file("www/logoSmerte.png", package = "smerte")`'
@@ -31,7 +30,7 @@ options(scipen = 1, digits = 2) #set to two decimal
 
 ```
 
-```{r get-data, warning = FALSE, message=TRUE, echo=FALSE}
+```{r get-data, warning = FALSE, message=FALSE}
 
  if (rapbase::isRapContext()) {
   
@@ -52,9 +51,7 @@ options(scipen = 1, digits = 2) #set to two decimal
   }
 ```
 
-# Variabeloversikt - `r params$avdValg`
-
-Datagrunnlag: `r params$avdValg`   <br>
+Datagrunnlag: `r params$hospitalName` <br>
 StartDato:    `r params$startDate` <br>
 SluttDato:    `r params$endDate`
 
@@ -71,10 +68,10 @@ dat_rapport = dat_variabeloversikt %>%
   
 ```
 
-# Plot Intro
+
 ```{r, fig-fordeling, eval = TRUE, echo = FALSE, message = FALSE}
-fig_fordeling = DataExplorer::plot_intro(dat_rapport, 
-                                         ggtheme = ggplot2::theme_minimal())
+# fig_fordeling = DataExplorer::plot_intro(dat_rapport, 
+#                                          ggtheme = ggplot2::theme_minimal())
 ```
 
 ```{r, fig-missing, fig.height=20, eval=TRUE, echo = FALSE, message = FALSE}
