@@ -88,6 +88,17 @@ ui <- shiny::tagList(
         )
       ),
       shiny::tabPanel(
+        "Variabeloversikt",
+        shiny::sidebarLayout(
+          shiny::sidebarPanel(
+            smerte::variabeloversiktInput("variabeloversikt")
+          ),
+          shiny::mainPanel(
+            smerte::defaultReportUI("variabeloversikt")
+          )
+        )
+      ),
+      shiny::tabPanel(
         "Spinalkateter",
         shiny::sidebarLayout(
           shiny::sidebarPanel(
@@ -109,17 +120,17 @@ ui <- shiny::tagList(
           )
         )
       ),
-        shiny::tabPanel(
-          "Epidural (barn)",
-          shiny::sidebarLayout(
-            shiny::sidebarPanel(
-              smerte::defaultReportInput("lokalepi")
-            ),
-            shiny::mainPanel(
-              smerte::defaultReportUI("lokalepi")
-            )
+      shiny::tabPanel(
+        "Epidural (barn)",
+        shiny::sidebarLayout(
+          shiny::sidebarPanel(
+            smerte::defaultReportInput("lokalepi")
+          ),
+          shiny::mainPanel(
+            smerte::defaultReportUI("lokalepi")
           )
-        ),
+        )
+      ),
       shiny::tabPanel(
         "Tid til død etter utskrivelse",
         shiny::sidebarLayout(
@@ -142,7 +153,7 @@ ui <- shiny::tagList(
           )
         )
       )
-     ),
+    ),
     shiny::tabPanel(
       "Abonnement lokal",
       shiny::sidebarLayout(
@@ -203,7 +214,7 @@ ui <- shiny::tagList(
         "Metadata",
         shiny::sidebarLayout(
           shiny::sidebarPanel(uiOutput("metaControl")),
-          shiny::mainPanel(htmlOutput("metaData"))
+            shiny::mainPanel(htmlOutput("metaData"))
         )
       ),
       shiny::tabPanel(
@@ -214,14 +225,14 @@ ui <- shiny::tagList(
             rapbase::autoReportOrgInput("smerteDispatchment"),
             shiny::HTML(
               "NB Dobbeltsjekk at rapporten er gitt riktig datakilde!<br/><br/>"
-            ),
+              ),
             rapbase::autoReportInput("smerteDispatchment")
-          ),
+            ),
           shiny::mainPanel(
             rapbase::autoReportUI("smerteDispatchment")
+            )
           )
-        )
-      ),
+        ),
       shiny::tabPanel(
         "Utsendelser nasjonal",
         shiny::sidebarLayout(
@@ -230,37 +241,37 @@ ui <- shiny::tagList(
             rapbase::autoReportOrgInput("smerteDispatchmentNasjonal"),
             shiny::HTML(
               "NB Dobbeltsjekk at rapporten er gitt riktig datakilde!<br/><br/>"
-            ),
+              ),
             rapbase::autoReportInput("smerteDispatchmentNasjonal")
-          ),
+            ),
           shiny::mainPanel(
             rapbase::autoReportUI("smerteDispatchmentNasjonal")
+            )
           )
-        )
-      ),
+        ),
       shiny::tabPanel(
         "Eksport",
         shiny::sidebarLayout(
           shiny::sidebarPanel(
             rapbase::exportUCInput("smerteExport")
-          ),
+            ),
           shiny::mainPanel(
             rapbase::exportGuideUI("smerteExportGuide")
+            )
           )
-        )
-      ),
+        ),
       shiny::tabPanel(
         "Bruksstatisitkk",
         shiny::sidebarLayout(
           shiny::sidebarPanel(
             rapbase::statsInput("smerteStats"),
             rapbase::statsGuideUI("smerteStats")
-          ),
+            ),
           shiny::mainPanel(
             rapbase::statsUI("smerteStats")
+            )
           )
         )
       )
-    )
-  ) # navbarPage
+    ) # navbarPage
 ) # tagList

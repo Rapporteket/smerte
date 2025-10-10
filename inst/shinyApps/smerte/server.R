@@ -64,9 +64,11 @@ server <- function(input, output, session) {
   observeEvent(list(user$role(), user$org()), {
     if (!shiny::req(user$role()) %in% "SC") {
       shiny::hideTab(inputId = "tabs", target = "Verktøy")
+      shiny::hideTab(inputId = "tabs", target = "Variabeloversikt")
     }
     if (shiny::req(user$role()) %in% "SC") {
       shiny::showTab(inputId = "tabs", target = "Verktøy")
+      shiny::showTab(inputId = "tabs", target = "Variabeloversikt")
       if (smerte::isNationalReg(shiny::req(user$org()))) {
         shiny::showTab(inputId = "tabs", target = "Utsendelser nasjonal")
         shiny::hideTab(inputId = "tabs", target = "Utsendelser")
@@ -74,10 +76,14 @@ server <- function(input, output, session) {
         shiny::showTab(inputId = "tabs", target = "Utsendelser")
         shiny::hideTab(inputId = "tabs", target = "Utsendelser nasjonal")
       }
-
     }
   }
   )
+
+  # SelectInput for variabeloversiktrapport
+  updateSelectInput(session, "avdValg",
+                    choices = map_orgname$orgname)
+
 
   contentDump <- function(file, type, userRole = "LU") {
     d <- smerte::getDataDump(registryName(),input$dumpDataSet,
@@ -124,7 +130,7 @@ server <- function(input, output, session) {
     )
   )
 
-  # # Tilsynsrapport
+  # Tilsynsrapport
   smerte::defaultReportServer2(
     id = "tilsyn",
     reportFileName = reactiveVal("LokalTilsynsrapportMaaned.Rmd"),
@@ -136,6 +142,7 @@ server <- function(input, output, session) {
     id = "dekningsgrad",
     reportFileName = reactiveVal("LokalDekningsgradrapport.Rmd"),
     reportParams = reportParams)
+
   # Dekningsgrad ny
   smerte::defaultReportServer2(
     id = "dekningsgradReserv",
@@ -159,7 +166,6 @@ server <- function(input, output, session) {
     reportParams = reportParams)
 
   # Opiodreduksjon
-
   reportTemplate2 <- shiny::reactiveVal()
   observeEvent(user$org(), {
     if (smerte::isNationalReg(user$org())) {
@@ -175,12 +181,27 @@ server <- function(input, output, session) {
     reportFileName = reportTemplate2,
     reportParams = reportParams)
 
-
   # eProm
   smerte::defaultReportServer2(
     id = "eprom",
     reportFileName = reactiveVal("lokalEprom.Rmd"),
     reportParams = reportParams)
+
+  # Variabeloversikt
+  smerte::defaultReportServer2(
+    id = "variabeloversikt",
+    reportFileName = reactiveVal("Variabeloversikt.Rmd"),
+    reportParams = shiny::reactive(
+      list(
+        hospitalName = hospitalName(),
+        reshId = user$org(),
+        registryName = registryName(),
+        userRole = user$role(),
+        userFullName = userFullName,
+        shinySession = session,
+        avdValg = input$avdValg
+      )
+    ))
 
   # Spinalkateter
   smerte::defaultReportServer2(
@@ -222,6 +243,17 @@ server <- function(input, output, session) {
                      "author", "orgName", "orgId",
                      "registryName", "userFullName"),
       paramValues = c("nasjonalIndikator", "pdf", "Kvalitetsindikatorer",
+                      "Smerteregisteret", "sykehus", 99999,
+                      "smertedata", userFullName)
+    ),
+    `Variabeloversikt - alle enheter` = list(
+      synopsis = paste0("Variabeloversikt for Smerteregisteret",
+                        "(alle enheter)"),
+      fun = "reportProcessor",
+      paramNames = c("report", "outputType", "title",
+                     "author", "orgName", "orgId",
+                     "registryName", "userFullName"),
+      paramValues = c("Variabeloversikt", "pdf", "Variabeloversikt",
                       "Smerteregisteret", "sykehus", 99999,
                       "smertedata", userFullName)
     )
