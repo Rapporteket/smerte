@@ -46,7 +46,9 @@ Imports:
     shinycssloaders,
     yaml,
     zoo,
-    tidyverse
+    tidyverse,
+    janitor,
+    DataExplorer
 Remotes:
     Rapporteket/rapbase@main
 Suggests: 
