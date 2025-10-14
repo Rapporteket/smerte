@@ -196,6 +196,14 @@ test_that("data for spinalkateter can be queried", {
   )
 })
 
+test_that("data for variabeloversikt can be queried", {
+  check_db()
+  expect_equal(class(getRegDataVariabeloversikt(
+    "testDb", 1, "SC", Sys.Date(), Sys.Date())),
+    "data.frame"
+  )
+})
+
 test_that("data for local years can be queried", {
   check_db()
   expect_equal(class(getLocalYears(
