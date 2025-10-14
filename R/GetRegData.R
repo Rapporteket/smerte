@@ -748,7 +748,7 @@ WHERE
 
 #' @rdname getRegData
 #' @export
-GetRegDataVariabeloversikt <- function(registryName, reshId, userRole,
+getRegDataVariabeloversikt <- function(registryName, reshId, userRole,
                                        startDate, endDate, ...) {
 
   dbType <- "mysql"
