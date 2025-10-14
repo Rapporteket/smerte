@@ -1,26 +1,17 @@
-shiny::addResourcePath('rap', system.file('www', package='rapbase'))
 regTitle = "Smerteregisteret"
 
 ui <- shiny::tagList(
   shiny::navbarPage(
-    title = shiny::div(
-      shiny::a(
-        shiny::includeHTML(system.file('www/logo.svg', package='rapbase'))),
-      regTitle
-    ),
+    title = rapbase::title(regTitle),
     windowTitle = regTitle,
-    theme = "rap/bootstrap.css",
+    theme = rapbase::theme(),
     id = "tabs",
 
     shiny::tabPanel(
       "Veiledning",
       rapbase::navbarWidgetInput("navbar-widget", selectOrganization = TRUE),
       shiny::mainPanel(width = 12,
-        shiny::htmlOutput("veiledning", inline = TRUE)#,
-        # rapbase::appNavbarUserWidget(user = uiOutput("appUserName"),
-        #                              organization = uiOutput("appOrgName"),
-        #                              addUserInfo = TRUE),
-        # shiny::tags$head(tags$link(rel="shortcut icon", href="rap/favicon.ico"))
+        shiny::htmlOutput("veiledning", inline = TRUE)
       )
     ),
     shiny::navbarMenu(
