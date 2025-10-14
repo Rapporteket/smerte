@@ -81,7 +81,7 @@ server <- function(input, output, session) {
   )
 
   # SelectInput for variabeloversiktrapport
-  updateSelectInput(session, "avdValg",
+  shiny::updateSelectInput(session, "avdValg",
                     choices = map_orgname$orgname)
 
 
