@@ -431,8 +431,8 @@ server <- function(input, output, session) {
   # Eksport
   ## brukerkontroller
   rapbase::exportUCServer2(
-    "smerteExport", registryName = registryName,
-    repoName = "smerte", eligible = shiny::req(vis_rapp))
+    "smerteExport", registryName, "smerte", eligible = shiny::req(vis_rapp)
+  )
 
   ## veileding
   rapbase::exportGuideServer2("smerteExportGuide", registryName)
