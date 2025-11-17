@@ -29,6 +29,7 @@ fikse_sykehusnavn <- function(df) {
       UnitId == 100320 ~ "St.Olavs hospital",
       UnitId == 101719 ~ "UNN",
       UnitId == 4204083 ~ "Vestre Viken",
+      UnitId == 100084 ~ "Fonna",
       TRUE ~ NA_character_
     ))
 }
