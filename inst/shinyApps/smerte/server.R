@@ -430,7 +430,7 @@ server <- function(input, output, session) {
 
   # Eksport
   ## brukerkontroller
-  rapbase::exportUCServer2(
+  rapbase::exportUCServer(
     "smerteExport", registryName, "smerte", eligible = shiny::req(vis_rapp)
   )
 
