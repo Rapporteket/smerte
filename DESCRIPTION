@@ -1,7 +1,7 @@
 Package: smerte
 Type: Package
 Title: R-pakke for smerteregisteret
-Version: 2.0.9
+Version: 2.0.16
 Authors@R: c(
     person(given = "Janne",
            family = "Mannseth",
@@ -11,12 +11,25 @@ Authors@R: c(
            family = "Edvardsen",
            role = c("aut"),
            email = "biorakel@gmail.com",
-           comment = c(ORCID = "0000-0002-5210-3656")))
+           comment = c(ORCID = "0000-0002-5210-3656")),
+    person(given = "Endre Kvåle",
+           family = "Evjen",
+           role = c("aut"),
+           email = "endre.kvale.evjen@helse-bergen.no"),
+    person(given = "Kevin Otto",
+           family = "Thon",
+           role = c("aut"),
+           email = "kevin.thon@helse-nord.no"),
+    person(given = "Arnfinn Hykkerud",
+           family = "Steindal",
+           role = c("aut"),
+           email = "arnfinn.steindal@gmail.com",
+           comment = c(ORCID = "0000-0002-4088-7860")))
 Maintainer: Janne Mannseth <janne.mannseth@helse-bergen.no>
 Description: Pakke for det nasjonale registeret "Smerteregisteret". Utarbeiding av rapporter for lokale og nasjonale data.
 License: GPL-3
 Depends:
-  R (>= 3.5.0)
+  R (>= 4.1.0)
 Imports:
     bookdown,
     DT,
