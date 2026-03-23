@@ -89,12 +89,22 @@ server <- function(input, output, session) {
       if (input$dumpDataSet %in% c("smertediagnoser", "smertediagnosernum")) {
         forlopsoversikt <- rapbase::loadRegData(
           registryName(),
-          "SELECT ForlopsID, AvdRESH FROM forlopsoversikt")
-        d <- merge(d, forlopsoversikt, by = "ForlopsID")
+          "SELECT ForlopsID, PasientID, AvdRESH FROM forlopsoversikt")
+        d <- merge(d, forlopsoversikt, by = "ForlopsID") %>%
+          dplyr::select(ForlopsID, PasientID, everything())
       }
       if (input$dumpDataSet != "avdelingsoversikt") {
         d <- dplyr::filter(d, AvdRESH == shiny::req(user$org()))
       }
+    }
+    if (userRole == "SC") {
+      if (input$dumpDataSet %in% c("smertediagnoser", "smertediagnosernum", "smertediagnosernumnasjonal")) {
+        forlopsoversikt <- rapbase::loadRegData(
+          registryName(),
+          "SELECT ForlopsID, PasientID, SykehusNavn FROM forlopsoversiktnasjonal")
+        d <- merge(d, forlopsoversikt, by = "ForlopsID") %>%
+          dplyr::select(ForlopsID, PasientID, SykehusNavn, everything())
+        }
     }
     if (type == "xlsx-csv") {
       readr::write_excel_csv2(d, file)
