@@ -90,8 +90,8 @@ server <- function(input, output, session) {
         forlopsoversikt <- rapbase::loadRegData(
           registryName(),
           "SELECT ForlopsID, PasientID, AvdRESH FROM forlopsoversikt")
-        d <- merge(d, forlopsoversikt, by = "ForlopsID") %>%
-          dplyr::select(ForlopsID, PasientID, everything())
+        d <- merge(d, forlopsoversikt, by = "ForlopsID") |>
+          dplyr::relocate(ForlopsID, PasientID)
       }
       if (input$dumpDataSet != "avdelingsoversikt") {
         d <- dplyr::filter(d, AvdRESH == shiny::req(user$org()))
@@ -102,8 +102,8 @@ server <- function(input, output, session) {
         forlopsoversikt <- rapbase::loadRegData(
           registryName(),
           "SELECT ForlopsID, PasientID, SykehusNavn FROM forlopsoversiktnasjonal")
-        d <- merge(d, forlopsoversikt, by = "ForlopsID") %>%
-          dplyr::select(ForlopsID, PasientID, SykehusNavn, everything())
+        d <- merge(d, forlopsoversikt, by = "ForlopsID") |>
+          dplyr::relocate(ForlopsID, PasientID, SykehusNavn)
         }
     }
     if (type == "xlsx-csv") {
