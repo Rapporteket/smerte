@@ -101,9 +101,9 @@ server <- function(input, output, session) {
       if (input$dumpDataSet %in% c("smertediagnoser", "smertediagnosernum", "smertediagnosernumnasjonal")) {
         forlopsoversikt <- rapbase::loadRegData(
           registryName(),
-          "SELECT ForlopsID, PasientID, SykehusNavn FROM forlopsoversiktnasjonal")
+          "SELECT ForlopsID, PasientID, SykehusNavn AvdRESH FROM forlopsoversiktnasjonal")
         d <- merge(d, forlopsoversikt, by = "ForlopsID") |>
-          dplyr::relocate(ForlopsID, PasientID, SykehusNavn)
+          dplyr::relocate(ForlopsID, PasientID, AvdRESH, SykehusNavn)
         }
     }
     if (type == "xlsx-csv") {
