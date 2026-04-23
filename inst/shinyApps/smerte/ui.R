@@ -2,9 +2,9 @@ regTitle = "Smerteregisteret"
 
 ui <- shiny::tagList(
   shiny::navbarPage(
-    title = rapbase::title(regTitle),
+    title = regTitle(regTitle),
     windowTitle = regTitle,
-    theme = rapbase::theme(),
+    theme = rapTheme(),
     id = "tabs",
 
     shiny::tabPanel(
