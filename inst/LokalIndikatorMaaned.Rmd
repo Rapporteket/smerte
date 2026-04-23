@@ -150,8 +150,8 @@ if (dim(behdat)[1] < 1) {
     dplyr::filter(behtils == 1)
   
   #Plotting plotdat
-  ggplot2::ggplot(plotdat, ggplot2::aes(month, freq)) + 
-    geom_line(ggplot2::aes(group = 1)) + geom_point() +
+  ggplot(plotdat, aes(month, freq)) + 
+    geom_line(aes(group = 1)) + geom_point() +
     scale_x_date(date_labels = "%m-%y") +
     labs(x = "Måned", y = "Andel", subtitle = "Andel tilsett av to eller flere faggrupper per måned") + theme_classic() +
     theme(axis.text.x = element_text(size = 9), plot.margin = unit(c(1, 1, 2, 0), "cm"), axis.title.y = element_text(margin = margin(t = 0, r = 10, b = 0, l = 0)), axis.title.x = element_text(margin = margin(t = 10, r = 0, b = 0, l = 0))) 
@@ -224,8 +224,8 @@ if (dim(dat)[1] < 1) {
     dplyr::filter(henvtils == 1)
   
   #Plotting plotdat
-  ggplot2::ggplot(plot2, ggplot2::aes(month, freq)) + 
-    geom_line(ggplot2::aes(group = 1)) + geom_point() + 
+  ggplot(plot2, aes(month, freq)) + 
+    geom_line(aes(group = 1)) + geom_point() + 
     labs(x = "Måned", y = "Andel", subtitle = "Andel tilsett samme dag pasienten var henvist per måned") +
     theme_classic() +
     theme(
@@ -308,8 +308,8 @@ if (dim(dat)[1] < 1) {
     dplyr::filter(fornoyd == 1)
   
   #Plotting plotdat
-  ggplot2::ggplot(plot3, ggplot2::aes(month, freq)) + 
-    geom_line(ggplot2::aes(group = 1)) + geom_point() + 
+  ggplot(plot3, aes(month, freq)) + 
+    geom_line(aes(group = 1)) + geom_point() + 
     labs(x = "Måned", y = "Andel", subtitle = "Andel fornøyd med ivaretakelsen fra smerteteam per måned") + 
     theme_classic() +
     theme(
@@ -454,15 +454,15 @@ if (dim(dat)[1] < 1) {
   colorsplot <- c("stbe" = "magenta3", "svbe" = "hotpink1", "stro" = "darkcyan", "svro" = "cyan2")
   labelsplot <- c("Sterkeste smerte \ni bevegelse", "Svakeste smerte \ni bevegelse", "Sterkeste smerte \ni ro", "Svakeste smerte \ni ro")
   
-  p = ggplot2::ggplot() + 
-    geom_line(data = p1, ggplot2::aes(month, freq1, group = 1, color = "stbe"), size = 0.5) +
-    geom_point(data = p1, ggplot2::aes(month, freq1, group = 1, color = "stbe"), shape = 16, size = 1.5) +
-    geom_line(data = p2, ggplot2::aes(month, freq2, group = 1, color = "svbe"), size = 0.5) +
-    geom_point(data = p2, ggplot2::aes(month, freq2, group = 1, color = "svbe"), shape = 16, size = 1.5) +
-    geom_line(data = p3, ggplot2::aes(month, freq3, group = 1, color = "stro"), size = 0.5) +
-    geom_point(data = p3, ggplot2::aes(month, freq3, group = 1, color = "stro"), shape = 16, size = 1.5) +
-    geom_line(data = p4, ggplot2::aes(month, freq4, group = 1, color = "svro"), size = 0.5) +
-    geom_point(data = p4, ggplot2::aes(month, freq4, group = 1, color = "svro"), shape = 16, size = 1.5) +
+  p = ggplot() + 
+    geom_line(data = p1, aes(month, freq1, group = 1, color = "stbe"), size = 0.5) +
+    geom_point(data = p1, aes(month, freq1, group = 1, color = "stbe"), shape = 16, size = 1.5) +
+    geom_line(data = p2, aes(month, freq2, group = 1, color = "svbe"), size = 0.5) +
+    geom_point(data = p2, aes(month, freq2, group = 1, color = "svbe"), shape = 16, size = 1.5) +
+    geom_line(data = p3, aes(month, freq3, group = 1, color = "stro"), size = 0.5) +
+    geom_point(data = p3, aes(month, freq3, group = 1, color = "stro"), shape = 16, size = 1.5) +
+    geom_line(data = p4, aes(month, freq4, group = 1, color = "svro"), size = 0.5) +
+    geom_point(data = p4, aes(month, freq4, group = 1, color = "svro"), shape = 16, size = 1.5) +
     labs(x = 'Måned', y = "Andel", title = "Andel med nedgang i smerte") + 
     theme_classic() +
     scale_x_date(date_labels = "%m-%y") +
@@ -552,8 +552,8 @@ if (dim(plotikmed)[1] < 1) {
 } else {
   
   #Plotting plotdat
-  ggplot2::ggplot(plotikmed, ggplot2::aes(month, freq)) + 
-    geom_line(ggplot2::aes(group = 1)) + geom_point() + 
+  ggplot(plotikmed, aes(month, freq)) + 
+    geom_line(aes(group = 1)) + geom_point() + 
     labs(x = "Måned", y = "Andel", 
          subtitle = "Andel med ikke-medikamentell behandling per måned") +
     theme_classic() +
@@ -633,8 +633,8 @@ if (dim(plotnedtr)[1] < 1) {
 } else {
   
   #Plotting plotdat
-  ggplot2::ggplot(plotnedtr, ggplot2::aes(month, freq)) + 
-    geom_line(ggplot2::aes(group = 1)) + geom_point() + 
+  ggplot(plotnedtr, aes(month, freq)) + 
+    geom_line(aes(group = 1)) + geom_point() + 
     labs(x = "Måned", y = "Andel", 
          subtitle = "Andel med nedtrappingsplan per måned") +
     theme_classic() +
@@ -715,8 +715,8 @@ if (dim(plotnedtr)[1] < 1) {
 } else {
   
   #Plotting plotdat
-  ggplot2::ggplot(plotaks, ggplot2::aes(month, freq)) + 
-    geom_line(ggplot2::aes(group = 1)) + geom_point() + 
+  ggplot(plotaks, aes(month, freq)) + 
+    geom_line(aes(group = 1)) + geom_point() + 
     labs(x = "Måned", y = "Andel", 
          subtitle = "Andel med akseptabel smerte ved siste tilsyn per måned") +
     theme_classic() +
@@ -796,8 +796,8 @@ if (dim(plotnedtr)[1] < 1) {
 } else {
   
   #Plotting plotdat
-  ggplot2::ggplot(plotfunk, ggplot2::aes(month, freq)) + 
-    geom_line(ggplot2::aes(group = 1)) + geom_point() + 
+  ggplot(plotfunk, aes(month, freq)) + 
+    geom_line(aes(group = 1)) + geom_point() + 
     labs(x = "Måned", y = "Andel", 
          subtitle = "Andel med bedring i funksjonsnivå per måned") +
     theme_classic() +
@@ -957,8 +957,8 @@ if (dim(plotnrs)[1] < 1) {
 } else {
   
   #Plotting plotdat
-  ggplot2::ggplot(plotnrs, ggplot2::aes(month, freq)) + 
-    geom_line(ggplot2::aes(group = 1)) + geom_point() + 
+  ggplot(plotnrs, aes(month, freq)) + 
+    geom_line(aes(group = 1)) + geom_point() + 
     labs(x = "Måned", y = "Andel", 
          subtitle = "Andel av de som er tilsett som kunne angi NRS ved første og siste tilsyn.") +
     theme_classic() +

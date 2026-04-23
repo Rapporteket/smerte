@@ -163,18 +163,18 @@ if (dim(dat)[1] < 1) {
   ind1plot <- dplyr::bind_rows(ind1plot, meanind1plot)
   
   #Plotting plotdat
-  ggplot2::ggplot(ind1plot, ggplot2::aes(monthname, freq)) + 
-    ggplot2::geom_line(ggplot2::aes(group = factor(SykehusNavn), colour=factor(SykehusNavn)), size = 0.5) +
-    ggplot2::geom_point(ggplot2::aes(group = factor(SykehusNavn), colour=factor(SykehusNavn)), size = 1) + 
-    ggplot2::labs(x = "Måned", y = "Andel", subtitle = "Andel tilsett av to eller flere faggrupper (månedlig)", color = "Sykehus") +
-    ggplot2::theme_classic() +
-    ggplot2::theme(axis.text.x = ggplot2::element_text(size = 8.5),
-          axis.text.y = ggplot2::element_text(size = 10),
-          axis.title = ggplot2::element_text(size = 10),
-          plot.margin = ggplot2::unit(c(1, 1, 2, 1), "cm"),
-          legend.text = ggplot2::element_text(size = 10),
-          axis.title.y = ggplot2::element_text(margin = ggplot2::margin(t = 0, r = 10, b = 0, l = 0)),
-          axis.title.x = ggplot2::element_text(margin = ggplot2::margin(t = 10, r = 0, b = 0, l = 0))
+  ggplot(ind1plot, aes(monthname, freq)) + 
+    geom_line(aes(group = factor(SykehusNavn), colour=factor(SykehusNavn)), size = 0.5) +
+    geom_point(aes(group = factor(SykehusNavn), colour=factor(SykehusNavn)), size = 1) + 
+    labs(x = "Måned", y = "Andel", subtitle = "Andel tilsett av to eller flere faggrupper (månedlig)", color = "Sykehus") +
+    theme_classic() +
+    theme(axis.text.x = element_text(size = 8.5),
+          axis.text.y = element_text(size = 10),
+          axis.title = element_text(size = 10),
+          plot.margin = unit(c(1, 1, 2, 1), "cm"),
+          legend.text = element_text(size = 10),
+          axis.title.y = element_text(margin = margin(t = 0, r = 10, b = 0, l = 0)),
+          axis.title.x = element_text(margin = margin(t = 10, r = 0, b = 0, l = 0))
     )
 }
 
@@ -249,9 +249,9 @@ if (dim(dat)[1] < 1) {
   ind2plot <- dplyr::bind_rows(ind2plot, meanind2plot)
   
   #Plotting plotdat
-  ggplot2::ggplot(ind2plot, ggplot2::aes(monthname, freq)) + 
-    ggplot2::geom_line(ggplot2::aes(group = factor(SykehusNavn), colour=factor(SykehusNavn)), size = 0.5) + ggplot2::geom_point(ggplot2::aes(group = factor(SykehusNavn), colour=factor(SykehusNavn)), size = 1) + 
-    ggplot2::labs(x = "Måned", y = "Andel", subtitle = "Andel tilsett samme dag som de ble henvist (månedlig)", color = "Sykehus") + ggplot2::theme_classic() + ggplot2::theme(axis.text.x = ggplot2::element_text(size = 8.5), axis.text.y = ggplot2::element_text(size = 10), axis.title = ggplot2::element_text(size = 10), plot.margin = ggplot2::unit(c(1, 1, 2, 1), "cm"), legend.text = ggplot2::element_text(size = 10), axis.title.y = ggplot2::element_text(margin = ggplot2::margin(t = 0, r = 10, b = 0, l = 0)), axis.title.x = ggplot2::element_text(margin = ggplot2::margin(t = 10, r = 0, b = 0, l = 0)))
+  ggplot(ind2plot, aes(monthname, freq)) + 
+    geom_line(aes(group = factor(SykehusNavn), colour=factor(SykehusNavn)), size = 0.5) + geom_point(aes(group = factor(SykehusNavn), colour=factor(SykehusNavn)), size = 1) + 
+    labs(x = "Måned", y = "Andel", subtitle = "Andel tilsett samme dag som de ble henvist (månedlig)", color = "Sykehus") + theme_classic() + theme(axis.text.x = element_text(size = 8.5), axis.text.y = element_text(size = 10), axis.title = element_text(size = 10), plot.margin = unit(c(1, 1, 2, 1), "cm"), legend.text = element_text(size = 10), axis.title.y = element_text(margin = margin(t = 0, r = 10, b = 0, l = 0)), axis.title.x = element_text(margin = margin(t = 10, r = 0, b = 0, l = 0)))
   
 }
 ```
@@ -337,9 +337,9 @@ if (dim(dat)[1] < 1) {
   ind3plot <- dplyr::bind_rows(ind3plot, meanind3plot)
   
   #Plotting plotdat
-  ggplot2::ggplot(ind3plot, ggplot2::aes(monthname, freq)) + 
-    ggplot2::geom_line(ggplot2::aes(group = factor(SykehusNavn), colour=factor(SykehusNavn)), size = 0.5) + ggplot2::geom_point(ggplot2::aes(group = factor(SykehusNavn), colour=factor(SykehusNavn)), size = 1) + 
-    ggplot2::labs(x = "Måned", y = "Andel", subtitle = "Andel fornøyd med ivaretakelsen fra smerteteam (månedlig)", color = "Sykehus") + ggplot2::theme_classic() + ggplot2::theme(axis.text.x = ggplot2::element_text(size = 8.5), axis.text.y = ggplot2::element_text(size = 10), axis.title = ggplot2::element_text(size = 10), plot.margin = ggplot2::unit(c(1, 1, 2, 1), "cm"), legend.text = ggplot2::element_text(size = 10), axis.title.y = ggplot2::element_text(margin = ggplot2::margin(t = 0, r = 10, b = 0, l = 0)), axis.title.x = ggplot2::element_text(margin = ggplot2::margin(t = 10, r = 0, b = 0, l = 0))) 
+  ggplot(ind3plot, aes(monthname, freq)) + 
+    geom_line(aes(group = factor(SykehusNavn), colour=factor(SykehusNavn)), size = 0.5) + geom_point(aes(group = factor(SykehusNavn), colour=factor(SykehusNavn)), size = 1) + 
+    labs(x = "Måned", y = "Andel", subtitle = "Andel fornøyd med ivaretakelsen fra smerteteam (månedlig)", color = "Sykehus") + theme_classic() + theme(axis.text.x = element_text(size = 8.5), axis.text.y = element_text(size = 10), axis.title = element_text(size = 10), plot.margin = unit(c(1, 1, 2, 1), "cm"), legend.text = element_text(size = 10), axis.title.y = element_text(margin = margin(t = 0, r = 10, b = 0, l = 0)), axis.title.x = element_text(margin = margin(t = 10, r = 0, b = 0, l = 0))) 
   
 }
 ```
@@ -525,24 +525,24 @@ if (dim(dat)[1] < 1) {
   #Aggregate by month for plot
   #Common plot details
   plotdetails = list(
-    ggplot2::geom_line(
-      ggplot2::aes(group = factor(SykehusNavn), colour=factor(SykehusNavn)),
+    geom_line(
+      aes(group = factor(SykehusNavn), colour=factor(SykehusNavn)),
       size = 0.5),
-    ggplot2::geom_point(
-      ggplot2::aes(group = factor(SykehusNavn), colour=factor(SykehusNavn)),
+    geom_point(
+      aes(group = factor(SykehusNavn), colour=factor(SykehusNavn)),
       size = 1
     ),
-    ggplot2::theme_classic(),
-    ggplot2::theme(
-      axis.text.x = ggplot2::element_text(size = 10),
-      axis.text.y = ggplot2::element_text(size = 10),
-      axis.title = ggplot2::element_text(size = 10),
-      plot.margin = ggplot2::unit(c(1, 1, 2, 1), "cm"),
-      legend.text = ggplot2::element_text(size = 10),
-      plot.title = ggplot2::element_text(size=10),
-      legend.title = ggplot2::element_text(size = 10),
-      axis.title.y = ggplot2::element_text(margin = ggplot2::margin(t = 0, r = 10, b = 0, l = 0)),
-      axis.title.x = ggplot2::element_text(margin = ggplot2::margin(t = 10, r = 0, b = 0, l = 0))
+    theme_classic(),
+    theme(
+      axis.text.x = element_text(size = 10),
+      axis.text.y = element_text(size = 10),
+      axis.title = element_text(size = 10),
+      plot.margin = unit(c(1, 1, 2, 1), "cm"),
+      legend.text = element_text(size = 10),
+      plot.title = element_text(size=10),
+      legend.title = element_text(size = 10),
+      axis.title.y = element_text(margin = margin(t = 0, r = 10, b = 0, l = 0)),
+      axis.title.x = element_text(margin = margin(t = 10, r = 0, b = 0, l = 0))
     )
   )
   
@@ -565,9 +565,9 @@ if (dim(dat)[1] < 1) {
   #Merging the two tibbles
   ind41plot <- dplyr::bind_rows(ind41plot, meanind41plot)
   
-  p1 = ggplot2::ggplot(ind41plot, ggplot2::aes(monthname, freq)) + 
+  p1 = ggplot(ind41plot, aes(monthname, freq)) + 
     plotdetails +
-    ggplot2::labs(
+    labs(
       x = "Måned", y = "Andel",
       title = "Andel med nedgang i NRS for sterkeste smerte i bevegelse (månedlig)",
       color = "Sykehus"
@@ -593,9 +593,9 @@ if (dim(dat)[1] < 1) {
   ind42plot <- dplyr::bind_rows(ind42plot, meanind42plot)
   
   #Plotting plotdat
-  p2 = ggplot2::ggplot(ind42plot, ggplot2::aes(monthname, freq)) + 
+  p2 = ggplot(ind42plot, aes(monthname, freq)) + 
     plotdetails +
-    ggplot2::labs(
+    labs(
       x = "Måned",
       y = "Andel",
       title = "Andel med nedgang i NRS for svakeste smerte i bevegelse (månedlig)",
@@ -622,9 +622,9 @@ if (dim(dat)[1] < 1) {
   ind43plot <- dplyr::bind_rows(ind43plot, meanind43plot)
   
   #Plotting plotdat
-  p3 = ggplot2::ggplot(ind43plot, ggplot2::aes(monthname, freq)) + 
+  p3 = ggplot(ind43plot, aes(monthname, freq)) + 
     plotdetails +
-    ggplot2::labs(
+    labs(
       x = "Måned",
       y = "Andel",
       title = "Andel med nedgang i NRS for sterkeste smerte i ro (månedlig)",
@@ -651,9 +651,9 @@ if (dim(dat)[1] < 1) {
   ind44plot <- dplyr::bind_rows(ind44plot, meanind44plot)
   
   #Plotting plotdat
-  p4 = ggplot2::ggplot(ind44plot, ggplot2::aes(monthname, freq)) + 
+  p4 = ggplot(ind44plot, aes(monthname, freq)) + 
     plotdetails +
-    ggplot2::labs(
+    labs(
       x = "Måned",
       y = "Andel",
       title = "Andel med nedgang i NRS for svakeste smerte i ro (månedlig)",
@@ -776,24 +776,24 @@ if (dim(plotikmed)[1] < 1) {
 } else {
   
   #Plotting plotdat
-  ggplot2::ggplot(plotikmed, ggplot2::aes(monthname, freq)) + 
-    ggplot2::geom_line(ggplot2::aes(group = factor(SykehusNavn), 
+  ggplot(plotikmed, aes(monthname, freq)) + 
+    geom_line(aes(group = factor(SykehusNavn), 
                   colour=factor(SykehusNavn)), size = 0.5) +
-    ggplot2::geom_point(ggplot2::aes(group = factor(SykehusNavn), 
+    geom_point(aes(group = factor(SykehusNavn), 
                    colour=factor(SykehusNavn)), size = 1) + 
-    ggplot2::labs(x = "Måned", y = "Andel", 
+    labs(x = "Måned", y = "Andel", 
          subtitle = "Andel med ikke-medikamentell behandling per måned", 
-         color = "Sykehus") + ggplot2::theme_classic() + 
-    ggplot2::theme(axis.text.x = ggplot2::element_text(size = 8.5), 
-          axis.text.y = ggplot2::element_text(size = 10), 
-          axis.title = ggplot2::element_text(size = 10), 
-          plot.margin = ggplot2::unit(c(1, 1, 2, 1), "cm"), 
-          legend.text = ggplot2::element_text(size = 10), 
-          axis.title.y = ggplot2::element_text(
-            margin = ggplot2::margin(t = 0, r = 10, b = 0, l = 0)
+         color = "Sykehus") + theme_classic() + 
+    theme(axis.text.x = element_text(size = 8.5), 
+          axis.text.y = element_text(size = 10), 
+          axis.title = element_text(size = 10), 
+          plot.margin = unit(c(1, 1, 2, 1), "cm"), 
+          legend.text = element_text(size = 10), 
+          axis.title.y = element_text(
+            margin = margin(t = 0, r = 10, b = 0, l = 0)
           ), 
-          axis.title.x = ggplot2::element_text(
-            margin = ggplot2::margin(t = 10, r = 0, b = 0, l = 0)
+          axis.title.x = element_text(
+            margin = margin(t = 10, r = 0, b = 0, l = 0)
           )
     ) 
   
@@ -871,24 +871,24 @@ if (dim(plotnedtr)[1] < 1) {
 } else {
   
   #Plotting plotdat
-  ggplot2::ggplot(plotnedtr, ggplot2::aes(monthname, freq)) + 
-    ggplot2::geom_line(ggplot2::aes(group = factor(SykehusNavn), 
+  ggplot(plotnedtr, aes(monthname, freq)) + 
+    geom_line(aes(group = factor(SykehusNavn), 
                   colour=factor(SykehusNavn)), size = 0.5) +
-    ggplot2::geom_point(ggplot2::aes(group = factor(SykehusNavn), 
+    geom_point(aes(group = factor(SykehusNavn), 
                    colour=factor(SykehusNavn)), size = 1) + 
-    ggplot2::labs(x = "Måned", y = "Andel", 
+    labs(x = "Måned", y = "Andel", 
          subtitle = "Andel med nedtrappingsplan per måned", 
-         color = "Sykehus") + ggplot2::theme_classic() + 
-    ggplot2::theme(axis.text.x = ggplot2::element_text(size = 8.5), 
-          axis.text.y = ggplot2::element_text(size = 10), 
-          axis.title = ggplot2::element_text(size = 10), 
-          plot.margin = ggplot2::unit(c(1, 1, 2, 1), "cm"), 
-          legend.text = ggplot2::element_text(size = 13), 
-          axis.title.y = ggplot2::element_text(
-            margin = ggplot2::margin(t = 0, r = 10, b = 0, l = 0)
+         color = "Sykehus") + theme_classic() + 
+    theme(axis.text.x = element_text(size = 8.5), 
+          axis.text.y = element_text(size = 10), 
+          axis.title = element_text(size = 10), 
+          plot.margin = unit(c(1, 1, 2, 1), "cm"), 
+          legend.text = element_text(size = 13), 
+          axis.title.y = element_text(
+            margin = margin(t = 0, r = 10, b = 0, l = 0)
           ), 
-          axis.title.x = ggplot2::element_text(
-            margin = ggplot2::margin(t = 10, r = 0, b = 0, l = 0)
+          axis.title.x = element_text(
+            margin = margin(t = 10, r = 0, b = 0, l = 0)
           )
     ) 
   
@@ -963,24 +963,24 @@ if (dim(plotaks)[1] < 1) {
 } else {
   
   #Plotting plotdat
-  ggplot2::ggplot(plotaks, ggplot2::aes(monthname, freq)) + 
-    ggplot2::geom_line(ggplot2::aes(group = factor(SykehusNavn), 
+  ggplot(plotaks, aes(monthname, freq)) + 
+    geom_line(aes(group = factor(SykehusNavn), 
                   colour=factor(SykehusNavn)), size = 0.5) +
-    ggplot2::geom_point(ggplot2::aes(group = factor(SykehusNavn), 
+    geom_point(aes(group = factor(SykehusNavn), 
                    colour=factor(SykehusNavn)), size = 1) + 
-    ggplot2::labs(x = "Måned", y = "Andel", 
+    labs(x = "Måned", y = "Andel", 
          subtitle = "Andel med akseptabel smerte ved siste tilsyn per måned", 
-         color = "Sykehus") + ggplot2::theme_classic() + 
-    ggplot2::theme(axis.text.x = ggplot2::element_text(size = 8.5), 
-          axis.text.y = ggplot2::element_text(size = 10), 
-          axis.title = ggplot2::element_text(size = 10), 
-          plot.margin = ggplot2::unit(c(1, 1, 2, 1), "cm"), 
-          legend.text = ggplot2::element_text(size = 13), 
-          axis.title.y = ggplot2::element_text(
-            margin = ggplot2::margin(t = 0, r = 10, b = 0, l = 0)
+         color = "Sykehus") + theme_classic() + 
+    theme(axis.text.x = element_text(size = 8.5), 
+          axis.text.y = element_text(size = 10), 
+          axis.title = element_text(size = 10), 
+          plot.margin = unit(c(1, 1, 2, 1), "cm"), 
+          legend.text = element_text(size = 13), 
+          axis.title.y = element_text(
+            margin = margin(t = 0, r = 10, b = 0, l = 0)
           ), 
-          axis.title.x = ggplot2::element_text(
-            margin = ggplot2::margin(t = 10, r = 0, b = 0, l = 0)
+          axis.title.x = element_text(
+            margin = margin(t = 10, r = 0, b = 0, l = 0)
           )
     ) 
   
@@ -1068,24 +1068,24 @@ if (dim(plotfunk)[1] < 1) {
 } else {
 
   #Plotting plotdat
-  ggplot2::ggplot(plotfunk, ggplot2::aes(monthname, freq)) +
-    ggplot2::geom_line(ggplot2::aes(group = factor(SykehusNavn), 
+  ggplot(plotfunk, aes(monthname, freq)) +
+    geom_line(aes(group = factor(SykehusNavn), 
                   colour=factor(SykehusNavn)), size = 0.5) +
-    ggplot2::geom_point(ggplot2::aes(group = factor(SykehusNavn), 
+    geom_point(aes(group = factor(SykehusNavn), 
                    colour=factor(SykehusNavn)), size = 1) + 
-    ggplot2::labs(x = "Måned", y = "Andel", 
+    labs(x = "Måned", y = "Andel", 
          subtitle = "Andel med forbedring i funksjon per måned", 
-         color = "Sykehus") + ggplot2::theme_classic() + 
-    ggplot2::theme(axis.text.x = ggplot2::element_text(size = 8.5), 
-          axis.text.y = ggplot2::element_text(size = 10), 
-          axis.title = ggplot2::element_text(size = 10), 
-          plot.margin = ggplot2::unit(c(1, 1, 2, 1), "cm"), 
-          legend.text = ggplot2::element_text(size = 13), 
-          axis.title.y = ggplot2::element_text(
-            margin = ggplot2::margin(t = 0, r = 10, b = 0, l = 0)
+         color = "Sykehus") + theme_classic() + 
+    theme(axis.text.x = element_text(size = 8.5), 
+          axis.text.y = element_text(size = 10), 
+          axis.title = element_text(size = 10), 
+          plot.margin = unit(c(1, 1, 2, 1), "cm"), 
+          legend.text = element_text(size = 13), 
+          axis.title.y = element_text(
+            margin = margin(t = 0, r = 10, b = 0, l = 0)
           ), 
-          axis.title.x = ggplot2::element_text(
-            margin = ggplot2::margin(t = 10, r = 0, b = 0, l = 0)
+          axis.title.x = element_text(
+            margin = margin(t = 10, r = 0, b = 0, l = 0)
           )
     )
 
@@ -1239,24 +1239,24 @@ if (dim(plotnrs)[1] < 1) {
   figur for denne kvalitetsindikatoren."
 } else {
     #Plotting plotdat
-  ggplot2::ggplot(plotnrs, ggplot2::aes(monthname, freq)) +
-    ggplot2::geom_line(ggplot2::aes(group = factor(SykehusNavn), 
+  ggplot(plotnrs, aes(monthname, freq)) +
+    geom_line(aes(group = factor(SykehusNavn), 
                   colour=factor(SykehusNavn)), size = 0.5) +
-    ggplot2::geom_point(ggplot2::aes(group = factor(SykehusNavn), 
+    geom_point(aes(group = factor(SykehusNavn), 
                    colour=factor(SykehusNavn)), size = 1) + 
-    ggplot2::labs(x = "Måned", y = "Andel", 
+    labs(x = "Måned", y = "Andel", 
          subtitle = "Andel av de som er tilsett som kunne angi NRS ved første og siste tilsyn.", 
-         color = "Sykehus") + ggplot2::theme_classic() + 
-    ggplot2::theme(axis.text.x = ggplot2::element_text(size = 8.5), 
-          axis.text.y = ggplot2::element_text(size = 10), 
-          axis.title = ggplot2::element_text(size = 10), 
-          plot.margin = ggplot2::unit(c(1, 1, 2, 1), "cm"), 
-          legend.text = ggplot2::element_text(size = 13), 
-          axis.title.y = ggplot2::element_text(
-            margin = ggplot2::margin(t = 0, r = 10, b = 0, l = 0)
+         color = "Sykehus") + theme_classic() + 
+    theme(axis.text.x = element_text(size = 8.5), 
+          axis.text.y = element_text(size = 10), 
+          axis.title = element_text(size = 10), 
+          plot.margin = unit(c(1, 1, 2, 1), "cm"), 
+          legend.text = element_text(size = 13), 
+          axis.title.y = element_text(
+            margin = margin(t = 0, r = 10, b = 0, l = 0)
           ), 
-          axis.title.x = ggplot2::element_text(
-            margin = ggplot2::margin(t = 10, r = 0, b = 0, l = 0)
+          axis.title.x = element_text(
+            margin = margin(t = 10, r = 0, b = 0, l = 0)
           )
     )
   
