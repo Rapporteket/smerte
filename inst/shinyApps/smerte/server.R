@@ -35,15 +35,19 @@ server <- function(input, output, session) {
 
 # Nasjonal database -------------------------------------------------------
   shiny::observeEvent(user$org(), {
+
+    #fjerne dynamiske tabs
+    shiny::removeTab(inputId = "tabs", target = "Tilsyn")
+    shiny::removeTab(inputId = "tabs", target = "Dekningsgrad før reservasjon")
+    shiny::removeTab(inputId = "tabs", target = "Dekningsgrad etter reservasjon")
+    shiny::removeTab(inputId = "tabs", target = "Spinalkateter")
+    shiny::removeTab(inputId = "tabs", target = "Smertekategori")
+    shiny::removeTab(inputId = "tabs", target = "Oppfølging ved smerteklinikk")
+    # shiny::removeTab(inputId = "tabs", target = "Epidural (barn)")
+    shiny::removeTab(inputId = "tabs", target = "Abonnement lokal")
+    shiny::removeTab(inputId = "tabs", target = "Abonnement nasjonal")
+
     if (smerte::isNationalReg(shiny::req(user$org()))) {
-      shiny::removeTab(inputId = "tabs", target = "Tilsyn")
-      shiny::removeTab(inputId = "tabs", target = "Dekningsgrad før reservasjon")
-      shiny::removeTab(inputId = "tabs", target = "Dekningsgrad etter reservasjon")
-      shiny::removeTab(inputId = "tabs", target = "Spinalkateter")
-      shiny::removeTab(inputId = "tabs", target = "Smertekategori")
-      shiny::removeTab(inputId = "tabs", target = "Oppfølging ved smerteklinikk")
-      # shiny::removeTab(inputId = "tabs", target = "Epidural (barn)")
-      shiny::removeTab(inputId = "tabs", target = "Abonnement lokal")
 
       shiny::insertTab(inputId = "tabs",
                        tab = shiny::tabPanel(
@@ -58,15 +62,9 @@ server <- function(input, output, session) {
                            )
                          )
                        ),
-                       position = "after",
-                       target = "Rapporter")
-    }
-
-# Lokal database ----------------------------------------------------------
-
-    if (!(smerte::isNationalReg(shiny::req(user$org())))) {
-
-      shiny::removeTab(inputId = "tabs", target = "Abonnement nasjonal")
+                       position = "before",
+                       target = "Datadump")
+    } else {
 
       shiny::insertTab(inputId = "tabs",
                        tab = shiny::tabPanel(
@@ -182,8 +180,8 @@ server <- function(input, output, session) {
                            )
                          )
                        ),
-                       position = "after",
-                       target = "Rapporter")
+                       position = "before",
+                       target = "Datadump")
     }
   }
   )
@@ -191,11 +189,13 @@ server <- function(input, output, session) {
 # Tilgangsnivå -----------------------------------------------------------
 
   observeEvent(list(user$role(), user$org()), {
-    if (!shiny::req(user$role()) %in% "SC") {
-      shiny::removeTab(inputId = "tabs", target = "Verktøy")
-    }
+    shiny::req(user$role(), user$org())
+
+    shiny::removeTab(inputId = "tabs", target = "Verktøy")
+    shiny::removeTab("tabs", target = "Utsendelser")
+    shiny::removeTab("tabs", target = "Utsendelser nasjonal")
+
     if (shiny::req(user$role()) %in% "SC") {
-      message("Viser Verktøy tab for bruker med rolle: ", user$role())
       shiny::insertTab(
         inputId = "tabs",
         tab = shiny::navbarMenu("Verktøy",
@@ -204,22 +204,6 @@ server <- function(input, output, session) {
                                   shiny::sidebarLayout(
                                     shiny::sidebarPanel(uiOutput("metaControl")),
                                     shiny::mainPanel(htmlOutput("metaData"))
-                                  )
-                                ),
-                                shiny::tabPanel(
-                                  "Utsendelser nasjonal",
-                                  shiny::sidebarLayout(
-                                    shiny::sidebarPanel(
-                                      rapbase::autoReportFormatInput("smerteDispatchmentNasjonal"),
-                                      rapbase::autoReportOrgInput("smerteDispatchmentNasjonal"),
-                                      shiny::HTML(
-                                        "NB Dobbeltsjekk at rapporten er gitt riktig datakilde!<br/><br/>"
-                                      ),
-                                      rapbase::autoReportInput("smerteDispatchmentNasjonal")
-                                    ),
-                                    shiny::mainPanel(
-                                      rapbase::autoReportUI("smerteDispatchmentNasjonal")
-                                    )
                                   )
                                 ),
                                 shiny::tabPanel(
@@ -249,6 +233,49 @@ server <- function(input, output, session) {
         position = "after",
         target = "Datadump"
       )
+      if(smerte::isNationalReg(user$org())) {
+        shiny::insertTab("tabs",
+                       tab = shiny::tabPanel(
+                         "Utsendelser nasjonal",
+                         shiny::sidebarLayout(
+                           shiny::sidebarPanel(
+                             rapbase::autoReportFormatInput("smerteDispatchmentNasjonal"),
+                             rapbase::autoReportOrgInput("smerteDispatchmentNasjonal"),
+                             shiny::HTML(
+                               "NB Dobbeltsjekk at rapporten er gitt riktig datakilde!<br/><br/>"
+                               ),
+                             rapbase::autoReportInput("smerteDispatchmentNasjonal")
+                             ),
+                           shiny::mainPanel(
+                             rapbase::autoReportUI("smerteDispatchmentNasjonal")
+                             )
+                           )
+                         ),
+                       position = "before",
+                       target = "Eksport"
+                       )
+      } else {
+        shiny::insertTab("tabs",
+                         tab = shiny::tabPanel(
+                           "Utsendelser",
+                           shiny::sidebarLayout(
+                             shiny::sidebarPanel(
+                               rapbase::autoReportFormatInput("smerteDispatchment"),
+                               rapbase::autoReportOrgInput("smerteDispatchment"),
+                               shiny::HTML(
+                                 "NB Dobbeltsjekk at rapporten er gitt riktig datakilde!<br/><br/>"
+                                 ),
+                               rapbase::autoReportInput("smerteDispatchment")
+                               ),
+                             shiny::mainPanel(
+                               rapbase::autoReportUI("smerteDispatchment")
+                               )
+                             )
+                           ),
+                         position = "before",
+                         target = "Eksport"
+        )
+        }
     }
   }
   )
