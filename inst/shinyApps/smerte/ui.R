@@ -8,16 +8,18 @@ ui <- shiny::tagList(
     id = "tabs",
 
     shiny::tabPanel(
-      "Veiledning",
+      title = "Veiledning",
+      value = "tab_veiledning",
       rapbase::navbarWidgetInput("navbar-widget", selectOrganization = TRUE),
       shiny::mainPanel(width = 12,
         shiny::htmlOutput("veiledning", inline = TRUE)
       )
     ),
     shiny::navbarMenu(
-      "Rapporter",
+      title = "Rapporter",
       shiny::tabPanel(
-        "Indikatorer",
+        title = "Indikatorer",
+        value = "tab_indikatorer",
         shiny::sidebarLayout(
           shiny::sidebarPanel(
             smerte::defaultReportInput("indikator")
@@ -28,7 +30,8 @@ ui <- shiny::tagList(
         )
       ),
       shiny::tabPanel(
-        "Opioidreduksjon",
+        title = "Opioidreduksjon",
+        value = "tab_opioidreduksjon",
         shiny::sidebarLayout(
           shiny::sidebarPanel(
             smerte::defaultReportInput("opioid")
@@ -39,7 +42,8 @@ ui <- shiny::tagList(
         )
       ),
       shiny::tabPanel(
-        "Eprom",
+        title = "Eprom",
+        value = "tab_eprom",
         shiny::sidebarLayout(
           shiny::sidebarPanel(
             smerte::defaultReportInput("eprom")
@@ -50,7 +54,8 @@ ui <- shiny::tagList(
         )
       ),
       # shiny::tabPanel(
-      #   "Epidural - barn",
+      #   title = "Epidural - barn",
+      #   value = "tab_epidural_barn",
       #   shiny::sidebarLayout(
       #     shiny::sidebarPanel(
       #       smerte::defaultReportInput("lokalepi")
@@ -61,7 +66,8 @@ ui <- shiny::tagList(
       #     )
       #   ),
       shiny::tabPanel(
-        "Tid til død etter utskrivelse",
+        title = "Tid til død etter utskrivelse",
+        value = "tab_tid_til_dod",
         shiny::sidebarLayout(
           shiny::sidebarPanel(
             smerte::defaultReportInput("timetodeath")
@@ -73,7 +79,8 @@ ui <- shiny::tagList(
       ),
      ),
     shiny::tabPanel(
-      "Datadump",
+      title = "Datadump",
+      value = "tab_datadump",
       shiny::sidebarLayout(
         shiny::sidebarPanel(
           width = 4,
