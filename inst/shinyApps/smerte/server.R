@@ -37,21 +37,22 @@ server <- function(input, output, session) {
   shiny::observeEvent(user$org(), {
 
     #fjerne dynamiske tabs
-    shiny::removeTab(inputId = "tabs", target = "Tilsyn")
-    shiny::removeTab(inputId = "tabs", target = "Dekningsgrad før reservasjon")
-    shiny::removeTab(inputId = "tabs", target = "Dekningsgrad etter reservasjon")
-    shiny::removeTab(inputId = "tabs", target = "Spinalkateter")
-    shiny::removeTab(inputId = "tabs", target = "Smertekategori")
-    shiny::removeTab(inputId = "tabs", target = "Oppfølging ved smerteklinikk")
-    # shiny::removeTab(inputId = "tabs", target = "Epidural (barn)")
-    shiny::removeTab(inputId = "tabs", target = "Abonnement lokal")
-    shiny::removeTab(inputId = "tabs", target = "Abonnement nasjonal")
+    shiny::removeTab(inputId = "tabs", target = "tab_tilsyn")
+    shiny::removeTab(inputId = "tabs", target = "tab_dg_for_res")
+    shiny::removeTab(inputId = "tabs", target = "tab_dg_etter_res")
+    shiny::removeTab(inputId = "tabs", target = "tab_spinalkateter")
+    shiny::removeTab(inputId = "tabs", target = "tab_smertekategori")
+    shiny::removeTab(inputId = "tabs", target = "tab_oppf_smerteklinikk")
+    # shiny::removeTab(inputId = "tabs", target = "tab_epidural_barn")
+    shiny::removeTab(inputId = "tabs", target = "tab_abb_lokal")
+    shiny::removeTab(inputId = "tabs", target = "tab_abb_nasjonal")
 
     if (smerte::isNationalReg(shiny::req(user$org()))) {
 
       shiny::insertTab(inputId = "tabs",
                        tab = shiny::tabPanel(
-                         "Abonnement nasjonal",
+                         title = "Abonnement nasjonal",
+                         value = "tab_abb_nasjonal",
                          shiny::sidebarLayout(
                            shiny::sidebarPanel(
                              rapbase::autoReportFormatInput("smerteSubscriptionNational"),
@@ -63,12 +64,13 @@ server <- function(input, output, session) {
                          )
                        ),
                        position = "before",
-                       target = "Datadump")
+                       target = "tab_datadump")
     } else {
 
       shiny::insertTab(inputId = "tabs",
                        tab = shiny::tabPanel(
-                         "Tilsyn",
+                         title = "Tilsyn",
+                         value = "tab_tilsyn",
                          shiny::sidebarLayout(
                            shiny::sidebarPanel(
                              smerte::defaultReportInput("tilsyn")
@@ -79,12 +81,13 @@ server <- function(input, output, session) {
                          )
                        ),
                        position = "before",
-                       target = "Indikatorer"
+                       target = "tab_indikatorer"
                        )
 
       shiny::insertTab(inputId = "tabs",
                        tab = shiny::tabPanel(
-                         "Dekningsgrad før reservasjon",
+                         title = "Dekningsgrad før reservasjon",
+                         value = "tab_dg_for_res",
                          shiny::sidebarLayout(
                            shiny::sidebarPanel(
                              smerte::defaultReportInput("dekningsgrad",
@@ -98,12 +101,13 @@ server <- function(input, output, session) {
                          )
                        ),
                        position = "before",
-                       target = "Indikatorer"
+                       target = "tab_indikatorer"
                        )
 
       shiny::insertTab(inputId = "tabs",
                        tab = shiny::tabPanel(
-                         "Dekningsgrad etter reservasjon",
+                         title = "Dekningsgrad etter reservasjon",
+                         value = "tab_dg_etter_res",
                          shiny::sidebarLayout(
                            shiny::sidebarPanel(
                              smerte::defaultReportInput("dekningsgradReserv",
@@ -116,12 +120,13 @@ server <- function(input, output, session) {
                          )
                        ),
                        position = "before",
-                       target = "Indikatorer"
+                       target = "tab_indikatorer"
                        )
 
       shiny::insertTab(inputId = "tabs",
                        tab =  shiny::tabPanel(
-                         "Spinalkateter",
+                         title = "Spinalkateter",
+                         value = "tab_spinalkateter",
                          shiny::sidebarLayout(
                            shiny::sidebarPanel(
                              smerte::defaultReportInput("spinalkateter")
@@ -132,12 +137,13 @@ server <- function(input, output, session) {
                          )
                        ),
                        position = "before",
-                       target = "Tid til død etter utskrivelse"
+                       target = "tab_tid_til_dod"
                        )
 
       shiny::insertTab(inputId = "tabs",
                        tab = shiny::tabPanel(
-                         "Smertekategori",
+                         title = "Smertekategori",
+                         value = "tab_smertekategori",
                          shiny::sidebarLayout(
                            shiny::sidebarPanel(
                              smerte::defaultReportInput("smertekategori")
@@ -148,12 +154,13 @@ server <- function(input, output, session) {
                          )
                        ),
                        position = "before",
-                       target = "Tid til død etter utskrivelse"
+                       target = "tab_tid_til_dod"
                        )
 
       shiny::insertTab(inputId = "tabs",
                        tab =       shiny::tabPanel(
-                         "Oppfølging ved smerteklinikk",
+                         title = "Oppfølging ved smerteklinikk",
+                         value = "tab_oppf_smerteklinikk",
                          shiny::sidebarLayout(
                            shiny::sidebarPanel(
                              smerte::defaultReportInput("oppfolg")
@@ -164,12 +171,13 @@ server <- function(input, output, session) {
                          )
                        ),
                        position = "after",
-                       target = "Tid til død etter utskrivelse"
+                       target = "tab_tid_til_dod"
                        )
 
       shiny::insertTab(inputId = "tabs",
                        tab = shiny::tabPanel(
-                         "Abonnement lokal",
+                         title = "Abonnement lokal",
+                         value = "tab_abb_lokal",
                          shiny::sidebarLayout(
                            shiny::sidebarPanel(
                              rapbase::autoReportFormatInput("smerteSubscription"),
@@ -181,7 +189,7 @@ server <- function(input, output, session) {
                          )
                        ),
                        position = "before",
-                       target = "Datadump")
+                       target = "tab_datadump")
     }
   }
   )
@@ -192,90 +200,84 @@ server <- function(input, output, session) {
     shiny::req(user$role(), user$org())
 
     shiny::removeTab(inputId = "tabs", target = "Verktøy")
-    shiny::removeTab("tabs", target = "Utsendelser")
-    shiny::removeTab("tabs", target = "Utsendelser nasjonal")
+    shiny::removeTab("tabs", target = "tab_utsendelser")
+    shiny::removeTab("tabs", target = "tab_utsendelser_nasjonal")
 
     if (shiny::req(user$role()) %in% "SC") {
       shiny::insertTab(
         inputId = "tabs",
-        tab = shiny::navbarMenu("Verktøy",
-                                shiny::tabPanel(
-                                  "Metadata",
-                                  shiny::sidebarLayout(
-                                    shiny::sidebarPanel(uiOutput("metaControl")),
-                                    shiny::mainPanel(htmlOutput("metaData"))
-                                  )
-                                ),
-                                shiny::tabPanel(
-                                  "Eksport",
-                                  shiny::sidebarLayout(
-                                    shiny::sidebarPanel(
-                                      rapbase::exportUCInput("smerteExport")
-                                    ),
-                                    shiny::mainPanel(
-                                      rapbase::exportGuideUI("smerteExportGuide")
-                                    )
-                                  )
-                                ),
-                                shiny::tabPanel(
-                                  "Bruksstatisitkk",
-                                  shiny::sidebarLayout(
-                                    shiny::sidebarPanel(
-                                      rapbase::statsInput("smerteStats"),
-                                      rapbase::statsGuideUI("smerteStats")
-                                    ),
-                                    shiny::mainPanel(
-                                      rapbase::statsUI("smerteStats")
-                                    )
-                                  )
-                                )
-        ),
+        tab = shiny::navbarMenu(
+          title = "Verktøy",
+          shiny::tabPanel(
+            title = "Metadata",
+            value = "tab_metadata",
+            shiny::sidebarLayout(
+              shiny::sidebarPanel(uiOutput("metaControl")),
+              shiny::mainPanel(htmlOutput("metaData"))
+              )
+            ),
+          shiny::tabPanel(
+            title = "Eksport",
+            value = "tab_eksport",
+            shiny::sidebarLayout(
+              shiny::sidebarPanel(
+                rapbase::exportUCInput("smerteExport")
+                ),
+              shiny::mainPanel(
+                rapbase::exportGuideUI("smerteExportGuide")
+                )
+              )
+            ),
+          shiny::tabPanel(
+            title = "Bruksstatisitkk",
+            value = "tab_bruksstatistikk",
+            shiny::sidebarLayout(
+              shiny::sidebarPanel(
+                rapbase::statsInput("smerteStats"),
+                rapbase::statsGuideUI("smerteStats")
+                ),
+              shiny::mainPanel(
+                rapbase::statsUI("smerteStats")
+                )
+              )
+            ),
+        if(smerte::isNationalReg(user$org())) shiny::tabPanel(
+            title = "Utsendelser nasjonal",
+            value = "tab_utsendelser_nasjonal",
+            shiny::sidebarLayout(
+              shiny::sidebarPanel(
+                rapbase::autoReportFormatInput("smerteDispatchmentNasjonal"),
+                rapbase::autoReportOrgInput("smerteDispatchmentNasjonal"),
+                shiny::HTML(
+                  "NB Dobbeltsjekk at rapporten er gitt riktig datakilde!<br/><br/>"
+                  ),
+                rapbase::autoReportInput("smerteDispatchmentNasjonal")
+                ),
+              shiny::mainPanel(
+                rapbase::autoReportUI("smerteDispatchmentNasjonal")
+                )
+              )
+            ) else shiny::tabPanel(
+             title = "Utsendelser",
+             value = "tab_utsendelser",
+             shiny::sidebarLayout(
+               shiny::sidebarPanel(
+                 rapbase::autoReportFormatInput("smerteDispatchment"),
+                 rapbase::autoReportOrgInput("smerteDispatchment"),
+                 shiny::HTML(
+                   "NB Dobbeltsjekk at rapporten er gitt riktig datakilde!<br/><br/>"
+                   ),
+                 rapbase::autoReportInput("smerteDispatchment")
+                 ),
+               shiny::mainPanel(
+                 rapbase::autoReportUI("smerteDispatchment")
+                 )
+               )
+             )
+          ),
         position = "after",
-        target = "Datadump"
+        target = "tab_datadump"
       )
-      if(smerte::isNationalReg(user$org())) {
-        shiny::insertTab("tabs",
-                       tab = shiny::tabPanel(
-                         "Utsendelser nasjonal",
-                         shiny::sidebarLayout(
-                           shiny::sidebarPanel(
-                             rapbase::autoReportFormatInput("smerteDispatchmentNasjonal"),
-                             rapbase::autoReportOrgInput("smerteDispatchmentNasjonal"),
-                             shiny::HTML(
-                               "NB Dobbeltsjekk at rapporten er gitt riktig datakilde!<br/><br/>"
-                               ),
-                             rapbase::autoReportInput("smerteDispatchmentNasjonal")
-                             ),
-                           shiny::mainPanel(
-                             rapbase::autoReportUI("smerteDispatchmentNasjonal")
-                             )
-                           )
-                         ),
-                       position = "before",
-                       target = "Eksport"
-                       )
-      } else {
-        shiny::insertTab("tabs",
-                         tab = shiny::tabPanel(
-                           "Utsendelser",
-                           shiny::sidebarLayout(
-                             shiny::sidebarPanel(
-                               rapbase::autoReportFormatInput("smerteDispatchment"),
-                               rapbase::autoReportOrgInput("smerteDispatchment"),
-                               shiny::HTML(
-                                 "NB Dobbeltsjekk at rapporten er gitt riktig datakilde!<br/><br/>"
-                                 ),
-                               rapbase::autoReportInput("smerteDispatchment")
-                               ),
-                             shiny::mainPanel(
-                               rapbase::autoReportUI("smerteDispatchment")
-                               )
-                             )
-                           ),
-                         position = "before",
-                         target = "Eksport"
-        )
-        }
     }
   }
   )
