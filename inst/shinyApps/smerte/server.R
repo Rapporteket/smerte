@@ -33,48 +33,222 @@ server <- function(input, output, session) {
     )
   }
 
-  # Hide tabs depending on context
-  ## do not show local reports in national context
+# Nasjonal database -------------------------------------------------------
   shiny::observeEvent(user$org(), {
     if (smerte::isNationalReg(shiny::req(user$org()))) {
-      shiny::hideTab(inputId = "tabs", target = "Tilsyn")
-      shiny::hideTab(inputId = "tabs", target = "Dekningsgrad før reservasjon")
-      shiny::hideTab(inputId = "tabs", target = "Dekningsgrad etter reservasjon")
-      shiny::hideTab(inputId = "tabs", target = "Spinalkateter")
-      shiny::hideTab(inputId = "tabs", target = "Smertekategori")
-      shiny::hideTab(inputId = "tabs", target = "Oppfølging ved smerteklinikk")
-      shiny::hideTab(inputId = "tabs", target = "Epidural (barn)")
-      shiny::hideTab(inputId = "tabs", target = "Abonnement lokal")
-      shiny::showTab(inputId = "tabs", target = "Abonnement nasjonal")
+      shiny::removeTab(inputId = "tabs", target = "Tilsyn")
+      shiny::removeTab(inputId = "tabs", target = "Dekningsgrad før reservasjon")
+      shiny::removeTab(inputId = "tabs", target = "Dekningsgrad etter reservasjon")
+      shiny::removeTab(inputId = "tabs", target = "Spinalkateter")
+      shiny::removeTab(inputId = "tabs", target = "Smertekategori")
+      shiny::removeTab(inputId = "tabs", target = "Oppfølging ved smerteklinikk")
+      # shiny::removeTab(inputId = "tabs", target = "Epidural (barn)")
+      shiny::removeTab(inputId = "tabs", target = "Abonnement lokal")
+
+      shiny::insertTab(inputId = "tabs",
+                       tab = shiny::tabPanel(
+                         "Abonnement nasjonal",
+                         shiny::sidebarLayout(
+                           shiny::sidebarPanel(
+                             rapbase::autoReportFormatInput("smerteSubscriptionNational"),
+                             rapbase::autoReportInput("smerteSubscriptionNational")
+                           ),
+                           shiny::mainPanel(
+                             rapbase::autoReportUI("smerteSubscriptionNational")
+                           )
+                         )
+                       ),
+                       position = "after",
+                       target = "Rapporter")
     }
+
+# Lokal database ----------------------------------------------------------
+
     if (!(smerte::isNationalReg(shiny::req(user$org())))) {
-      shiny::showTab(inputId = "tabs", target = "Tilsyn")
-      shiny::showTab(inputId = "tabs", target = "Dekningsgrad før reservasjon")
-      shiny::showTab(inputId = "tabs", target = "Dekningsgrad etter reservasjon")
-      shiny::showTab(inputId = "tabs", target = "Spinalkateter")
-      shiny::showTab(inputId = "tabs", target = "Smertekategori")
-      shiny::showTab(inputId = "tabs", target = "Oppfølging ved smerteklinikk")
-      shiny::showTab(inputId = "tabs", target = "Abonnement lokal")
-      shiny::hideTab(inputId = "tabs", target = "Abonnement nasjonal")
+
+      shiny::removeTab(inputId = "tabs", target = "Abonnement nasjonal")
+
+      shiny::insertTab(inputId = "tabs",
+                       tab = shiny::tabPanel(
+                         "Tilsyn",
+                         shiny::sidebarLayout(
+                           shiny::sidebarPanel(
+                             smerte::defaultReportInput("tilsyn")
+                           ),
+                           shiny::mainPanel(
+                             smerte::defaultReportUI("tilsyn")
+                           )
+                         )
+                       ),
+                       position = "before",
+                       target = "Indikatorer"
+                       )
+
+      shiny::insertTab(inputId = "tabs",
+                       tab = shiny::tabPanel(
+                         "Dekningsgrad før reservasjon",
+                         shiny::sidebarLayout(
+                           shiny::sidebarPanel(
+                             smerte::defaultReportInput("dekningsgrad",
+                                                        startDate = "2022-01-01",
+                                                        endDate = "2022-11-30",
+                                                        max = "2022-11-30")
+                           ),
+                           shiny::mainPanel(
+                             smerte::defaultReportUI("dekningsgrad")
+                           )
+                         )
+                       ),
+                       position = "before",
+                       target = "Indikatorer"
+                       )
+
+      shiny::insertTab(inputId = "tabs",
+                       tab = shiny::tabPanel(
+                         "Dekningsgrad etter reservasjon",
+                         shiny::sidebarLayout(
+                           shiny::sidebarPanel(
+                             smerte::defaultReportInput("dekningsgradReserv",
+                                                        startDate = "2022-12-01",
+                                                        min = "2022-12-01")
+                           ),
+                           shiny::mainPanel(
+                             smerte::defaultReportUI("dekningsgradReserv")
+                           )
+                         )
+                       ),
+                       position = "before",
+                       target = "Indikatorer"
+                       )
+
+      shiny::insertTab(inputId = "tabs",
+                       tab =  shiny::tabPanel(
+                         "Spinalkateter",
+                         shiny::sidebarLayout(
+                           shiny::sidebarPanel(
+                             smerte::defaultReportInput("spinalkateter")
+                           ),
+                           shiny::mainPanel(
+                             smerte::defaultReportUI("spinalkateter")
+                           )
+                         )
+                       ),
+                       position = "before",
+                       target = "Tid til død etter utskrivelse"
+                       )
+
+      shiny::insertTab(inputId = "tabs",
+                       tab = shiny::tabPanel(
+                         "Smertekategori",
+                         shiny::sidebarLayout(
+                           shiny::sidebarPanel(
+                             smerte::defaultReportInput("smertekategori")
+                           ),
+                           shiny::mainPanel(
+                             smerte::defaultReportUI("smertekategori")
+                           )
+                         )
+                       ),
+                       position = "before",
+                       target = "Tid til død etter utskrivelse"
+                       )
+
+      shiny::insertTab(inputId = "tabs",
+                       tab =       shiny::tabPanel(
+                         "Oppfølging ved smerteklinikk",
+                         shiny::sidebarLayout(
+                           shiny::sidebarPanel(
+                             smerte::defaultReportInput("oppfolg")
+                           ),
+                           shiny::mainPanel(
+                             smerte::defaultReportUI("oppfolg")
+                           )
+                         )
+                       ),
+                       position = "after",
+                       target = "Tid til død etter utskrivelse"
+                       )
+
+      shiny::insertTab(inputId = "tabs",
+                       tab = shiny::tabPanel(
+                         "Abonnement lokal",
+                         shiny::sidebarLayout(
+                           shiny::sidebarPanel(
+                             rapbase::autoReportFormatInput("smerteSubscription"),
+                             rapbase::autoReportInput("smerteSubscription")
+                           ),
+                           shiny::mainPanel(
+                             rapbase::autoReportUI("smerteSubscription")
+                           )
+                         )
+                       ),
+                       position = "after",
+                       target = "Rapporter")
     }
   }
   )
 
-  ## tools only for SC
+# Tilgangsnivå -----------------------------------------------------------
+
   observeEvent(list(user$role(), user$org()), {
     if (!shiny::req(user$role()) %in% "SC") {
-      shiny::hideTab(inputId = "tabs", target = "Verktøy")
+      shiny::removeTab(inputId = "tabs", target = "Verktøy")
     }
     if (shiny::req(user$role()) %in% "SC") {
-      shiny::showTab(inputId = "tabs", target = "Verktøy")
-      if (smerte::isNationalReg(shiny::req(user$org()))) {
-        shiny::showTab(inputId = "tabs", target = "Utsendelser nasjonal")
-        shiny::hideTab(inputId = "tabs", target = "Utsendelser")
-      } else {
-        shiny::showTab(inputId = "tabs", target = "Utsendelser")
-        shiny::hideTab(inputId = "tabs", target = "Utsendelser nasjonal")
-      }
-
+      message("Viser Verktøy tab for bruker med rolle: ", user$role())
+      shiny::insertTab(
+        inputId = "tabs",
+        tab = shiny::navbarMenu("Verktøy",
+                                shiny::tabPanel(
+                                  "Metadata",
+                                  shiny::sidebarLayout(
+                                    shiny::sidebarPanel(uiOutput("metaControl")),
+                                    shiny::mainPanel(htmlOutput("metaData"))
+                                  )
+                                ),
+                                shiny::tabPanel(
+                                  "Utsendelser nasjonal",
+                                  shiny::sidebarLayout(
+                                    shiny::sidebarPanel(
+                                      rapbase::autoReportFormatInput("smerteDispatchmentNasjonal"),
+                                      rapbase::autoReportOrgInput("smerteDispatchmentNasjonal"),
+                                      shiny::HTML(
+                                        "NB Dobbeltsjekk at rapporten er gitt riktig datakilde!<br/><br/>"
+                                      ),
+                                      rapbase::autoReportInput("smerteDispatchmentNasjonal")
+                                    ),
+                                    shiny::mainPanel(
+                                      rapbase::autoReportUI("smerteDispatchmentNasjonal")
+                                    )
+                                  )
+                                ),
+                                shiny::tabPanel(
+                                  "Eksport",
+                                  shiny::sidebarLayout(
+                                    shiny::sidebarPanel(
+                                      rapbase::exportUCInput("smerteExport")
+                                    ),
+                                    shiny::mainPanel(
+                                      rapbase::exportGuideUI("smerteExportGuide")
+                                    )
+                                  )
+                                ),
+                                shiny::tabPanel(
+                                  "Bruksstatisitkk",
+                                  shiny::sidebarLayout(
+                                    shiny::sidebarPanel(
+                                      rapbase::statsInput("smerteStats"),
+                                      rapbase::statsGuideUI("smerteStats")
+                                    ),
+                                    shiny::mainPanel(
+                                      rapbase::statsUI("smerteStats")
+                                    )
+                                  )
+                                )
+        ),
+        position = "after",
+        target = "Datadump"
+      )
     }
   }
   )

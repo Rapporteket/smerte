@@ -17,44 +17,6 @@ ui <- shiny::tagList(
     shiny::navbarMenu(
       "Rapporter",
       shiny::tabPanel(
-        "Tilsyn",
-        shiny::sidebarLayout(
-          shiny::sidebarPanel(
-            smerte::defaultReportInput("tilsyn")
-          ),
-          shiny::mainPanel(
-            smerte::defaultReportUI("tilsyn")
-          )
-        )
-      ),
-      shiny::tabPanel(
-        "Dekningsgrad før reservasjon",
-        shiny::sidebarLayout(
-          shiny::sidebarPanel(
-            smerte::defaultReportInput("dekningsgrad",
-                                       startDate = "2022-01-01",
-                                       endDate = "2022-11-30",
-                                       max = "2022-11-30")
-          ),
-          shiny::mainPanel(
-            smerte::defaultReportUI("dekningsgrad")
-          )
-        )
-      ),
-      shiny::tabPanel(
-        "Dekningsgrad etter reservasjon",
-        shiny::sidebarLayout(
-          shiny::sidebarPanel(
-            smerte::defaultReportInput("dekningsgradReserv",
-                                       startDate = "2022-12-01",
-                                       min = "2022-12-01")
-          ),
-          shiny::mainPanel(
-            smerte::defaultReportUI("dekningsgradReserv")
-          )
-        )
-      ),
-      shiny::tabPanel(
         "Indikatorer",
         shiny::sidebarLayout(
           shiny::sidebarPanel(
@@ -87,39 +49,17 @@ ui <- shiny::tagList(
           )
         )
       ),
-      shiny::tabPanel(
-        "Spinalkateter",
-        shiny::sidebarLayout(
-          shiny::sidebarPanel(
-            smerte::defaultReportInput("spinalkateter")
-          ),
-          shiny::mainPanel(
-            smerte::defaultReportUI("spinalkateter")
-          )
-        )
-      ),
-      shiny::tabPanel(
-        "Smertekategori",
-        shiny::sidebarLayout(
-          shiny::sidebarPanel(
-            smerte::defaultReportInput("smertekategori")
-          ),
-          shiny::mainPanel(
-            smerte::defaultReportUI("smertekategori")
-          )
-        )
-      ),
-        shiny::tabPanel(
-          "Epidural (barn)",
-          shiny::sidebarLayout(
-            shiny::sidebarPanel(
-              smerte::defaultReportInput("lokalepi")
-            ),
-            shiny::mainPanel(
-              smerte::defaultReportUI("lokalepi")
-            )
-          )
-        ),
+      # shiny::tabPanel(
+      #   "Epidural - barn",
+      #   shiny::sidebarLayout(
+      #     shiny::sidebarPanel(
+      #       smerte::defaultReportInput("lokalepi")
+      #       ),
+      #       shiny::mainPanel(
+      #         smerte::defaultReportUI("lokalepi")
+      #       )
+      #     )
+      #   ),
       shiny::tabPanel(
         "Tid til død etter utskrivelse",
         shiny::sidebarLayout(
@@ -131,42 +71,7 @@ ui <- shiny::tagList(
           )
         )
       ),
-      shiny::tabPanel(
-        "Oppfølging ved smerteklinikk",
-        shiny::sidebarLayout(
-          shiny::sidebarPanel(
-            smerte::defaultReportInput("oppfolg")
-          ),
-          shiny::mainPanel(
-            smerte::defaultReportUI("oppfolg")
-          )
-        )
-      )
      ),
-    shiny::tabPanel(
-      "Abonnement lokal",
-      shiny::sidebarLayout(
-        shiny::sidebarPanel(
-          rapbase::autoReportFormatInput("smerteSubscription"),
-          rapbase::autoReportInput("smerteSubscription")
-        ),
-        shiny::mainPanel(
-          rapbase::autoReportUI("smerteSubscription")
-        )
-      )
-    ),
-    shiny::tabPanel(
-      "Abonnement nasjonal",
-      shiny::sidebarLayout(
-        shiny::sidebarPanel(
-          rapbase::autoReportFormatInput("smerteSubscriptionNational"),
-          rapbase::autoReportInput("smerteSubscriptionNational")
-        ),
-        shiny::mainPanel(
-          rapbase::autoReportUI("smerteSubscriptionNational")
-        )
-      )
-    ),
     shiny::tabPanel(
       "Datadump",
       shiny::sidebarLayout(
@@ -198,69 +103,5 @@ ui <- shiny::tagList(
         )
       )
     ),
-    shiny::navbarMenu("Verktøy",
-      shiny::tabPanel(
-        "Metadata",
-        shiny::sidebarLayout(
-          shiny::sidebarPanel(uiOutput("metaControl")),
-          shiny::mainPanel(htmlOutput("metaData"))
-        )
-      ),
-      shiny::tabPanel(
-        "Utsendelser",
-        shiny::sidebarLayout(
-          shiny::sidebarPanel(
-            rapbase::autoReportFormatInput("smerteDispatchment"),
-            rapbase::autoReportOrgInput("smerteDispatchment"),
-            shiny::HTML(
-              "NB Dobbeltsjekk at rapporten er gitt riktig datakilde!<br/><br/>"
-            ),
-            rapbase::autoReportInput("smerteDispatchment")
-          ),
-          shiny::mainPanel(
-            rapbase::autoReportUI("smerteDispatchment")
-          )
-        )
-      ),
-      shiny::tabPanel(
-        "Utsendelser nasjonal",
-        shiny::sidebarLayout(
-          shiny::sidebarPanel(
-            rapbase::autoReportFormatInput("smerteDispatchmentNasjonal"),
-            rapbase::autoReportOrgInput("smerteDispatchmentNasjonal"),
-            shiny::HTML(
-              "NB Dobbeltsjekk at rapporten er gitt riktig datakilde!<br/><br/>"
-            ),
-            rapbase::autoReportInput("smerteDispatchmentNasjonal")
-          ),
-          shiny::mainPanel(
-            rapbase::autoReportUI("smerteDispatchmentNasjonal")
-          )
-        )
-      ),
-      shiny::tabPanel(
-        "Eksport",
-        shiny::sidebarLayout(
-          shiny::sidebarPanel(
-            rapbase::exportUCInput("smerteExport")
-          ),
-          shiny::mainPanel(
-            rapbase::exportGuideUI("smerteExportGuide")
-          )
-        )
-      ),
-      shiny::tabPanel(
-        "Bruksstatisitkk",
-        shiny::sidebarLayout(
-          shiny::sidebarPanel(
-            rapbase::statsInput("smerteStats"),
-            rapbase::statsGuideUI("smerteStats")
-          ),
-          shiny::mainPanel(
-            rapbase::statsUI("smerteStats")
-          )
-        )
-      )
-    )
   ) # navbarPage
 ) # tagList
