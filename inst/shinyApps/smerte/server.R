@@ -594,7 +594,7 @@ server <- function(input, output, session) {
   # Datadump
   output$dumpTabControl <- shiny::renderUI({
     dumps = names(meta())
-    if(user$role() != "SC") {
+    if(user$role() != "SC" | !isNationalReg(user$org())) {
       dumps = setdiff(names(meta()),
                       c("emp11", "emp11_pain_diagnosis", "emp12", "emp22",
                         "hads", "mce", "mcelist", "opioidoppf", "pateval",
