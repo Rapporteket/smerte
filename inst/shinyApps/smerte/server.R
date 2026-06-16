@@ -283,6 +283,7 @@ server <- function(input, output, session) {
   )
 
   contentDump <- function(file, type, userRole = "LU") {
+
     d <- smerte::getDataDump(registryName(),input$dumpDataSet,
                              reshId = user$org(),
                              fromDate = input$dumpDateRange[1],
@@ -592,7 +593,15 @@ server <- function(input, output, session) {
 
   # Datadump
   output$dumpTabControl <- shiny::renderUI({
-    selectInput("dumpDataSet", "Velg datasett:", names(meta()))
+    dumps = names(meta())
+    if(user$role() != "SC") {
+      dumps = setdiff(names(meta()),
+                      c("emp11", "emp11_pain_diagnosis", "emp12", "emp22",
+                        "hads", "mce", "mcelist", "opioidoppf", "pateval",
+                        "patreg", "proms")
+                      )
+      }
+    selectInput("dumpDataSet", "Velg datasett:", dumps)
   })
 
   output$dumpDataInfo <- shiny::renderUI({

@@ -723,6 +723,12 @@ WHERE
   }
 
   if (isNationalReg(reshId)) {
+    if(tableName %in% c("emp11", "emp11_pain_diagnosis", "emp12", "emp22",
+                        "hads", "mce", "mcelist", "opioidoppf", "pateval",
+                        "patreg", "proms")) {
+      query = paste0("SELECT * FROM ", tableName, ";")
+    }
+
     query <- gsub("forlopsoversikt", "forlopsoversiktnasjonal", query)
   }
 
