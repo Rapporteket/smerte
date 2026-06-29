@@ -359,7 +359,7 @@ server <- function(input, output, session) {
   reportTemplate <- shiny::reactiveVal()
   observeEvent(user$org(), {
     if (smerte::isNationalReg(user$org())) {
-      reportTemplate("NasjonalIndikatorMaaned.Rmd")
+      reportTemplate("NasjonalIndikatorMaaned-ny.Rmd")
     } else {
       reportTemplate("LokalIndikatorMaaned.Rmd")
     }
