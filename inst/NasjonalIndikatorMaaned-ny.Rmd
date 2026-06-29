@@ -1,0 +1,942 @@
+---
+params:
+  title: ': kvalitetsindikatorer i perioden '
+  author: 'Rapporteket'
+  hospitalName: 'Ukjent sykehus'
+  reshId: 'locallyDefined'
+  userRole: 'MyRole'
+  userFullName: 'Ukjent bruker'
+  startDate: !r lubridate::today() - lubridate::years(1)
+  endDate: !r lubridate::today() - lubridate::weeks(1)
+  year: '2016'
+  tableFormat: 'html'
+  registryName: 'rapbase'
+  shinySession: list()
+title: '`r paste0("Smerteregisteret ", params$hospitalName, params$title, params$startDate, " til ", params$endDate)`'
+author: '`r params$author`'
+date: '`r format(Sys.time(), "%d\\. %B, %Y")`'
+reglogo: '`r system.file("www/logoSmerte.png", package = "smerte")`'
+regtext: 'SmerteReg er et nasjonalt kvalitetsregister som registrer alleinneliggende pasienter som henvises for tilsyn fra akutt smerteteam. Formålet med SmerteReg er å bedre kvaliteten på tjenesten akutt smerteteam yter til smertepasienter på norske sykehus samt å danne grunnlag for forskning.'
+registryName: Smerteregisteret
+userFullName: '`r params$userFullName`'
+---
+
+```{r set options and load packages, include = FALSE}
+knitr::opts_chunk$set(echo=FALSE)
+options(knitr.table.format = params$tableFormat)
+options(tinytex.verbose = TRUE)
+options(scipen = 1, digits = 2) #set to two decimal 
+
+```
+
+```{r get data, warning = FALSE, message = FALSE}
+
+ if (rapbase::isRapContext()) {
+
+  tablenames = tibble::tibble(
+    tab = c("emp11", "emp12", "emp22", "mce", 
+            "mcelist", "pateval", "patreg" 
+            ), 
+    tib_name = paste0("d_", tab)
+  )  
+  
+  # Hente inn rådata
+  for(i in 1:nrow(tablenames)) {
+    assign(tablenames$tib_name[i], 
+           tibble::as_tibble(rapbase::loadRegData(params$registryName,
+                               query = paste0("SELECT * FROM ", 
+                                              tablenames$tab[i], ";"), 
+                               dbType = "mysql"
+                               )
+    ))
+  }
+}  
+
+# Filtrere basert på user-input
+d_mce = d_mce %>% 
+  filter(between(REGISTERED_DATE, params$startDate, params$endDate)) %>% 
+  mutate(monthname = zoo::as.Date(zoo::as.yearmon(REGISTERED_DATE)))
+
+mceid_included = d_mce$MCEID
+
+```
+
+```{r prep-indikatordata, warning = FALSE, message = FALSE}
+
+# Ulike behandlere - Brukes til indikator for tilsyn av flere grupper
+behandlere = c("AntTilsLege", "AntTilsSykPleier", "AntTilsFysioT", "AntTilsPsyk", "AntTilsSosio")
+  
+# Indikatordata for indikatorer: 
+# - Tilsyn av flere 
+# - Tilsett samme dag som henvisning 
+# - Fornøyd med behandling 
+# - Ikke medisinsk behandling 
+# - Nedtrappingsplan 
+d_indikator = d_mce %>% 
+  select(MCEID, PARENT_ID, CENTREID, MCETYPE, REGISTERED_DATE, REFERRAL_DATE, SUPERVISION, monthname) %>% 
+  left_join(d_emp22, by = c("MCEID", "CENTREID")) %>% 
+  left_join(d_pateval %>% select(MCEID, SATISFACTION), by = c("MCEID")) %>% 
+  select(
+    # MCE
+    MCEID, CENTREID, monthname, REGISTERED_DATE, REFERRAL_DATE, SUPERVISION, 
+    # Pateval
+    SATISFACTION, 
+    # Emp22 
+    "AntTilsLege" = CAREGIVER_DOCTOR_TIMES,
+    "AntTilsSykPleier" = CAREGIVER_NURSE_TIMES,
+    "AntTilsFysioT" = CAREGIVER_PHYSIOTHERAPIST_TIMES,
+    "AntTilsPsyk" = CAREGIVER_PSYCHOLOGIST_TIMES,
+    "AntTilsSosio" = CAREGIVER_SOCIAL_WORKER_TIMES,
+    "AntPasTils" = CONSULTATIONS, 
+    "IkkeMedBeh" = INITIATED_BY_TEAM_NON_MEDICAL,
+    "Journalnotat" = DOWNSCALINGMEASURES_JOURNAL,
+    "VidereOppf" = SHOULD_FOLLOWUP, 
+    "BehNedtrappAvsluttTils" = DOWNSCALING) %>% 
+  mutate(behtils = rowSums(!is.na(select(., all_of(behandlere)))) > 1, 
+         henvtils = REGISTERED_DATE == REFERRAL_DATE, 
+         fornoyd = case_when(SATISFACTION %in% 1:3 ~ FALSE, 
+                             SATISFACTION %in% 4:5 ~ TRUE, 
+                             TRUE ~ NA), 
+         IkkeMedisinsk = IkkeMedBeh %in% c(0,1) & SUPERVISION == 1, 
+         nedtrapp = !is.na(Journalnotat) & VidereOppf == 1 & BehNedtrappAvsluttTils == 1) %>% 
+  fikse_sykehusnavn(reshIdVar = "CENTREID")
+ 
+# Vektor med smertevariabler etter transform. Brukes for å konvertere 99 til NA
+smertevars = c("SvSmRo12", "StSmRo12", "SvSmBev12", "StSmBev12", 
+               "SvSmRo21", "StSmRo21", "SvSmBev21", "StSmBev21"
+               )
+
+# Datasett for smerteindikator - Endring i sterkeste/svakeste smerte i bevegelse/ro. 
+d_smerteindikator = d_mce %>% 
+  select(MCEID, PARENT_ID, CENTREID, MCETYPE, 
+         REGISTERED_DATE, REFERRAL_DATE, SUPERVISION, monthname) %>% 
+  left_join(d_emp12 %>% 
+              select(MCEID, FORMORDER, CENTREID, 
+                     WEAKPAIN_STILL, WEAKPAIN_MOTION, 
+                     STRONGPAIN_STILL, STRONGPAIN_MOTION, 
+                     PATIENT_ACCEPTABLEPAIN, PATIENT_FUNCTIONLEVEL,
+                     PATIENT_ALLRIGHT), 
+            by = c("MCEID", "CENTREID")) %>% 
+  group_by(MCEID) %>% 
+  summarise(
+    CENTREID = first(CENTREID), 
+    Tilsett = first(SUPERVISION),
+    monthname = first(monthname), 
+    SvSmRo12 = WEAKPAIN_STILL[FORMORDER == 1], 
+    StSmRo12 = STRONGPAIN_STILL[FORMORDER == 1],
+    SvSmBev12 = WEAKPAIN_MOTION[FORMORDER == 1],
+    StSmBev12 = STRONGPAIN_MOTION[FORMORDER == 1], 
+    SvSmRo21 = WEAKPAIN_STILL[FORMORDER == 2], 
+    StSmRo21 = STRONGPAIN_STILL[FORMORDER == 2], 
+    SvSmBev21 = WEAKPAIN_MOTION[FORMORDER == 2], 
+    StSmBev21 = STRONGPAIN_MOTION[FORMORDER == 2],
+    AkseptabelSmerte21 = PATIENT_ACCEPTABLEPAIN[FORMORDER == 2],
+    Funksjon12 = PATIENT_FUNCTIONLEVEL[FORMORDER == 1], 
+    Funksjon21 = PATIENT_FUNCTIONLEVEL[FORMORDER == 2], 
+    AngiNRS12 = PATIENT_ALLRIGHT[FORMORDER == 1],
+    AngiNRS21 = PATIENT_ALLRIGHT[FORMORDER == 2]
+    ) %>% 
+  # Erstatter 99 (vet ikke) med NA, sjekker hvem som har svart ved begge måletidspunkt
+  # Finner endring fra t0 til t1 og lager indikator (TRUE, FALSE, NA) for alle målinger
+  mutate(across(all_of(smertevars), ~replace(., . == 99, NA)),
+          svart_begge = rowSums(is.na(select(., all_of(smertevars)))) < 1, 
+         # Endring i smerte for de som har svart ved begge tidspunkt 
+         stro = case_when(svart_begge ~ StSmRo12-StSmRo21, 
+                          TRUE ~ NA), 
+         svro = case_when(svart_begge ~ SvSmRo12-SvSmRo21, 
+                          TRUE ~ NA), , 
+         stbe = case_when(svart_begge ~ StSmBev12-StSmBev21, 
+                          TRUE ~ NA), , 
+         svbe = case_when(svart_begge ~ SvSmRo12-SvSmRo21, 
+                          TRUE ~ NA),
+         # Indikatorvariabler for om pasient har opplevd nedgang i smerte fra 1 til 2
+         stbe1 = stbe > 0, 
+         stro1 = stro > 0, 
+         svbe1 = svbe > 0, 
+         svro1 = svro > 0,
+  ) %>% 
+  fikse_sykehusnavn("CENTREID")
+
+```
+
+# Innledning
+Smerteregisteret har seks kvalitetsindikatorer som skal være til hjelp i utviklingen av god smertebehandling. Merk at det her skilles mellom forløp og pasienter, siden samme pasient kan ha flere forløp. I denne rapporten vises __nasjonale__ tall i perioden __`r format(params$startDate, "%d. %b %Y")`__ til __`r format(params$endDate, "%d. %b %Y")`__, det vil si at alle forløp som er inkluderbare og har samtykke er med.
+
+# Tilsett av to eller flere faggrupper
+
+```{r behandlertilsyn, warning=FALSE, message=FALSE, results='asis'}
+
+#Til tabell
+  kvalind1 <- d_indikator %>%
+    dplyr::group_by(SykehusNavn, behtils) %>%
+    dplyr::summarise(n = dplyr::n()) %>%
+    dplyr::mutate( ant = sum(n), freq = n/sum(n)) %>% 
+    filter(behtils) %>% 
+    select(SykehusNavn, n, ant, freq) 
+    
+   #Tabell
+tab_behandlertilsyn = rapbase::mst(
+  tab = kvalind1,
+  col_names = c("Sykehus", "Antall", "Totalt antall", "Andel"),
+  type = params$tableFormat,
+  cap = paste0("Oversikt over andel pasienter som har hatt tilsyn av to eller flere behandlergrupper."),
+  digs = 2,
+  align = c("l", "r", "r", "r"))
+```
+
+```{r tab-behandlertilsyn, warning=FALSE, message=FALSE, results='asis'}
+tab_behandlertilsyn
+```
+
+Andel forløp hvor pasientene tilses av to eller flere faggrupper. Det er ønskelig med høyest mulig andel. De ulike faggruppene er lege, sykepleier, sosionom, psykolog og fysioterapeut. Med "totalt antall" menes her alle forløp som har minimum ett tilsyn. 
+
+Figuren under viser hvordan andelen har fordelt seg i løpet av året.
+
+```{r behandlertilsynfig, warning = FALSE, message = FALSE, results = 'asis', fig.pos = "H", out.extra = '', fig.align='center', out.width='100%', fig.width = 14, fig.asp = 0.5}
+ind1plot <- d_indikator %>%
+    dplyr::group_by(SykehusNavn, monthname, behtils) %>%
+    dplyr::summarise(n = dplyr::n()) %>%
+    dplyr::mutate( ant = sum(n), freq = n/sum(n)) %>%
+    dplyr::filter(behtils) %>% 
+  select(-behtils)
+  
+  #Adding the mean of the groups each month
+  meanind1plot <- d_indikator %>% 
+    dplyr::group_by(monthname, behtils) %>%
+    dplyr::summarise(n = n(), .groups = "drop_last") %>%
+    mutate(ant = sum(n), freq = n/sum(n)) %>% 
+    dplyr::mutate(SykehusNavn="Snitt", .before = monthname) %>% 
+    filter(behtils) %>% 
+    select(-behtils)
+  
+  #Merging the two tibbles
+  ind1plot <- dplyr::bind_rows(ind1plot, meanind1plot)
+  
+  #Plotting plotdat
+  ggplot2::ggplot(ind1plot, ggplot2::aes(monthname, freq)) + 
+    ggplot2::geom_line(ggplot2::aes(group = factor(SykehusNavn), colour=factor(SykehusNavn)), size = 0.5) +
+    ggplot2::geom_point(ggplot2::aes(group = factor(SykehusNavn), colour=factor(SykehusNavn)), size = 1) + 
+    ggplot2::labs(x = "Måned", y = "Andel", subtitle = "Andel tilsett av to eller flere faggrupper (månedlig)", color = "Sykehus") +
+    ggplot2::theme_classic() +
+    ggplot2::theme(axis.text.x = ggplot2::element_text(size = 8.5),
+          axis.text.y = ggplot2::element_text(size = 10),
+          axis.title = ggplot2::element_text(size = 10),
+          plot.margin = ggplot2::unit(c(1, 1, 2, 1), "cm"),
+          legend.text = ggplot2::element_text(size = 10),
+          axis.title.y = ggplot2::element_text(margin = ggplot2::margin(t = 0, r = 10, b = 0, l = 0)),
+          axis.title.x = ggplot2::element_text(margin = ggplot2::margin(t = 10, r = 0, b = 0, l = 0))
+    )
+
+```
+
+# Tilsett samme dag pasienten var henvist
+Andel forløp hvor pasientene får tilsyn samme dag som de ble henvist. Det er ønskelig med høyest mulig andel. Med "totalt antall" menes her alle forløp som har minimum ett tilsyn. 
+
+```{r tidhenvisttiltilsyn, warning = FALSE, message = FALSE, results = 'asis'}
+
+kvalind2 = d_indikator %>% 
+  group_by(SykehusNavn, henvtils) %>% 
+  summarise(n = n(), .groups = "drop_last") %>% 
+  mutate(ant = sum(n), freq = n/sum(n)) %>% 
+  filter(henvtils) %>% 
+  select(SykehusNavn, n, ant, freq)
+
+#Tabell
+  rapbase::mst(
+    tab = kvalind2,
+    col_names = c("Sykehus", "Antall", "Totalt antall", "Andel"),
+    type = params$tableFormat,
+    cap = paste0("Oversikt over andel pasienter som ble tilsett samme dag som de ble henvist."),
+    digs = 2,
+    align = c("l", "r", "r", "r"))
+
+```
+
+Figuren under viser hvordan andelen har fordelt seg i løpet av året.
+```{r tilsetthenvistfig, warning = FALSE, message=FALSE, results='asis', fig.pos= "H", out.extra = '', fig.align='center', out.width='100%', fig.width = 14, fig.asp = 0.5}
+
+  ind2plot <- d_indikator %>%
+    #mutate(monthname = zoo::as.Date(zoo::as.yearmon(REGISTERED_DATE))) %>% 
+    dplyr::group_by(SykehusNavn, monthname, henvtils) %>%
+    dplyr::summarise(n = dplyr::n()) %>%
+    dplyr::mutate(ant = sum(n), freq = n/sum(n)) %>%
+    dplyr::filter(henvtils)
+  
+  meanind2plot = d_indikator %>% 
+    group_by(monthname, henvtils) %>% 
+    summarise(n = n()) %>% 
+    mutate(ant = sum(n), freq = n/sum(n)) %>% 
+    filter(henvtils) %>% 
+    mutate(SykehusNavn = "Snitt", .before = monthname)
+  
+#Merging the two tibbles
+  ind2plot <- dplyr::bind_rows(ind2plot, meanind2plot)
+  
+#Plotting plotdat
+  ggplot2::ggplot(ind2plot, ggplot2::aes(monthname, freq)) + 
+    ggplot2::geom_line(ggplot2::aes(group = factor(SykehusNavn), colour=factor(SykehusNavn)), size = 0.5) + ggplot2::geom_point(ggplot2::aes(group = factor(SykehusNavn), colour=factor(SykehusNavn)), size = 1) + 
+    ggplot2::labs(x = "Måned", y = "Andel", subtitle = "Andel tilsett samme dag som de ble henvist (månedlig)", color = "Sykehus") + ggplot2::theme_classic() + ggplot2::theme(axis.text.x = ggplot2::element_text(size = 8.5), axis.text.y = ggplot2::element_text(size = 10), axis.title = ggplot2::element_text(size = 10), plot.margin = ggplot2::unit(c(1, 1, 2, 1), "cm"), legend.text = ggplot2::element_text(size = 10), axis.title.y = ggplot2::element_text(margin = ggplot2::margin(t = 0, r = 10, b = 0, l = 0)), axis.title.x = ggplot2::element_text(margin = ggplot2::margin(t = 10, r = 0, b = 0, l = 0)))
+```
+
+# Fornøyd med ivaretakelsen fra smerteteam
+Andel forløp hvor pasientene er "i stor grad" eller "i svært stor grad" fornøyd med ivaretakelsen fra smerteteamet. Det er ønskelig med høyest mulig andel. Det er kun de forløpene der spørsmålet er besvart som inkluderes.
+
+```{r pasienttilfredshet, warning = FALSE, message=FALSE, results='asis'}
+
+kvalind3 = d_indikator %>%
+  group_by(SykehusNavn, fornoyd) %>%
+  filter(!is.na(fornoyd)) %>% 
+  summarise(n = n()) %>% 
+    mutate(ant = sum(n), freq = n/sum(n)) %>% 
+    filter(fornoyd) %>% 
+    select(-fornoyd)
+    
+  #Tabell
+  rapbase::mst(
+    tab = kvalind3,
+    col_names = c("Sykehus", "Antall", "Totalt antall", "Andel"),
+    type = params$tableFormat,
+    cap = paste0("Oversikt over andel pasienter som var fornøyd med ivaretakelsen fra smerteteamet."),
+    digs = 2,
+    align = c("l", "r", "r", "r"))
+```
+
+Figuren under viser hvordan andelen har fordelt seg i løpet av året.
+```{r fornoydfig, warning = FALSE, message=FALSE, results='asis', fig.pos= "H", out.extra = '', fig.align='center', out.width='100%', fig.width = 14, fig.asp = 0.5}
+
+  #Aggregate by month for plot
+  #Grouping by month and finding frequency (remove NA here), then filtering on the "correct" frequency (if not, we get the inverse too)
+  ind3plot <- d_indikator %>%
+    dplyr::filter(!is.na(fornoyd)) %>%
+    dplyr::group_by(SykehusNavn, monthname, fornoyd) %>%
+    dplyr::summarise(n = dplyr::n()) %>%
+    dplyr::mutate(ant = sum(n), freq = n/sum(n)) %>%
+    dplyr::filter(fornoyd)
+  
+  #Adding the mean of the groups each month
+  meanind3plot <- ind3plot %>% 
+    dplyr::group_by(monthname) %>%
+    dplyr::summarise(freq = mean(freq)) %>%
+    dplyr::mutate(SykehusNavn="Snitt", .before = monthname)
+  
+  #Merging the two tibbles
+  ind3plot <- dplyr::bind_rows(ind3plot, meanind3plot)
+  
+  #Plotting plotdat
+  ggplot2::ggplot(ind3plot, ggplot2::aes(monthname, freq)) + 
+    ggplot2::geom_line(ggplot2::aes(group = factor(SykehusNavn), colour=factor(SykehusNavn)), size = 0.5) + ggplot2::geom_point(ggplot2::aes(group = factor(SykehusNavn), colour=factor(SykehusNavn)), size = 1) + 
+    ggplot2::labs(x = "Måned", y = "Andel", subtitle = "Andel fornøyd med ivaretakelsen fra smerteteam (månedlig)", color = "Sykehus") + ggplot2::theme_classic() + ggplot2::theme(axis.text.x = ggplot2::element_text(size = 8.5), axis.text.y = ggplot2::element_text(size = 10), axis.title = ggplot2::element_text(size = 10), plot.margin = ggplot2::unit(c(1, 1, 2, 1), "cm"), legend.text = ggplot2::element_text(size = 10), axis.title.y = ggplot2::element_text(margin = ggplot2::margin(t = 0, r = 10, b = 0, l = 0)), axis.title.x = ggplot2::element_text(margin = ggplot2::margin(t = 10, r = 0, b = 0, l = 0))) 
+```
+
+# Nedgang i smerte
+Andel forløp hvor pasienten har nedgang i smertescore Numeric Rating Scale (NRS) fra første til siste tilsyn. Totalt måles endring for følgende fire smertetilstander: _sterkeste_ og _svakeste_ smerte i _ro_ og i _bevegelse_. Det er ønskelig med høyest mulig andel. Det er kun de forløpene der spørsmålet er besvart både ved første og siste tilsyn som inkluderes ("vet ikke" telles heller ikke med).
+
+```{r smertenivaa, message=FALSE, warning=FALSE, results='asis'}
+
+# Hjelpefunksjon for å klargjøre tabeller
+lag_ind_base = function(df, ..., ind_var) {
+  
+  df %>% 
+    filter(!is.na({{ ind_var }})) %>% 
+    group_by(..., {{ ind_var }}) %>% 
+    summarise(n = n(), .groups = "drop_last") %>% 
+    mutate(ant = sum(n), freq = n/sum(n)) %>% 
+    filter({{ ind_var }}) %>% 
+    select(- {{ ind_var }})
+}
+
+d_sterkeste_smerte_bev = lag_ind_base(d_smerteindikator, SykehusNavn, ind_var = stbe1)
+d_svakeste_smerte_bev = lag_ind_base(d_smerteindikator,  SykehusNavn, ind_var = svbe1)
+d_sterkeste_smerte_ro = lag_ind_base(d_smerteindikator,  SykehusNavn, ind_var = stro1)
+d_svakeste_smerte_ro = lag_ind_base(d_smerteindikator,  SykehusNavn, ind_var = svro1)
+
+#Sterkeste bevegelse
+ tab41 <- rapbase::mst(
+    tab = d_sterkeste_smerte_bev,
+    col_names = c("Sykehus", "Antall", "Totalt antall", "Andel"),
+    type = params$tableFormat,
+    cap = paste0("Oversikt over andel pasienter som hadde nedang i NRS fra første til siste måling for sterkeste smerte i bevegelse."),
+    label = "tab-sterkeste-smerte-bev",
+    digs = 2,
+    align = c("l", "r", "r", "r"))
+
+  #Svakeste bevegelse
+ tab42 <- rapbase::mst(
+    tab = d_svakeste_smerte_bev,
+    col_names = c("Sykehus", "Antall", "Totalt antall", "Andel"),
+    type = params$tableFormat,
+    cap = paste0("Oversikt over andel pasienter som hadde nedang i NRS fra første til siste måling for svakeste smerte i bevegelse."),
+    label = "tab-svakeste-smerte-bev",
+    digs = 2,
+    align = c("l", "r", "r", "r"))
+  
+  #Sterkeste ro
+  tab43 <- rapbase::mst(
+    tab = d_sterkeste_smerte_ro,
+    col_names = c("Sykehus", "Antall", "Totalt antall", "Andel"),
+    type = params$tableFormat,
+    cap = paste0("Oversikt over andel pasienter som hadde nedang i NRS fra første til siste måling for sterkeste smerte i ro."),
+    label = "tab-sterkeste-smerte-ro",
+    digs = 2,
+    align = c("l", "r", "r", "r"))
+  
+  #Svakeste ro
+ tab44 <- rapbase::mst(
+    tab = d_svakeste_smerte_ro,
+    col_names = c("Sykehus", "Antall", "Totalt antall", "Andel"),
+    type = params$tableFormat,
+    cap = paste0("Oversikt over andel pasienter som hadde nedang i NRS fra første til siste måling for svakeste smerte i ro."),
+    label = "tab-svakeste-smerte-ro",
+    digs = 2,
+    align = c("l", "r", "r", "r"))
+```
+
+```{r nrstab1, warning = FALSE, message=FALSE, results='asis'}
+  tab41
+```
+
+```{r nrstab2, warning = FALSE, message=FALSE, results='asis'}
+  tab42
+```
+
+```{r nrstab3, warning = FALSE, message=FALSE, results='asis'}
+  tab43
+```
+
+```{r nrstab4, warning = FALSE, message=FALSE, results='asis'}
+  tab44
+```
+
+Figuren under viser hvordan andelene har fordelt seg i løpet av året for de fire NRS-målene.
+```{r nrsfig, warning = FALSE, message=FALSE, results='asis', fig.align='center', out.width='100%'}
+
+#Aggregate by month for plot
+  #Common plot details
+  plotdetails = list(
+    ggplot2::geom_line(
+      ggplot2::aes(group = factor(SykehusNavn), colour=factor(SykehusNavn)),
+      size = 0.5),
+    ggplot2::geom_point(
+      ggplot2::aes(group = factor(SykehusNavn), colour=factor(SykehusNavn)),
+      size = 1
+    ),
+    ggplot2::theme_classic(),
+    ggplot2::theme(
+      axis.text.x = ggplot2::element_text(size = 10),
+      axis.text.y = ggplot2::element_text(size = 10),
+      axis.title = ggplot2::element_text(size = 10),
+      plot.margin = ggplot2::unit(c(1, 1, 2, 1), "cm"),
+      legend.text = ggplot2::element_text(size = 10),
+      plot.title = ggplot2::element_text(size=10),
+      legend.title = ggplot2::element_text(size = 10),
+      axis.title.y = ggplot2::element_text(margin = ggplot2::margin(t = 0, r = 10, b = 0, l = 0)),
+      axis.title.x = ggplot2::element_text(margin = ggplot2::margin(t = 10, r = 0, b = 0, l = 0))
+    )
+  )
+  
+  ind41plot_base = lag_ind_base(d_smerteindikator, SykehusNavn, monthname, ind_var = stbe1)
+  ind42plot_base = lag_ind_base(d_smerteindikator, SykehusNavn, monthname, ind_var = svbe1)
+  ind43plot_base = lag_ind_base(d_smerteindikator, SykehusNavn, monthname, ind_var = stro1)
+  ind44plot_base = lag_ind_base(d_smerteindikator, SykehusNavn, monthname, ind_var = svro1)
+  
+  # Legge på snitt per mnd
+  ind41plot = ind41plot_base %>% 
+    ungroup() %>% 
+    add_row(ind41plot_base %>% 
+              group_by(monthname) %>%
+              summarise(SykehusNavn = "Snitt", 
+                        n = sum(n), 
+                        ant = sum(ant), 
+                        freq = n/ant)
+            )
+  
+  ind42plot = ind42plot_base %>% 
+    ungroup() %>% 
+    add_row(ind42plot_base %>% 
+              group_by(monthname) %>%
+              summarise(SykehusNavn = "Snitt", 
+                        n = sum(n), 
+                        ant = sum(ant), 
+                        freq = n/ant)
+            )
+  
+  ind43plot = ind43plot_base %>% 
+    ungroup() %>% 
+    add_row(ind43plot_base %>% 
+              group_by(monthname) %>%
+              summarise(SykehusNavn = "Snitt", 
+                        n = sum(n), 
+                        ant = sum(ant), 
+                        freq = n/ant)
+            )
+  
+  ind44plot = ind44plot_base %>% 
+    ungroup() %>% 
+    add_row(ind44plot_base %>% 
+              group_by(monthname) %>%
+              summarise(SykehusNavn = "Snitt", 
+                        n = sum(n), 
+                        ant = sum(ant), 
+                        freq = n/ant)
+            )
+  
+  p1 = ggplot2::ggplot(ind41plot, ggplot2::aes(monthname, freq)) + 
+    plotdetails +
+    ggplot2::labs(
+      x = "Måned", y = "Andel",
+      title = "Andel med nedgang i NRS for sterkeste smerte i bevegelse (månedlig)",
+      color = "Sykehus"
+    ) 
+  
+  #Plotting plotdat
+  p2 = ggplot2::ggplot(ind42plot, ggplot2::aes(monthname, freq)) + 
+    plotdetails +
+    ggplot2::labs(
+      x = "Måned",
+      y = "Andel",
+      title = "Andel med nedgang i NRS for svakeste smerte i bevegelse (månedlig)",
+      color = "Sykehus"
+    )
+  
+  #Plotting plotdat
+  p3 = ggplot2::ggplot(ind43plot, ggplot2::aes(monthname, freq)) + 
+    plotdetails +
+    ggplot2::labs(
+      x = "Måned",
+      y = "Andel",
+      title = "Andel med nedgang i NRS for sterkeste smerte i ro (månedlig)",
+      color = "Sykehus"
+    )
+  
+
+  #Plotting plotdat
+  p4 = ggplot2::ggplot(ind44plot, ggplot2::aes(monthname, freq)) + 
+    plotdetails +
+    ggplot2::labs(
+      x = "Måned",
+      y = "Andel",
+      title = "Andel med nedgang i NRS for svakeste smerte i ro (månedlig)",
+      color = "Sykehus"
+    )
+```
+
+```{r nrsfig1, warning = FALSE, message=FALSE, results='asis', fig.align='center', out.width='100%', fig.width = 14, fig.asp = 0.5}
+  print(p1)
+```
+
+```{r nrsfig2, warning = FALSE, message=FALSE, results='asis', , fig.align='center', out.width='100%', fig.width = 14, fig.asp = 0.5}
+  print(p2)
+```
+
+```{r nrsfig3, warning = FALSE, message=FALSE, results='asis', fig.align='center', out.width='100%', fig.width = 14, fig.asp = 0.5}
+  print(p3)
+```
+
+```{r nrsfig4, warning = FALSE, message=FALSE, results='asis', fig.align='center', out.width='100%', fig.width = 14, fig.asp = 0.5}
+  print(p4)
+```
+
+# Ikke-medikamentell behandling
+Andel pasienter hvor ikke-medikamentell behandling startes, endres og/eller følges opp av Smerteteam. Det er ønskelig å utnytte også ikke-medikamentell behandling ved akutt smertebehandling. Dette inkluderer alt fra enkle tiltak som for eksempel varme/kuldebehandling og mobilisering til  berøringstrening og speilbehandling.  Videre også ulike fysioterapeutiske tiltak inkludert TENS og avspenning og ikke minst kognitive tilnærminger som for eksempel avledning, smertemestring og endringsorientert samtale.
+
+```{r ikkemed, warning = FALSE, message=FALSE, results='asis'}
+
+d_ikkeMed = d_indikator %>% 
+    #fikse_sykehusnavn("CENTREID") %>% 
+    filter(!is.na(IkkeMedisinsk))
+  
+  ikkmed = d_ikkeMed %>% 
+    group_by(SykehusNavn, IkkeMedisinsk) %>% 
+    summarise(n = n(), 
+              .groups = "drop_last") %>% 
+    mutate(ant = sum(n), 
+           freq = n/sum(n)) %>% 
+    filter(IkkeMedisinsk) %>% 
+    select(-IkkeMedisinsk)
+  
+  #Tabell
+  rapbase::mst(
+    tab = ikkmed,
+    col_names = c("Sykehus", "Antall", "Totalt antall", "Andel"),
+    type = params$tableFormat,
+    cap = paste0("Oversikt over andel pasienter med ikke-medikamentell 
+                 behandling."),
+    digs = 2,
+    align = c("l", "r", "r", "r"))
+```
+
+Figuren under viser hvordan andelen har fordelt seg i løpet av året.
+
+```{r ikkemedfig, warning = FALSE, message=FALSE, results='asis', fig.pos= "H", out.extra = '', fig.align='center', out.width='100%', fig.width = 14, fig.asp = 0.5}
+
+plotikmed = d_ikkeMed %>% 
+  group_by(SykehusNavn, monthname, IkkeMedisinsk) %>%
+  summarise(n = dplyr::n(), .groups = "drop_last") %>%
+  mutate(ant = sum(n), freq = n/sum(n)) %>%
+  filter(IkkeMedisinsk) %>% 
+  ungroup() %>% 
+  add_row(SykehusNavn = "Snitt", 
+    d_ikkeMed %>% 
+      group_by(monthname, IkkeMedisinsk) %>% 
+      summarise(n = n(), .groups = "drop_last") %>% 
+      mutate(ant = sum(n), freq = n/sum(n)) %>% 
+      filter(IkkeMedisinsk)
+  )
+
+#Plotting plotdat
+  ggplot2::ggplot(plotikmed, ggplot2::aes(monthname, freq)) + 
+    ggplot2::geom_line(ggplot2::aes(group = factor(SykehusNavn), 
+                  colour=factor(SykehusNavn)), size = 0.5) +
+    ggplot2::geom_point(ggplot2::aes(group = factor(SykehusNavn), 
+                   colour=factor(SykehusNavn)), size = 1) + 
+    ggplot2::labs(x = "Måned", y = "Andel", 
+         subtitle = "Andel med ikke-medikamentell behandling per måned", 
+         color = "Sykehus") + ggplot2::theme_classic() + 
+    ggplot2::theme(axis.text.x = ggplot2::element_text(size = 8.5), 
+          axis.text.y = ggplot2::element_text(size = 10), 
+          axis.title = ggplot2::element_text(size = 10), 
+          plot.margin = ggplot2::unit(c(1, 1, 2, 1), "cm"), 
+          legend.text = ggplot2::element_text(size = 10), 
+          axis.title.y = ggplot2::element_text(
+            margin = ggplot2::margin(t = 0, r = 10, b = 0, l = 0)
+          ), 
+          axis.title.x = ggplot2::element_text(
+            margin = ggplot2::margin(t = 10, r = 0, b = 0, l = 0)
+          )
+    ) 
+```
+
+# Nedtrappingsplan (for opioider)
+Andel pasienter som har fått laget nedtrappingsplan (for opioider) hvor det er vurdert behov for dette. Sterke smertestillende er effektive og potente medikamenter som brukes i utstrakt grad i akutt smertebehandling på sykehus. Langvarig bruk er derimot sjelden indisert og det er derfor viktig at pasienter som behandles med slike medikamenter også får en nedtrappingsplan for å hjelpe med optimal bruk.
+
+```{r nedtr, warning = FALSE, message=FALSE, results='asis'}
+
+d_nedtrapp = d_indikator %>% 
+   filter(!is.na(Journalnotat), BehNedtrappAvsluttTils == 1) %>% 
+   group_by(SykehusNavn, "nedtrapp" = Journalnotat & VidereOppf == 1) %>% 
+   summarise(n = n(), .groups = "drop_last") %>% 
+   mutate(ant = sum(n), freq = n/sum(n)) %>% 
+   filter(nedtrapp) %>% 
+   select(-nedtrapp)
+  
+  #Tabell
+  rapbase::mst(
+    tab = d_nedtrapp,
+    col_names = c("Sykehus", "Antall", "Totalt antall", "Andel"),
+    type = params$tableFormat,
+    cap = paste0("Oversikt over andel som fikk en plan for nedtrapping av de 
+                 som ble vurdert til å trenge det."),
+    digs = 2,
+    align = c("l", "r", "r", "r"))
+```
+
+Figuren under viser hvordan andelen har fordelt seg i løpet av året.
+
+```{r nedtrfig, warning = FALSE, message=FALSE, results='asis', fig.pos= "H", out.extra = '', fig.align='center', out.width='100%', fig.width = 14, fig.asp = 0.5}
+
+plotnedtr = d_indikator %>% 
+   filter(!is.na(Journalnotat), BehNedtrappAvsluttTils == 1) %>% 
+   group_by(SykehusNavn, monthname, "nedtrapp" = Journalnotat & VidereOppf == 1) %>% 
+   summarise(n = n(), .groups = "drop_last") %>% 
+   mutate(ant = sum(n), freq = n/sum(n)) %>% 
+   filter(nedtrapp) %>% 
+   select(-nedtrapp) %>% 
+  ungroup() %>% 
+  add_row(SykehusNavn = "Snitt", 
+          d_indikator %>% 
+   filter(!is.na(Journalnotat), BehNedtrappAvsluttTils == 1) %>% 
+   group_by(monthname, "nedtrapp" = Journalnotat & VidereOppf == 1) %>% 
+   summarise(n = n(), .groups = "drop_last") %>% 
+   mutate(ant = sum(n), freq = n/sum(n)) %>% 
+   filter(nedtrapp) %>% 
+   select(-nedtrapp)
+)
+
+#Plotting plotdat
+  ggplot2::ggplot(plotnedtr, ggplot2::aes(monthname, freq)) + 
+    ggplot2::geom_line(ggplot2::aes(group = factor(SykehusNavn), 
+                  colour=factor(SykehusNavn)), size = 0.5) +
+    ggplot2::geom_point(ggplot2::aes(group = factor(SykehusNavn), 
+                   colour=factor(SykehusNavn)), size = 1) + 
+    ggplot2::labs(x = "Måned", y = "Andel", 
+         subtitle = "Andel med nedtrappingsplan per måned", 
+         color = "Sykehus") + ggplot2::theme_classic() + 
+    ggplot2::theme(axis.text.x = ggplot2::element_text(size = 8.5), 
+          axis.text.y = ggplot2::element_text(size = 10), 
+          axis.title = ggplot2::element_text(size = 10), 
+          plot.margin = ggplot2::unit(c(1, 1, 2, 1), "cm"), 
+          legend.text = ggplot2::element_text(size = 13), 
+          axis.title.y = ggplot2::element_text(
+            margin = ggplot2::margin(t = 0, r = 10, b = 0, l = 0)
+          ), 
+          axis.title.x = ggplot2::element_text(
+            margin = ggplot2::margin(t = 10, r = 0, b = 0, l = 0)
+          )
+    ) 
+```
+
+# Akseptabel smerte
+Andel pasienter som har akseptabel smerte ved siste tilsyn. 
+
+```{r aks, warning = FALSE, message=FALSE, results='asis'}
+
+akseptabelsmerte = d_smerteindikator %>% 
+  filter(!is.na(AkseptabelSmerte21) & AkseptabelSmerte21 != 9) %>% 
+  group_by(SykehusNavn, AkseptabelSmerte21) %>% 
+  summarise(n = n(), .groups = "drop_last") %>% 
+  mutate(ant = sum(n), freq = n/sum(n)) %>% 
+  filter(AkseptabelSmerte21 == 1) %>% 
+  select(-AkseptabelSmerte21)
+
+#Tabell
+  rapbase::mst(
+    tab = akseptabelsmerte,
+    col_names = c("Sykehus", "Antall", "Totalt antall", "Andel"),
+    type = params$tableFormat,
+    cap = paste0("Oversikt over andel med akseptabel smerte ved siste tilsyn."),
+    digs = 2,
+    align = c("l", "r", "r", "r"))
+```
+
+Figuren under viser hvordan andelen har fordelt seg i løpet av året.
+
+```{r aksfig, warning = FALSE, message=FALSE, results='asis', fig.pos= "H", out.extra = '', fig.align='center', out.width='100%', fig.width = 14, fig.asp = 0.5}
+
+plotaks = d_smerteindikator %>% 
+  filter(!is.na(AkseptabelSmerte21) & AkseptabelSmerte21 != 9) %>% 
+  group_by(SykehusNavn, monthname, AkseptabelSmerte21) %>% 
+  summarise(n = n(), .groups = "drop_last") %>% 
+  mutate(ant = sum(n), freq = n/sum(n)) %>% 
+  filter(AkseptabelSmerte21 == 1) %>% 
+  select(-AkseptabelSmerte21) %>% 
+  ungroup() %>% 
+  add_row(
+    SykehusNavn = "Snitt", 
+    d_smerteindikator %>% 
+  filter(!is.na(AkseptabelSmerte21) & AkseptabelSmerte21 != 9) %>% 
+  group_by(monthname, AkseptabelSmerte21) %>% 
+  summarise(n = n(), .groups = "drop_last") %>% 
+  mutate(ant = sum(n), freq = n/sum(n)) %>% 
+  filter(AkseptabelSmerte21 == 1) %>% 
+  select(-AkseptabelSmerte21)
+  )
+
+#Plotting plotdat
+  ggplot2::ggplot(plotaks, ggplot2::aes(monthname, freq)) + 
+    ggplot2::geom_line(ggplot2::aes(group = factor(SykehusNavn), 
+                  colour=factor(SykehusNavn)), size = 0.5) +
+    ggplot2::geom_point(ggplot2::aes(group = factor(SykehusNavn), 
+                   colour=factor(SykehusNavn)), size = 1) + 
+    ggplot2::labs(x = "Måned", y = "Andel", 
+         subtitle = "Andel med akseptabel smerte ved siste tilsyn per måned", 
+         color = "Sykehus") + ggplot2::theme_classic() + 
+    ggplot2::theme(axis.text.x = ggplot2::element_text(size = 8.5), 
+          axis.text.y = ggplot2::element_text(size = 10), 
+          axis.title = ggplot2::element_text(size = 10), 
+          plot.margin = ggplot2::unit(c(1, 1, 2, 1), "cm"), 
+          legend.text = ggplot2::element_text(size = 13), 
+          axis.title.y = ggplot2::element_text(
+            margin = ggplot2::margin(t = 0, r = 10, b = 0, l = 0)
+          ), 
+          axis.title.x = ggplot2::element_text(
+            margin = ggplot2::margin(t = 10, r = 0, b = 0, l = 0)
+          )
+    ) 
+```
+
+# Endret funksjonsnivå
+Andel pasienter hvor funksjon bedrer seg fra første til siste tilsyn. De som ikke hadde bedring kan i tillegg til forverring ha uendret funksjon (mangler det svar på en eller begge målinger er de ikke med i utregningen).
+
+```{r funk, warning = FALSE, message=FALSE, results='asis'}
+  
+funfor = d_smerteindikator %>% 
+  filter(!is.na(Funksjon12), !is.na(Funksjon21), 
+         Funksjon12 != 9, Funksjon21 != 9) %>% 
+  mutate(bedring = Funksjon21 - Funksjon12)
+
+funfor1 <- funfor %>%
+    dplyr::mutate(bedring1 = bedring > 0) %>%
+    dplyr::group_by(SykehusNavn, bedring1) %>%
+    dplyr::summarise(n = dplyr::n()) %>%
+    dplyr::mutate(ant = sum(n), freq = n/sum(n)) %>%
+    dplyr::filter(bedring1 > 0) %>% 
+  select(-bedring1)
+
+andel_fun = sum(funfor$bedring == 0, na.rm = TRUE)
+andel_tot = length(funfor$bedring)
+andel_uendret = andel_fun/andel_tot
+
+rapbase::mst(
+    tab = funfor1,
+    col_names = c("Sykehus", "Antall", "Totalt antall", "Andel"),
+    type = params$tableFormat,
+    cap = paste0("Oversikt over andel som hadde bedring i funksjon fra første til siste tilsyn."),
+    digs = 2,
+    align = c("l", "r", "r", "r"))
+```
+En andel på `r andel_uendret` (totalt) hadde uendret funksjon.
+
+Figuren under viser hvordan andelen har fordelt seg i løpet av året.
+
+```{r funkfig, warning = FALSE, message=FALSE, results='asis', fig.pos= "H", out.extra = '', fig.align='center', out.width='100%', fig.width = 14, fig.asp = 0.5}
+
+#Aggregate by month for plot
+ plotfunk <- funfor %>%
+    dplyr::mutate(bedring1 = bedring > 0) %>%
+    dplyr::group_by(SykehusNavn, monthname, bedring1) %>%
+    dplyr::summarise(n = dplyr::n()) %>%
+    dplyr::mutate(ant = sum(n), freq = n/sum(n)) %>%
+    dplyr::filter(bedring1 == 1)
+
+#Plotting plotdat
+  ggplot2::ggplot(plotfunk, ggplot2::aes(monthname, freq)) +
+    ggplot2::geom_line(ggplot2::aes(group = factor(SykehusNavn), 
+                  colour=factor(SykehusNavn)), size = 0.5) +
+    ggplot2::geom_point(ggplot2::aes(group = factor(SykehusNavn), 
+                   colour=factor(SykehusNavn)), size = 1) + 
+    ggplot2::labs(x = "Måned", y = "Andel", 
+         subtitle = "Andel med forbedring i funksjon per måned", 
+         color = "Sykehus") + ggplot2::theme_classic() + 
+    ggplot2::theme(axis.text.x = ggplot2::element_text(size = 8.5), 
+          axis.text.y = ggplot2::element_text(size = 10), 
+          axis.title = ggplot2::element_text(size = 10), 
+          plot.margin = ggplot2::unit(c(1, 1, 2, 1), "cm"), 
+          legend.text = ggplot2::element_text(size = 13), 
+          axis.title.y = ggplot2::element_text(
+            margin = ggplot2::margin(t = 0, r = 10, b = 0, l = 0)
+          ), 
+          axis.title.x = ggplot2::element_text(
+            margin = ggplot2::margin(t = 10, r = 0, b = 0, l = 0)
+          )
+    )
+```
+
+# NRS og kvalitetsforbedringsprosjektet
+Her legges midlertidig inn oversikt til bruk i kvalitetsforbedringsprosjektet vedrørende NRS.
+
+```{r NRS2-12, warning = FALSE, message=FALSE, results='asis'}
+
+d_nrs_utvalg = d_smerteindikator %>%  
+  filter(Tilsett == 1, AngiNRS12 != 2, AngiNRS21 != 2)
+  
+#De med nedgang i smerte for StSmBe
+  #Antall i utvalget vårt
+ant_utvalg <- nrow(d_nrs_utvalg)
+ant_utvalgtils = nrow(d_smerteindikator %>% filter(Tilsett == 1))
+  
+nrsdata12 = d_smerteindikator %>% 
+  count(AngiNRS12) %>% 
+  mutate(prosent = round(100*(n/sum(n))))
+
+#Gi navn
+ nrsdata12 = nrsdata12 %>%
+   dplyr::mutate(grunnPR = dplyr::case_when(AngiNRS12 == 0 ~ "Nei",
+                             AngiNRS12 == 1 ~ "Ja",
+                             AngiNRS12 == 2 ~ "Ikke aktuelt",
+                             AngiNRS12 == 3 ~ "Ikke spurt")) 
+
+#Endrer rekkefølge og tar i tilleg ved NA-raden (siste)
+nrsdata12 <- nrsdata12[1:(dim(nrsdata12)[1]-1), c(4,2,3)]
+
+#Bruker pakke kableextra
+rapbase::mst(
+  tab = nrsdata12, 
+    col_names = c("", "Antall ", "Prosent"),
+    cap = "Angi NRS (første tilsyn)",
+    label = "tabnrsdata12",
+    type = params$tableFormat,
+    digs = 0,
+    align = c("l", "r", "r", "r"))
+```
+
+```{r NRS2-21, warning = FALSE, message=FALSE, results='asis'}
+
+nrsdata21 = d_smerteindikator %>% 
+  count(AngiNRS21) %>% 
+  mutate(prosent = round(100*(n/sum(n))))
+
+#Gi navn
+ nrsdata21 = nrsdata21 %>%
+   dplyr::mutate(grunnPR = dplyr::case_when(AngiNRS21 == 0 ~ "Nei",
+                             AngiNRS21 == 1 ~ "Ja",
+                             AngiNRS21 == 2 ~ "Ikke aktuelt",
+                             AngiNRS21 == 3 ~ "Ikke spurt")) 
+
+#Endrer rekkefølge og tar i tilleg ved NA-raden (siste)
+nrsdata21 <- nrsdata21[1:(dim(nrsdata21)[1]-1), c(4,2,3)]
+
+#Bruker pakke kableextra
+rapbase::mst(
+  tab = nrsdata21,
+    col_names = c("", "Antall ", "Prosent"),
+    cap = "Angi NRS (Siste tilsyn)",
+    label = "tabnrsdata21",
+    type = params$tableFormat,
+    digs = 0,
+    align = c("l", "r", "r", "r"))
+
+```
+
+Tabell \@ref(tab:tabnrsdata12) gir en oversikt over om pasientene var i stand til å angi NRS ved første tilsyn, mens tabell \@ref(tab:tabnrsdata21) viser det samme ved siste tilsyn.
+
+Antall forløp som har fått tilsyn av minst én profesjon og hvor det samtidig _ikke_ er krysset av for 'ikke aktuelt' å angi NRS (både første og siste tilsyn) er i den valgte tidpserioden `r ant_utvalg` forløp. Totalt antall forløp med tilsyn av minst en profesjon er `r ant_utvalgtils`.
+
+```{r NRSscoreangitt, warning = FALSE, message=FALSE, results='asis'}
+
+dat_utvalg2 = d_smerteindikator %>% 
+  filter(Tilsett == 1 & AngiNRS12 == 1 & AngiNRS21 == 1)
+
+dat_utvalg21 = d_smerteindikator %>% 
+  filter(Tilsett == 1 & AngiNRS12 == 1)
+
+dat_utvalg22 = d_smerteindikator %>% 
+  filter(Tilsett == 1 & AngiNRS21 == 1)
+
+#De med nedgang i smerte for StSmBe
+  #Antall i utvalget vårt
+  ant_utvalg2 <- nrow(dat_utvalg2)
+  ant_utvalg21 <- nrow(dat_utvalg21)
+  ant_utvalg22 <- nrow(dat_utvalg22)
+  
+```
+
+Antall forløp som har fått tilsyn av minst én profesjon og hvor det er krysset av for at pasienten kan angi NRS (alternativ 'Ja') for både første og siste tilsyn er i den valgte tidpserioden `r ant_utvalg2` forløp.
+
+Antall av disse forløpene hvor det er angitt NRS ved (minst) første tilsyn er `r ant_utvalg21`, mens det tilsvarende antall for (minst) siste tilsyn er `r ant_utvalg22`.
+
+Figuren under viser hvordan andelen forløp med minst ett tilsyn hvor det har blitt angitt NRS to ganger har fordelt seg i løpet av året. Tallgrunnlaget er her basert på følgende. Teller: alle forløp der NRS har blitt angitt to ganger. Nevner: alle forløp der det ikke er svart 'nei' eller 'ikke aktuelt' på å angi NRS.
+
+```{r kvalNRSfig, warning = FALSE, message=FALSE, results='asis', fig.pos= "H", out.extra = '', fig.align='center', out.width='100%', fig.width = 14, fig.asp = 0.5}
+
+nrsplotdat = d_smerteindikator %>% 
+  mutate(med = case_when(Tilsett == 1 & AngiNRS12 == 1 & AngiNRS21 == 1 ~ 1, 
+                          TRUE ~ 0))
+
+plotnrs<- nrsplotdat %>% 
+  dplyr::group_by(SykehusNavn, monthname, med) %>%
+  dplyr::summarise(n = dplyr::n()) %>%
+  dplyr::mutate(freq = n/sum(n)) %>%
+  dplyr::filter(med == 1)
+
+#Plotting plotdat
+  ggplot2::ggplot(plotnrs, ggplot2::aes(monthname, freq)) +
+    ggplot2::geom_line(ggplot2::aes(group = factor(SykehusNavn), 
+                  colour=factor(SykehusNavn)), size = 0.5) +
+    ggplot2::geom_point(ggplot2::aes(group = factor(SykehusNavn), 
+                   colour=factor(SykehusNavn)), size = 1) + 
+    ggplot2::labs(x = "Måned", y = "Andel", 
+         subtitle = "Andel av de som er tilsett som kunne angi NRS ved første og siste tilsyn.", 
+         color = "Sykehus") + ggplot2::theme_classic() + 
+    ggplot2::theme(axis.text.x = ggplot2::element_text(size = 8.5), 
+          axis.text.y = ggplot2::element_text(size = 10), 
+          axis.title = ggplot2::element_text(size = 10), 
+          plot.margin = ggplot2::unit(c(1, 1, 2, 1), "cm"), 
+          legend.text = ggplot2::element_text(size = 13), 
+          axis.title.y = ggplot2::element_text(
+            margin = ggplot2::margin(t = 0, r = 10, b = 0, l = 0)
+          ), 
+          axis.title.x = ggplot2::element_text(
+            margin = ggplot2::margin(t = 10, r = 0, b = 0, l = 0)
+          )
+    )
+```
