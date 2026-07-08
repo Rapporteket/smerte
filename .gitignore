@@ -9,3 +9,21 @@ inst/*.log
 inst/*.aux
 docs/
 .Rprofile
+
+# Many kinds of data files
+*.rda
+*.csv
+*.tsv
+*.xlsx
+*.xls
+*.sav
+*.dta
+*.sas7bdat
+*.rds
+*.RData
+*.sql
+
+*.zip
+*.tar
+*.gz
+
