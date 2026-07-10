@@ -578,9 +578,15 @@ server <- function(input, output, session) {
     DT::dataTableOutput("metaDataTable")
   })
 
+  dumps = c("allevarnum", "smertediagnosernum", "smertediagnoser",
+            "patient", "emp11", "emp_11_pain_diagnosis",
+            "emp12", "emp22", "hads",
+            "mce", "opiodoppf", "pateval", "patreg"
+            )
+
   # Datadump
   output$dumpTabControl <- shiny::renderUI({
-    selectInput("dumpDataSet", "Velg datasett:", names(meta()))
+    selectInput("dumpDataSet", "Velg datasett:", dumps)
   })
 
   output$dumpDataInfo <- shiny::renderUI({
