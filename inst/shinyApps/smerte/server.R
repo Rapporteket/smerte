@@ -91,10 +91,7 @@ server <- function(input, output, session) {
                          value = "tab_dg_for_res",
                          shiny::sidebarLayout(
                            shiny::sidebarPanel(
-                             smerte::defaultReportInput("dekningsgrad",
-                                                        startDate = "2022-01-01",
-                                                        endDate = "2022-11-30",
-                                                        max = "2022-11-30")
+                             smerte::defaultReportInput("dekningsgrad")
                            ),
                            shiny::mainPanel(
                              smerte::defaultReportUI("dekningsgrad")
@@ -111,9 +108,7 @@ server <- function(input, output, session) {
                          value = "tab_dg_etter_res",
                          shiny::sidebarLayout(
                            shiny::sidebarPanel(
-                             smerte::defaultReportInput("dekningsgradReserv",
-                                                        startDate = "2022-12-01",
-                                                        min = "2022-12-01")
+                             smerte::defaultReportInput("dekningsgradReserv")
                            ),
                            shiny::mainPanel(
                              smerte::defaultReportUI("dekningsgradReserv")
