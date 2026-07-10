@@ -29,12 +29,13 @@ options(tinytex.verbose = TRUE)
 ```{r get data, include=FALSE}
 
 if (rapbase::isRapContext()) {
-  dat <- smerte::getRegDataRapportDekningsgradReservasjon(
+  dat <- smerte::getDataDump(
     registryName = params$registryName,
     reshId = params$reshId,
+    tableName = "allevarnum",
     userRole = params$userRole,
-    startDate = params$startDate,
-    endDate = params$endDate,
+    fromDate = params$startDate,
+    toDate = params$endDate,
     session = params$shinySession
   )
 } else {
