@@ -10,7 +10,7 @@ server <- function(input, output, session) {
     as.data.frame() |>
     dplyr::rename(orgname = V1, UnitId = V2)
 
-  map_orgname <- smerte::fikse_sykehusnavn(map_db_resh %>% select(-orgname), "UnitId")
+  map_orgname <- smerte::fikse_sykehusnavn(map_db_resh %>% dplyr::select(-orgname), "UnitId")
 
   user <- rapbase::navbarWidgetServer2(
     "navbar-widget",
