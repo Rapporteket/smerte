@@ -37,7 +37,8 @@ if (rapbase::isRapContext()) {
   dat <- smerte::getDataDump(
     registryName = params$registryName,
     reshId = params$reshId,
-    tableName = if (smerte::isNationalReg(params$reshId)) "allevarnumnasjonal" else "allevarnum",
+    tableName = "allevarnum",
+    userRole = params$userRole,
     fromDate = params$startDate,
     toDate = params$endDate,
     session = params$shinySession)
