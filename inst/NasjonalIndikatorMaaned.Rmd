@@ -39,7 +39,7 @@ if (rapbase::isRapContext()) {
                                      fromDate = params$startDate,
                                      toDate = params$endDate,
                                      session = params$shinySession) %>% 
-    fikse_sykehusnavn("AvdRESH")
+    smerte::fikse_sykehusnavn("AvdRESH")
 } else {
   #Dataimport: skal hente lokale data for hvert sykehus (tar vekk sti, og erstatter med lokal fil)
   path <- read.csv(file = "H:/pathnasjonal.csv", header = FALSE, sep = ";")
