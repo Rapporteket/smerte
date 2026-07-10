@@ -47,8 +47,8 @@ NULL
 #' @keywords internal
 getListTextFunction = function(registryName) {
   con = rapbase::rapOpenDbConnection(dbName = registryName, dbType = "mysql")
-  dbExecute(con$con, "DROP FUNCTION IF EXISTS getListText")
-  dbExecute(con$con,
+  DBI::dbExecute(con$con, "DROP FUNCTION IF EXISTS getListText")
+  DBI::dbExecute(con$con,
             "
   CREATE FUNCTION getListText(
     p_list_name VARCHAR(255),
@@ -756,7 +756,7 @@ getDataDump <- function(registryName, reshId, userRole, tableName, fromDate, toD
                    userInput
     )
   } else {
-    query = bygg_query(tableName, userInput)
+    query = smerte::bygg_query(tableName, userInput)
   }
 
   # LOGGING
