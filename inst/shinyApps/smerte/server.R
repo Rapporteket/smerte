@@ -291,7 +291,7 @@ server <- function(input, output, session) {
     if (userRole %in% c("SC", "LC")) {
       if (input$dumpDataSet %in% c("smertediagnoser", "smertediagnosernum", "smertediagnosernumnasjonal")) {
 
-        d = d %>% fikse_sykehusnavn("AvdResh") %>%
+        d = d %>% smerte::fikse_sykehusnavn("AvdResh") %>%
           dplyr::relocate(SykehusNavn,
                    .after = "AvdResh")
       }
