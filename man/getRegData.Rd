@@ -106,7 +106,7 @@ getHospitalName(registryName, reshId, userRole)
 
 getNameReshId(registryName, reshId, asNamedList = FALSE)
 
-getDataDump(registryName, reshId, tableName, fromDate, toDate, ...)
+getDataDump(registryName, reshId, userRole, tableName, fromDate, toDate, ...)
 }
 \arguments{
 \item{registryName}{String providing the current registryName}
