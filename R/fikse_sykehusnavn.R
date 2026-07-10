@@ -32,31 +32,12 @@ fikse_sykehusnavn <- function(df, reshIdVar = UnitId) {
     100083    , "Helse Stavanger"      , "Helse stavanger"                 , "SUS"
   )
 
-  df %>%
-    dplyr::mutate(orgname = dplyr::case_when(
-      UnitId == 0 ~ "Nasjonal",
-      UnitId == 100089 ~ "Ahus",
-      UnitId == 100082 ~ "HUS",
-      UnitId == 4214288 ~ "Levanger",
-      UnitId == 4201115 ~ "Møre og Romsdal",
-      UnitId == 4207789 ~ "OUS Ullevål",
-      UnitId == 705758 ~ "OUS Radiumhospitalet",
-      UnitId == 705652 ~ "OUS Rikshospitalet",
-      UnitId == 100320 ~ "St.Olavs hospital",
-      UnitId == 101719 ~ "UNN",
-      UnitId == 4204083 ~ "Vestre Viken",
-      UnitId == 100084 ~ "Fonna",
-      UnitId == 100133 ~ "Sørlandet",
-      UnitId == 100083 ~ "Helse Stavanger",
-      TRUE ~ NA_character_
-    ))
-
   if (!(reshIdVar %in% names(df))) stop(paste0("df must contain variable: ", reshIdVar))
 
   sykehusoversikt_temp = sykehusoversikt %>%
-    mutate(reshID = as.character(reshID)) %>%
-    rename(!!reshIdVar := reshID)
+    dplyr::mutate(reshID = as.character(reshID)) %>%
+    dplyr::rename(!!reshIdVar := reshID)
 
-  left_join(df, sykehusoversikt_temp, by = reshIdVar)
+  dplyr::left_join(df, sykehusoversikt_temp, by = reshIdVar)
 
 }
