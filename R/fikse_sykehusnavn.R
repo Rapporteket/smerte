@@ -6,12 +6,9 @@
 #'
 #' @export
 #' @examples
-#' x <- data.frame(UnitId = c(108141, 109880, NA, 123, 105502))
+#' x <- data.frame(UnitId = as.character(c(108141, 109880, NA, 123, 105502)))
 #' x %>% fikse_sykehusnavn(reshIdVar = "UnitId")
 #'
-#' y <- data.frame(UnitId = c(108141, 109880, NA, 123, 105502),
-#'                 orgname = c("AHUS", "Ullevål", "NA",
-#'                  "test", "Stavanger"))
 fikse_sykehusnavn <- function(df, reshIdVar = UnitId) {
 
   sykehusoversikt = tibble::tribble(
