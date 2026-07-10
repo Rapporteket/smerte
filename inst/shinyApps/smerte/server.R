@@ -279,33 +279,24 @@ server <- function(input, output, session) {
   )
 
   contentDump <- function(file, type, userRole = "LU") {
+
     d <- smerte::getDataDump(registryName(),
                              tableName = input$dumpDataSet,
                              reshId = user$org(),
+                             userRole = user$role(),
                              fromDate = input$dumpDateRange[1],
                              toDate = input$dumpDateRange[2],
                              session = session)
-    if (userRole == "LU") {
-      if (input$dumpDataSet %in% c("smertediagnoser", "smertediagnosernum")) {
-        forlopsoversikt <- rapbase::loadRegData(
-          registryName(),
-          "SELECT ForlopsID, PasientID, AvdRESH FROM forlopsoversikt")
-        d <- merge(d, forlopsoversikt, by = "ForlopsID") |>
-          dplyr::relocate(ForlopsID, PasientID)
-      }
-      if (input$dumpDataSet != "avdelingsoversikt") {
-        d <- dplyr::filter(d, AvdRESH == shiny::req(user$org()))
-      }
-    }
-    if (userRole == "SC") {
+
+    if (userRole %in% c("SC", "LC")) {
       if (input$dumpDataSet %in% c("smertediagnoser", "smertediagnosernum", "smertediagnosernumnasjonal")) {
-        forlopsoversikt <- rapbase::loadRegData(
-          registryName(),
-          "SELECT ForlopsID, PasientID, SykehusNavn FROM forlopsoversiktnasjonal")
-        d <- merge(d, forlopsoversikt, by = "ForlopsID") |>
-          dplyr::relocate(ForlopsID, PasientID, SykehusNavn)
-        }
+
+        d = d %>% fikse_sykehusnavn("AvdResh") %>%
+          relocate(SykehusNavn,
+                   .after = "AvdResh")
+      }
     }
+
     if (type == "xlsx-csv") {
       readr::write_excel_csv2(d, file)
     } else {
