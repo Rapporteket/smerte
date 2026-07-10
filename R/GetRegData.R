@@ -762,7 +762,7 @@ getDataDump <- function(registryName, reshId, userRole, tableName, fromDate, toD
   # LOGGING
   if ("session" %in% names(list(...))) {
     rapbase::repLogger(session = list(...)[["session"]],
-                       msg = paste0("Smerte data dump: ", tableName, "\n Query: ", query))
+                       msg = paste0("Smerte data dump: ", tableName, " - FromDate: ", fromDate, " - ToDate: ", toDate))
   }
 
   # Henter uttrekk
