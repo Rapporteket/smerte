@@ -10,7 +10,8 @@ server <- function(input, output, session) {
     as.data.frame() |>
     dplyr::rename(orgname = V1, UnitId = V2)
 
-  map_orgname <- smerte::fikse_sykehusnavn(map_db_resh)
+  map_orgname <- smerte::fikse_sykehusnavn(map_db_resh %>% dplyr::select(-orgname), "UnitId")
+
   user <- rapbase::navbarWidgetServer2(
     "navbar-widget",
     orgName = "smerte",
@@ -90,10 +91,7 @@ server <- function(input, output, session) {
                          value = "tab_dg_for_res",
                          shiny::sidebarLayout(
                            shiny::sidebarPanel(
-                             smerte::defaultReportInput("dekningsgrad",
-                                                        startDate = "2022-01-01",
-                                                        endDate = "2022-11-30",
-                                                        max = "2022-11-30")
+                             smerte::defaultReportInput("dekningsgrad")
                            ),
                            shiny::mainPanel(
                              smerte::defaultReportUI("dekningsgrad")
@@ -110,9 +108,7 @@ server <- function(input, output, session) {
                          value = "tab_dg_etter_res",
                          shiny::sidebarLayout(
                            shiny::sidebarPanel(
-                             smerte::defaultReportInput("dekningsgradReserv",
-                                                        startDate = "2022-12-01",
-                                                        min = "2022-12-01")
+                             smerte::defaultReportInput("dekningsgradReserv")
                            ),
                            shiny::mainPanel(
                              smerte::defaultReportUI("dekningsgradReserv")
@@ -283,32 +279,24 @@ server <- function(input, output, session) {
   )
 
   contentDump <- function(file, type, userRole = "LU") {
-    d <- smerte::getDataDump(registryName(),input$dumpDataSet,
+
+    d <- smerte::getDataDump(registryName(),
+                             tableName = input$dumpDataSet,
                              reshId = user$org(),
+                             userRole = user$role(),
                              fromDate = input$dumpDateRange[1],
                              toDate = input$dumpDateRange[2],
                              session = session)
-    if (userRole == "LU") {
-      if (input$dumpDataSet %in% c("smertediagnoser", "smertediagnosernum")) {
-        forlopsoversikt <- rapbase::loadRegData(
-          registryName(),
-          "SELECT ForlopsID, PasientID, AvdRESH FROM forlopsoversikt")
-        d <- merge(d, forlopsoversikt, by = "ForlopsID") |>
-          dplyr::relocate(ForlopsID, PasientID)
-      }
-      if (input$dumpDataSet != "avdelingsoversikt") {
-        d <- dplyr::filter(d, AvdRESH == shiny::req(user$org()))
-      }
-    }
-    if (userRole == "SC") {
+
+    if (userRole %in% c("SC", "LC")) {
       if (input$dumpDataSet %in% c("smertediagnoser", "smertediagnosernum", "smertediagnosernumnasjonal")) {
-        forlopsoversikt <- rapbase::loadRegData(
-          registryName(),
-          "SELECT ForlopsID, PasientID, SykehusNavn FROM forlopsoversiktnasjonal")
-        d <- merge(d, forlopsoversikt, by = "ForlopsID") |>
-          dplyr::relocate(ForlopsID, PasientID, SykehusNavn)
-        }
+
+        d = d %>% smerte::fikse_sykehusnavn("AvdResh") %>%
+          dplyr::relocate(SykehusNavn,
+                   .after = "AvdResh")
+      }
     }
+
     if (type == "xlsx-csv") {
       readr::write_excel_csv2(d, file)
     } else {
@@ -590,9 +578,15 @@ server <- function(input, output, session) {
     DT::dataTableOutput("metaDataTable")
   })
 
+  dumps = c("allevarnum", "smertediagnosernum", "smertediagnoser",
+            "patient", "emp11", "emp_11_pain_diagnosis",
+            "emp12", "emp22", "hads",
+            "mce", "opiodoppf", "pateval", "patreg"
+            )
+
   # Datadump
   output$dumpTabControl <- shiny::renderUI({
-    selectInput("dumpDataSet", "Velg datasett:", names(meta()))
+    selectInput("dumpDataSet", "Velg datasett:", dumps)
   })
 
   output$dumpDataInfo <- shiny::renderUI({
