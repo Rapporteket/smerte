@@ -725,13 +725,13 @@ GROUP BY
 getDataDump <- function(registryName, reshId, userRole, tableName, fromDate, toDate, ...) {
 
   # Liste over tabeller som skal være tilgjengelig for uttrekk
-  rådatatabeller = c("patient", "emp11", "emp_11_pain_diagnosis",
+  raadatatabeller = c("patient", "emp11", "emp_11_pain_diagnosis",
                      "emp12", "emp22", "hads",
                      "mce", "opiodoppf", "pateval", "patreg")
 
   koblet = c("allevarnum", "smertediagnosernum", "smertediagnoser")
 
-  if(!tableName %in% c(rådatatabeller, koblet)) {
+  if(!tableName %in% c(raadatatabeller, koblet)) {
     stop(message = "Ukjent datasett")
   }
 
@@ -747,7 +747,7 @@ getDataDump <- function(registryName, reshId, userRole, tableName, fromDate, toD
   }
 
   # Lage spørringer
-  if(tableName %in% rådatatabeller) {
+  if(tableName %in% raadatatabeller) {
 
     query = paste0("SELECT tab.*
                  FROM mce mce
