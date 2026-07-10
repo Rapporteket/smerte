@@ -292,7 +292,7 @@ server <- function(input, output, session) {
       if (input$dumpDataSet %in% c("smertediagnoser", "smertediagnosernum", "smertediagnosernumnasjonal")) {
 
         d = d %>% fikse_sykehusnavn("AvdResh") %>%
-          relocate(SykehusNavn,
+          dplyr::relocate(SykehusNavn,
                    .after = "AvdResh")
       }
     }
