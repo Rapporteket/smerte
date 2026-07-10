@@ -4,10 +4,10 @@
 \alias{fikse_sykehusnavn}
 \title{Add variable `orgname` if missing, update values if existing}
 \usage{
-fikse_sykehusnavn(df)
+fikse_sykehusnavn(df, reshIdVar = UnitId)
 }
 \arguments{
-\item{df}{data.frame, must contain variable `UnitId`}
+\item{df}{data.frame, must contain variable `reshIdVar`}
 }
 \value{
 data.frame with variable `orgname`. Old values are overwritten
@@ -18,7 +18,7 @@ Add variable `orgname` if missing, update values if existing
 }
 \examples{
 x <- data.frame(UnitId = c(108141, 109880, NA, 123, 105502))
-x \%>\% fikse_sykehusnavn()
+x \%>\% fikse_sykehusnavn(reshIdVar = "UnitId")
 
 y <- data.frame(UnitId = c(108141, 109880, NA, 123, 105502),
                 orgname = c("AHUS", "Ullevål", "NA",

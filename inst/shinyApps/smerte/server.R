@@ -10,7 +10,8 @@ server <- function(input, output, session) {
     as.data.frame() |>
     dplyr::rename(orgname = V1, UnitId = V2)
 
-  map_orgname <- smerte::fikse_sykehusnavn(map_db_resh)
+  map_orgname <- smerte::fikse_sykehusnavn(map_db_resh %>% select(-orgname), "UnitId")
+
   user <- rapbase::navbarWidgetServer2(
     "navbar-widget",
     orgName = "smerte",
@@ -283,7 +284,8 @@ server <- function(input, output, session) {
   )
 
   contentDump <- function(file, type, userRole = "LU") {
-    d <- smerte::getDataDump(registryName(),input$dumpDataSet,
+    d <- smerte::getDataDump(registryName(),
+                             tableName = input$dumpDataSet,
                              reshId = user$org(),
                              fromDate = input$dumpDateRange[1],
                              toDate = input$dumpDateRange[2],
