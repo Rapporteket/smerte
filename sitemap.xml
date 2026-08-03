@@ -3,8 +3,10 @@
 <url><loc>/authors.html</loc></url>
 <url><loc>/index.html</loc></url>
 <url><loc>/news/index.html</loc></url>
+<url><loc>/reference/bygg_query.html</loc></url>
 <url><loc>/reference/defaultReport.html</loc></url>
 <url><loc>/reference/fikse_sykehusnavn.html</loc></url>
+<url><loc>/reference/getListTextFunction.html</loc></url>
 <url><loc>/reference/getRegData.html</loc></url>
 <url><loc>/reference/index.html</loc></url>
 <url><loc>/reference/isTenant.html</loc></url>
