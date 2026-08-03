@@ -13,8 +13,6 @@
 #'
 #' @return Shiny object
 #' @name defaultReport
-#' @aliases defaultReportInput defaultReportUI defaultReportServer
-#' defaultReportApp
 NULL
 
 #' @rdname defaultReport
