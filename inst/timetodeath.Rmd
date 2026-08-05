@@ -32,15 +32,16 @@ library(ggplot2)
 
 ```{r get data, include=FALSE}
 
-if (isRapContext()) {
-  fulldat <- getRegDataTimetodeath(
-    registryName = params$registryName,
-    reshId = params$reshId,
-    userRole = params$userRole,
-    startDate = params$startDate,
-    endDate = params$endDate,
-    session = params$shinySession
-  )
+if (rapbase::isRapContext()) {
+fulldat <- smerte::getDataDump(registryName = params$registryName,
+                                     reshId = params$reshId,
+                                     tableName = "timetodeath",
+                                     userRole=params$userRole,
+                                     fromDate = params$startDate,
+                                     toDate = params$endDate,
+                                     session = params$shinySession) %>% 
+    smerte::fikse_sykehusnavn("AvdRESH")
+
 } else {
   
   #Dataimport: skal hente lokale data for hvert sykehus (tar vekk sti, og erstatter med lokal fil)

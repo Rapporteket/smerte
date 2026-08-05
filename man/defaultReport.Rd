@@ -5,8 +5,8 @@
 \alias{defaultReportInput}
 \alias{defaultReportUI}
 \alias{defaultReportServer}
-\alias{defaultReportApp}
 \alias{defaultReportServer2}
+\alias{defaultReportApp}
 \title{Shiny modules for Smertereg at Rapportket}
 \usage{
 defaultReportInput(

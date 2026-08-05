@@ -14,11 +14,6 @@
 #' @param smerteKat Integer defining the SmerteKat code to use in query
 #' @param ... Optional arguments to be passed to the function
 #' @name getRegData
-#' @aliases getRegDataLokalTilsynsrapportMaaned
-#' getRegDataRapportDekningsgrad getRegDataSmertekategori
-#' getSmerteDiagKatValueLab
-#' getRegDataSpinalkateter getLocalYears getAllYears getHospitalName
-#' getNameReshId getDataDump
 NULL
 
 
@@ -729,12 +724,11 @@ getDataDump <- function(registryName, reshId, userRole, tableName, fromDate, toD
                      "emp12", "emp22", "hads",
                      "mce", "opiodoppf", "pateval", "patreg")
 
-  koblet = c("allevarnum", "smertediagnosernum", "smertediagnoser")
+  koblet = c("allevarnum", "smertediagnosernum", "smertediagnoser", "timetodeath")
 
   if(!tableName %in% c(raadatatabeller, koblet)) {
     stop(message = "Ukjent datasett")
   }
-
 
   # Filtrere for resh og valgte datoer
   if (reshId == 0) {
@@ -1199,7 +1193,7 @@ bygg_query = function(tableName, userInput) {
     patreg.PAINNOTTOSTAND AS PRSpm6
     FROM
     mce mce INNER JOIN patient patient ON mce.PATIENT_ID = patient.ID
-    INNER  JOIN emp11 emp11 ON mce.MCEID = emp11.MCEID
+    INNER JOIN emp11 emp11 ON mce.MCEID = emp11.MCEID
     INNER JOIN mcelist mcelist ON mce.MCEID = mcelist.MCEID
     LEFT OUTER  JOIN emp12 emp12 ON mce.MCEID = emp12.MCEID  AND emp12.FORMORDER = 1
     LEFT OUTER  JOIN emp12 emp21 ON mce.MCEID = emp21.MCEID  AND emp21.FORMORDER = 2
@@ -1283,6 +1277,30 @@ bygg_query = function(tableName, userInput) {
     AND epd.PAINDIAG_CATEGORY = scd.DIAGCAT
     INNER JOIN mce mce ON COALESCE(NULLIF(mce.PARENT_ID, 'NA'), mce.MCEID) = epd.MCEID ",
                    userInput)
+  }
+
+  if(tableName == "timetodeath") {
+
+    query = paste0("SELECT
+                   mce.MCEID AS ForlopsID,
+                   mce.CENTREID AS AvdRESH,
+                   mce.REGISTERED_DATE AS HovedDato,
+                   mce.SUPERVISION AS Tilsett,
+                   epd.ID AS SmerteDiagID,
+                   epd.PAINCAT AS SmerteKat,
+                   epd.PAINDIAG_CATEGORY AS DiagKat,
+                   emp11.AKUTTLANGV AS AkuttLang,
+                   emp11.ANALGESICS_NON_OPIOIDS AS Opioid4a,
+                   emp22.END_DATE AS SluttDato,
+                   patient.DECEASED_DATE AS Ddato
+                   FROM mce
+                   INNER JOIN patient ON mce.PATIENT_ID = patient.ID
+                   INNER JOIN emp11 ON mce.MCEID = emp11.MCEID
+                   INNER JOIN emp11_pain_diagnosis epd ON COALESCE(NULLIF(mce.PARENT_ID, 'NA'), mce.MCEID) = epd.MCEID
+                   LEFT OUTER JOIN emp22 ON COALESCE(NULLIF(mce.PARENT_ID, 'NA'), mce.MCEID) = emp22.MCEID "
+                   ,
+                   userInput)
+
   }
 
   return(query)
