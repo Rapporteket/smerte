@@ -14,7 +14,7 @@ NULL
 #' @export
 isNationalReg <- function(reshId) {
 
-  conf <- rapbase::getConfig(fileName = "rapbaseConfig.yml")
+  conf <- getConfig(fileName = "rapbaseConfig.yml")
   if (reshId == conf$reg$smerte$nationalAccess$reshId) {
     return(TRUE)
   } else {
@@ -27,7 +27,7 @@ isNationalReg <- function(reshId) {
 #' @export
 isOUSReg <- function(reshId) {
 
-  conf <- rapbase::getConfig(fileName = "rapbaseConfig.yml")
+  conf <- getConfig(fileName = "rapbaseConfig.yml")
   if (reshId %in% conf$reg$smerte$ousAccess$reshId) {
     return(TRUE)
   } else {

@@ -71,7 +71,7 @@ reportProcessor <- function(report,
   }
 
   if (report == "veiledning") {
-    filePath <- rapbase::renderRmd(
+    filePath <- renderRmd(
       system.file("veiledning.Rmd", package = "smerte"),
       outputType = outputType,
       params = list(
@@ -85,7 +85,7 @@ reportProcessor <- function(report,
   }
 
   if (report == "tilsyn") {
-    filePath <- rapbase::renderRmd(
+    filePath <- renderRmd(
       system.file("LokalTilsynsrapportMaaned.Rmd", package = "smerte"),
       outputType = outputType,
       params = list(
@@ -101,7 +101,7 @@ reportProcessor <- function(report,
   }
 
   if (report == "indikator") {
-    filePath <- rapbase::renderRmd(
+    filePath <- renderRmd(
       system.file("LokalIndikatorMaaned.Rmd", package = "smerte"),
       outputType = outputType,
       params = list(
@@ -117,7 +117,7 @@ reportProcessor <- function(report,
   }
 
   if (report == "nasjonalIndikator") {
-    filePath <- rapbase::renderRmd(
+    filePath <- renderRmd(
       system.file("NasjonalIndikatorMaaned.Rmd", package = "smerte"),
       outputType = outputType,
       params = list(
@@ -133,7 +133,7 @@ reportProcessor <- function(report,
   }
 
   if (report == "spinalkateter") {
-    filePath <- rapbase::renderRmd(
+    filePath <- renderRmd(
       system.file("LokalSpinalkateter.Rmd", package = "smerte"),
       outputType = outputType,
       params = list(

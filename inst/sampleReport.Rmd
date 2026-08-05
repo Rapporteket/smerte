@@ -27,7 +27,7 @@ userFullName: '`r params$userFullName`'
 library(knitr)
 library(kableExtra)
 library(rapbase)
-knitr::opts_chunk$set(echo=FALSE)
+opts_chunk$set(echo=FALSE)
 options(knitr.table.format = params$tableFormat)
 options(tinytex.verbose = TRUE)
 ```

@@ -1,99 +1,99 @@
 regTitle = "Smerteregisteret"
 
-ui <- shiny::tagList(
-  shiny::navbarPage(
-    title = rapbase::regTitle(regTitle),
+ui <- tagList(
+  navbarPage(
+    title = regTitle(regTitle),
     windowTitle = regTitle,
-    theme = rapbase::rapTheme(),
+    theme = rapTheme(),
     id = "tabs",
 
-    shiny::tabPanel(
+    tabPanel(
       title = "Veiledning",
       value = "tab_veiledning",
-      rapbase::navbarWidgetInput("navbar-widget", selectOrganization = TRUE),
-      shiny::mainPanel(width = 12,
-        shiny::htmlOutput("veiledning", inline = TRUE)
+      navbarWidgetInput("navbar-widget", selectOrganization = TRUE),
+      mainPanel(width = 12,
+        htmlOutput("veiledning", inline = TRUE)
       )
     ),
-    shiny::navbarMenu(
+    navbarMenu(
       title = "Rapporter",
-      shiny::tabPanel(
+      tabPanel(
         title = "Indikatorer",
         value = "tab_indikatorer",
-        shiny::sidebarLayout(
-          shiny::sidebarPanel(
-            smerte::defaultReportInput("indikator")
+        sidebarLayout(
+          sidebarPanel(
+            defaultReportInput("indikator")
           ),
-          shiny::mainPanel(
-            smerte::defaultReportUI("indikator")
+          mainPanel(
+            defaultReportUI("indikator")
           )
         )
       ),
-      shiny::tabPanel(
+      tabPanel(
         title = "Opioidreduksjon",
         value = "tab_opioidreduksjon",
-        shiny::sidebarLayout(
-          shiny::sidebarPanel(
-            smerte::defaultReportInput("opioid")
+        sidebarLayout(
+          sidebarPanel(
+            defaultReportInput("opioid")
           ),
-          shiny::mainPanel(
-            smerte::defaultReportUI("opioid")
+          mainPanel(
+            defaultReportUI("opioid")
           )
         )
       ),
-      shiny::tabPanel(
+      tabPanel(
         title = "Eprom",
         value = "tab_eprom",
-        shiny::sidebarLayout(
-          shiny::sidebarPanel(
-            smerte::defaultReportInput("eprom")
+        sidebarLayout(
+          sidebarPanel(
+            defaultReportInput("eprom")
           ),
-          shiny::mainPanel(
-            smerte::defaultReportUI("eprom")
+          mainPanel(
+            defaultReportUI("eprom")
           )
         )
       ),
-      # shiny::tabPanel(
+      # tabPanel(
       #   title = "Epidural - barn",
       #   value = "tab_epidural_barn",
-      #   shiny::sidebarLayout(
-      #     shiny::sidebarPanel(
-      #       smerte::defaultReportInput("lokalepi")
+      #   sidebarLayout(
+      #     sidebarPanel(
+      #       defaultReportInput("lokalepi")
       #       ),
-      #       shiny::mainPanel(
-      #         smerte::defaultReportUI("lokalepi")
+      #       mainPanel(
+      #         defaultReportUI("lokalepi")
       #       )
       #     )
       #   ),
-      shiny::tabPanel(
+      tabPanel(
         title = "Tid til død etter utskrivelse",
         value = "tab_tid_til_dod",
-        shiny::sidebarLayout(
-          shiny::sidebarPanel(
-            smerte::defaultReportInput("timetodeath")
+        sidebarLayout(
+          sidebarPanel(
+            defaultReportInput("timetodeath")
           ),
-          shiny::mainPanel(
-            smerte::defaultReportUI("timetodeath")
+          mainPanel(
+            defaultReportUI("timetodeath")
           )
         )
       ),
      ),
-    shiny::tabPanel(
+    tabPanel(
       title = "Datadump",
       value = "tab_datadump",
-      shiny::sidebarLayout(
-        shiny::sidebarPanel(
+      sidebarLayout(
+        sidebarPanel(
           width = 4,
-          shiny::uiOutput("dumpTabControl"),
-          shiny::dateRangeInput(
+          uiOutput("dumpTabControl"),
+          dateRangeInput(
             "dumpDateRange",
             "Velg periode:",
-            start = lubridate::ymd(Sys.Date()) - lubridate::years(1),
+            start = ymd(Sys.Date()) - years(1),
             end = Sys.Date(),
             separator = "-",
             weekstart = 1
           ),
-          shiny::radioButtons(
+          radioButtons(
             "dumpFormat",
             "Velg filformat:",
             choices = list(
@@ -103,10 +103,10 @@ ui <- shiny::tagList(
               `xlsx-csv2 (nordisk format)` = "xlsx-csv2"
             )
           ),
-          shiny::downloadButton("dumpDownload", "Hent!")
+          downloadButton("dumpDownload", "Hent!")
         ),
-        shiny::mainPanel(
-          shiny::htmlOutput("dumpDataInfo")
+        mainPanel(
+          htmlOutput("dumpDataInfo")
         )
       )
     ),

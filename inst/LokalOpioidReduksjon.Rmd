@@ -21,7 +21,7 @@ registryName: Smerteregisteret
 userFullName: '`r params$userFullName`'
 ---
 ```{r set options and load packages, include = FALSE}
-knitr::opts_chunk$set(echo=FALSE)
+opts_chunk$set(echo=FALSE)
 options(knitr.table.format = params$tableFormat)
 options(tinytex.verbose = TRUE)
 
@@ -39,8 +39,8 @@ library(kableExtra)
 ```
 
 ```{r setup, include=FALSE}
-if (rapbase::isRapContext()) {
-  dat <- smerte::getRegDataOpiodReduksjon(registryName = params$registryName,
+if (isRapContext()) {
+  dat <- getRegDataOpiodReduksjon(registryName = params$registryName,
                                      reshId = params$reshId,
                                      userRole=params$userRole,
                                      startDate = params$startDate,
@@ -70,7 +70,7 @@ if(dim(dat)[1] < 1) {
 ```{r noData, eval=!dataPresent, results='asis'}
 cat('# Upps...\nI den valgte tidsperioden er det ikke nok data til å gi 
     ut resultater.')
-knitr::knit_exit()
+knit_exit()
 
 ```
 
@@ -84,14 +84,14 @@ Dersom et valgt år ikke vises er det ingen registreringer på morfinekvivalente
 ```{r overall, include=FALSE}
 #Gjennomsnittlig antall forløp
 d_moek = dat %>% filter(!is.na(MoEkvivalens22)) %>%
-    dplyr::group_by(year(StartdatoTO)) %>%
-    dplyr::summarise(nevner = n(),
+    group_by(year(StartdatoTO)) %>%
+    summarise(nevner = n(),
               ind = sum(MoEkvivalens22)/n())
 ```
 
 ```{r taboverall, results='asis', echo = FALSE}
 
-rapbase::mst(tab = d_moek,
+mst(tab = d_moek,
      col_names = c("År", "Antall forløp", "Gj.snitt MoEkv"),
      cap = paste0("Gjennomsnittlig mengde morfinekvivalenter per år"),
      label = "moek",

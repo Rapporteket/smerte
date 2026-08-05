@@ -19,24 +19,24 @@ NULL
 #' @export
 defaultReportInput <- function(
   id,
-  startDate = lubridate::today() - lubridate::years(1),
-  endDate = lubridate::today() - lubridate::weeks(1),
+  startDate = today() - years(1),
+  endDate = today() - weeks(1),
   min = "1980-01-01",
   max = "2100-01-01") {
 
-  shiny::tagList(
-    shiny::dateRangeInput(shiny::NS(id, "dateRange"),
+  tagList(
+    dateRangeInput(NS(id, "dateRange"),
                           label = "Velg periode:",
                           start = startDate,
                           end = endDate,
                           min = min,
                           max = max,
                           separator = "-"),
-    shiny::radioButtons(shiny::NS(id, "format"),
+    radioButtons(NS(id, "format"),
                         "Format for nedlasting",
                         list(PDF = "pdf", HTML = "html"),
                         inline = FALSE),
-    shiny::downloadButton(shiny::NS(id, "downloadReport"), "Last ned!")
+    downloadButton(NS(id, "downloadReport"), "Last ned!")
   )
 
 }
@@ -45,8 +45,8 @@ defaultReportInput <- function(
 #' @rdname defaultReport
 #' @export
 defaultReportUI <- function(id) {
-  shiny::tagList(
-    shiny::htmlOutput(shiny::NS(id, "report"), inline = TRUE)
+  tagList(
+    htmlOutput(NS(id, "report"), inline = TRUE)
   )
 }
 
@@ -54,19 +54,19 @@ defaultReportUI <- function(id) {
 #' @rdname defaultReport
 #' @export
 defaultReportServer <- function(id, reportFileName, reportParams) {
-  shiny::moduleServer(id, function(input, output, session) {
+  moduleServer(id, function(input, output, session) {
 
-    output$report <- shiny::renderUI({
+    output$report <- renderUI({
       reportParams$startDate <- input$dateRange[1]
       reportParams$endDate <- input$dateRange[2]
-      rapbase::renderRmd(
+      renderRmd(
         sourceFile = system.file(reportFileName, package = "smerte"),
         outputType = "html_fragment",
         params = reportParams
       )
     })
 
-    output$downloadReport <- shiny::downloadHandler(
+    output$downloadReport <- downloadHandler(
       filename = function() {
         basename(
           tempfile(
@@ -80,7 +80,7 @@ defaultReportServer <- function(id, reportFileName, reportParams) {
         reportParams$startDate <- input$dateRange[1]
         reportParams$endDate <- input$dateRange[2]
         reportParams$tableFormat <- input$format
-        fn <- rapbase::renderRmd(
+        fn <- renderRmd(
           sourceFile = system.file(reportFileName, package = "smerte"),
           outputType = input$format,
           params = reportParams
@@ -94,20 +94,20 @@ defaultReportServer <- function(id, reportFileName, reportParams) {
 #' @rdname defaultReport
 #' @export
 defaultReportServer2 <- function(id, reportFileName, reportParams) {
-  shiny::moduleServer(id, function(input, output, session) {
+  moduleServer(id, function(input, output, session) {
 
-    output$report <- shiny::renderUI({
+    output$report <- renderUI({
       reportParams_list <- reportParams()
       reportParams_list$startDate <- input$dateRange[1]
       reportParams_list$endDate <- input$dateRange[2]
-      rapbase::renderRmd(
+      renderRmd(
         sourceFile = system.file(reportFileName(), package = "smerte"),
         outputType = "html_fragment",
         params = reportParams_list
       )
     })
 
-    output$downloadReport <- shiny::downloadHandler(
+    output$downloadReport <- downloadHandler(
       filename = function() {
         basename(
           tempfile(
@@ -122,7 +122,7 @@ defaultReportServer2 <- function(id, reportFileName, reportParams) {
         reportParams_list$startDate <- input$dateRange[1]
         reportParams_list$endDate <- input$dateRange[2]
         reportParams_list$tableFormat <- input$format
-        fn <- rapbase::renderRmd(
+        fn <- renderRmd(
           sourceFile = system.file(reportFileName(), package = "smerte"),
           outputType = input$format,
           params = reportParams_list
@@ -138,12 +138,12 @@ defaultReportServer2 <- function(id, reportFileName, reportParams) {
 #' @export
 defaultReportApp <- function() {
 
-  ui <- shiny::fluidPage(
-    shiny::sidebarLayout(
-      shiny::sidebarPanel(
+  ui <- fluidPage(
+    sidebarLayout(
+      sidebarPanel(
         defaultReportInput("test")
       ),
-      shiny::mainPanel(
+      mainPanel(
         defaultReportUI("test")
       )
     )
@@ -161,5 +161,5 @@ defaultReportApp <- function() {
     defaultReportServer("test", "sampleReport.Rmd", params)
   }
 
-  shiny::shinyApp(ui, server)
+  shinyApp(ui, server)
 }

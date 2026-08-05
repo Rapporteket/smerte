@@ -32,21 +32,28 @@ Depends:
   R (>= 4.1.0)
 Imports:
     bookdown,
+    DBI, 
+    dplyr,
     DT,
+    ggplot2, 
     gridExtra,
     kableExtra,
     knitr,
+    lubridate,
     magrittr,
     rapbase,
+    readr,
     revealjs,
     rlang,
     rmarkdown,
     shiny,
     shinyalert,
     shinycssloaders,
+    stringr,
+    tibble, 
+    tidyr,
     yaml,
-    zoo,
-    tidyverse
+    zoo
 Remotes:
     Rapporteket/rapbase@main
 Suggests: 
@@ -56,4 +63,6 @@ Suggests:
     RMariaDB
 Encoding: UTF-8
 LazyData: true
+URL: https://github.com/rapporteket/smerte
+BugReports: https://github.com/rapporteket/smerte/issues
 Config/roxygen2/version: 8.0.0

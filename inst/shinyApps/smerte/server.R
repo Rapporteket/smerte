@@ -1,33 +1,33 @@
 server <- function(input, output, session) {
 
-  # rapbase::logShinyInputChanges(input)
+  # logShinyInputChanges(input)
 
   map_db_resh <-
-    rapbase::getConfig("rapbaseConfig.yml")$reg$smerte$databases |>
+    getConfig("rapbaseConfig.yml")$reg$smerte$databases |>
     unlist() |>
     matrix(nrow=2) |>
     t() |>
     as.data.frame() |>
-    dplyr::rename(orgname = V1, UnitId = V2)
+    rename(orgname = V1, UnitId = V2)
 
-  map_orgname <- smerte::fikse_sykehusnavn(map_db_resh %>% dplyr::select(-orgname), "UnitId")
+  map_orgname <- fikse_sykehusnavn(map_db_resh %>% select(-orgname), "UnitId")
 
-  user <- rapbase::navbarWidgetServer2(
+  user <- navbarWidgetServer2(
     "navbar-widget",
     orgName = "smerte",
     caller = "smerte",
-    map_orgname = shiny::req(map_orgname)
+    map_orgname = req(map_orgname)
   )
 
-  rapbase::appLogger(session, msg = "Starting smerte app")
+  appLogger(session, msg = "Starting smerte app")
 
   # Parameters that may change depending on the role and org of user
   ## setting values that do depend on a Rapporteket context
-  if (rapbase::isRapContext()) {
+  if (isRapContext()) {
     registryName <- reactive(
       map_db_resh$orgname[map_db_resh$UnitId == user$org()])
     userFullName <- Sys.getenv("FALK_USER_FULLNAME")
-    hospitalName <- reactive(smerte::getHospitalName(
+    hospitalName <- reactive(getHospitalName(
       registryName(),
       user$org(),
       user$role())
@@ -35,32 +35,32 @@ server <- function(input, output, session) {
   }
 
 # Nasjonal database -------------------------------------------------------
-  shiny::observeEvent(user$org(), {
+  observeEvent(user$org(), {
 
     #fjerne dynamiske tabs
-    shiny::removeTab(inputId = "tabs", target = "tab_tilsyn")
-    shiny::removeTab(inputId = "tabs", target = "tab_dg_for_res")
-    shiny::removeTab(inputId = "tabs", target = "tab_dg_etter_res")
-    shiny::removeTab(inputId = "tabs", target = "tab_spinalkateter")
-    shiny::removeTab(inputId = "tabs", target = "tab_smertekategori")
-    shiny::removeTab(inputId = "tabs", target = "tab_oppf_smerteklinikk")
-    # shiny::removeTab(inputId = "tabs", target = "tab_epidural_barn")
-    shiny::removeTab(inputId = "tabs", target = "tab_abb_lokal")
-    shiny::removeTab(inputId = "tabs", target = "tab_abb_nasjonal")
+    removeTab(inputId = "tabs", target = "tab_tilsyn")
+    removeTab(inputId = "tabs", target = "tab_dg_for_res")
+    removeTab(inputId = "tabs", target = "tab_dg_etter_res")
+    removeTab(inputId = "tabs", target = "tab_spinalkateter")
+    removeTab(inputId = "tabs", target = "tab_smertekategori")
+    removeTab(inputId = "tabs", target = "tab_oppf_smerteklinikk")
+    # removeTab(inputId = "tabs", target = "tab_epidural_barn")
+    removeTab(inputId = "tabs", target = "tab_abb_lokal")
+    removeTab(inputId = "tabs", target = "tab_abb_nasjonal")
 
-    if (smerte::isNationalReg(shiny::req(user$org()))) {
+    if (isNationalReg(req(user$org()))) {
 
-      shiny::insertTab(inputId = "tabs",
-                       tab = shiny::tabPanel(
+      insertTab(inputId = "tabs",
+                       tab = tabPanel(
                          title = "Abonnement nasjonal",
                          value = "tab_abb_nasjonal",
-                         shiny::sidebarLayout(
-                           shiny::sidebarPanel(
-                             rapbase::autoReportFormatInput("smerteSubscriptionNational"),
-                             rapbase::autoReportInput("smerteSubscriptionNational")
+                         sidebarLayout(
+                           sidebarPanel(
+                             autoReportFormatInput("smerteSubscriptionNational"),
+                             autoReportInput("smerteSubscriptionNational")
                            ),
-                           shiny::mainPanel(
-                             rapbase::autoReportUI("smerteSubscriptionNational")
+                           mainPanel(
+                             autoReportUI("smerteSubscriptionNational")
                            )
                          )
                        ),
@@ -68,16 +68,16 @@ server <- function(input, output, session) {
                        target = "tab_datadump")
     } else {
 
-      shiny::insertTab(inputId = "tabs",
-                       tab = shiny::tabPanel(
+      insertTab(inputId = "tabs",
+                       tab = tabPanel(
                          title = "Tilsyn",
                          value = "tab_tilsyn",
-                         shiny::sidebarLayout(
-                           shiny::sidebarPanel(
-                             smerte::defaultReportInput("tilsyn")
+                         sidebarLayout(
+                           sidebarPanel(
+                             defaultReportInput("tilsyn")
                            ),
-                           shiny::mainPanel(
-                             smerte::defaultReportUI("tilsyn")
+                           mainPanel(
+                             defaultReportUI("tilsyn")
                            )
                          )
                        ),
@@ -85,16 +85,16 @@ server <- function(input, output, session) {
                        target = "tab_indikatorer"
                        )
 
-      shiny::insertTab(inputId = "tabs",
-                       tab = shiny::tabPanel(
+      insertTab(inputId = "tabs",
+                       tab = tabPanel(
                          title = "Dekningsgrad før reservasjon",
                          value = "tab_dg_for_res",
-                         shiny::sidebarLayout(
-                           shiny::sidebarPanel(
-                             smerte::defaultReportInput("dekningsgrad")
+                         sidebarLayout(
+                           sidebarPanel(
+                             defaultReportInput("dekningsgrad")
                            ),
-                           shiny::mainPanel(
-                             smerte::defaultReportUI("dekningsgrad")
+                           mainPanel(
+                             defaultReportUI("dekningsgrad")
                            )
                          )
                        ),
@@ -102,16 +102,16 @@ server <- function(input, output, session) {
                        target = "tab_indikatorer"
                        )
 
-      shiny::insertTab(inputId = "tabs",
-                       tab = shiny::tabPanel(
+      insertTab(inputId = "tabs",
+                       tab = tabPanel(
                          title = "Dekningsgrad etter reservasjon",
                          value = "tab_dg_etter_res",
-                         shiny::sidebarLayout(
-                           shiny::sidebarPanel(
-                             smerte::defaultReportInput("dekningsgradReserv")
+                         sidebarLayout(
+                           sidebarPanel(
+                             defaultReportInput("dekningsgradReserv")
                            ),
-                           shiny::mainPanel(
-                             smerte::defaultReportUI("dekningsgradReserv")
+                           mainPanel(
+                             defaultReportUI("dekningsgradReserv")
                            )
                          )
                        ),
@@ -119,16 +119,16 @@ server <- function(input, output, session) {
                        target = "tab_indikatorer"
                        )
 
-      shiny::insertTab(inputId = "tabs",
-                       tab =  shiny::tabPanel(
+      insertTab(inputId = "tabs",
+                       tab =  tabPanel(
                          title = "Spinalkateter",
                          value = "tab_spinalkateter",
-                         shiny::sidebarLayout(
-                           shiny::sidebarPanel(
-                             smerte::defaultReportInput("spinalkateter")
+                         sidebarLayout(
+                           sidebarPanel(
+                             defaultReportInput("spinalkateter")
                            ),
-                           shiny::mainPanel(
-                             smerte::defaultReportUI("spinalkateter")
+                           mainPanel(
+                             defaultReportUI("spinalkateter")
                            )
                          )
                        ),
@@ -136,16 +136,16 @@ server <- function(input, output, session) {
                        target = "tab_tid_til_dod"
                        )
 
-      shiny::insertTab(inputId = "tabs",
-                       tab = shiny::tabPanel(
+      insertTab(inputId = "tabs",
+                       tab = tabPanel(
                          title = "Smertekategori",
                          value = "tab_smertekategori",
-                         shiny::sidebarLayout(
-                           shiny::sidebarPanel(
-                             smerte::defaultReportInput("smertekategori")
+                         sidebarLayout(
+                           sidebarPanel(
+                             defaultReportInput("smertekategori")
                            ),
-                           shiny::mainPanel(
-                             smerte::defaultReportUI("smertekategori")
+                           mainPanel(
+                             defaultReportUI("smertekategori")
                            )
                          )
                        ),
@@ -153,16 +153,16 @@ server <- function(input, output, session) {
                        target = "tab_tid_til_dod"
                        )
 
-      shiny::insertTab(inputId = "tabs",
-                       tab =       shiny::tabPanel(
+      insertTab(inputId = "tabs",
+                       tab =       tabPanel(
                          title = "Oppfølging ved smerteklinikk",
                          value = "tab_oppf_smerteklinikk",
-                         shiny::sidebarLayout(
-                           shiny::sidebarPanel(
-                             smerte::defaultReportInput("oppfolg")
+                         sidebarLayout(
+                           sidebarPanel(
+                             defaultReportInput("oppfolg")
                            ),
-                           shiny::mainPanel(
-                             smerte::defaultReportUI("oppfolg")
+                           mainPanel(
+                             defaultReportUI("oppfolg")
                            )
                          )
                        ),
@@ -170,17 +170,17 @@ server <- function(input, output, session) {
                        target = "tab_tid_til_dod"
                        )
 
-      shiny::insertTab(inputId = "tabs",
-                       tab = shiny::tabPanel(
+      insertTab(inputId = "tabs",
+                       tab = tabPanel(
                          title = "Abonnement lokal",
                          value = "tab_abb_lokal",
-                         shiny::sidebarLayout(
-                           shiny::sidebarPanel(
-                             rapbase::autoReportFormatInput("smerteSubscription"),
-                             rapbase::autoReportInput("smerteSubscription")
+                         sidebarLayout(
+                           sidebarPanel(
+                             autoReportFormatInput("smerteSubscription"),
+                             autoReportInput("smerteSubscription")
                            ),
-                           shiny::mainPanel(
-                             rapbase::autoReportUI("smerteSubscription")
+                           mainPanel(
+                             autoReportUI("smerteSubscription")
                            )
                          )
                        ),
@@ -193,80 +193,80 @@ server <- function(input, output, session) {
 # Tilgangsnivå -----------------------------------------------------------
 
   observeEvent(list(user$role(), user$org()), {
-    shiny::req(user$role(), user$org())
+    req(user$role(), user$org())
 
-    shiny::removeTab(inputId = "tabs", target = "Verktøy")
-    shiny::removeTab("tabs", target = "tab_utsendelser")
-    shiny::removeTab("tabs", target = "tab_utsendelser_nasjonal")
+    removeTab(inputId = "tabs", target = "Verktøy")
+    removeTab("tabs", target = "tab_utsendelser")
+    removeTab("tabs", target = "tab_utsendelser_nasjonal")
 
-    if (shiny::req(user$role()) %in% "SC") {
-      shiny::insertTab(
+    if (req(user$role()) %in% "SC") {
+      insertTab(
         inputId = "tabs",
-        tab = shiny::navbarMenu(
+        tab = navbarMenu(
           title = "Verktøy",
-          shiny::tabPanel(
+          tabPanel(
             title = "Metadata",
             value = "tab_metadata",
-            shiny::sidebarLayout(
-              shiny::sidebarPanel(uiOutput("metaControl")),
-              shiny::mainPanel(htmlOutput("metaData"))
+            sidebarLayout(
+              sidebarPanel(uiOutput("metaControl")),
+              mainPanel(htmlOutput("metaData"))
               )
             ),
-          shiny::tabPanel(
+          tabPanel(
             title = "Eksport",
             value = "tab_eksport",
-            shiny::sidebarLayout(
-              shiny::sidebarPanel(
-                rapbase::exportUCInput("smerteExport")
+            sidebarLayout(
+              sidebarPanel(
+                exportUCInput("smerteExport")
                 ),
-              shiny::mainPanel(
-                rapbase::exportGuideUI("smerteExportGuide")
+              mainPanel(
+                exportGuideUI("smerteExportGuide")
                 )
               )
             ),
-          shiny::tabPanel(
+          tabPanel(
             title = "Bruksstatisitkk",
             value = "tab_bruksstatistikk",
-            shiny::sidebarLayout(
-              shiny::sidebarPanel(
-                rapbase::statsInput("smerteStats"),
-                rapbase::statsGuideUI("smerteStats")
+            sidebarLayout(
+              sidebarPanel(
+                statsInput("smerteStats"),
+                statsGuideUI("smerteStats")
                 ),
-              shiny::mainPanel(
-                rapbase::statsUI("smerteStats")
+              mainPanel(
+                statsUI("smerteStats")
                 )
               )
             ),
-        if(smerte::isNationalReg(user$org())) shiny::tabPanel(
+        if(isNationalReg(user$org())) tabPanel(
             title = "Utsendelser nasjonal",
             value = "tab_utsendelser_nasjonal",
-            shiny::sidebarLayout(
-              shiny::sidebarPanel(
-                rapbase::autoReportFormatInput("smerteDispatchmentNasjonal"),
-                rapbase::autoReportOrgInput("smerteDispatchmentNasjonal"),
-                shiny::HTML(
+            sidebarLayout(
+              sidebarPanel(
+                autoReportFormatInput("smerteDispatchmentNasjonal"),
+                autoReportOrgInput("smerteDispatchmentNasjonal"),
+                HTML(
                   "NB Dobbeltsjekk at rapporten er gitt riktig datakilde!<br/><br/>"
                   ),
-                rapbase::autoReportInput("smerteDispatchmentNasjonal")
+                autoReportInput("smerteDispatchmentNasjonal")
                 ),
-              shiny::mainPanel(
-                rapbase::autoReportUI("smerteDispatchmentNasjonal")
+              mainPanel(
+                autoReportUI("smerteDispatchmentNasjonal")
                 )
               )
-            ) else shiny::tabPanel(
+            ) else tabPanel(
              title = "Utsendelser",
              value = "tab_utsendelser",
-             shiny::sidebarLayout(
-               shiny::sidebarPanel(
-                 rapbase::autoReportFormatInput("smerteDispatchment"),
-                 rapbase::autoReportOrgInput("smerteDispatchment"),
-                 shiny::HTML(
+             sidebarLayout(
+               sidebarPanel(
+                 autoReportFormatInput("smerteDispatchment"),
+                 autoReportOrgInput("smerteDispatchment"),
+                 HTML(
                    "NB Dobbeltsjekk at rapporten er gitt riktig datakilde!<br/><br/>"
                    ),
-                 rapbase::autoReportInput("smerteDispatchment")
+                 autoReportInput("smerteDispatchment")
                  ),
-               shiny::mainPanel(
-                 rapbase::autoReportUI("smerteDispatchment")
+               mainPanel(
+                 autoReportUI("smerteDispatchment")
                  )
                )
              )
@@ -280,7 +280,7 @@ server <- function(input, output, session) {
 
   contentDump <- function(file, type, userRole = "LU") {
 
-    d <- smerte::getDataDump(registryName(),
+    d <- getDataDump(registryName(),
                              tableName = input$dumpDataSet,
                              reshId = user$org(),
                              userRole = user$role(),
@@ -291,30 +291,30 @@ server <- function(input, output, session) {
     if (userRole %in% c("SC", "LC")) {
       if (input$dumpDataSet %in% c("smertediagnoser", "smertediagnosernum", "smertediagnosernumnasjonal")) {
 
-        d = d %>% smerte::fikse_sykehusnavn("AvdResh") %>%
-          dplyr::relocate(SykehusNavn,
+        d = d %>% fikse_sykehusnavn("AvdResh") %>%
+          relocate(SykehusNavn,
                    .after = "AvdResh")
       }
     }
 
     if (type == "xlsx-csv") {
-      readr::write_excel_csv2(d, file)
+      write_excel_csv2(d, file)
     } else {
-      readr::write_csv2(d, file)
+      write_csv2(d, file)
     }
   }
 
 
   # Veiledning
-  output$veiledning <- shiny::renderUI({
+  output$veiledning <- renderUI({
     #htmlRenderRmd("veiledning.Rmd")
-    rapbase::renderRmd(
+    renderRmd(
       system.file("veiledning.Rmd", package = "smerte"),
       outputType = "html_fragment"
     )
   })
 
-  reportParams <- shiny::reactive(
+  reportParams <- reactive(
     list(
       hospitalName = hospitalName(),
       reshId = user$org(),
@@ -326,27 +326,27 @@ server <- function(input, output, session) {
   )
 
   # # Tilsynsrapport
-  smerte::defaultReportServer2(
+  defaultReportServer2(
     id = "tilsyn",
     reportFileName = reactiveVal("LokalTilsynsrapportMaaned.Rmd"),
     reportParams = reportParams
   )
 
   # Dekningsgrad gammel
-  smerte::defaultReportServer2(
+  defaultReportServer2(
     id = "dekningsgrad",
     reportFileName = reactiveVal("LokalDekningsgradrapport.Rmd"),
     reportParams = reportParams)
   # Dekningsgrad ny
-  smerte::defaultReportServer2(
+  defaultReportServer2(
     id = "dekningsgradReserv",
     reportFileName = reactiveVal("LokalDekningsgradrapportReservasjon.Rmd"),
     reportParams = reportParams)
 
   # Indikatorrapport
-  reportTemplate <- shiny::reactiveVal()
+  reportTemplate <- reactiveVal()
   observeEvent(user$org(), {
-    if (smerte::isNationalReg(user$org())) {
+    if (isNationalReg(user$org())) {
       reportTemplate("NasjonalIndikatorMaaned.Rmd")
     } else {
       reportTemplate("LokalIndikatorMaaned.Rmd")
@@ -354,16 +354,16 @@ server <- function(input, output, session) {
   }
   )
 
-  smerte::defaultReportServer2(
+  defaultReportServer2(
     id = "indikator",
     reportFileName = reportTemplate,
     reportParams = reportParams)
 
   # Opiodreduksjon
 
-  reportTemplate2 <- shiny::reactiveVal()
+  reportTemplate2 <- reactiveVal()
   observeEvent(user$org(), {
-    if (smerte::isNationalReg(user$org())) {
+    if (isNationalReg(user$org())) {
       reportTemplate2("NasjonalOpioidReduksjon.Rmd")
     } else {
       reportTemplate2("LokalOpioidReduksjon.Rmd")
@@ -371,43 +371,43 @@ server <- function(input, output, session) {
   }
   )
 
-  smerte::defaultReportServer2(
+  defaultReportServer2(
     id = "opioid",
     reportFileName = reportTemplate2,
     reportParams = reportParams)
 
 
   # eProm
-  smerte::defaultReportServer2(
+  defaultReportServer2(
     id = "eprom",
     reportFileName = reactiveVal("lokalEprom.Rmd"),
     reportParams = reportParams)
 
   # Spinalkateter
-  smerte::defaultReportServer2(
+  defaultReportServer2(
     id = "spinalkateter",
     reportFileName = reactiveVal("LokalSpinalkateter.Rmd"),
     reportParams = reportParams)
 
   # Smertekategori
-  smerte::defaultReportServer2(
+  defaultReportServer2(
     id = "smertekategori",
     reportFileName = reactiveVal("LokalSmertekategori.Rmd"),
     reportParams = reportParams)
 
   # Tid til død
-  smerte::defaultReportServer2(
+  defaultReportServer2(
     id = "timetodeath",
     reportFileName = reactiveVal("timetodeath.Rmd"),
     reportParams = reportParams)
 
   # Oppfølging ved smerteklinikk
-  smerte::defaultReportServer2(
+  defaultReportServer2(
     id = "oppfolg",
     reportFileName = reactiveVal("LokalOppfolg.Rmd"),
     reportParams = reportParams)
   # Epidural hos barn
-  smerte::defaultReportServer2(
+  defaultReportServer2(
     id = "lokalepi",
     reportFileName = reactiveVal("LokalEpidural.Rmd"),
     reportParams = reportParams)
@@ -464,14 +464,14 @@ server <- function(input, output, session) {
   )
 
   ## set reactive parameters overriding those in the reports list
-  subParamNames <- shiny::reactive(c("registryName", "orgName", "orgId",
+  subParamNames <- reactive(c("registryName", "orgName", "orgId",
                                      "userRole"))
-  subParamValues <- shiny::reactive(c(registryName(), hospitalName(), user$org(),
+  subParamValues <- reactive(c(registryName(), hospitalName(), user$org(),
                                       user$role()))
 
   # Abonnement
 
-  rapbase::autoReportServer(
+  autoReportServer(
     "smerteSubscription",
     registryName = "smerte",
     type = "subscription",
@@ -482,7 +482,7 @@ server <- function(input, output, session) {
     user = user
   )
 
-  rapbase::autoReportServer(
+  autoReportServer(
     "smerteSubscriptionNational",
     registryName = "smerte",
     type = "subscription",
@@ -494,43 +494,43 @@ server <- function(input, output, session) {
   )
 
   # # Utsendelser
-  format <- rapbase::autoReportFormatServer("smerteDispatchment")
-  format2 <- rapbase::autoReportFormatServer("smerteDispatchmentNasjonal")
+  format <- autoReportFormatServer("smerteDispatchment")
+  format2 <- autoReportFormatServer("smerteDispatchmentNasjonal")
 
   orgs <- c(list(`Alle nasjonale data` = "0"),
-            smerte::getNameReshId(
+            getNameReshId(
               registryName = map_db_resh$orgname[map_db_resh$UnitId == 0],
               reshId = 0,
               asNamedList = TRUE))
 
-  org <- rapbase::autoReportOrgServer(
+  org <- autoReportOrgServer(
     "smerteDispatchment",
-    smerte::getNameReshId(registryName = shiny::req(registryName()),
-                          reshId = shiny::req(user$org()),
+    getNameReshId(registryName = req(registryName()),
+                          reshId = req(user$org()),
                           asNamedList = TRUE))
-  shiny::observeEvent(user$org(), {
-    org <- rapbase::autoReportOrgServer(
+  observeEvent(user$org(), {
+    org <- autoReportOrgServer(
       "smerteDispatchment",
-      smerte::getNameReshId(registryName = shiny::req(registryName()),
-                            reshId = shiny::req(user$org()),
+      getNameReshId(registryName = req(registryName()),
+                            reshId = req(user$org()),
                             asNamedList = TRUE))
   }
   )
-  org2 <- rapbase::autoReportOrgServer("smerteDispatchmentNasjonal", orgs)
+  org2 <- autoReportOrgServer("smerteDispatchmentNasjonal", orgs)
 
   vis_rapp <- reactiveVal(FALSE)
   observeEvent(user$role(), {
     vis_rapp(user$role() == "SC")
   })
   ## set reactive parameters overriding those in the reports list
-  disParamNames <- shiny::reactive(c("registryName", "orgName", "orgId",
+  disParamNames <- reactive(c("registryName", "orgName", "orgId",
                                      "userRole", "outputType"))
-  disParamValues <- shiny::reactive(c(registryName(), hospitalName(), org$value(),
+  disParamValues <- reactive(c(registryName(), hospitalName(), org$value(),
                                       user$role(), format()))
-  disParamValues2 <- shiny::reactive(c(registryName(), hospitalName(), org2$value(),
+  disParamValues2 <- reactive(c(registryName(), hospitalName(), org2$value(),
                                        user$role(), format2()))
 
-  rapbase::autoReportServer(
+  autoReportServer(
     "smerteDispatchment",
     registryName = "smerte",
     type = "dispatchment",
@@ -544,7 +544,7 @@ server <- function(input, output, session) {
     user = user
   )
 
-  rapbase::autoReportServer(
+  autoReportServer(
     "smerteDispatchmentNasjonal",
     registryName = "smerte",
     type = "dispatchment",
@@ -560,11 +560,11 @@ server <- function(input, output, session) {
 
 
   # Metadata
-  meta <- shiny::reactive({
-    rapbase::describeRegistryDb(registryName())
+  meta <- reactive({
+    describeRegistryDb(registryName())
   })
 
-  output$metaControl <- shiny::renderUI({
+  output$metaControl <- renderUI({
     tabs <- names(meta())
     selectInput("metaTab", "Velg tabell:", tabs)
   })
@@ -574,8 +574,8 @@ server <- function(input, output, session) {
     options = list(lengthMenu=c(25, 50, 100, 200, 400))
   )
 
-  output$metaData <- shiny::renderUI({
-    DT::dataTableOutput("metaDataTable")
+  output$metaData <- renderUI({
+    dataTableOutput("metaDataTable")
   })
 
   dumps = c("allevarnum", "smertediagnosernum", "smertediagnoser",
@@ -585,15 +585,15 @@ server <- function(input, output, session) {
             )
 
   # Datadump
-  output$dumpTabControl <- shiny::renderUI({
+  output$dumpTabControl <- renderUI({
     selectInput("dumpDataSet", "Velg datasett:", dumps)
   })
 
-  output$dumpDataInfo <- shiny::renderUI({
+  output$dumpDataInfo <- renderUI({
     p(paste("Valgt for nedlasting:", input$dumpDataSet))
   })
 
-  output$dumpDownload <- shiny::downloadHandler(
+  output$dumpDownload <- downloadHandler(
     filename = function() {
       basename(tempfile(pattern = input$dumpDataSet,
                         fileext = ".csv"))
@@ -605,16 +605,16 @@ server <- function(input, output, session) {
 
   # Eksport
   ## brukerkontroller
-  rapbase::exportUCServer(
-    "smerteExport", registryName, "smerte", eligible = shiny::req(vis_rapp)
+  exportUCServer(
+    "smerteExport", registryName, "smerte", eligible = req(vis_rapp)
   )
 
   ## veileding
-  rapbase::exportGuideServer2("smerteExportGuide", registryName)
+  exportGuideServer2("smerteExportGuide", registryName)
 
   # Bruksstatistikk
-  rapbase::statsServer2("smerteStats", registryName = "smerte",
+  statsServer2("smerteStats", registryName = "smerte",
                         app_id = Sys.getenv("FALK_APP_ID"),
-                        eligible = shiny::req(vis_rapp))
-  rapbase::statsGuideServer("smerteStats", registryName = "smerte")
+                        eligible = req(vis_rapp))
+  statsGuideServer("smerteStats", registryName = "smerte")
 }

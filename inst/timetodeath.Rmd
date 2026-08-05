@@ -6,8 +6,8 @@ params:
   reshId: 'locallyDefined'
   userRole: 'MyRole'
   userFullName: 'Ukjent bruker'
-  startDate: !r lubridate::today() - lubridate::years(1)
-  endDate: !r lubridate::today() - lubridate::weeks(1)
+  startDate: !r today() - years(1)
+  endDate: !r today() - weeks(1)
   year: '2016'
   tableFormat: 'html'
   registryName: 'rapbase'
@@ -21,7 +21,7 @@ registryName: Smerteregisteret
 userFullName: '`r params$userFullName`'
 ---
 ```{r set options and load packages, include = FALSE}
-knitr::opts_chunk$set(echo=FALSE)
+opts_chunk$set(echo=FALSE)
 options(knitr.table.format = params$tableFormat)
 options(tinytex.verbose = TRUE)
 
@@ -83,7 +83,7 @@ if(dim(fulldat)[1] < 1) {
 ```{r noData, eval=!dataPresent, results='asis'}
 cat('# Upps...\nI den valgte tidsperioden er det ikke nok data til å gi 
     ut resultater.')
-knitr::knit_exit()
+knit_exit()
 
 ```
 # Tid til død etter utskrivelse
@@ -137,50 +137,50 @@ datd <- dat %>%
 #######Working with pain diagonse
 #SmerteKat.x = 1 er akutt smerte (se SmerteKat.y)
 akutt = datd %>% 
-  dplyr::filter(!is.na(SmerteKat)) %>% 
-  dplyr::distinct(ForlopsID, .keep_all = TRUE) %>% 
-  dplyr::summarise(antall_ja = sum(SmerteKat == 1),
-                   nevner = dplyr::n(),
+  filter(!is.na(SmerteKat)) %>% 
+  distinct(ForlopsID, .keep_all = TRUE) %>% 
+  summarise(antall_ja = sum(SmerteKat == 1),
+                   nevner = n(),
                    ind = antall_ja/nevner) %>% 
-  dplyr::ungroup()
+  ungroup()
 
 #SmerteKat.x = 2 er langvarig smerte (se SmerteKat.y)
 langvarig = datd %>% 
-  dplyr::filter(!is.na(SmerteKat)) %>% 
-  dplyr::distinct(ForlopsID, .keep_all = TRUE) %>% 
-  dplyr::summarise(antall_ja = sum(SmerteKat == 2),
-                   nevner = dplyr::n(),
+  filter(!is.na(SmerteKat)) %>% 
+  distinct(ForlopsID, .keep_all = TRUE) %>% 
+  summarise(antall_ja = sum(SmerteKat == 2),
+                   nevner = n(),
                    ind = antall_ja/nevner) %>% 
-  dplyr::ungroup()
+  ungroup()
 
 #SmerteKat.x = 3 er palliativ smerte (se SmerteKat.y)
 palliativ = datd %>% 
-  dplyr::filter(!is.na(SmerteKat)) %>% 
-  dplyr::distinct(ForlopsID, .keep_all = TRUE) %>% 
-  dplyr::summarise(antall_ja = sum(SmerteKat == 3),
-                   nevner = dplyr::n(),
+  filter(!is.na(SmerteKat)) %>% 
+  distinct(ForlopsID, .keep_all = TRUE) %>% 
+  summarise(antall_ja = sum(SmerteKat == 3),
+                   nevner = n(),
                    ind = antall_ja/nevner) %>% 
-  dplyr::ungroup()
+  ungroup()
 
 #SmerteKat.x = 4 er annet smerte (se SmerteKat.y)
 annet = datd %>% 
-  dplyr::filter(!is.na(SmerteKat)) %>% 
-  dplyr::distinct(ForlopsID, .keep_all = TRUE) %>% 
-  dplyr::summarise(antall_ja = sum(SmerteKat == 4),
-                   nevner = dplyr::n(),
+  filter(!is.na(SmerteKat)) %>% 
+  distinct(ForlopsID, .keep_all = TRUE) %>% 
+  summarise(antall_ja = sum(SmerteKat == 4),
+                   nevner = n(),
                    ind = antall_ja/nevner) %>% 
-  dplyr::ungroup()
+  ungroup()
 
 #Underdiagnose for de forløp med hoveddiagnose akutt smerte
 underdiag = datd %>% 
-  dplyr::filter(SmerteKat == 1) %>% 
-  dplyr::distinct(ForlopsID, .keep_all = TRUE) %>% 
-  dplyr::count(DiagKat) %>%
-  dplyr::mutate(pro = n/sum(n)) %>%
-  dplyr::mutate(
-    DiagKat = dplyr::recode(
+  filter(SmerteKat == 1) %>% 
+  distinct(ForlopsID, .keep_all = TRUE) %>% 
+  count(DiagKat) %>%
+  mutate(pro = n/sum(n)) %>%
+  mutate(
+    DiagKat = recode(
       DiagKat,
-      # !!!smerte::getSmerteDiagKatValueLab(params$registryName, reshId = params$reshId, smerteKat = 1)
+      # !!!getSmerteDiagKatValueLab(params$registryName, reshId = params$reshId, smerteKat = 1)
       "1" = "På grunn av kirurgi", 
       "2" = "På grunn av skade/traume", 
       "3" = "På grunn av sykdom", 
@@ -189,7 +189,7 @@ underdiag = datd %>%
   )
 
 #Setter sammen
-tot_smertekat <- dplyr::bind_rows(akutt, langvarig, palliativ, annet)
+tot_smertekat <- bind_rows(akutt, langvarig, palliativ, annet)
 rownames(tot_smertekat) = c("Akutt smerte", "Langvarig smerte", "Palliativ", "Annet")
 
 
@@ -209,7 +209,7 @@ ggplot(datd, aes(x = timeafter)) +
 ```{r smertekat, eval=dataPresent, results='asis'}
 
 #Smertekategori
-# rapbase::mst(
+# mst(
 #   tab = tot_smertekat, 
 #   col_names = c( "Antall ja" ,"Antall totalt", "Andel"),
 #   cap = paste0("Tabellen viser hvordan pasientenes hovedkategori (smerte) fordeler seg mellom akutt, langvarig eller palliativ smerte."),
@@ -234,7 +234,7 @@ dat_stacked <- datd %>%
 ```{r tab2, eval=dataPresent, results='asis'}
 
 #Tabelloversikt
-rapbase::mst(
+mst(
   tab = dat_stacked, 
   col_names = c( "Tid til død" ,"Smertekategori", "Antall"),
   cap = paste0("Fordeling mellom gruppene."),

@@ -11,7 +11,7 @@
 #'
 fikse_sykehusnavn <- function(df, reshIdVar = UnitId) {
 
-  sykehusoversikt = tibble::tribble(
+  sykehusoversikt = tribble(
     ~ "reshID", ~"orgname"             , ~"SykehusNavn"                    , ~"SykehusKortnavn",
     0         , "Nasjonal"             , "Nasjonal"                        , "Nasjonal",
     100089    , "Ahus"                 , "Ahus"                            , "AHUS",
@@ -32,9 +32,9 @@ fikse_sykehusnavn <- function(df, reshIdVar = UnitId) {
   if (!(reshIdVar %in% names(df))) stop(paste0("df must contain variable: ", reshIdVar))
 
   sykehusoversikt_temp = sykehusoversikt %>%
-    dplyr::mutate(reshID = as.character(reshID)) %>%
-    dplyr::rename(!!reshIdVar := reshID)
+    mutate(reshID = as.character(reshID)) %>%
+    rename(!!reshIdVar := reshID)
 
-  dplyr::left_join(df, sykehusoversikt_temp, by = reshIdVar)
+  left_join(df, sykehusoversikt_temp, by = reshIdVar)
 
 }
