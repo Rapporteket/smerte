@@ -105,6 +105,7 @@
 #' @importFrom tibble tribble
 #' @importFrom tibble as_tibble
 #' @importFrom tidyr gather
+#' @importFrom tidyr replace_na
 #' @importFrom tidyr spread
 #' @importFrom zoo as.Date
 #' @importFrom zoo as.yearmon

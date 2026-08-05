@@ -101,11 +101,11 @@ I den valgte tidsperioden fikk tilsammen `r antUtsendt` pasienter av totalt `r d
 #Fjerner først de som ikke har fått tilsendt (null) 3 = null
 datpr <- dat[!is.na(dat$PasDelUfylPR), ]
 #Bruker her pakkene dplyr og magrittr
-pasreg <- datpr %>% 
-  count(GrManglUtfylPR) %>%
+pasreg <- datpr |> 
+  count(GrManglUtfylPR) |>
   mutate(prosent = round(100*(n/sum(n))))
 #Gi navn i stedet for tall til alternativene for tilsyn/ikke tilsyn
-pasreg = pasreg %>%
+pasreg = pasreg |>
   mutate(grunnPR = case_when(GrManglUtfylPR == 1 ~ "Tidsmangel behandler",
                              GrManglUtfylPR == 2 ~ "Tidlig utskrivning",
                              GrManglUtfylPR == 3 ~ "Kritisk syk/død",
@@ -135,11 +135,11 @@ mst(
 ispr1 <- sum(!is.na(dat$PRSpm1))
 datpr1 <- dat[!is.na(dat$PRSpm1), ]
 #Bruker her pakkene dplyr og magrittr
-pr1 <- datpr1 %>% 
-  count(PRSpm1) %>% 
+pr1 <- datpr1 |> 
+  count(PRSpm1) |> 
   mutate(prosent = round(100 * (n / sum(n))))
 #Gi navn i stedet for tall til alternativene for tilsyn/ikke tilsyn
-pr1 = pr1 %>%
+pr1 = pr1 |>
   mutate(sovnfor = case_when(PRSpm1 == 1 ~ "Ikke i det hele tatt",
                              PRSpm1 == 2 ~ "I liten grad",
                              PRSpm1 == 3 ~ "I noen grad",
@@ -167,9 +167,9 @@ Tabell \@ref(tab:prspm1) viser oversikten over søvnproblemer før innleggelse f
 ispr2 <- sum(!is.na(dat$PRSpm2))
 datpr2 <- dat[!is.na(dat$PRSpm2), ]
 #Bruker her pakkene dplyr og magrittr
-pr2 <- datpr2 %>% count(PRSpm2) %>% mutate(prosent = round(100*(n/sum(n))))
+pr2 <- datpr2 |> count(PRSpm2) |> mutate(prosent = round(100*(n/sum(n))))
 #Gi navn i stedet for tall til alternativene for tilsyn/ikke tilsyn
-pr2 = pr2 %>%
+pr2 = pr2 |>
   mutate(sovnfor = case_when(PRSpm2 == 1 ~ "Ikke i det hele tatt",
                              PRSpm2 == 2 ~ "I liten grad",
                              PRSpm2 == 3 ~ "I noen grad",
@@ -211,11 +211,11 @@ Figur \@ref(fig:kontaktfig) viser oversikten over hvor mange ganger pasientene h
 ispr4 <- sum(!is.na(dat$PRSpm4))
 datpr4 <- dat[!is.na(dat$PRSpm4), ]
 #Bruker her pakkene dplyr og magrittr
-pr4 <- datpr4 %>%
-  count(PRSpm4) %>%
+pr4 <- datpr4 |>
+  count(PRSpm4) |>
   mutate(prosent = round(100 * (n / sum(n))))
 #Gi navn i stedet for tall til alternativene for tilsyn/ikke tilsyn
-pr4 = pr4 %>%
+pr4 = pr4 |>
   mutate(psyk = case_when(PRSpm4 == 0 ~ "Nei",
                           PRSpm4 == 1 ~ "Ja",
                           PRSpm4 == 9 ~ "Vet ikke"))
@@ -240,11 +240,11 @@ Tabell \@ref(tab:prsmp4) viser oversikten over hvor mange av pasientene som tidl
 ispr5 <- sum(!is.na(dat$PRSpm5))
 datpr5 <- dat[!is.na(dat$PRSpm5), ]
 #Bruker her pakkene dplyr og magrittr
-pr5 <- datpr5 %>%
-  count(PRSpm5) %>%
+pr5 <- datpr5 |>
+  count(PRSpm5) |>
   mutate(prosent = round(100 * (n / sum(n))))
 #Gi navn i stedet for tall til alternativene for tilsyn/ikke tilsyn
-pr5 = pr5 %>%
+pr5 = pr5 |>
   mutate(forferd = case_when(PRSpm5 == 0 ~ "Aldri",
                              PRSpm5 == 1 ~ "Nesten aldri",
                              PRSpm5 == 2 ~ "Sjelden",
@@ -274,11 +274,11 @@ Tabell \@ref(tab:prspm5) viser oversikten over hvor ofte pasientene føler '... 
 ispr6 <- sum(!is.na(dat$PRSpm6))
 datpr6 <- dat[!is.na(dat$PRSpm6), ]
 #Bruker her pakkene dplyr og magrittr
-pr6 <- datpr6 %>%
-  count(PRSpm6) %>%
+pr6 <- datpr6 |>
+  count(PRSpm6) |>
   mutate(prosent = round(100 * (n / sum(n))))
 #Gi navn i stedet for tall til alternativene for tilsyn/ikke tilsyn
-pr6 = pr6 %>%
+pr6 = pr6 |>
   mutate(holdut = case_when(PRSpm6 == 0 ~ "Aldri",
                             PRSpm6 == 1 ~ "Nesten aldri",
                             PRSpm6 == 2 ~ "Sjelden",
@@ -322,12 +322,12 @@ if(antUtsendt != 0){
 #Fjerner først de som ikke har fått tilsendt (null) 3 = null
 datH <- dat[!is.na(dat$PasDelUtf), ]
 #Bruker her pakkene dplyr og magrittr
-hads <- datH %>%
-  count(GrManglUtfylHADS) %>%
+hads <- datH |>
+  count(GrManglUtfylHADS) |>
   mutate(prosent = round(100 * (n / sum(n))))
 
 #Gi navn i stedet for tall til alternativene for tilsyn/ikke tilsyn
-hads = hads %>%
+hads = hads |>
   mutate(grunnHADS = case_when(GrManglUtfylHADS == 1 ~ "Tidsmangel behandler",
                                GrManglUtfylHADS == 2 ~ "Tidlig utskrivning",
                                GrManglUtfylHADS == 3 ~ "Kritisk syk/død",
@@ -347,9 +347,9 @@ mst(tab = hads, col_names = c("", "Antall ", "Prosent"),
 
 
 #Tabeller som viser oversiktene over score
-tabdep <- dat %>%
-  filter(!is.na(HADSScoreDepresjon)) %>%
-  count(HADSScoreDepresjon) %>% group_by(HADSScoreDepresjon)
+tabdep <- dat |>
+  filter(!is.na(HADSScoreDepresjon)) |>
+  count(HADSScoreDepresjon) |> group_by(HADSScoreDepresjon)
 
 mst(tab = tabdep, col_names = c("Score ", "Antall"),
              cap = paste0("Resultatfordeling for HADS depresjon"),
@@ -358,9 +358,9 @@ mst(tab = tabdep, col_names = c("Score ", "Antall"),
              digs = 0,
              align = c("l", "r", "r"))
 
-tabangst <- dat %>%
-  filter(!is.na(HADSScoreAngst)) %>%
-  count(HADSScoreAngst) %>% group_by(HADSScoreAngst)
+tabangst <- dat |>
+  filter(!is.na(HADSScoreAngst)) |>
+  count(HADSScoreAngst) |> group_by(HADSScoreAngst)
 
 mst(tab = tabangst, col_names = c("Score ", "Antall"),
              cap = paste0("Resultatfordeling for HADS angst"),
@@ -378,8 +378,8 @@ Tabell \@ref(tab:deptab) viser en oversikt over hvordan poengsummene for depresj
 ```{r hadsfig, echo=FALSE, warning = FALSE, eval=dataPresent, fig.align='center', out.width='100%', fig.cap="Fordeling av angst og depresjonsscore i HADS. Poengscorene vurderes som følger: lavere enn den grønne linjen viser ingen tegn til symptomer, mellom den grønne og den gule linjen viser milde symptomer, mellom den gule og den røde linjen viser moderate symptomer, mens over den røde viser alvorlig symptomer."}
 
 #Figur for depresjonscore
-dep = dat %>%
-  select(HADSScoreDepresjon) %>%
+dep = dat |>
+  select(HADSScoreDepresjon) |>
   filter(!is.na(HADSScoreDepresjon))
 
 depplot = depplot = ggplot(dep, aes(x=HADSScoreDepresjon)) +
@@ -393,8 +393,8 @@ depplot = depplot = ggplot(dep, aes(x=HADSScoreDepresjon)) +
   geom_vline(xintercept = 17, linetype="dotted", 
              color = "red", size=1)
 #Figur for angstscore
-angst = dat %>%
-  select(HADSScoreAngst) %>%
+angst = dat |>
+  select(HADSScoreAngst) |>
   filter(!is.na(HADSScoreAngst))
 
 angstplot = ggplot(angst, aes(x=HADSScoreAngst)) +
@@ -440,12 +440,12 @@ if(antUtsendt != 0){
 #Fjerner først de som ikke har fått tilsendt (null) 3 = null
 datE <- dat[!is.na(dat$PasdelUtfylEval), ]
 #Bruker her pakkene dplyr og magrittr
-evalu <- datE %>%
-  count(AarsakmanglUfylEval) %>%
+evalu <- datE |>
+  count(AarsakmanglUfylEval) |>
   mutate(prosent = round(100 * (n / sum(n))))
 
 #Gi navn i stedet for tall til alternativene for tilsyn/ikke tilsyn
-evalu = evalu %>%
+evalu = evalu |>
   mutate(grunnEval = case_when(AarsakmanglUfylEval == 1 ~ "Tidsmangel behandler",
                                AarsakmanglUfylEval == 2 ~ "Tidlig utskrivning",
                                AarsakmanglUfylEval == 3 ~ "Kritisk syk/død",
@@ -477,11 +477,11 @@ På spørsmålet 'Husker du at du nylig har vært i kontakt med og fått behandl
 ```{r eval1, warning = FALSE, message=FALSE, results='asis', eval=dataPresent}
 
 #Evalspm1
-eval1 <- datE %>%
-  count(EvalSpm1) %>%
+eval1 <- datE |>
+  count(EvalSpm1) |>
   mutate(prosent = round(100 * (n / sum(n))))
 #Gi navn i stedet for tall til alternativene for tilsyn/ikke tilsyn
-eval1 = eval1 %>%
+eval1 = eval1 |>
   mutate(spm1 = case_when(EvalSpm1 == 1 ~ "Mye bedre",
                           EvalSpm1 == 2 ~ "Bedre",
                           EvalSpm1 == 3 ~ "Litt bedre",
@@ -508,11 +508,11 @@ Tabell \@ref(tab:evalspm1) viser oversikten over det første spørsmålet i Eval
 
 ```{r eval2, warning = FALSE, message=FALSE, results='asis', eval=dataPresent}
 #Evalspm2
-eval2 <- datE %>%
-  count(EvalSpm2) %>%
+eval2 <- datE |>
+  count(EvalSpm2) |>
   mutate(prosent = round(100 * (n / sum(n))))
 #Gi navn i stedet for tall til alternativene for tilsyn/ikke tilsyn
-eval2 = eval2 %>%
+eval2 = eval2 |>
   mutate(spm2 = case_when(EvalSpm2 == 1 ~ "Mye bedre",
                           EvalSpm2 == 2 ~ "Bedre",
                           EvalSpm2 == 3 ~ "Litt bedre",
@@ -538,11 +538,11 @@ Tabell \@ref(tab:evalspm2) viser oversikten over det andre spørsmålet i Eval: 
 ```{r eval3, warning = FALSE, message=FALSE, results='asis', eval=dataPresent}
 
 #Evalspm3
-eval3 <- datE %>%
-  count(EvalSpm3) %>%
+eval3 <- datE |>
+  count(EvalSpm3) |>
   mutate(prosent = round(100 * (n / sum(n))))
 #Gi navn i stedet for tall til alternativene for tilsyn/ikke tilsyn
-eval3 = eval3 %>%
+eval3 = eval3 |>
   mutate(spm3 = case_when(EvalSpm3 == 1 ~ "Ikke i det hele tatt",
                           EvalSpm3 == 2 ~ "I liten grad",
                           EvalSpm3 == 3 ~ "I noen grad",
@@ -565,11 +565,11 @@ Tabell \@ref(tab:evalspm3) viser oversikten over det tredje spørsmålet i Eval:
 ```{r eval4, warning = FALSE, message=FALSE, results='asis', eval=dataPresent}
 
 #Evalspm4
-eval4 <- datE %>%
-  count(EvalSpm4) %>%
+eval4 <- datE |>
+  count(EvalSpm4) |>
   mutate(prosent = round(100 * (n / sum(n))))
 #Gi navn i stedet for tall til alternativene for tilsyn/ikke tilsyn
-eval4 = eval4 %>%
+eval4 = eval4 |>
   mutate(spm4 = case_when(EvalSpm4 == 1 ~ "Ikke i det hele tatt",
                           EvalSpm4 == 2 ~ "I liten grad",
                           EvalSpm4 == 3 ~ "I noen grad",
@@ -592,11 +592,11 @@ Tabell \@ref(tab:evalspm4) viser oversikten over det fjerde spørsmålet i Eval:
 ```{r eval5, warning = FALSE, message=FALSE, results='asis', eval=dataPresent}
 
 #Evalspm5
-eval5 <- datE %>%
-  count(EvalSpm5) %>%
+eval5 <- datE |>
+  count(EvalSpm5) |>
   mutate(prosent = round(100 * (n / sum(n))))
 #Gi navn i stedet for tall til alternativene for tilsyn/ikke tilsyn
-eval5 <- eval5 %>%
+eval5 <- eval5 |>
   mutate(spm5 = case_when(EvalSpm5 == 1 ~ "Ikke i det hele tatt",
                           EvalSpm5 == 2 ~ "I liten grad",
                           EvalSpm5 == 3 ~ "I noen grad",
@@ -619,11 +619,11 @@ Tabell \@ref(tab:evalspm5) viser oversikten over det femte spørsmålet i Eval: 
 ```{r eval6, warning = FALSE, message=FALSE, results='asis', eval=dataPresent}
 
 #Evalspm6
-eval6 <- datE %>%
-  count(EvalSpm6) %>%
+eval6 <- datE |>
+  count(EvalSpm6) |>
   mutate(prosent = round(100 * (n / sum(n))))
 #Gi navn i stedet for tall til alternativene for tilsyn/ikke tilsyn
-eval6 = eval6 %>%
+eval6 = eval6 |>
   mutate(spm6 = case_when(EvalSpm6 == 1 ~ "Ikke i det hele tatt",
                           EvalSpm6 == 2 ~ "I liten grad",
                           EvalSpm6 == 3 ~ "I noen grad",
@@ -647,11 +647,11 @@ Tabell \@ref(tab:evalspm6) viser oversikten over det sjette spørsmålet i Eval:
 ```{r eval7, warning = FALSE, message=FALSE, results='asis', eval=dataPresent}
 
 #Evalspm7
-eval7 <- datE %>%
-  count(EvalSpm7) %>%
+eval7 <- datE |>
+  count(EvalSpm7) |>
   mutate(prosent = round(100 * (n / sum(n))))
 #Gi navn i stedet for tall til alternativene for tilsyn/ikke tilsyn
-eval7 = eval7 %>%
+eval7 = eval7 |>
   mutate(spm7 = case_when(EvalSpm7 == 1 ~ "Ikke i det hele tatt",
                           EvalSpm7 == 2 ~ "I liten grad",
                           EvalSpm7 == 3 ~ "I noen grad",
@@ -675,11 +675,11 @@ Tabell \@ref(tab:evalspm7) viser oversikten over det syvende spørsmålet i Eval
 ```{r eval8, warning = FALSE, message=FALSE, results='asis', eval=dataPresent}
 
 #Evalspm8
-eval8 <- datE %>%
-  count(EvalSpm8) %>%
+eval8 <- datE |>
+  count(EvalSpm8) |>
   mutate(prosent = round(100 *(n / sum(n))))
 #Gi navn i stedet for tall til alternativene for tilsyn/ikke tilsyn
-eval8 = eval8 %>%
+eval8 = eval8 |>
   mutate(spm8 = case_when(EvalSpm8 == 1 ~ "Ikke i det hele tatt",
                           EvalSpm8 == 2 ~ "I liten grad",
                           EvalSpm8 == 3 ~ "I noen grad",
@@ -703,11 +703,11 @@ Tabell \@ref(tab:evalspm8) viser oversikten over det åttende spørsmålet i Eva
 ```{r eval9, warning = FALSE, message=FALSE, results='asis', eval=dataPresent}
 
 #Evalspm9
-eval9 <- datE %>%
-  count(EvalSpm9) %>%
+eval9 <- datE |>
+  count(EvalSpm9) |>
   mutate(prosent = round(100 * (n / sum(n))))
 #Gi navn i stedet for tall til alternativene for tilsyn/ikke tilsyn
-eval9 = eval9 %>%
+eval9 = eval9 |>
   mutate(spm9 = case_when(EvalSpm9 == 1 ~ "Ikke i det hele tatt",
                           EvalSpm9 == 2 ~ "I liten grad",
                           EvalSpm9 == 3 ~ "I noen grad",
@@ -734,11 +734,11 @@ Tabell \@ref(tab:evalspm9) viser oversikten over det niende spørsmålet i Eval:
 ```{r eval10, warning = FALSE, message=FALSE, results='asis', eval=dataPresent}
 
 #Evalspm10
-eval10 <- datE %>%
-  count(EvalSpm10) %>%
+eval10 <- datE |>
+  count(EvalSpm10) |>
   mutate(prosent = round(100 * (n / sum(n))))
 #Gi navn i stedet for tall til alternativene for tilsyn/ikke tilsyn
-eval10 = eval10 %>%
+eval10 = eval10 |>
   mutate(spm10 = case_when(EvalSpm10 == 1 ~ "Ikke i det hele tatt",
                            EvalSpm10 == 2 ~ "I liten grad",
                            EvalSpm10 == 3 ~ "I noen grad",
@@ -762,11 +762,11 @@ Tabell \@ref(tab:evalspm10) viser oversikten over det tiende spørsmålet i Eval
 ```{r eval11, warning = FALSE, message=FALSE, results='asis', eval=dataPresent}
 
 #Evalspm11
-eval11 <- datE %>%
-  count(EvalSpm11) %>%
+eval11 <- datE |>
+  count(EvalSpm11) |>
   mutate(prosent = round(100 * (n / sum(n))))
 #Gi navn i stedet for tall til alternativene for tilsyn/ikke tilsyn
-eval11 = eval11 %>%
+eval11 = eval11 |>
   mutate(spm11 = case_when(EvalSpm11 == 1 ~ "Ikke i det hele tatt",
                            EvalSpm11 == 2 ~ "I liten grad",
                            EvalSpm11 == 3 ~ "I noen grad",
@@ -813,11 +813,11 @@ if(antUtsendt != 0) {
 
 datO <- dat[!is.na(dat$PasdelUtfylOpioid), ]
 #Bruker her pakkene dplyr og magrittr
-opio <- datO %>%
-  count(AarsakmanglUtfylOpioid) %>%
+opio <- datO |>
+  count(AarsakmanglUtfylOpioid) |>
   mutate(prosent = round(100 * (n / sum(n))))
 #Gi navn i stedet for tall til alternativene for tilsyn/ikke tilsyn
-opio = opio %>%
+opio = opio |>
   mutate(grunnOpi = case_when(AarsakmanglUtfylOpioid == 1 ~ "Tidsmangel behandler",
                               AarsakmanglUtfylOpioid == 2 ~ "Tidlig utskrivning",
                               AarsakmanglUtfylOpioid == 3 ~ "Kritisk syk/død",
@@ -860,61 +860,61 @@ På spørsmål om pasienten var skrevet ut av sykehus (ved besvarelse) var det `
 datOE <- datO[datO$Smstilletterutskrivelse == 1, ]
 
 #Medikamenter
-DolcontinMalfin <- datOE %>%
-  select(DolcontinMalfin) %>% 
+DolcontinMalfin <- datOE |>
+  select(DolcontinMalfin) |> 
   summarise(antja = sum(DolcontinMalfin == 1, na.rm=TRUE)) 
-FentanylplDurogesicpl <- datOE %>%
-  select(FentanylplDurogesicpl) %>%
+FentanylplDurogesicpl <- datOE |>
+  select(FentanylplDurogesicpl) |>
   summarise(antja = sum(FentanylplDurogesicpl == 1, na.rm = TRUE)) 
-Metadon <- datOE %>%
-  select(Metadon) %>%
+Metadon <- datOE |>
+  select(Metadon) |>
   summarise(antja = sum(Metadon == 1, na.rm = TRUE)) 
-Morfin <- datOE %>%
-  select(Morfin) %>%
+Morfin <- datOE |>
+  select(Morfin) |>
   summarise(antja = sum(Morfin== 1, na.rm=TRUE)) 
-Norspanplaster <- datOE %>%
-  select(Norspanplaster) %>%
+Norspanplaster <- datOE |>
+  select(Norspanplaster) |>
   summarise(antja = sum(Norspanplaster== 1, na.rm=TRUE)) 
-OxynormOxykodon <- datOE %>%
-  select(OxynormOxykodon) %>%
+OxynormOxykodon <- datOE |>
+  select(OxynormOxykodon) |>
   summarise(antja = sum(OxynormOxykodon== 1, na.rm=TRUE)) 
-OxyxontinReltebon <- datOE %>%
-  select(OxyxontinReltebon) %>%
+OxyxontinReltebon <- datOE |>
+  select(OxyxontinReltebon) |>
   summarise(antja = sum(OxyxontinReltebon== 1, na.rm=TRUE)) 
-Palexia <- datOE %>%
-  select(Palexia) %>%
+Palexia <- datOE |>
+  select(Palexia) |>
   summarise(antja = sum(Palexia== 1, na.rm=TRUE)) 
-PalladonHydromorfon <- datOE %>%
-  select(PalladonHydromorfon) %>%
+PalladonHydromorfon <- datOE |>
+  select(PalladonHydromorfon) |>
   summarise(antja = sum(PalladonHydromorfon== 1, na.rm=TRUE)) 
-Paralginforte <- datOE %>%
-  select(Paralginforte) %>%
+Paralginforte <- datOE |>
+  select(Paralginforte) |>
   summarise(antja = sum(Paralginforte== 1, na.rm=TRUE)) 
-Buprenorfin <- datOE %>%
-  select(Buprenorfin) %>%
+Buprenorfin <- datOE |>
+  select(Buprenorfin) |>
   summarise(antja = sum(Buprenorfin== 1, na.rm=TRUE)) 
-Targiniq <- datOE %>%
-  select(Targiniq) %>%
+Targiniq <- datOE |>
+  select(Targiniq) |>
   summarise(antja = sum(Targiniq== 1, na.rm=TRUE)) 
-Tramadolvarianter <- datOE %>%
-  select(Tramadolvarianter) %>%
+Tramadolvarianter <- datOE |>
+  select(Tramadolvarianter) |>
   summarise(antja = sum(Tramadolvarianter== 1, na.rm=TRUE)) 
-Andre <- datOE %>%
-  select(Andre) %>%
+Andre <- datOE |>
+  select(Andre) |>
   summarise(antja = sum(Andre== 1, na.rm=TRUE)) 
-Usikker <- datOE %>%
-  select(Usikker) %>%
+Usikker <- datOE |>
+  select(Usikker) |>
   summarise(antja = sum(Usikker== 1, na.rm=TRUE)) 
 #Binder data sammen
 datmed <- bind_rows(DolcontinMalfin, FentanylplDurogesicpl, Metadon, Morfin, 
                     Norspanplaster, OxynormOxykodon, OxyxontinReltebon, Palexia,
                     PalladonHydromorfon, Paralginforte, Buprenorfin, Targiniq, 
-                    Tramadolvarianter, Andre, Usikker) %>%
+                    Tramadolvarianter, Andre, Usikker) |>
   set_rownames(c("DolcontinMalfin", "FentanylplDurogesicpl", "Metadon",
                  "Morfin", "Norspanplaster", "OxynormOxykodon", 
                  "OxyxontinReltebon", "Palexia", "PalladonHydromorfon", 
                  "Paralginforte", "Buprenorfin", "Targiniq", "Tramadolvarianter",
-                 "Andre", "Usikker")) %>%
+                 "Andre", "Usikker")) |>
   set_colnames(c("Antall ja"))
 
 mst(tab = datmed,
@@ -926,11 +926,11 @@ mst(tab = datmed,
              align = c("r", "r"))
 
 #Bruker fortsatt noe
-bruk <- datO %>%
-  count(Fortsattbruk) %>%
+bruk <- datO |>
+  count(Fortsattbruk) |>
   mutate(prosent = round(100 * (n / sum(n))))
 #Gi navn i stedet for tall til alternativene for tilsyn/ikke tilsyn
-bruk = bruk %>%
+bruk = bruk |>
   mutate(brukna = case_when(Fortsattbruk == 0 ~ "Nei",
                             Fortsattbruk == 1 ~ "Ja, i samme dosering",
                             Fortsattbruk == 2 ~ "Ja, i høyere dosering",
@@ -951,11 +951,11 @@ Tabell \@ref(tab:medtab) viser en oversikt over hvilke medikamenter som har blit
 ```{r nedtrapp, warning = FALSE, message=FALSE, results='asis', eval=dataPresent}
 #Info nedtrapping
 #nedtrer her pakkene dplyr og magrittr
-nedtr <- datO %>%
-  count(InfoNedtrapping) %>%
+nedtr <- datO |>
+  count(InfoNedtrapping) |>
   mutate(prosent = round(100 * (n / sum(n))))
 #Gi navn i stedet for tall til alternativene for tilsyn/ikke tilsyn
-nedtr = nedtr %>%
+nedtr = nedtr |>
   mutate(infned = case_when(InfoNedtrapping == 0 ~ "Nei",
                             InfoNedtrapping == 1 ~ "Ja"))
 #Endrer rekkefølge og tar i tilleg ved NA-raden (siste)
@@ -971,11 +971,11 @@ mst(tab = nedtr,
              align = c("l", "r", "r", "r"))
 
 #Info hvem
-hvem <- datO %>%
-  count(HvemInfoNedtrapping) %>%
+hvem <- datO |>
+  count(HvemInfoNedtrapping) |>
   mutate(prosent = round(100 * (n / sum(n))))
 #Gi navn i stedet for tall til alternativene for tilsyn/ikke tilsyn
-hvem <- hvem %>%
+hvem <- hvem |>
   mutate(infhvem = case_when(HvemInfoNedtrapping == 1 ~ "Smerteteam",
                              HvemInfoNedtrapping == 2 ~ "Annet helsepersonell",
                              HvemInfoNedtrapping == 3 ~ "Begge",
@@ -1008,11 +1008,11 @@ ikbrosj <- sum(datO$InfoBrosjyreNedtrapp == 0, na.rm = TRUE)
 
 #Info fulgt nedtraping
 #fulgter her pakkene dplyr og magrittr
-fulgt <- datO %>%
-  count(FolgeAnbefalingNedtrapp) %>%
+fulgt <- datO |>
+  count(FolgeAnbefalingNedtrapp) |>
   mutate(prosent = round(100 * (n / sum(n))))
 #Gi navn i stedet for tall til alternativene for tilsyn/ikke tilsyn
-fulgt <- fulgt %>%
+fulgt <- fulgt |>
   mutate(inffulgt = case_when(FolgeAnbefalingNedtrapp == 1 ~ "Ja",
                               FolgeAnbefalingNedtrapp == 2 ~ "Nei, lenger enn anbefalt",
                               FolgeAnbefalingNedtrapp == 3 ~ "Nei, har ikke kunnet trappe ned",
@@ -1035,11 +1035,11 @@ Tabell \@ref(tab:nedrfulgtplan) viser hva pasientene har svart på om de klarte 
 
 ```{r absti, warning = FALSE, message=FALSE, results='asis', eval=dataPresent}
 #Info plagsomme abstinenser
-absti <- datO %>%
-  count(OpplevdAbstinenssympt) %>%
+absti <- datO |>
+  count(OpplevdAbstinenssympt) |>
   mutate(prosent = round(100 * (n / sum(n))))
 #Gi navn i stedet for tall til alternativene for tilsyn/ikke tilsyn
-absti <- absti %>%
+absti <- absti |>
   mutate(infabsti = case_when(OpplevdAbstinenssympt == 0 ~ "Nei",
                               OpplevdAbstinenssympt == 1 ~ "Ja",
                               OpplevdAbstinenssympt == 9 ~ "Usikker"))
@@ -1056,11 +1056,11 @@ mst(tab = absti,
              align = c("l", "r", "r", "r"))
 
 #Info forstod forstodabstinenser
-forstoabsti <- datO %>%
-  count(ForstodAbstinenssympt) %>%
+forstoabsti <- datO |>
+  count(ForstodAbstinenssympt) |>
   mutate(prosent = round(100 * (n / sum(n))))
 #Gi navn i stedet for tall til alternativene for tilsyn/ikke tilsyn
-forstoabsti <- forstoabsti %>%
+forstoabsti <- forstoabsti |>
   mutate(infforstoabsti = case_when(ForstodAbstinenssympt == 0 ~ "Nei",
                                     ForstodAbstinenssympt == 1 ~ "Ja",
                                     ForstodAbstinenssympt == 9 ~ "Usikker"))
@@ -1076,11 +1076,11 @@ mst(tab = forstoabsti,
              align = c("l", "r", "r", "r"))
 
 #Info løsning
-losn <- datO %>%
-  count(LosningProblemAbstinens) %>%
+losn <- datO |>
+  count(LosningProblemAbstinens) |>
   mutate(prosent = round(100 * (n / sum(n))))
 #Gi navn i stedet for tall til alternativene for tilsyn/ikke tilsyn
-losn <- losn %>%
+losn <- losn |>
   mutate(inflosn = case_when(LosningProblemAbstinens == 0 ~ "Nei",
                              LosningProblemAbstinens == 1 ~ "Ja",
                              LosningProblemAbstinens == 9 ~ "Usikker"))
@@ -1100,11 +1100,11 @@ Tabell \@ref(tab:abstietter) viser en oversikt over om pasienten har opplevd  ab
 
 ```{r trett, warning = FALSE, message=FALSE, results='asis', eval=dataPresent}
 #Info tretthet
-trett <- datO %>%
-  count(OpplevdPlagsomTretthet) %>%
+trett <- datO |>
+  count(OpplevdPlagsomTretthet) |>
   mutate(prosent = round(100 * (n / sum(n))))
 #Gi navn i stedet for tall til alternativene for tilsyn/ikke tilsyn
-trett <- trett %>%
+trett <- trett |>
   mutate(inftrett = case_when(OpplevdPlagsomTretthet == 0 ~ "Nei",
                               OpplevdPlagsomTretthet == 1 ~ "Ja"))
 #Endrer rekkefølge og tar i tilleg ved NA-raden (siste)
@@ -1121,11 +1121,11 @@ mst(tab = trett,
              align = c("l", "r", "r", "r"))
 
 #Info trettloshet
-trettlos <- datO %>%
-  count(LosningProblemTretthet) %>%
+trettlos <- datO |>
+  count(LosningProblemTretthet) |>
   mutate(prosent = round(100 * (n / sum(n))))
 #Gi navn i stedet for tall til alternativene for tilsyn/ikke tilsyn
-trettlos <- trettlos %>%
+trettlos <- trettlos |>
   mutate(inftrettlos = case_when(LosningProblemTretthet == 0 ~ "Nei",
                                  LosningProblemTretthet == 1 ~ "Ja",
                                  LosningProblemTretthet == 9 ~ "Vet ikke"))
@@ -1144,11 +1144,11 @@ Tabell \@ref(tab:tretth) viser en oversikt over spørsmålet "Opplevde du plagso
 
 ```{r bil, warning = FALSE, message=FALSE, results='asis', eval=dataPresent}
 #Bilkjøring
-bil <- datO %>%
-  count(InfoSmertestillBilkjoring) %>%
+bil <- datO |>
+  count(InfoSmertestillBilkjoring) |>
   mutate(prosent = round(100 * (n / sum(n))))
 #Gi navn i stedet for tall til alternativene for tilsyn/ikke tilsyn
-bil <- bil %>%
+bil <- bil |>
   mutate(infbil = case_when(InfoSmertestillBilkjoring == 0 ~ "Nei",
                             InfoSmertestillBilkjoring == 1 ~ "Ja",
                             InfoSmertestillBilkjoring == 9 ~ "Ikke aktuelt"))
@@ -1166,11 +1166,11 @@ mst(tab = bil,
              align = c("l", "r", "r", "r"))
 
 #Info hvembil
-hvembil <- datO %>%
-  count(HvemInfoSmertestillBilkjoring) %>%
+hvembil <- datO |>
+  count(HvemInfoSmertestillBilkjoring) |>
   mutate(prosent = round(100 * (n / sum(n))))
 #Gi navn i stedet for tall til alternativene for tilsyn/ikke tilsyn
-hvembil <- hvembil %>%
+hvembil <- hvembil |>
   mutate(infhvembil = case_when(HvemInfoSmertestillBilkjoring == 1 ~ "Smerteteam",
                                 HvemInfoSmertestillBilkjoring == 2 ~ "Annet helsepersonell",
                                 HvemInfoSmertestillBilkjoring == 3 ~ "Begge",
@@ -1201,11 +1201,11 @@ ikbrosjbil <- sum(datO$InfoBrosyjreBilkjoring == 0, na.rm = TRUE)
 
 
 #Info spørsmål
-hvorinfo <- datO %>%
-  count(HenvendelseAngSmertestill) %>%
+hvorinfo <- datO |>
+  count(HenvendelseAngSmertestill) |>
   mutate(prosent = round(100 * (n / sum(n))))
 #Gi navn i stedet for tall til alternativene for tilsyn/ikke tilsyn
-hvorinfo <- hvorinfo %>%
+hvorinfo <- hvorinfo |>
   mutate(infhvorinfo = case_when(HenvendelseAngSmertestill == 0 ~ "Nei",
                                  HenvendelseAngSmertestill == 1 ~ "Ja",
                                  HenvendelseAngSmertestill == 9 ~ "Usikker"))

@@ -84,8 +84,8 @@ Dersom et valgt år ikke vises er det ingen registreringer på morfinekvivalente
 ```{r overall, include=FALSE}
 #Gjennomsnittlig antall forløp
 
-d_moek = dat %>% filter(!is.na(MoEkvivalens22)) %>%
-    group_by(year(StartdatoTO)) %>%
+d_moek = dat |> filter(!is.na(MoEkvivalens22)) |>
+    group_by(year(StartdatoTO)) |>
     summarise(nevner = n(),
               ind = sum(MoEkvivalens22)/n())
 ```
@@ -104,8 +104,8 @@ mst(tab = d_moek,
 ## Per sykehus
 
 ```{r sykehus, include=FALSE}
-d_moek_syk = dat %>% filter(!is.na(MoEkvivalens22)) %>%
-  group_by(year(StartdatoTO), SykehusNavn) %>%
+d_moek_syk = dat |> filter(!is.na(MoEkvivalens22)) |>
+  group_by(year(StartdatoTO), SykehusNavn) |>
   summarise(nevner = n(), ind = sum(MoEkvivalens22)/n())
 ```
 

@@ -10,7 +10,7 @@ server <- function(input, output, session) {
     as.data.frame() |>
     rename(orgname = V1, UnitId = V2)
 
-  map_orgname <- fikse_sykehusnavn(map_db_resh %>% select(-orgname), "UnitId")
+  map_orgname <- fikse_sykehusnavn(map_db_resh |> select(-orgname), "UnitId")
 
   user <- navbarWidgetServer2(
     "navbar-widget",
@@ -291,7 +291,7 @@ server <- function(input, output, session) {
     if (userRole %in% c("SC", "LC")) {
       if (input$dumpDataSet %in% c("smertediagnoser", "smertediagnosernum", "smertediagnosernumnasjonal")) {
 
-        d = d %>% fikse_sykehusnavn("AvdResh") %>%
+        d = d |> fikse_sykehusnavn("AvdResh") |>
           relocate(SykehusNavn,
                    .after = "AvdResh")
       }

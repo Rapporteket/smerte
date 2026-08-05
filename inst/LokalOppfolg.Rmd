@@ -57,12 +57,12 @@ avdelingene på sykehuset i løpet av hele tidsperioden.
 #Oversikt over videre oppfølging
 
 # Data for tabell
-oppfolgdat <- dat %>%
-  #filter(Tilsett == 1) %>% kan ta med dersom de vil
-  count(OppfSmeKl) %>%
+oppfolgdat <- dat |>
+  #filter(Tilsett == 1) |> kan ta med dersom de vil
+  count(OppfSmeKl) |>
   mutate(prosent = round(100*(n/sum(n))))
 # Gi navn i stedet for tall til alternativene for tilsyn/ikke tilsyn
-oppfolgdat <- oppfolgdat %>%
+oppfolgdat <- oppfolgdat |>
   mutate(oppfolggrunn = 
                   case_when(OppfSmeKl == 0 ~ "Nei",
                                    OppfSmeKl == 1 ~ "Ja",
@@ -88,21 +88,21 @@ mst(
 ```{r avdelingsoppfølging, warning = TRUE, message=TRUE, results='asis'}
 #Oversikt over videre oppfølging avdeling
 
-oppfolgavd <- dat %>%
-  filter(!is.na(OppfSmeKl)) %>% 
-  count(DEPARTMENT_SHORTNAME, OppfSmeKl) %>%
+oppfolgavd <- dat |>
+  filter(!is.na(OppfSmeKl)) |> 
+  count(DEPARTMENT_SHORTNAME, OppfSmeKl) |>
   spread(OppfSmeKl, n, fill=0)
 
 total_avdeling <- colSums(oppfolgavd[, -1])
 
 #Legge på totalrad nederst
-oppfolgavd <- oppfolgavd %>%
+oppfolgavd <- oppfolgavd |>
   bind_rows(total_avdeling)
 
 #Legge til navn
 oppfolgavd[nrow(oppfolgavd), 1] <- "TOTAL"
 
-oppfolgavd <- oppfolgavd %>%
+oppfolgavd <- oppfolgavd |>
   mutate(rowsum = rowSums(select_if(., is.numeric)))
 
 

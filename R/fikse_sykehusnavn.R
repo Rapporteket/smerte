@@ -7,7 +7,7 @@
 #' @export
 #' @examples
 #' x <- data.frame(UnitId = as.character(c(108141, 109880, NA, 123, 105502)))
-#' x %>% fikse_sykehusnavn(reshIdVar = "UnitId")
+#' x |> fikse_sykehusnavn(reshIdVar = "UnitId")
 #'
 fikse_sykehusnavn <- function(df, reshIdVar = UnitId) {
 
@@ -31,8 +31,8 @@ fikse_sykehusnavn <- function(df, reshIdVar = UnitId) {
 
   if (!(reshIdVar %in% names(df))) stop(paste0("df must contain variable: ", reshIdVar))
 
-  sykehusoversikt_temp = sykehusoversikt %>%
-    mutate(reshID = as.character(reshID)) %>%
+  sykehusoversikt_temp = sykehusoversikt |>
+    mutate(reshID = as.character(reshID)) |>
     rename(!!reshIdVar := reshID)
 
   left_join(df, sykehusoversikt_temp, by = reshIdVar)

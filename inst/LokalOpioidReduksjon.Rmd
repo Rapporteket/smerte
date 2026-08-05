@@ -83,8 +83,8 @@ Dersom et valgt år ikke vises er det ingen registreringer på morfinekvivalente
 ## Totalt
 ```{r overall, include=FALSE}
 #Gjennomsnittlig antall forløp
-d_moek = dat %>% filter(!is.na(MoEkvivalens22)) %>%
-    group_by(year(StartdatoTO)) %>%
+d_moek = dat |> filter(!is.na(MoEkvivalens22)) |>
+    group_by(year(StartdatoTO)) |>
     summarise(nevner = n(),
               ind = sum(MoEkvivalens22)/n())
 ```

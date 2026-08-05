@@ -18,6 +18,6 @@ Add variable `orgname` if missing, update values if existing
 }
 \examples{
 x <- data.frame(UnitId = as.character(c(108141, 109880, NA, 123, 105502)))
-x \%>\% fikse_sykehusnavn(reshIdVar = "UnitId")
+x |> fikse_sykehusnavn(reshIdVar = "UnitId")
 
 }
