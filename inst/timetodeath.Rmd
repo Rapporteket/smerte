@@ -39,7 +39,7 @@ fulldat <- smerte::getDataDump(registryName = params$registryName,
                                      userRole=params$userRole,
                                      fromDate = params$startDate,
                                      toDate = params$endDate,
-                                     session = params$shinySession) %>% 
+                                     session = params$shinySession) |> 
     smerte::fikse_sykehusnavn("AvdRESH")
 
 } else {
@@ -65,7 +65,7 @@ fulldat <- smerte::getDataDump(registryName = params$registryName,
   diag <- read.csv(file = pathdt, header = TRUE, sep = ";", encoding = "UTF-8")
   
   #Joiner diagnose numerisk og diagnosetekst
-  diagfull = diagnum %>% left_join(diag, by = c("ForlopsID", "HovedDato", "SmerteDiagID"))
+  diagfull = diagnum |> left_join(diag, by = c("ForlopsID", "HovedDato", "SmerteDiagID"))
   #Joiner så allevarnum med diagnose_full
   fulldat = left_join(dat, diagfull, by = "ForlopsID")
   
@@ -96,14 +96,14 @@ fulldat$enddate <- as.Date(fulldat$SluttDato)
 fulldat$deathd <- as.Date(fulldat$Ddato)
 
 #Only those who were seen (and changing name from fulldat to dat)
-dat <- fulldat %>%
+dat <- fulldat |>
   filter(Tilsett == 1)
 
 #Finner uker mellom utskrivelse og eventuell død
 dat$diff <- difftime(dat$deathd, dat$enddate, units = "weeks")
 
 #Lager variabel timeafter som kategorieserer inn i måneder av ulik lengde
-dat <- dat %>% 
+dat <- dat |> 
   mutate(timeafter = 
            case_when(diff <= 4 ~ 'Innen 1 måned',
                      diff > 4 & diff <= 12 ~ '1-3 måneder',
@@ -117,7 +117,7 @@ dat$timeafter <- factor(dat$timeafter,
                                    "3-6 måneder", "6-12 måneder", "Over 1 år"))
 
 
-dat <- dat %>% 
+dat <- dat |> 
   mutate(Smertekategori = 
            case_when(SmerteKat == 1 ~ 'Akutt',
                      SmerteKat == 2 ~ 'Langvarig',
@@ -130,53 +130,53 @@ dat$Smertekategori <- factor(dat$Smertekategori,
 
 
 #Creating data set with only those who died
-datd <- dat %>%
+datd <- dat |>
   filter(!is.na(dat$timeafter))
 
 
 #######Working with pain diagonse
 #SmerteKat.x = 1 er akutt smerte (se SmerteKat.y)
-akutt = datd %>% 
-  filter(!is.na(SmerteKat)) %>% 
-  distinct(ForlopsID, .keep_all = TRUE) %>% 
+akutt = datd |> 
+  filter(!is.na(SmerteKat)) |> 
+  distinct(ForlopsID, .keep_all = TRUE) |> 
   summarise(antall_ja = sum(SmerteKat == 1),
                    nevner = n(),
-                   ind = antall_ja/nevner) %>% 
+                   ind = antall_ja/nevner) |> 
   ungroup()
 
 #SmerteKat.x = 2 er langvarig smerte (se SmerteKat.y)
-langvarig = datd %>% 
-  filter(!is.na(SmerteKat)) %>% 
-  distinct(ForlopsID, .keep_all = TRUE) %>% 
+langvarig = datd |> 
+  filter(!is.na(SmerteKat)) |> 
+  distinct(ForlopsID, .keep_all = TRUE) |> 
   summarise(antall_ja = sum(SmerteKat == 2),
                    nevner = n(),
-                   ind = antall_ja/nevner) %>% 
+                   ind = antall_ja/nevner) |> 
   ungroup()
 
 #SmerteKat.x = 3 er palliativ smerte (se SmerteKat.y)
-palliativ = datd %>% 
-  filter(!is.na(SmerteKat)) %>% 
-  distinct(ForlopsID, .keep_all = TRUE) %>% 
+palliativ = datd |> 
+  filter(!is.na(SmerteKat)) |> 
+  distinct(ForlopsID, .keep_all = TRUE) |> 
   summarise(antall_ja = sum(SmerteKat == 3),
                    nevner = n(),
-                   ind = antall_ja/nevner) %>% 
+                   ind = antall_ja/nevner) |> 
   ungroup()
 
 #SmerteKat.x = 4 er annet smerte (se SmerteKat.y)
-annet = datd %>% 
-  filter(!is.na(SmerteKat)) %>% 
-  distinct(ForlopsID, .keep_all = TRUE) %>% 
+annet = datd |> 
+  filter(!is.na(SmerteKat)) |> 
+  distinct(ForlopsID, .keep_all = TRUE) |> 
   summarise(antall_ja = sum(SmerteKat == 4),
                    nevner = n(),
-                   ind = antall_ja/nevner) %>% 
+                   ind = antall_ja/nevner) |> 
   ungroup()
 
 #Underdiagnose for de forløp med hoveddiagnose akutt smerte
-underdiag = datd %>% 
-  filter(SmerteKat == 1) %>% 
-  distinct(ForlopsID, .keep_all = TRUE) %>% 
-  count(DiagKat) %>%
-  mutate(pro = n/sum(n)) %>%
+underdiag = datd |> 
+  filter(SmerteKat == 1) |> 
+  distinct(ForlopsID, .keep_all = TRUE) |> 
+  count(DiagKat) |>
+  mutate(pro = n/sum(n)) |>
   mutate(
     DiagKat = recode(
       DiagKat,
@@ -223,9 +223,9 @@ ggplot(datd, aes(x = timeafter)) +
 
 ```{r datawrangl2, eval=dataPresent, include = FALSE}
 
-dat_stacked <- datd %>%
-  filter(!is.na(Smertekategori)) %>%
-  group_by(timeafter, Smertekategori) %>%
+dat_stacked <- datd |>
+  filter(!is.na(Smertekategori)) |>
+  group_by(timeafter, Smertekategori) |>
   summarise(n_timekat = n())
 
 ```
