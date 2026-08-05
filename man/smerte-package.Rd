@@ -8,6 +8,14 @@
 \description{
 Pakke for det nasjonale registeret "Smerteregisteret". Utarbeiding av rapporter for lokale og nasjonale data.
 }
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://github.com/rapporteket/smerte}
+  \item Report bugs at \url{https://github.com/rapporteket/smerte/issues}
+}
+
+}
 \author{
 \strong{Maintainer}: Janne Mannseth \email{janne.mannseth@helse-bergen.no}
 

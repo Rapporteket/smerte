@@ -32,22 +32,28 @@ Depends:
   R (>= 4.1.0)
 Imports:
     bookdown,
+    DBI, 
+    dplyr,
     DT,
+    ggplot2, 
     gridExtra,
     kableExtra,
     knitr,
+    lubridate,
     magrittr,
     rapbase,
+    readr,
     revealjs,
     rlang,
     rmarkdown,
     shiny,
     shinyalert,
     shinycssloaders,
+    stringr,
+    tibble, 
+    tidyr,
     yaml,
-    zoo,
-    tidyverse,
-    dplyr
+    zoo
 Remotes:
     Rapporteket/rapbase@main
 Suggests: 
