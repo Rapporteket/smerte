@@ -103,7 +103,7 @@ oppfolgavd <- oppfolgavd |>
 oppfolgavd[nrow(oppfolgavd), 1] <- "TOTAL"
 
 oppfolgavd <- oppfolgavd |>
-  mutate(rowsum = rowSums(select_if(., is.numeric)))
+  mutate(rowsum = rowSums(across(where(is.numeric))))
 
 
 ###Lager tabell basert på antall ulike unike svar (ja, nei, usikker, vet ikke)
