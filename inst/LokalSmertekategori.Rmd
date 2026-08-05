@@ -60,7 +60,7 @@ if (rapbase::isRapContext()) {
   diag <- read.csv(file = pathdt, header = TRUE, sep = ";", encoding = "UTF-8")
   
   #Joiner diagnose numerisk og diagnosetekst
-  diagfull = diagnum %>% left_join(diag, by = c("ForlopsID", "HovedDato", "SmerteDiagID"))
+  diagfull = diagnum |> left_join(diag, by = c("ForlopsID", "HovedDato", "SmerteDiagID"))
   #Joiner så allevarnum med diagnose_full
   fulldat = left_join(dat, diagfull, by = "ForlopsID")
   
@@ -92,48 +92,48 @@ Her finner vi diverse informasjon rundt smertekategori.
 #Oversikt over diverse angående akutt og langvarig smerte
 
 #Akutt og langvarig smerte i samme forløp
-akklang = fulldat %>%
-  dplyr::filter(!is.na(SmerteKat)) %>% 
-  dplyr::distinct(ForlopsID, .keep_all = TRUE) %>% 
+akklang = fulldat |>
+  dplyr::filter(!is.na(SmerteKat)) |> 
+  dplyr::distinct(ForlopsID, .keep_all = TRUE) |> 
   dplyr::summarise(
     antall_ja = sum(AkuttLang == 1),
     nevner = dplyr::n(),
-    ind = antall_ja/nevner) %>% 
+    ind = antall_ja/nevner) |> 
   dplyr::ungroup()
 
 #SmerteKat.x = 1 er akutt smerte (se SmerteKat.y)
-akutt = fulldat %>% 
-  dplyr::filter(!is.na(SmerteKat)) %>% 
-  dplyr::distinct(ForlopsID, .keep_all = TRUE) %>% 
+akutt = fulldat |> 
+  dplyr::filter(!is.na(SmerteKat)) |> 
+  dplyr::distinct(ForlopsID, .keep_all = TRUE) |> 
   dplyr::summarise(antall_ja = sum(SmerteKat == 1),
             nevner = dplyr::n(),
-            ind = antall_ja/nevner) %>% 
+            ind = antall_ja/nevner) |> 
   dplyr::ungroup()
 
 #SmerteKat.x = 2 er langvarig smerte (se SmerteKat.y)
-langvarig = fulldat %>% 
-  dplyr::filter(!is.na(SmerteKat)) %>% 
-  dplyr::distinct(ForlopsID, .keep_all = TRUE) %>% 
+langvarig = fulldat |> 
+  dplyr::filter(!is.na(SmerteKat)) |> 
+  dplyr::distinct(ForlopsID, .keep_all = TRUE) |> 
   dplyr::summarise(antall_ja = sum(SmerteKat == 2),
                    nevner = dplyr::n(),
-                   ind = antall_ja/nevner) %>% 
+                   ind = antall_ja/nevner) |> 
   dplyr::ungroup()
 
 #SmerteKat.x = 3 er palliativ smerte (se SmerteKat.y)
-palliativ = fulldat %>% 
-  dplyr::filter(!is.na(SmerteKat)) %>% 
-  dplyr::distinct(ForlopsID, .keep_all = TRUE) %>% 
+palliativ = fulldat |> 
+  dplyr::filter(!is.na(SmerteKat)) |> 
+  dplyr::distinct(ForlopsID, .keep_all = TRUE) |> 
   dplyr::summarise(antall_ja = sum(SmerteKat == 3),
                    nevner = dplyr::n(),
-                   ind = antall_ja/nevner) %>% 
+                   ind = antall_ja/nevner) |> 
   dplyr::ungroup()
 
 #Underdiagnose for de forløp med hoveddiagnose akutt smerte
-underdiag = fulldat %>% 
-  dplyr::filter(SmerteKat == 1) %>% 
-  dplyr::distinct(ForlopsID, .keep_all = TRUE) %>% 
-  dplyr::count(DiagKat) %>%
-  dplyr::mutate(pro = n/sum(n)) %>%
+underdiag = fulldat |> 
+  dplyr::filter(SmerteKat == 1) |> 
+  dplyr::distinct(ForlopsID, .keep_all = TRUE) |> 
+  dplyr::count(DiagKat) |>
+  dplyr::mutate(pro = n/sum(n)) |>
   dplyr::mutate(
     DiagKat = dplyr::recode(
       DiagKat,
@@ -189,12 +189,12 @@ Tabell \@ref(tab:smertekattab) gir en oversikt over fordelingen i smertekategori
 
 #Oversikt over opioidbruk ved innleggelse
 
-opi <- fulldat %>%
-  dplyr::filter(!is.na(Opioid4a)) %>% 
-  dplyr::distinct(ForlopsID, .keep_all = TRUE) %>% 
+opi <- fulldat |>
+  dplyr::filter(!is.na(Opioid4a)) |> 
+  dplyr::distinct(ForlopsID, .keep_all = TRUE) |> 
   dplyr::summarise(antall_ja = sum(Opioid4a == 1),
                    nevner = dplyr::n(),
-                   ind = antall_ja/nevner) %>% 
+                   ind = antall_ja/nevner) |> 
   dplyr::ungroup()
 
 rapbase::mst(

@@ -54,7 +54,7 @@ if (rapbase::isRapContext()) {
 #dat$SykehusNavn[dat$SykehusNavn == "Helse Bergen HF"] = "HB"
 
 #Legger inn månedene i riktig rekkefølge
-dat <- dat %>%
+dat <- dat |> 
   dplyr::mutate(monthname = zoo::as.Date(zoo::as.yearmon(StartdatoTO)))
 
 #Tar bare med barn (< 18 år)
@@ -94,7 +94,7 @@ if (dim(bdat)[1] < 1) {
 } else {
   
   #Kun de som har fått epidural
-  plotdat <- bdat %>%
+  plotdat <- bdat |> 
     filter(EDA == 1)
   
   #Lager histogram fordelt på alder

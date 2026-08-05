@@ -63,14 +63,14 @@ mstt <- function(tab, colnames = colnames(tab), type, cap,
     }
     k <- knitr::kable(tab, col.names = colnames, caption = cap,
                       label = label, digits = digs,
-                      align = align, booktabs = TRUE) %>% 
+                      align = align, booktabs = TRUE) |> 
       kableExtra::kable_styling(latex_options = lo, font_size = fs)
   }
   
   if (type == "html") {
     k <- knitr::kable(tab, col.names = colnames, caption = cap,
                       label = label, digits = digs,
-                      align = align) %>% 
+                      align = align) |> 
       kableExtra::kable_styling(
         bootstrap_options = c("striped", "hover", "condensed"), full_width = F)
   }
@@ -104,9 +104,9 @@ dat$MoEkvivalens22[is.na(dat$MoEkvivalens22)] <- 0
 
 #Få med behandlertilsyn på alle før vi selekterer på spinalkateter
 
-datbeh = dat %>%
+datbeh = dat |>
   tidyr::gather(key = tilsynstype, value=antall, AntPasTils, AntTilsLege,
-         AntTilsSykPleier, AntTilsFysioT, AntTilsPsyk, AntTilsSosio) %>%
+         AntTilsSykPleier, AntTilsFysioT, AntTilsPsyk, AntTilsSosio) |>
   dplyr::mutate(antall = replace(antall, is.na(antall), 0), 
          month = months(zoo::as.Date(StartdatoTO)),
          tilsynstype=stringr::str_replace_all(tilsynstype,"AntTilsLege",
@@ -126,18 +126,18 @@ datbeh = dat %>%
          tilsynstype=stringr::str_replace_all(tilsynstype, "AntPasTils",
                                               "Total"))
 #Samler alt til behandlertilsyn
-datbeh = datbeh %>%
-  dplyr::group_by(tilsynstype, ForlopsID) %>% 
-  dplyr::summarise(antall = sum(antall), .groups = "drop_last") %>% 
-  tidyr::spread(tilsynstype, antall) %>%
-  dplyr::rowwise() %>% 
+datbeh = datbeh |>
+  dplyr::group_by(tilsynstype, ForlopsID) |> 
+  dplyr::summarise(antall = sum(antall), .groups = "drop_last") |> 
+  tidyr::spread(tilsynstype, antall) |>
+  dplyr::rowwise() |> 
   dplyr::mutate(Behandlertilsyn = sum(Fysioterapeut, Lege, Psykolog, Sosionom, 
                                       Sykepleier))
 
 #Kun siste kolonne er relevant og legges til i hoveddata 
 #unlist pga fra tibble til vektor
-dat$behtils = datbeh %>%
-  dplyr::select(Behandlertilsyn) %>%
+dat$behtils = datbeh |>
+  dplyr::select(Behandlertilsyn) |>
   unlist(use.names = FALSE)
 
 #Lager nye variabler som skal inneholde endring i NRS, settes initielt til NA
@@ -161,10 +161,10 @@ dat$behtils = datbeh %>%
 # }
 #   
 # #De som er NA må få en meningsfullverdi til tabellen som skal skrives
-# dat$stbe = dat %>% dplyr::mutate(stbe = ifelse(is.na(stbe), "Mangler", stbe))
-# dat$svbe = dat %>% dplyr::mutate(svbe = ifelse(is.na(svbe), "Mangler", svbe))
-# dat$stro = dat %>% dplyr::mutate(stro = ifelse(is.na(stro), "Mangler", stro))
-# dat$svro = dat %>% dplyr::mutate(svro = ifelse(is.na(svro), "Mangler", svro))
+# dat$stbe = dat |> dplyr::mutate(stbe = ifelse(is.na(stbe), "Mangler", stbe))
+# dat$svbe = dat |> dplyr::mutate(svbe = ifelse(is.na(svbe), "Mangler", svbe))
+# dat$stro = dat |> dplyr::mutate(stro = ifelse(is.na(stro), "Mangler", stro))
+# dat$svro = dat |> dplyr::mutate(svro = ifelse(is.na(svro), "Mangler", svro))
 
 
 ### Ta med kun de som har hatt spinalkateter: SA (beh 2.2) = 1
@@ -191,9 +191,9 @@ knitr::knit_exit()
 #Tar med relevant data og lager difftid som er tid fra henvisning til forløpets avslutning
 #as_tibble brukes for å fjerne radnummer som ellers vises i tabellen
 datspinalgen <- tibble::as_tibble(
-  datspinal %>%
+  datspinal |>
     dplyr::select(AntPasTils, behtils, StartdatoTO, PasientID, 
-                  ForlopsID, TotTid, SluttDato) %>% 
+                  ForlopsID, TotTid, SluttDato) |> 
     dplyr::mutate(
       difftid = as.numeric(gsub("[^0-9]", "", 
                                 as.Date(datspinal$SluttDato) - 
@@ -228,15 +228,15 @@ I den valgte tidsperioden ble spinalkateter gitt til tilsammen `r antspinal` av 
 
 #as_tibble brukes for å fjerne radnummer som ellers vises i tabellen
 datmed <- tibble::as_tibble(
-  datspinal %>%
+  datspinal |>
     dplyr::select(ForlopsID, MoEkvivalens, MoEkvivalens22, Opbehd221d, 
-                  LAbehd221d, KoAbedel221d) %>%
+                  LAbehd221d, KoAbedel221d) |>
     dplyr::mutate(Opbehd221d = dplyr::case_when(Opbehd221d == 0 ~ "Nei",
                                          Opbehd221d == 1 ~ "Ja",
-                                         TRUE ~ "Ikke aktuelt")) %>%
+                                         TRUE ~ "Ikke aktuelt")) |>
     dplyr::mutate(LAbehd221d = dplyr::case_when(LAbehd221d == 0 ~ "Nei",
                                          LAbehd221d == 1 ~ "Ja",
-                                         TRUE ~ "Ikke aktuelt")) %>%
+                                         TRUE ~ "Ikke aktuelt")) |>
     dplyr::mutate(KoAbedel221d = dplyr::case_when(KoAbedel221d == 0 ~ "Nei",
                                          KoAbedel221d == 1 ~ "Ja",
                                          TRUE ~ "Ikke aktuelt"))
@@ -261,7 +261,7 @@ Tabell \@ref(tab:medtab) gir en oversikt over medikament i spinalkateter for de 
 
 # Endring i NRS fra første tilsyn til siste tilsyn
 nrsbev = tibble::as_tibble(
-  datspinal %>%
+  datspinal |>
     dplyr::select(ForlopsID, StSmBev12, StSmBev21, SvSmBev12, SvSmBev21)
 )
 
@@ -281,7 +281,7 @@ Tabell \@ref(tab:spinalnrsBEV) gir en oversikt over NRS-score for smerte i beveg
 
 # Endring i NRS fra første tilsyn til siste tilsyn
 nrsro = tibble::as_tibble(
-  datspinal %>%
+  datspinal |>
     dplyr::select(ForlopsID, StSmRo12, StSmRo21, SvSmRo12, SvSmRo21)
 )
 

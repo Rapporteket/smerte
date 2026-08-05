@@ -57,12 +57,12 @@ avdelingene på sykehuset i løpet av hele tidsperioden.
 #Oversikt over videre oppfølging
 
 # Data for tabell
-oppfolgdat <- dat %>%
-  #dplyr::filter(Tilsett == 1) %>% kan ta med dersom de vil
-  dplyr::count(OppfSmeKl) %>%
+oppfolgdat <- dat |>
+  #dplyr::filter(Tilsett == 1) |> kan ta med dersom de vil
+  dplyr::count(OppfSmeKl) |>
   dplyr::mutate(prosent = round(100*(n/sum(n))))
 # Gi navn i stedet for tall til alternativene for tilsyn/ikke tilsyn
-oppfolgdat <- oppfolgdat %>%
+oppfolgdat <- oppfolgdat |>
   dplyr::mutate(oppfolggrunn = 
                   dplyr::case_when(OppfSmeKl == 0 ~ "Nei",
                                    OppfSmeKl == 1 ~ "Ja",
@@ -88,21 +88,21 @@ rapbase::mst(
 ```{r avdelingsoppfølging, warning = TRUE, message=TRUE, results='asis'}
 #Oversikt over videre oppfølging avdeling
 
-oppfolgavd <- dat %>%
-  dplyr::filter(!is.na(OppfSmeKl)) %>% 
-  dplyr::count(DEPARTMENT_SHORTNAME, OppfSmeKl) %>%
+oppfolgavd <- dat |>
+  dplyr::filter(!is.na(OppfSmeKl)) |> 
+  dplyr::count(DEPARTMENT_SHORTNAME, OppfSmeKl) |>
   tidyr::spread(OppfSmeKl, n, fill=0)
 
 total_avdeling <- colSums(oppfolgavd[, -1])
 
 #Legge på totalrad nederst
-oppfolgavd <- oppfolgavd %>%
+oppfolgavd <- oppfolgavd |>
   dplyr::bind_rows(total_avdeling)
 
 #Legge til navn
 oppfolgavd[nrow(oppfolgavd), 1] <- "TOTAL"
 
-oppfolgavd <- oppfolgavd %>%
+oppfolgavd <- oppfolgavd |>
   dplyr::mutate(rowsum = rowSums(dplyr::select_if(., is.numeric)))
 
 

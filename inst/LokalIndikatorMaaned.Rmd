@@ -41,7 +41,7 @@ if (rapbase::isRapContext()) {
                                      userRole=params$userRole,
                                      fromDate = params$startDate,
                                      toDate = params$endDate,
-                                     session = params$shinySession) %>% 
+                                     session = params$shinySession) |> 
     smerte::fikse_sykehusnavn("AvdRESH")
 } else {
   #Dataimport: skal hente lokale data for hvert sykehus (tar vekk sti, og erstatter med lokal filB)
@@ -52,14 +52,14 @@ if (rapbase::isRapContext()) {
   
   #Må kunne laste inn data for de ulike årene
   # aar <- params$year
-  #dat = dat %>% filter(year(date(StartdatoTO)) == aar) #year
+  #dat = dat |> filter(year(date(StartdatoTO)) == aar) #year
 }
 
 #Forkorter sykehusnavn
 dat$SykehusNavn[dat$SykehusNavn == "Helse Bergen HF"] = "HB"
 
 #Legger inn månedene i riktig rekkefølge
-dat <- dat %>%
+dat <- dat |> 
   dplyr::mutate(monthname = zoo::as.Date(zoo::as.yearmon(StartdatoTO)))
 ```
 
@@ -145,10 +145,10 @@ if (dim(behdat)[1] < 1) {
 } else {
   #Aggregate by month for plot
   #Grouping by month and finding frequency for behtils, then filtering on the "correct" frequency (if not, we get the inverse too)
-  plotdat <- behdat %>%
-    dplyr::group_by(month = monthname, behtils) %>%
-    dplyr::summarise(n = dplyr::n()) %>%
-    dplyr::mutate(freq = n/sum(n)) %>%
+  plotdat <- behdat |> 
+    dplyr::group_by(month = monthname, behtils) |> 
+    dplyr::summarise(n = dplyr::n()) |> 
+    dplyr::mutate(freq = n/sum(n)) |> 
     dplyr::filter(behtils == 1)
   
   #Plotting plotdat
@@ -219,10 +219,10 @@ if (dim(dat)[1] < 1) {
 } else {
   #Aggregate by month for plot
   #Grouping by month and finding frequency, then filtering on the "correct" frequency (if not, we get the inverse too)
-  plot2 <- henvdat %>%
-    dplyr::group_by(month = monthname, henvtils) %>%
-    dplyr::summarise(n = dplyr::n()) %>%
-    dplyr::mutate(freq = n/sum(n)) %>%
+  plot2 <- henvdat |> 
+    dplyr::group_by(month = monthname, henvtils) |> 
+    dplyr::summarise(n = dplyr::n()) |> 
+    dplyr::mutate(freq = n/sum(n)) |> 
     dplyr::filter(henvtils == 1)
   
   #Plotting plotdat
@@ -302,11 +302,11 @@ if (dim(dat)[1] < 1) {
   
   #Aggregate by month for plot
   #Grouping by month and finding frequency (remove NA here), then filtering on the "correct" frequency (if not, we get the inverse too)
-  plot3 <- dat %>%
-    dplyr::filter(!is.na(fornoyd)) %>%
-    dplyr::group_by(month = monthname, fornoyd) %>%
-    dplyr::summarise(n = dplyr::n()) %>%
-    dplyr::mutate(freq = n/sum(n)) %>%
+  plot3 <- dat |>
+    dplyr::filter(!is.na(fornoyd)) |>
+    dplyr::group_by(month = monthname, fornoyd) |>
+    dplyr::summarise(n = dplyr::n()) |>
+    dplyr::mutate(freq = n/sum(n)) |>
     dplyr::filter(fornoyd == 1)
   
   #Plotting plotdat
@@ -418,39 +418,39 @@ if (dim(dat)[1] < 1) {
   #Aggregate by month for plot
   
   #For StBe
-  p1 <- dat %>%
-    dplyr::filter(!is.na(stbe)) %>%
-    dplyr::mutate(stbe1 = stbe > 0) %>%
-    dplyr::group_by(month = monthname, stbe1) %>%
-    dplyr::summarise(n = dplyr::n()) %>%
-    dplyr::mutate(freq1 = n/sum(n)) %>%
+  p1 <- dat |>
+    dplyr::filter(!is.na(stbe)) |>
+    dplyr::mutate(stbe1 = stbe > 0) |>
+    dplyr::group_by(month = monthname, stbe1) |>
+    dplyr::summarise(n = dplyr::n()) |>
+    dplyr::mutate(freq1 = n/sum(n)) |>
     dplyr::filter(stbe1 == 1)
   
   # #For SvBe
-  p2 <- dat %>%
-    dplyr::filter(!is.na(svbe)) %>%
-    dplyr::mutate(svbe1 = svbe > 0) %>%
-    dplyr::group_by(month = monthname, svbe1) %>%
-    dplyr::summarise(n = dplyr::n()) %>%
-    dplyr::mutate(freq2 = n/sum(n)) %>%
+  p2 <- dat |>
+    dplyr::filter(!is.na(svbe)) |>
+    dplyr::mutate(svbe1 = svbe > 0) |>
+    dplyr::group_by(month = monthname, svbe1) |>
+    dplyr::summarise(n = dplyr::n()) |>
+    dplyr::mutate(freq2 = n/sum(n)) |>
     dplyr::filter(svbe1 == 1)
   
   #For StRo
-  p3 <- dat %>%
-    dplyr::filter(!is.na(stro)) %>%
-    dplyr::mutate(stro1 = stro > 0) %>%
-    dplyr::group_by(month = monthname, stro1) %>%
-    dplyr::summarise(n = dplyr::n()) %>%
-    dplyr::mutate(freq3 = n/sum(n)) %>%
+  p3 <- dat |>
+    dplyr::filter(!is.na(stro)) |>
+    dplyr::mutate(stro1 = stro > 0) |>
+    dplyr::group_by(month = monthname, stro1) |>
+    dplyr::summarise(n = dplyr::n()) |>
+    dplyr::mutate(freq3 = n/sum(n)) |>
     dplyr::filter(stro1 == 1)
   
   #For SvRo
-  p4 <- dat %>%
-    dplyr::filter(!is.na(svro)) %>%
-    dplyr::mutate(svro1 = svro > 0) %>%
-    dplyr::group_by(month = monthname, svro1) %>%
-    dplyr::summarise(n = dplyr::n()) %>%
-    dplyr::mutate(freq4 = n/sum(n)) %>%
+  p4 <- dat |>
+    dplyr::filter(!is.na(svro)) |>
+    dplyr::mutate(svro1 = svro > 0) |>
+    dplyr::group_by(month = monthname, svro1) |>
+    dplyr::summarise(n = dplyr::n()) |>
+    dplyr::mutate(freq4 = n/sum(n)) |>
     dplyr::filter(svro1 == 1)
   
   colorsplot <- c("stbe" = "magenta3", "svbe" = "hotpink1", "stro" = "darkcyan", "svro" = "cyan2")
@@ -541,11 +541,11 @@ messageik <- ""
 #Aggregate by month for plot
 #Grouping by month and finding frequency (remove NA here), then filtering on the "correct" frequency (if not, we get the inverse too)
 #Kun de som har blitt tilsett er aktuell for denne
-plotikmed <- dat %>%
-  dplyr::filter(!is.na(IkkeMedBeh), Tilsett == 1) %>%
-  dplyr::group_by(month = monthname, IkkeMedBeh) %>%
-  dplyr::summarise(n = dplyr::n()) %>%
-  dplyr::mutate(freq = n/sum(n)) %>%
+plotikmed <- dat |>
+  dplyr::filter(!is.na(IkkeMedBeh), Tilsett == 1) |>
+  dplyr::group_by(month = monthname, IkkeMedBeh) |>
+  dplyr::summarise(n = dplyr::n()) |>
+  dplyr::mutate(freq = n/sum(n)) |>
   dplyr::filter(IkkeMedBeh == 1)
 
 if (dim(plotikmed)[1] < 1) {
@@ -618,15 +618,15 @@ Figuren under viser hvordan andelen har fordelt seg i løpet av året.
 messageplot <- ""
 
 #Aggregate by month for plot
-plotnedtr<- dat %>% 
+plotnedtr<- dat |> 
   dplyr::filter(
     !is.na(Journalnotat),
     VidereOppf == 1,
     BehNedtrappAvsluttTils == 1
-  ) %>%
-  dplyr::group_by(month = monthname, Journalnotat) %>%
-  dplyr::summarise(n = dplyr::n()) %>%
-  dplyr::mutate(freq = n/sum(n)) %>%
+  ) |>
+  dplyr::group_by(month = monthname, Journalnotat) |>
+  dplyr::summarise(n = dplyr::n()) |>
+  dplyr::mutate(freq = n/sum(n)) |>
   dplyr::filter(Journalnotat == 1)
 
 if (dim(plotnedtr)[1] < 1) {
@@ -703,12 +703,12 @@ Figuren under viser hvordan andelen har fordelt seg i løpet av året.
 messageplotaks <- ""
 
 #Aggregate by month for plot
-plotaks<- dat %>% 
+plotaks<- dat |> 
   dplyr::filter(
-    !is.na(AkseptabelSmerte21)) %>%
-  dplyr::group_by(month = monthname, AkseptabelSmerte21) %>%
-  dplyr::summarise(n = dplyr::n()) %>%
-  dplyr::mutate(freq = n/sum(n)) %>%
+    !is.na(AkseptabelSmerte21)) |>
+  dplyr::group_by(month = monthname, AkseptabelSmerte21) |>
+  dplyr::summarise(n = dplyr::n()) |>
+  dplyr::mutate(freq = n/sum(n)) |>
   dplyr::filter(AkseptabelSmerte21 == 1)
 
 if (dim(plotnedtr)[1] < 1) {
@@ -784,12 +784,12 @@ Figuren under viser hvordan andelen har fordelt seg i løpet av året.
 messageplotfunk <- ""
 
 #Aggregate by month for plot
-plotfunk<- dat %>% 
+plotfunk<- dat |> 
   dplyr::filter(
-    !is.na(bedring)) %>%
-  dplyr::group_by(month = monthname, bedring) %>%
-  dplyr::summarise(n = dplyr::n()) %>%
-  dplyr::mutate(freq = n/sum(n)) %>%
+    !is.na(bedring)) |>
+  dplyr::group_by(month = monthname, bedring) |>
+  dplyr::summarise(n = dplyr::n()) |>
+  dplyr::mutate(freq = n/sum(n)) |>
   dplyr::filter(bedring == 1)
 
 if (dim(plotnedtr)[1] < 1) {
@@ -821,14 +821,14 @@ Her legges midlertidig inn oversikt til bruk i kvalitetsforbedringsprosjektet ve
 
 messagefunkNRS2 <- ""
 
-dat_utvalg <- dat %>%
+dat_utvalg <- dat |>
   dplyr::filter(Tilsett == 1 & AngiNRS12 != 2 & AngiNRS21 != 2)
   
 #De med nedgang i smerte for StSmBe
   #Antall i utvalget vårt
   ant_utvalg <- nrow(dat_utvalg)
 
-dat_utvalgtils <- dat %>%
+dat_utvalgtils <- dat |>
   dplyr::filter(Tilsett == 1)  
 ant_utvalgtils <- nrow(dat_utvalgtils)
   
@@ -838,11 +838,11 @@ if (dim(dat)[1] < 1) {
 } else {
   
 
- nrsdata12 <- dat %>% 
-   dplyr::count(AngiNRS12) %>%
+ nrsdata12 <- dat |> 
+   dplyr::count(AngiNRS12) |>
    dplyr::mutate(prosent = round(100*(n/sum(n))))
 #Gi navn
- nrsdata12 = nrsdata12 %>%
+ nrsdata12 = nrsdata12 |>
    dplyr::mutate(grunnPR = case_when(AngiNRS12 == 0 ~ "Nei",
                              AngiNRS12 == 1 ~ "Ja",
                              AngiNRS12 == 2 ~ "Ikke aktuelt",
@@ -874,11 +874,11 @@ if (dim(dat)[1] < 1) {
   messagefunkNRS21 <- "I den valgte tidsperioden er det ikke nok data til å gi resultatet."
 } else {
   
- nrsdata21 <- dat %>% 
-   dplyr::count(AngiNRS21) %>%
+ nrsdata21 <- dat |> 
+   dplyr::count(AngiNRS21) |>
    dplyr::mutate(prosent = round(100*(n/sum(n))))
 #Gi navn
- nrsdata21 = nrsdata21 %>%
+ nrsdata21 = nrsdata21 |>
    dplyr::mutate(grunnPR = case_when(AngiNRS21 == 0 ~ "Nei",
                              AngiNRS21 == 1 ~ "Ja",
                              AngiNRS21 == 2 ~ "Ikke aktuelt",
@@ -909,13 +909,13 @@ Antall forløp som har fått tilsyn av minst én profesjon og hvor det samtidig 
 
 messagefunkNRSangitt <- ""
 
-dat_utvalg2 <- dat %>%
+dat_utvalg2 <- dat |>
   dplyr::filter(Tilsett == 1 & AngiNRS12 == 1 & AngiNRS21 == 1)
 
-dat_utvalg21 <- dat %>%
+dat_utvalg21 <- dat |>
   dplyr::filter(Tilsett == 1 & AngiNRS12 == 1)
   
-dat_utvalg22 <- dat %>%
+dat_utvalg22 <- dat |>
   dplyr::filter(Tilsett == 1 & AngiNRS21 == 1)
 
 #De med nedgang i smerte for StSmBe
@@ -944,13 +944,13 @@ dat$med <- 0
     {dat$med[i] = 1}
    }
 
-nrsplotdat <- dat %>%
+nrsplotdat <- dat |>
   dplyr::filter(Tilsett == 1 & AngiNRS12 %in% c('1','3') & AngiNRS21 %in% c('1','3'))
 
-plotnrs<- nrsplotdat %>% 
-  dplyr::group_by(month = monthname, med) %>%
-  dplyr::summarise(n = dplyr::n()) %>%
-  dplyr::mutate(freq = n/sum(n)) %>%
+plotnrs<- nrsplotdat |> 
+  dplyr::group_by(month = monthname, med) |>
+  dplyr::summarise(n = dplyr::n()) |>
+  dplyr::mutate(freq = n/sum(n)) |>
   dplyr::filter(med == 1)
 
 if (dim(plotnrs)[1] < 1) {

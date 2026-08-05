@@ -77,11 +77,11 @@ grunnen for at det ikke ble gitt tilsyn i disse tilfellene.
 ```{r tilsynstabell, warning=TRUE, message=TRUE, results='asis'}
 ###Her klargjøres data for tilsynstabell
 # Data for tabell over tilsyn
-tilsynsdata <- dat %>% dplyr::count(Tilsett) %>%
+tilsynsdata <- dat |> dplyr::count(Tilsett) |>
   dplyr::mutate(prosent = round(100*(n/sum(n))))
 # Gi navn i stedet for tall til alternativene for tilsyn/ikke tilsyn
-tilsynsdata <- tilsynsdata %>%
-  dplyr::filter(!is.na(Tilsett)) %>%
+tilsynsdata <- tilsynsdata |>
+  dplyr::filter(!is.na(Tilsett)) |>
   dplyr::mutate(tilsynAarsak = 
                   dplyr::case_when(Tilsett == 1 ~ "Ja",
                                    Tilsett == 2 ~ "Nei, ikke behov",
@@ -93,7 +93,7 @@ tilsynsdata <- tilsynsdata %>%
 tilsynsdata <- tilsynsdata[ ,c(4,2,3)]
 
 #Hvis den skal fjernes en gang
-# tilsynsdata <- tilsynsdata %>%
+# tilsynsdata <- tilsynsdata |>
 #   dplyr::filter(tilsynAarsak != 'Mangler verdi')
 
 rapbase::mst(
@@ -114,34 +114,34 @@ rapbase::mst(
 ###Her klargjøres data for tilsynstabell
 
 # Data for tabell over gitt råd
-raad <- tilsyn_full <- dat %>%
-  dplyr::filter(!is.na(Tilsett)) %>%
-  dplyr::select(Tilsett, StartdatoTO) %>%
+raad <- tilsyn_full <- dat |>
+  dplyr::filter(!is.na(Tilsett)) |>
+  dplyr::select(Tilsett, StartdatoTO) |>
   dplyr::mutate(month = months(zoo::as.Date(StartdatoTO)),
                 yearmonth = zoo::as.yearmon(StartdatoTO))
-raad <- raad %>%
+raad <- raad |>
   dplyr::mutate(monthname = .data$yearmonth)
 
 #Hvis den skal fjernes en gang
-# raad <- raad %>%
+# raad <- raad |>
 #    dplyr::filter(Tilsett != '6')
 
 #Summerer antall gitt råd per måned
-sum_raad_maned = raad %>%
-  dplyr::select(Tilsett, monthname) %>%
-  tidyr::gather(Tilsett, monthname) %>%
-  dplyr::group_by(Tilsett, monthname) %>%
-  dplyr::count() %>%
-  dplyr::ungroup() %>%
-  tidyr::spread(Tilsett, n) %>%
-  replace(is.na(.), 0)
+sum_raad_maned = raad |>
+  dplyr::select(Tilsett, monthname) |> 
+  tidyr::gather(Tilsett, monthname) |> 
+  dplyr::group_by(Tilsett, monthname) |> 
+  dplyr::count() |> 
+  dplyr::ungroup() |> 
+  tidyr::spread(Tilsett, n)  |>  
+  mutate(across(where(is.integer), ~ replace_na(., 0)))
 
 #Totalsum per kolonne
 total_raad_maned <- colSums(sum_raad_maned[, -1])
 
 #Legger sammen
-sum_raad_maned <- sum_raad_maned %>%
-  dplyr::bind_rows(total_raad_maned) %>%
+sum_raad_maned <- sum_raad_maned |>
+  dplyr::bind_rows(total_raad_maned) |>
   dplyr::mutate(monthname = as.character(monthname))
 
 
@@ -257,12 +257,12 @@ if (!rapbase::isRapContext()) {
 }
 
 #Organiserer data etter tilsynstype og måned
-tilsyn_full <- dat %>%
+tilsyn_full <- dat |>
   dplyr::select(AntPasTils, AntTilsLege, AntTilsSykPleier, AntTilsFysioT,
                 AntTilsPsyk, AntTilsSosio, AntTilsKonfLege, StartdatoTO, PasientID, ForlopsID,
-                Tilsett, DEPARTMENT_NAME, DEPARTMENT_SHORTNAME, InnlAvd) %>%
+                Tilsett, DEPARTMENT_NAME, DEPARTMENT_SHORTNAME, InnlAvd) |>
   tidyr::gather(key = tilsynstype, value=antall, AntPasTils, AntTilsLege,
-                AntTilsSykPleier, AntTilsFysioT, AntTilsPsyk, AntTilsSosio, AntTilsKonfLege) %>%
+                AntTilsSykPleier, AntTilsFysioT, AntTilsPsyk, AntTilsSosio, AntTilsKonfLege) |>
   dplyr::mutate(antall = replace(antall, is.na(antall), 0), 
                 month = months(zoo::as.Date(StartdatoTO)),
                 tilsynstype=stringr::str_replace_all(tilsynstype,"AntTilsLege",
@@ -288,25 +288,25 @@ tilsyn_full <- dat %>%
 
 
 #### Alternative approach using yearmonth (last n months regardless) ###########
-tilsyn_full <- tilsyn_full %>%
+tilsyn_full <- tilsyn_full |>
   dplyr::mutate(monthname = .data$yearmonth) 
 
-sum_tilsyn_maned = tilsyn_full %>%
-  #dplyr::filter(Tilsett == 1) %>%
-  dplyr::group_by(tilsynstype, monthname) %>% 
-  dplyr::summarise(antall = sum(antall), .groups = "drop_last") %>% 
-  tidyr::spread(tilsynstype, antall) %>%
-  dplyr::rowwise() %>% 
+sum_tilsyn_maned = tilsyn_full |>
+  #dplyr::filter(Tilsett == 1) |>
+  dplyr::group_by(tilsynstype, monthname) |> 
+  dplyr::summarise(antall = sum(antall), .groups = "drop_last") |> 
+  tidyr::spread(tilsynstype, antall) |>
+  dplyr::rowwise() |> 
   dplyr::mutate(Behandlertilsyn = sum(Fysioterapeut, Lege, Psykolog, Sosionom, 
                                       Sykepleier))
 
-antall_pas_maned <- tilsyn_full %>%
-  dplyr::group_by(monthname) %>%
-  dplyr::distinct(PasientID, .keep_all = TRUE) %>%
+antall_pas_maned <- tilsyn_full |>
+  dplyr::group_by(monthname) |>
+  dplyr::distinct(PasientID, .keep_all = TRUE) |>
   dplyr::count(monthname, name = "n_pas")
 
-antall_henv_maned <- tilsyn_full %>%
-  dplyr::distinct(ForlopsID, .keep_all = TRUE) %>%
+antall_henv_maned <- tilsyn_full |>
+  dplyr::distinct(ForlopsID, .keep_all = TRUE) |>
   dplyr::count(monthname, name = "n_henv")
 # 
 # rapbase::mst(
@@ -339,8 +339,8 @@ sum_tilsyn_maned$n_henv <- antall_henv_maned$n_henv
 # Finne summen av hver tilsynstype
 total_tilsyn_maned <- colSums(sum_tilsyn_maned[, -1])
 
-sum_tilsyn_maned <- sum_tilsyn_maned %>%
-  dplyr::bind_rows(total_tilsyn_maned) %>%
+sum_tilsyn_maned <- sum_tilsyn_maned |>
+  dplyr::bind_rows(total_tilsyn_maned) |>
   dplyr::mutate(monthname = as.character(monthname))
 
 sum_tilsyn_maned$monthname[is.na(sum_tilsyn_maned$monthname)] <- "Total"
@@ -368,16 +368,16 @@ avdelingene på sykehuset i løpet av hele tidsperioden.
 ```{r avdelingstabell, warning = TRUE, message=TRUE, results='asis'}
 ###Her klargjøres data for avdelingsoversikt
 #Antall/n er pas tils
-sum_tilsyn_avdeling <- tilsyn_full %>%
-  dplyr::group_by(tilsynstype, DEPARTMENT_SHORTNAME) %>% 
-  dplyr::summarise(antall = sum(antall), .groups = "drop_last") %>% 
-  tidyr::spread(tilsynstype, antall) %>%
-  dplyr::rowwise() %>% 
+sum_tilsyn_avdeling <- tilsyn_full |>
+  dplyr::group_by(tilsynstype, DEPARTMENT_SHORTNAME) |> 
+  dplyr::summarise(antall = sum(antall), .groups = "drop_last") |> 
+  tidyr::spread(tilsynstype, antall) |>
+  dplyr::rowwise() |> 
   dplyr::mutate(behandlertilsyn = sum(Fysioterapeut, Lege, Psykolog, Sosionom,
                                       Sykepleier))
 
-antall_pas_avdeling <- tilsyn_full %>%
-  dplyr::distinct(ForlopsID, .keep_all = TRUE) %>%
+antall_pas_avdeling <- tilsyn_full |>
+  dplyr::distinct(ForlopsID, .keep_all = TRUE) |>
   dplyr::count(DEPARTMENT_SHORTNAME, name = "n") 
 
 sum_tilsyn_avdeling <- merge(sum_tilsyn_avdeling, antall_pas_avdeling, by = "DEPARTMENT_SHORTNAME") 
@@ -398,7 +398,7 @@ sum_tilsyn_avdeling <- dplyr::arrange(sum_tilsyn_avdeling, desc(n))
 #Få inn navnet på den nye raden
 
 #Legge på totalrad nederst
-sum_tilsyn_avdeling <- sum_tilsyn_avdeling %>%
+sum_tilsyn_avdeling <- sum_tilsyn_avdeling |>
   dplyr::bind_rows(total_tilsyn_avdeling)
 
 #Legge til navn
@@ -406,7 +406,7 @@ sum_tilsyn_avdeling[nrow(sum_tilsyn_avdeling), 1] <- "Total"
 
 # Bytte på rekkefølgen slik at behandlertilsyn kommer før pasienttilsyn
 sum_tilsyn_avdeling = sum_tilsyn_avdeling[,c(1,2,3,4,5,6,7,9,8,10)]
-sum_tilsyn_avdeling = sum_tilsyn_avdeling %>%
+sum_tilsyn_avdeling = sum_tilsyn_avdeling |>
   dplyr::mutate(DEPARTMENT_SHORTNAME =
                   stringr::str_replace_all(DEPARTMENT_SHORTNAME, "\n", " "))
 
