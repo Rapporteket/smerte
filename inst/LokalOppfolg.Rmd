@@ -58,7 +58,7 @@ avdelingene på sykehuset i løpet av hele tidsperioden.
 
 # Data for tabell
 oppfolgdat <- dat |>
-  #filter(Tilsett == 1) |> kan ta med dersom de vil
+  #filter(Tilsett == 1) #|> kan ta med dersom de vil
   count(OppfSmeKl) |>
   mutate(prosent = round(100*(n/sum(n))))
 # Gi navn i stedet for tall til alternativene for tilsyn/ikke tilsyn
