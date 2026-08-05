@@ -14,11 +14,6 @@
 #' @param smerteKat Integer defining the SmerteKat code to use in query
 #' @param ... Optional arguments to be passed to the function
 #' @name getRegData
-#' @aliases getRegDataLokalTilsynsrapportMaaned
-#' getRegDataRapportDekningsgrad getRegDataSmertekategori
-#' getSmerteDiagKatValueLab
-#' getRegDataSpinalkateter getLocalYears getAllYears getHospitalName
-#' getNameReshId getDataDump
 NULL
 
 

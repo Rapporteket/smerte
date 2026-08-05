@@ -4,20 +4,20 @@
 \alias{getRegData}
 \alias{getRegDataLokalTilsynsrapportMaaned}
 \alias{getRegDataRapportDekningsgrad}
-\alias{getRegDataSmertekategori}
+\alias{getRegDataRapportDekningsgradReservasjon}
+\alias{getRegDataIndikator}
+\alias{getRegDataOpiodReduksjon}
 \alias{getSmerteDiagKatValueLab}
+\alias{getRegDataSmertekategori}
+\alias{getRegDataTimetodeath}
 \alias{getRegDataSpinalkateter}
+\alias{getRegDataLokalEpidural}
+\alias{getRegDataRapportOppfolg}
 \alias{getLocalYears}
 \alias{getAllYears}
 \alias{getHospitalName}
 \alias{getNameReshId}
 \alias{getDataDump}
-\alias{getRegDataRapportDekningsgradReservasjon}
-\alias{getRegDataIndikator}
-\alias{getRegDataOpiodReduksjon}
-\alias{getRegDataTimetodeath}
-\alias{getRegDataLokalEpidural}
-\alias{getRegDataRapportOppfolg}
 \title{Provide dataframe of registry data}
 \usage{
 getRegDataLokalTilsynsrapportMaaned(
