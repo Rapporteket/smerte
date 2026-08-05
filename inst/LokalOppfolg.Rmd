@@ -21,15 +21,15 @@ registryName: Smerteregisteret
 userFullName: '`r params$userFullName`'
 ---
 ```{r set options and load packages, include = FALSE}
-knitr::opts_chunk$set(echo=FALSE)
+opts_chunk$set(echo=FALSE)
 options(knitr.table.format = params$tableFormat)
 options(tinytex.verbose = TRUE)
 ```
 
 ```{r get data, include=FALSE}
 
-if (rapbase::isRapContext()) {
-  dat <- smerte::getRegDataRapportOppfolg(
+if (isRapContext()) {
+  dat <- getRegDataRapportOppfolg(
     registryName = params$registryName,
     reshId = params$reshId,
     userRole = params$userRole,
@@ -58,13 +58,13 @@ avdelingene på sykehuset i løpet av hele tidsperioden.
 
 # Data for tabell
 oppfolgdat <- dat %>%
-  #dplyr::filter(Tilsett == 1) %>% kan ta med dersom de vil
-  dplyr::count(OppfSmeKl) %>%
-  dplyr::mutate(prosent = round(100*(n/sum(n))))
+  #filter(Tilsett == 1) %>% kan ta med dersom de vil
+  count(OppfSmeKl) %>%
+  mutate(prosent = round(100*(n/sum(n))))
 # Gi navn i stedet for tall til alternativene for tilsyn/ikke tilsyn
 oppfolgdat <- oppfolgdat %>%
-  dplyr::mutate(oppfolggrunn = 
-                  dplyr::case_when(OppfSmeKl == 0 ~ "Nei",
+  mutate(oppfolggrunn = 
+                  case_when(OppfSmeKl == 0 ~ "Nei",
                                    OppfSmeKl == 1 ~ "Ja",
                                    OppfSmeKl == 3 ~ "Usikker",
                                    OppfSmeKl == 9 ~ "Vet ikke",
@@ -72,7 +72,7 @@ oppfolgdat <- oppfolgdat %>%
                                    FALSE ~ "Ikke angitt"))
 oppfolgdat <- oppfolgdat[ ,c(4,2,3)]
 
-rapbase::mst(
+mst(
   tab = oppfolgdat,
   col_names = c("Anbefalt oppfølging ved smerteklinikk?", "Antall ", "Prosent"),
   cap = paste0("Antall for hver kategori om pasienten har blitt anbefalt videre oppfølging ved smerteklinikk. Gjelder ",
@@ -89,26 +89,26 @@ rapbase::mst(
 #Oversikt over videre oppfølging avdeling
 
 oppfolgavd <- dat %>%
-  dplyr::filter(!is.na(OppfSmeKl)) %>% 
-  dplyr::count(DEPARTMENT_SHORTNAME, OppfSmeKl) %>%
-  tidyr::spread(OppfSmeKl, n, fill=0)
+  filter(!is.na(OppfSmeKl)) %>% 
+  count(DEPARTMENT_SHORTNAME, OppfSmeKl) %>%
+  spread(OppfSmeKl, n, fill=0)
 
 total_avdeling <- colSums(oppfolgavd[, -1])
 
 #Legge på totalrad nederst
 oppfolgavd <- oppfolgavd %>%
-  dplyr::bind_rows(total_avdeling)
+  bind_rows(total_avdeling)
 
 #Legge til navn
 oppfolgavd[nrow(oppfolgavd), 1] <- "TOTAL"
 
 oppfolgavd <- oppfolgavd %>%
-  dplyr::mutate(rowsum = rowSums(dplyr::select_if(., is.numeric)))
+  mutate(rowsum = rowSums(select_if(., is.numeric)))
 
 
 ###Lager tabell basert på antall ulike unike svar (ja, nei, usikker, vet ikke)
 if(dim(oppfolgavd)[2] == 5){
-  rapbase::mst(
+  mst(
   tab = oppfolgavd,
   col_names = c("Avdeling", "Nei", "Ja", "Vet ikke", "Sum avdeling"),
   cap = paste0("Antall for hver kategori om pasienten har blitt anbefalt videre oppfølging ved smerteklinikk. Gjelder ",
@@ -121,7 +121,7 @@ if(dim(oppfolgavd)[2] == 5){
 }
 # 
 if(dim(oppfolgavd)[2] == 4){
-  rapbase::mst(
+  mst(
   tab = oppfolgavd,
   col_names = c("Avdeling", "Nei", "Ja", "Sum avdeling"),
   cap = paste0("Antall for hver kategori om pasienten har blitt anbefalt videre oppfølging ved smerteklinikk. Gjelder ",
@@ -134,7 +134,7 @@ if(dim(oppfolgavd)[2] == 4){
 }
 # 
 if(dim(oppfolgavd)[2] == 6){
-  rapbase::mst(
+  mst(
   tab = oppfolgavd,
   col_names = c("Avdeling", "Nei", "Ja", "Usikker", "Vet ikke", "Sum avdeling"),
   cap = paste0("Antall for hver kategori om pasienten har blitt anbefalt videre oppfølging ved smerteklinikk. Gjelder ",

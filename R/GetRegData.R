@@ -24,7 +24,7 @@ NULL
 
 .getDeps <- function(reshId, userRole) {
 
-  conf <- rapbase::getConfig(fileName = "rapbaseConfig.yml")
+  conf <- getConfig(fileName = "rapbaseConfig.yml")
   if (reshId %in% conf$reg$smerte$ousAccess$reshId &&
       userRole %in% conf$reg$smerte$ousAccess$userRole) {
     return(paste0(conf$reg$smerte$ousAccess$reshId, collapse = ", "))
@@ -46,9 +46,9 @@ NULL
 #'
 #' @keywords internal
 getListTextFunction = function(registryName) {
-  con = rapbase::rapOpenDbConnection(dbName = registryName, dbType = "mysql")
-  DBI::dbExecute(con$con, "DROP FUNCTION IF EXISTS getListText")
-  DBI::dbExecute(con$con,
+  con = rapOpenDbConnection(dbName = registryName, dbType = "mysql")
+  dbExecute(con$con, "DROP FUNCTION IF EXISTS getListText")
+  dbExecute(con$con,
             "
   CREATE FUNCTION getListText(
     p_list_name VARCHAR(255),
@@ -66,7 +66,7 @@ getListTextFunction = function(registryName) {
     RETURN COALESCE(v_text, CONCAT('Unknown: ', p_code));
   END
   ")
-  rapbase::rapCloseDbConnection(con$con)
+  rapCloseDbConnection(con$con)
 }
 
 
@@ -119,13 +119,13 @@ WHERE
   if ("session" %in% names(list(...))) {
     session <- list(...)[["session"]]
     if ("ShinySession" %in% attr(session, "class")) {
-      rapbase::repLogger(session = session,
+      repLogger(session = session,
                          msg = paste("Load tilsynsrapport data from",
                                      registryName, ": ", query))
     }
   }
 
-  rapbase::loadRegData(registryName, query, dbType)
+  loadRegData(registryName, query, dbType)
 }
 
 
@@ -158,11 +158,11 @@ WHERE
                   startDate, "' AND '", endDate, "');")
 
   if ("session" %in% names(list(...))) {
-    rapbase::repLogger(session = list(...)[["session"]],
+    repLogger(session = list(...)[["session"]],
                        msg = paste0("Load data from ", registryName, ":", query))
   }
 
-  rapbase::loadRegData(registryName, query, dbType)
+  loadRegData(registryName, query, dbType)
 }
 
 #' @rdname getRegData
@@ -194,11 +194,11 @@ WHERE
                   startDate, "' AND '", endDate, "');")
 
   if ("session" %in% names(list(...))) {
-    rapbase::repLogger(session = list(...)[["session"]],
+    repLogger(session = list(...)[["session"]],
                        msg = paste0("Load data from ", registryName, ":", query))
   }
 
-  rapbase::loadRegData(registryName, query, dbType)
+  loadRegData(registryName, query, dbType)
 }
 
 #' @rdname getRegData
@@ -263,13 +263,13 @@ WHERE
   if ("session" %in% names(list(...))) {
     session <- list(...)[["session"]]
     if ("ShinySession" %in% attr(session, "class")) {
-      rapbase::repLogger(session = session,
+      repLogger(session = session,
                          msg = paste("Load indikatorrapport data from",
                                      registryName, ": ", query))
     }
   }
 
-  rapbase::loadRegData(registryName, query, dbType)
+  loadRegData(registryName, query, dbType)
 }
 
 #' @rdname getRegData
@@ -304,13 +304,13 @@ WHERE
   if ("session" %in% names(list(...))) {
     session <- list(...)[["session"]]
     if ("ShinySession" %in% attr(session, "class")) {
-      rapbase::repLogger(session = session,
+      repLogger(session = session,
                          msg = paste("Load opiodrapport data from",
                                      registryName, ": ", query))
     }
   }
 
-  rapbase::loadRegData(registryName, query, dbType)
+  loadRegData(registryName, query, dbType)
 }
 
 
@@ -338,9 +338,9 @@ GROUP BY
     query <- gsub("smertediagnoser", "smertediagnosernasjonal", query)
   }
 
-  res <- rapbase::loadRegData(registryName, query)
+  res <- loadRegData(registryName, query)
 
-  as.list(stats::setNames(res$lable, res$value))
+  as.list(setNames(res$lable, res$value))
 }
 
 #' @rdname getRegData
@@ -383,11 +383,11 @@ WHERE
                   startDate, "' AND '", endDate, "');")
 
   if ("session" %in% names(list(...))) {
-    rapbase::repLogger(session = list(...)[["session"]],
+    repLogger(session = list(...)[["session"]],
                        msg = paste0("Load data from ", registryName, ":", query))
   }
 
-  rapbase::loadRegData(registryName, query, dbType)
+  loadRegData(registryName, query, dbType)
 }
 
 
@@ -437,11 +437,11 @@ WHERE
   }
 
   if ("session" %in% names(list(...))) {
-    rapbase::repLogger(session = list(...)[["session"]],
+    repLogger(session = list(...)[["session"]],
                        msg = paste0("Load data from ", registryName, ":", query))
   }
 
-  rapbase::loadRegData(registryName, query, dbType)
+  loadRegData(registryName, query, dbType)
 }
 
 
@@ -498,13 +498,13 @@ WHERE
   if ("session" %in% names(list(...))) {
     session <- list(...)[["session"]]
     if ("ShinySession" %in% attr(session, "class")) {
-      rapbase::repLogger(session = session,
+      repLogger(session = session,
                          msg = paste("Load spinalkateter data from",
                                      registryName, ": ", query))
     }
   }
 
-  rapbase::loadRegData(registryName, query, dbType)
+  loadRegData(registryName, query, dbType)
 }
 
 #' @rdname getRegData
@@ -536,11 +536,11 @@ WHERE
                   startDate, "' AND '", endDate, "');")
 
   if ("session" %in% names(list(...))) {
-    rapbase::repLogger(session = list(...)[["session"]],
+    repLogger(session = list(...)[["session"]],
                        msg = paste0("Load data from ", registryName, ":", query))
   }
 
-  rapbase::loadRegData(registryName, query, dbType)
+  loadRegData(registryName, query, dbType)
 }
 
 #' @rdname getRegData
@@ -588,13 +588,13 @@ WHERE
   if ("session" %in% names(list(...))) {
     session <- list(...)[["session"]]
     if ("ShinySession" %in% attr(session, "class")) {
-      rapbase::repLogger(session = session,
+      repLogger(session = session,
                          msg = paste("Load indikatorrapport data from",
                                      registryName, ": ", query))
     }
   }
 
-  rapbase::loadRegData(registryName, query, dbType)
+  loadRegData(registryName, query, dbType)
 }
 
 #' @rdname getRegData
@@ -620,7 +620,7 @@ GROUP BY
     query <- gsub("allevarnum", "allevarnumnasjonal", query)
   }
 
-  rapbase::loadRegData(registryName, query, dbType)
+  loadRegData(registryName, query, dbType)
 }
 
 #' @rdname getRegData
@@ -642,7 +642,7 @@ GROUP BY
     query <- gsub("allevarnum", "allevarnumnasjonal", query)
   }
 
-  rapbase::loadRegData(registryName, query, dbType)
+  loadRegData(registryName, query, dbType)
 }
 
 
@@ -673,11 +673,11 @@ WHERE
 
 
   # no hospital name for national registry
-  conf <- rapbase::getConfig(fileName = "rapbaseConfig.yml")
+  conf <- getConfig(fileName = "rapbaseConfig.yml")
   if (reshId %in% conf$reg$smerte$nationalAccess$reshId) {
     return("Nasjonal")
   } else {
-    df <- rapbase::loadRegData(registryName, dbType = dbType, query = query)
+    df <- loadRegData(registryName, dbType = dbType, query = query)
     n <- dim(df)[1]
     hVec <- df[1:n, 1]
     if (n > 1) {
@@ -709,10 +709,10 @@ GROUP BY
     query <- gsub("allevarnum", "allevarnumnasjonal", query)
   }
 
-  res <- rapbase::loadRegData(registryName, query)
+  res <- loadRegData(registryName, query)
 
   if (asNamedList) {
-    res <- stats::setNames(res$id, res$name)
+    res <- setNames(res$id, res$name)
     res <- as.list(res)
   }
 
@@ -756,17 +756,17 @@ getDataDump <- function(registryName, reshId, userRole, tableName, fromDate, toD
                    userInput
     )
   } else {
-    query = smerte::bygg_query(tableName, userInput)
+    query = bygg_query(tableName, userInput)
   }
 
   # LOGGING
   if ("session" %in% names(list(...))) {
-    rapbase::repLogger(session = list(...)[["session"]],
+    repLogger(session = list(...)[["session"]],
                        msg = paste0("Smerte data dump: ", tableName, " - FromDate: ", fromDate, " - ToDate: ", toDate))
   }
 
   # Henter uttrekk
-  rapbase::loadRegData(registryName, query)
+  loadRegData(registryName, query)
 }
 
 #' bygg_query

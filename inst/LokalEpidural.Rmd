@@ -6,8 +6,8 @@ params:
   reshId: 'locallyDefined'
   userRole: 'MyRole'
   userFullName: 'Ukjent bruker'
-  startDate: !r lubridate::today() - lubridate::years(1)
-  endDate: !r lubridate::today() - lubridate::weeks(1)
+  startDate: !r today() - years(1)
+  endDate: !r today() - weeks(1)
   year: '2016'
   tableFormat: 'html'
   registryName: 'rapbase'
@@ -21,7 +21,7 @@ registryName: Smerteregisteret
 userFullName: '`r params$userFullName`'
 ---
 ```{r set options and load packages, include = FALSE}
-knitr::opts_chunk$set(echo=FALSE)
+opts_chunk$set(echo=FALSE)
 options(knitr.table.format = params$tableFormat)
 options(tinytex.verbose = TRUE)
 options(scipen = 1, digits = 2) #set to two decimal 
@@ -35,8 +35,8 @@ library(zoo)
 
 ```{r get data, warning = FALSE, message=TRUE}
 
-if (rapbase::isRapContext()) {
-  dat <- smerte::getRegDataLokalEpidural(registryName = params$registryName,
+if (isRapContext()) {
+  dat <- getRegDataLokalEpidural(registryName = params$registryName,
                                      reshId = params$reshId,
                                      userRole=params$userRole,
                                      startDate = params$startDate,
@@ -55,7 +55,7 @@ if (rapbase::isRapContext()) {
 
 #Legger inn månedene i riktig rekkefølge
 dat <- dat %>%
-  dplyr::mutate(monthname = zoo::as.Date(zoo::as.yearmon(StartdatoTO)))
+  mutate(monthname = as.Date(as.yearmon(StartdatoTO)))
 
 #Tar bare med barn (< 18 år)
 bdat <- dat[dat$alder < 18, ]

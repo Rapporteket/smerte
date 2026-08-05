@@ -21,7 +21,7 @@ registryName: Smerteregisteret
 userFullName: '`r params$userFullName`'
 ---
 ```{r set options and load packages, include = FALSE}
-knitr::opts_chunk$set(echo=FALSE)
+opts_chunk$set(echo=FALSE)
 options(knitr.table.format = params$tableFormat)
 options(tinytex.verbose = TRUE)
 
@@ -33,8 +33,8 @@ library(magrittr)
 
 ```{r get data, include=FALSE}
 
-if (rapbase::isRapContext()) {
-  dat <- smerte::getDataDump(
+if (isRapContext()) {
+  dat <- getDataDump(
     registryName = params$registryName,
     reshId = params$reshId,
     tableName = "allevarnum",
@@ -68,7 +68,7 @@ En periode kunne man dele ut pasientregistreringsskjema til pasienter selv om de
 ```{r noData, eval=!dataPresent, results='asis'}
 cat('# Upps...\nI den valgte tidsperioden er det ikke nok data til å gi 
     ut resultater.')
-knitr::knit_exit()
+knit_exit()
 ```
 
 
@@ -117,7 +117,7 @@ pasreg = pasreg %>%
 pasreg <- pasreg[1:(dim(pasreg)[1]-1), c(4,2,3)]
 
 #Bruker pakke kableextra
-rapbase::mst(
+mst(
   tab = pasreg, 
   col_names = c("", "Antall ", "Prosent"),
   cap = "Årsak til manglende utfylling",
@@ -149,7 +149,7 @@ pr1 = pr1 %>%
 #Endrer rekkefølge og tar i tilleg ved NA-raden (siste)
 pr1 <- pr1[ , c(4, 2, 3)]
 
-rapbase::mst(
+mst(
   tab = pr1,
   col_names = c("", "Antall ", "Prosent"),
   cap = paste0("Søvnproblemer før innleggelse"),
@@ -179,7 +179,7 @@ pr2 = pr2 %>%
 #Endrer rekkefølge og tar i tilleg ved NA-raden (siste)
 pr2 <- pr2[ , c(4, 2, 3)]
 
-rapbase::mst(tab = pr2,
+mst(tab = pr2,
              col_names = c("", "Antall ", "Prosent"),
              cap = paste0("Søvnproblemer etter innleggelse"),
              label = "prspm2",
@@ -222,7 +222,7 @@ pr4 = pr4 %>%
 #Endrer rekkefølge og tar i tilleg ved NA-raden (siste)
 pr4 <- pr4[ , c(4, 2, 3)]
 
-rapbase::mst(tab = pr4,
+mst(tab = pr4,
              col_names = c("", "Antall ", "Prosent"),
              cap = paste0("Har tidligere opplevd belastninger som har krevd ",
                           "behandling av psykolog/psykiater"),
@@ -256,7 +256,7 @@ pr5 = pr5 %>%
 #Endrer rekkefølge og tar i tilleg ved NA-raden (siste)
 pr5 <- pr5[ , c(4, 2, 3)]
 
-rapbase::mst(tab = pr5,
+mst(tab = pr5,
              col_names = c("", "Antall ", "Prosent"),
              cap = paste0("Svar på spørsmålet: ... er det forferdelig, og jeg føler ",
                           "at det aldri kommer til å bli bedre"),
@@ -290,7 +290,7 @@ pr6 = pr6 %>%
 #Endrer rekkefølge og tar i tilleg ved NA-raden (siste)
 pr6 <- pr6[ , c(4, 2, 3)]
 
-rapbase::mst(tab = pr6, col_names = c("", "Antall ", "Prosent"),
+mst(tab = pr6, col_names = c("", "Antall ", "Prosent"),
              cap = paste0("Svar på spørsmålet: ... føles det som om jeg ikke holder ",
                           "ut"),
              label = "prspm6",
@@ -338,7 +338,7 @@ hads = hads %>%
 #Endrer rekkefølge og tar i tilleg ved NA-raden (siste)
 hads <- hads[1:(dim(hads)[1]-1), c(4, 2, 3)]
 
-rapbase::mst(tab = hads, col_names = c("", "Antall ", "Prosent"),
+mst(tab = hads, col_names = c("", "Antall ", "Prosent"),
              cap = paste0("Grunn manglende utfylling HADS"),
              label = "hadsspm",
              type = params$tableFormat,
@@ -351,7 +351,7 @@ tabdep <- dat %>%
   filter(!is.na(HADSScoreDepresjon)) %>%
   count(HADSScoreDepresjon) %>% group_by(HADSScoreDepresjon)
 
-rapbase::mst(tab = tabdep, col_names = c("Score ", "Antall"),
+mst(tab = tabdep, col_names = c("Score ", "Antall"),
              cap = paste0("Resultatfordeling for HADS depresjon"),
              label = "deptab",
              type = params$tableFormat,
@@ -362,7 +362,7 @@ tabangst <- dat %>%
   filter(!is.na(HADSScoreAngst)) %>%
   count(HADSScoreAngst) %>% group_by(HADSScoreAngst)
 
-rapbase::mst(tab = tabangst, col_names = c("Score ", "Antall"),
+mst(tab = tabangst, col_names = c("Score ", "Antall"),
              cap = paste0("Resultatfordeling for HADS angst"),
              label = "angsttab",
              type = params$tableFormat,
@@ -457,7 +457,7 @@ evalu = evalu %>%
 #Endrer rekkefølge og tar i tilleg ved NA-raden (siste)
 evalu <- evalu[1:(dim(evalu)[1]-1), c(4, 2, 3)]
 
-rapbase::mst(tab = evalu, col_names = c("", "Antall ", "Prosent"),
+mst(tab = evalu, col_names = c("", "Antall ", "Prosent"),
              cap = paste0("Grunn manglende utfylling Eval"),
              label = "evalspmtab",
              type = params$tableFormat,
@@ -493,7 +493,7 @@ eval1 = eval1 %>%
 #Endrer rekkefølge og tar i tilleg ved NA-raden (siste)
 eval1 <- eval1[1:(dim(eval1)[1]-1), c(4, 2, 3)]
 
-rapbase::mst(tab = eval1, col_names = c("", "Antall ", "Prosent"),
+mst(tab = eval1, col_names = c("", "Antall ", "Prosent"),
              cap = paste0("Siden oppstart av behandling fra Smerteteamet, er min ",
                           "smertetilstand blitt"),
              label = "evalspm1",
@@ -524,7 +524,7 @@ eval2 = eval2 %>%
 #Endrer rekkefølge og tar i tilleg ved NA-raden (siste)
 eval2 <- eval2[1:(dim(eval2)[1]-1), c(4, 2, 3)]
 
-rapbase::mst(tab = eval2,
+mst(tab = eval2,
              col_names = c("", "Antall ", "Prosent"),
              cap = paste0("Siden oppstart av behandling fra Smerteteamet, er min ",
                           "generelle tilstand blitt"),
@@ -552,7 +552,7 @@ eval3 = eval3 %>%
 #Endrer rekkefølge og tar i tilleg ved NA-raden (siste)
 eval3 <- eval3[1:(dim(eval3)[1]-1), c(4, 2, 3)]
 
-rapbase::mst(tab = eval3,
+mst(tab = eval3,
              col_names = c("", "Antall ", "Prosent"),
              cap = paste0("Hvor fornøyd er du med ivaretakelsen fra Smerteteamet?"),
              label = "evalspm3",
@@ -579,7 +579,7 @@ eval4 = eval4 %>%
 #Endrer rekkefølge og tar i tilleg ved NA-raden (siste)
 eval4 <- eval4[1:(dim(eval4)[1]-1), c(4, 2, 3)]
 
-rapbase::mst(tab = eval4,
+mst(tab = eval4,
              col_names = c("", "Antall ", "Prosent"),
              cap = paste0("Snakket behandlerne i smerteteamet til deg slik at du forsto dem?"),
              label = "evalspm4",
@@ -606,7 +606,7 @@ eval5 <- eval5 %>%
 #Endrer rekkefølge og tar i tilleg ved NA-raden (siste)
 eval5 <- eval5[1:(dim(eval5)[1]-1), c(4, 2, 3)]
 
-rapbase::mst(tab = eval5,
+mst(tab = eval5,
              col_names = c("", "Antall ", "Prosent"),
              cap = paste0("Har du tillit til smerteteamets faglige dyktighet?"),
              label = "evalspm5",
@@ -633,7 +633,7 @@ eval6 = eval6 %>%
 #Endrer rekkefølge og tar i tilleg ved NA-raden (siste)
 eval6 <- eval6[1:(dim(eval6)[1]-1), c(4, 2, 3)]
 
-rapbase::mst(tab = eval6,
+mst(tab = eval6,
              col_names = c("", "Antall ", "Prosent"),
              cap = paste0("Fikk du tilstrekkelig informasjon og forklaring om din ",
                           "smertetilstand?"),
@@ -661,7 +661,7 @@ eval7 = eval7 %>%
 #Endrer rekkefølge og tar i tilleg ved NA-raden (siste)
 eval7 <- eval7[1:(dim(eval7)[1]-1), c(4, 2, 3)]
 
-rapbase::mst(tab = eval7,
+mst(tab = eval7,
              col_names = c("", "Antall ", "Prosent"),
              cap = paste0("Opplevde du at smertebehandlingen var tilpasset din ",
                           "situasjon?"),
@@ -689,7 +689,7 @@ eval8 = eval8 %>%
 #Endrer rekkefølge og tar i tilleg ved NA-raden (siste)
 eval8 <- eval8[1:(dim(eval8)[1]-1), c(4, 2, 3)]
 
-rapbase::mst(tab = eval8,
+mst(tab = eval8,
              col_names = c("", "Antall ", "Prosent"),
              cap = paste0("Var du involvert i avgjørelser som angikk din ",
                           "smertebehandling?"),
@@ -717,7 +717,7 @@ eval9 = eval9 %>%
 #Endrer rekkefølge og tar i tilleg ved NA-raden (siste)
 eval9 <- eval9[1:(dim(eval9)[1]-1), c(4, 2, 3)]
 
-rapbase::mst(tab = eval9,
+mst(tab = eval9,
              col_names = c("", "Antall ", "Prosent"),
              cap = paste0("Opplevde du at smerteteamets arbeid var godt organisert?"),
              label = "evalspm9",
@@ -748,7 +748,7 @@ eval10 = eval10 %>%
 #Endrer rekkefølge og tar i tilleg ved NA-raden (siste)
 eval10 <- eval10[1:(dim(eval10)[1]-1), c(4, 2, 3)]
 
-rapbase::mst(tab = eval10,
+mst(tab = eval10,
              col_names = c("", "Antall ", "Prosent"),
              cap = paste0("Var hjelpen og behandlingen du fikk av smerteteamet, alt i ",
                           "alt, tilfredsstillende?"),
@@ -776,7 +776,7 @@ eval11 = eval11 %>%
 #Endrer rekkefølge og tar i tilleg ved NA-raden (siste)
 eval11 <- eval11[1:(dim(eval11)[1]-1), c(4, 2, 3)]
 
-rapbase::mst(tab = eval11,
+mst(tab = eval11,
              col_names = c("", "Antall ", "Prosent"),
              cap = paste0("Mener du at du på noen måte ble feilbehandlet av ",
                           "smerteteamet?"),
@@ -828,7 +828,7 @@ opio = opio %>%
 #Endrer rekkefølge og tar i tilleg ved NA-raden (siste)
 opio <- opio[1:(dim(opio)[1]-1), c(4, 2, 3)]
 
-rapbase::mst(tab = opio,
+mst(tab = opio,
              col_names = c("", "Antall ", "Prosent"),
              cap = paste0("Grunn manglende utfylling Opioid"),
              label = "opiospmtab",
@@ -917,7 +917,7 @@ datmed <- bind_rows(DolcontinMalfin, FentanylplDurogesicpl, Metadon, Morfin,
                  "Andre", "Usikker")) %>%
   set_colnames(c("Antall ja"))
 
-rapbase::mst(tab = datmed,
+mst(tab = datmed,
              col_names = c("Antall ja"),
              cap = paste0("Medikamenter i bruk siden utskrivelse."),
              label = "medtab",
@@ -938,7 +938,7 @@ bruk = bruk %>%
 #Endrer rekkefølge og tar i tilleg ved NA-raden (siste)
 bruk <- bruk[1:(dim(bruk)[1]-1), c(4, 2, 3)]
 
-rapbase::mst(tab = bruk,
+mst(tab = bruk,
              col_names = c("", "Antall ", "Prosent"),
              cap = paste0("Bruker du fortsatt noen av disse medikamentene?"),
              label = "medforts",
@@ -961,7 +961,7 @@ nedtr = nedtr %>%
 #Endrer rekkefølge og tar i tilleg ved NA-raden (siste)
 nedtr <- nedtr[1:(dim(nedtr)[1]-1), c(4, 2, 3)]
 
-rapbase::mst(tab = nedtr,
+mst(tab = nedtr,
              col_names = c("", "Antall ", "Prosent"),
              cap = paste0("Fikk du informasjon om nedtrapping av sterke smertestillende ",
                           "medikamenter?"),
@@ -983,7 +983,7 @@ hvem <- hvem %>%
 #Endrer rekkefølge og tar i tilleg ved NA-raden (siste)
 hvem <- hvem[1:(dim(hvem)[1]-1), c(4, 2, 3)]
 
-rapbase::mst(tab = hvem,
+mst(tab = hvem,
              col_names = c("", "Antall ", "Prosent"),
              cap = paste0("Av hvem fikk du informasjon om nedtrapping av sterke ",
                           "smertestillende medikamenter?"),
@@ -1020,7 +1020,7 @@ fulgt <- fulgt %>%
 #Endrer rekkefølge og tar i tilleg ved NA-raden (siste)
 fulgt <- fulgt[1:(dim(fulgt)[1]-1), c(4, 2, 3)]
 
-rapbase::mst(tab = fulgt,
+mst(tab = fulgt,
              col_names = c("", "Antall ", "Prosent"),
              cap = paste0("Klarte du å følge anbefalingene for bruk og nedtrapping av ",
                           "medikamentene?"),
@@ -1046,7 +1046,7 @@ absti <- absti %>%
 #Endrer rekkefølge og tar i tilleg ved NA-raden (siste)
 absti <- absti[1:(dim(absti)[1]-1), c(4, 2, 3)]
 
-rapbase::mst(tab = absti,
+mst(tab = absti,
              col_names = c("", "Antall ","Prosent"),
              cap = paste0("Opplevde du plagsomme abstinenssymptomer etter ",
                           "utskrivelse?"),
@@ -1067,7 +1067,7 @@ forstoabsti <- forstoabsti %>%
 #Endrer rekkefølge og tar i tilleg ved NA-raden (siste)
 forstoabsti <- forstoabsti[1:(dim(forstoabsti)[1]-1), c(4, 2, 3)]
 
-rapbase::mst(tab = forstoabsti,
+mst(tab = forstoabsti,
              col_names = c("", "Antall ", "Prosent"),
              cap = paste0("Forstod du at det var abstinenssymptomer?"),
              label = "abstiforstod",
@@ -1087,7 +1087,7 @@ losn <- losn %>%
 #Endrer rekkefølge og tar i tilleg ved NA-raden (siste)
 losn <- losn[1:(dim(losn)[1]-1), c(4, 2, 3)]
 
-rapbase::mst(tab = losn,
+mst(tab = losn,
              col_names = c("", "Antall ", "Prosent"),
              cap = paste0("Visste du hva du kunne gjøre med problemet?"),
              label = "abstilosn",
@@ -1111,7 +1111,7 @@ trett <- trett %>%
 trett <- trett[1:(dim(trett)[1]-1), c(4, 2, 3)]
 
 #tretter pakke kablextra
-rapbase::mst(tab = trett,
+mst(tab = trett,
              col_names = c("", "Antall ", "Prosent"),
              cap = paste0("Opplevde du plagsom tretthet eller følelse av å være ",
                           "medikamentpåvirket etter at du ble skrevet ut fra sykehuset?"),
@@ -1132,7 +1132,7 @@ trettlos <- trettlos %>%
 #Endrer rekkefølge og tar i tilleg ved NA-raden (siste)
 trettlos <- trettlos[1:(dim(trettlos)[1]-1), c(4, 2, 3)]
 
-rapbase::mst(tab = trettlos,
+mst(tab = trettlos,
              col_names = c("", "Antall ", "Prosent"),
              cap = paste0("Visste du hva du kunne gjøre med problemet?"),
              label = "trettvisste",
@@ -1156,7 +1156,7 @@ bil <- bil %>%
 bil <- bil[1:(dim(bil)[1]-1), c(4, 2, 3)]
 
 #biler pakke kablextra
-rapbase::mst(tab = bil,
+mst(tab = bil,
              col_names = c("", "Antall ", "Prosent"),
              cap = paste0("Fikk du informasjon om sterke smertestillende medikamenter ",
                           "og bilkjøring?"),
@@ -1178,7 +1178,7 @@ hvembil <- hvembil %>%
 #Endrer rekkefølge og tar i tilleg ved NA-raden (siste)
 hvembil <- hvembil[1:(dim(hvembil)[1]-1), c(4, 2, 3)]
 
-rapbase::mst(tab = hvembil,
+mst(tab = hvembil,
              col_names = c("", "Antall ", "Prosent"),
              cap = paste0("Av hvem fikk du informasjon om sterke smertestillende ",
                           "medikamenter og bilkjøring?"),
@@ -1212,7 +1212,7 @@ hvorinfo <- hvorinfo %>%
 #Endrer rekkefølge og tar i tilleg ved NA-raden (siste)
 hvorinfo <- hvorinfo[1:(dim(hvorinfo)[1]-1), c(4, 2, 3)]
 
-rapbase::mst(tab = hvorinfo,
+mst(tab = hvorinfo,
              col_names = c("", "Antall ", "Prosent"),
              cap = paste0("Visste du hvor du kunne henvende deg ved spørsmål om bruk ",
                           "av de smertestillende medikamentene?"),

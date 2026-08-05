@@ -11,7 +11,7 @@
 
 makeRegistryName <- function(baseName, reshID) {
 
-  conf <- rapbase::getConfig(fileName = "rapbaseConfig.yml")
+  conf <- getConfig(fileName = "rapbaseConfig.yml")
 
   if (isNationalReg(reshID)) {
     return(paste0(baseName, conf$reg$smerte$nationalAccess$nameKey))

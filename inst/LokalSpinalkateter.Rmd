@@ -6,8 +6,8 @@ params:
   reshId: 'locallyDefined'
   userRole: 'MyRole'
   userFullName: 'Ukjent bruker'
-  startDate: !r lubridate::today() - lubridate::years(1)
-  endDate: !r lubridate::today() - lubridate::weeks(1)
+  startDate: !r today() - years(1)
+  endDate: !r today() - weeks(1)
   year: '2016'
   tableFormat: 'html'
   registryName: 'rapbase'
@@ -21,15 +21,15 @@ registryName: Smerteregisteret
 userFullName: '`r params$userFullName`'
 ---
 ```{r set options and load packages, include = FALSE}
-knitr::opts_chunk$set(echo=FALSE)
+opts_chunk$set(echo=FALSE)
 options(knitr.table.format = params$tableFormat)
 options(tinytex.verbose = TRUE)
 ```
 
 ```{r get data, include=FALSE}
 
-if (rapbase::isRapContext()) {
-  dat <- smerte::getDataDump(registryName = params$registryName,
+if (isRapContext()) {
+  dat <- getDataDump(registryName = params$registryName,
                              reshId = params$reshId,
                              tableName = "allevarnum",
                              userRole = params$userRole,
@@ -53,7 +53,7 @@ if(dim(dat)[1] < 1) {
 
 ```{r makeStandardTableFunction, eval=TRUE}
 mstt <- function(tab, colnames = colnames(tab), type, cap,
-                label = knitr::opts_current$get("label"), digs, align = NULL,
+                label = opts_current$get("label"), digs, align = NULL,
                 fs = 8, lsd = FALSE) {
   if (type == "latex") {
     if (lsd) {
@@ -61,17 +61,17 @@ mstt <- function(tab, colnames = colnames(tab), type, cap,
     } else {
       lo <- c("hold_position")
     }
-    k <- knitr::kable(tab, col.names = colnames, caption = cap,
+    k <- kable(tab, col.names = colnames, caption = cap,
                       label = label, digits = digs,
                       align = align, booktabs = TRUE) %>% 
-      kableExtra::kable_styling(latex_options = lo, font_size = fs)
+      kable_styling(latex_options = lo, font_size = fs)
   }
   
   if (type == "html") {
-    k <- knitr::kable(tab, col.names = colnames, caption = cap,
+    k <- kable(tab, col.names = colnames, caption = cap,
                       label = label, digits = digs,
                       align = align) %>% 
-      kableExtra::kable_styling(
+      kable_styling(
         bootstrap_options = c("striped", "hover", "condensed"), full_width = F)
   }
   k
@@ -82,7 +82,7 @@ mstt <- function(tab, colnames = colnames(tab), type, cap,
 ```{r noData, eval=!dataPresent, results='asis'}
 cat('# Upps...\nI den valgte tidsperioden er det ikke nok data til å gi 
     ut resultater.')
-knitr::knit_exit()
+knit_exit()
 
 ```
 
@@ -105,39 +105,39 @@ dat$MoEkvivalens22[is.na(dat$MoEkvivalens22)] <- 0
 #Få med behandlertilsyn på alle før vi selekterer på spinalkateter
 
 datbeh = dat %>%
-  tidyr::gather(key = tilsynstype, value=antall, AntPasTils, AntTilsLege,
+  gather(key = tilsynstype, value=antall, AntPasTils, AntTilsLege,
          AntTilsSykPleier, AntTilsFysioT, AntTilsPsyk, AntTilsSosio) %>%
-  dplyr::mutate(antall = replace(antall, is.na(antall), 0), 
-         month = months(zoo::as.Date(StartdatoTO)),
-         tilsynstype=stringr::str_replace_all(tilsynstype,"AntTilsLege",
+  mutate(antall = replace(antall, is.na(antall), 0), 
+         month = months(as.Date(StartdatoTO)),
+         tilsynstype=str_replace_all(tilsynstype,"AntTilsLege",
                                               "Lege"),
-         tilsynstype=stringr::str_replace_all(tilsynstype,
+         tilsynstype=str_replace_all(tilsynstype,
                                               "AntTilsSykPleier",
                                               "Sykepleier"), 
-         tilsynstype=stringr::str_replace_all(tilsynstype,
+         tilsynstype=str_replace_all(tilsynstype,
                                               "AntTilsFysioT", 
                                               "Fysioterapeut"),
-         tilsynstype=stringr::str_replace_all(tilsynstype,
+         tilsynstype=str_replace_all(tilsynstype,
                                               "AntTilsPsyk", 
                                               "Psykolog"),
-         tilsynstype=stringr::str_replace_all(tilsynstype,
+         tilsynstype=str_replace_all(tilsynstype,
                                               "AntTilsSosio", 
                                               "Sosionom"),
-         tilsynstype=stringr::str_replace_all(tilsynstype, "AntPasTils",
+         tilsynstype=str_replace_all(tilsynstype, "AntPasTils",
                                               "Total"))
 #Samler alt til behandlertilsyn
 datbeh = datbeh %>%
-  dplyr::group_by(tilsynstype, ForlopsID) %>% 
-  dplyr::summarise(antall = sum(antall), .groups = "drop_last") %>% 
-  tidyr::spread(tilsynstype, antall) %>%
-  dplyr::rowwise() %>% 
-  dplyr::mutate(Behandlertilsyn = sum(Fysioterapeut, Lege, Psykolog, Sosionom, 
+  group_by(tilsynstype, ForlopsID) %>% 
+  summarise(antall = sum(antall), .groups = "drop_last") %>% 
+  spread(tilsynstype, antall) %>%
+  rowwise() %>% 
+  mutate(Behandlertilsyn = sum(Fysioterapeut, Lege, Psykolog, Sosionom, 
                                       Sykepleier))
 
 #Kun siste kolonne er relevant og legges til i hoveddata 
 #unlist pga fra tibble til vektor
 dat$behtils = datbeh %>%
-  dplyr::select(Behandlertilsyn) %>%
+  select(Behandlertilsyn) %>%
   unlist(use.names = FALSE)
 
 #Lager nye variabler som skal inneholde endring i NRS, settes initielt til NA
@@ -161,10 +161,10 @@ dat$behtils = datbeh %>%
 # }
 #   
 # #De som er NA må få en meningsfullverdi til tabellen som skal skrives
-# dat$stbe = dat %>% dplyr::mutate(stbe = ifelse(is.na(stbe), "Mangler", stbe))
-# dat$svbe = dat %>% dplyr::mutate(svbe = ifelse(is.na(svbe), "Mangler", svbe))
-# dat$stro = dat %>% dplyr::mutate(stro = ifelse(is.na(stro), "Mangler", stro))
-# dat$svro = dat %>% dplyr::mutate(svro = ifelse(is.na(svro), "Mangler", svro))
+# dat$stbe = dat %>% mutate(stbe = ifelse(is.na(stbe), "Mangler", stbe))
+# dat$svbe = dat %>% mutate(svbe = ifelse(is.na(svbe), "Mangler", svbe))
+# dat$stro = dat %>% mutate(stro = ifelse(is.na(stro), "Mangler", stro))
+# dat$svro = dat %>% mutate(svro = ifelse(is.na(svro), "Mangler", svro))
 
 
 ### Ta med kun de som har hatt spinalkateter: SA (beh 2.2) = 1
@@ -182,7 +182,7 @@ if(dim(datspinal)[1] < 1) {
 
 cat('# Upps...\nI den valgte tidsperioden er det ikke nok data til å gi 
     ut resultater for spinalkateter.')
-knitr::knit_exit()
+knit_exit()
 ```
 
 ## Tilsyn og tid
@@ -190,11 +190,11 @@ knitr::knit_exit()
 
 #Tar med relevant data og lager difftid som er tid fra henvisning til forløpets avslutning
 #as_tibble brukes for å fjerne radnummer som ellers vises i tabellen
-datspinalgen <- tibble::as_tibble(
+datspinalgen <- as_tibble(
   datspinal %>%
-    dplyr::select(AntPasTils, behtils, StartdatoTO, PasientID, 
+    select(AntPasTils, behtils, StartdatoTO, PasientID, 
                   ForlopsID, TotTid, SluttDato) %>% 
-    dplyr::mutate(
+    mutate(
       difftid = as.numeric(gsub("[^0-9]", "", 
                                 as.Date(datspinal$SluttDato) - 
                                   as.Date(datspinal$StartdatoTO)))
@@ -210,7 +210,7 @@ pastils_mean <- mean(datspinal$AntPasTils, na.rm = TRUE)
 #Til tabell
 spinaltabell <- datspinalgen[ , c(5, 1, 2, 6, 8)]
 
-rapbase::mst(
+mst(
   tab = spinaltabell, 
   col_names = c("ForløpsID" ,"Pasienttilsyn", "Behandlertilsyn", "Totaltid",
                 "Følgetid"),
@@ -227,22 +227,22 @@ I den valgte tidsperioden ble spinalkateter gitt til tilsammen `r antspinal` av 
 ```{r medik, warning = FALSE, message=FALSE, results='asis', eval=dataSpinalPresent}
 
 #as_tibble brukes for å fjerne radnummer som ellers vises i tabellen
-datmed <- tibble::as_tibble(
+datmed <- as_tibble(
   datspinal %>%
-    dplyr::select(ForlopsID, MoEkvivalens, MoEkvivalens22, Opbehd221d, 
+    select(ForlopsID, MoEkvivalens, MoEkvivalens22, Opbehd221d, 
                   LAbehd221d, KoAbedel221d) %>%
-    dplyr::mutate(Opbehd221d = dplyr::case_when(Opbehd221d == 0 ~ "Nei",
+    mutate(Opbehd221d = case_when(Opbehd221d == 0 ~ "Nei",
                                          Opbehd221d == 1 ~ "Ja",
                                          TRUE ~ "Ikke aktuelt")) %>%
-    dplyr::mutate(LAbehd221d = dplyr::case_when(LAbehd221d == 0 ~ "Nei",
+    mutate(LAbehd221d = case_when(LAbehd221d == 0 ~ "Nei",
                                          LAbehd221d == 1 ~ "Ja",
                                          TRUE ~ "Ikke aktuelt")) %>%
-    dplyr::mutate(KoAbedel221d = dplyr::case_when(KoAbedel221d == 0 ~ "Nei",
+    mutate(KoAbedel221d = case_when(KoAbedel221d == 0 ~ "Nei",
                                          KoAbedel221d == 1 ~ "Ja",
                                          TRUE ~ "Ikke aktuelt"))
 )
 
-rapbase::mst(
+mst(
   tab = datmed,
   col_names = c("ForløpsID","MoEkv før", "MoEkv etter", "Opioider",
                 "Lokal anestesi", "Ko-analgetika"),
@@ -260,12 +260,12 @@ Tabell \@ref(tab:medtab) gir en oversikt over medikament i spinalkateter for de 
 ```{r spinalNRSBEV, warning = FALSE, message=FALSE, results='asis', eval=dataSpinalPresent}
 
 # Endring i NRS fra første tilsyn til siste tilsyn
-nrsbev = tibble::as_tibble(
+nrsbev = as_tibble(
   datspinal %>%
-    dplyr::select(ForlopsID, StSmBev12, StSmBev21, SvSmBev12, SvSmBev21)
+    select(ForlopsID, StSmBev12, StSmBev21, SvSmBev12, SvSmBev21)
 )
 
-rapbase::mst(
+mst(
   tab = nrsbev, 
   col_names = c("ForløpsID", "Sterkeste smerte første tilsyn", "Sterkeste smerte siste tilsyn", "Svakeste smerte første tilsyn", "Svakeste smerte siste tilsyn"),
   cap = paste0("SMERTE I BEVEGELSE: Informasjon om NRS-score for smerte i bevegelse ved hvert forløp hvor det ble gitt spinalkateter. Tallverdi 0-10 angir smertescore, 99 = vet ikke og NA = ikke angitt svar."),
@@ -280,12 +280,12 @@ Tabell \@ref(tab:spinalnrsBEV) gir en oversikt over NRS-score for smerte i beveg
 ```{r spinalNRSRO, warning = FALSE, message=FALSE, results='asis', eval=dataSpinalPresent}
 
 # Endring i NRS fra første tilsyn til siste tilsyn
-nrsro = tibble::as_tibble(
+nrsro = as_tibble(
   datspinal %>%
-    dplyr::select(ForlopsID, StSmRo12, StSmRo21, SvSmRo12, SvSmRo21)
+    select(ForlopsID, StSmRo12, StSmRo21, SvSmRo12, SvSmRo21)
 )
 
-rapbase::mst(
+mst(
   tab = nrsro, 
   col_names = c("ForløpsID", "Sterkeste smerte første tilsyn", "Sterkeste smerte siste tilsyn", "Svakeste smerte første tilsyn", "Svakeste smerte siste tilsyn"),
   cap = paste0("SMERTE I RO: Informasjon om NRS-score for smerte i ro ved hvert forløp hvor det ble gitt spinalkateter. Tallverdi 0-10 angir smertescore, 99 = vet ikke og NA = ikke angitt svar."),

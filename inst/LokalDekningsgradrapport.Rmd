@@ -21,15 +21,15 @@ registryName: Smerteregisteret
 userFullName: '`r params$userFullName`'
 ---
 ```{r set options and load packages, include = FALSE}
-knitr::opts_chunk$set(echo=FALSE)
+opts_chunk$set(echo=FALSE)
 options(knitr.table.format = params$tableFormat)
 options(tinytex.verbose = TRUE)
 ```
 
 ```{r get data, include=FALSE}
 
-if (rapbase::isRapContext()) {
-  dat <- smerte::getDataDump(
+if (isRapContext()) {
+  dat <- getDataDump(
     registryName = params$registryName,
     reshId = params$reshId,
     tableName = "allevarnum",
