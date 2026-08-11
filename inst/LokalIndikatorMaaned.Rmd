@@ -60,7 +60,7 @@ dat$SykehusNavn[dat$SykehusNavn == "Helse Bergen HF"] = "HB"
 
 #Legger inn månedene i riktig rekkefølge
 dat <- dat |>
-  mutate(monthname = as.Date(as.yearmon(StartdatoTO)))
+  mutate(monthname = floor_date(StartdatoTO, "month"))
 ```
 
 # Innledning
