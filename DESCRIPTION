@@ -36,23 +36,16 @@ Imports:
     dplyr,
     DT,
     ggplot2, 
-    gridExtra,
     kableExtra,
     knitr,
     lubridate,
-    magrittr,
     rapbase,
     readr,
-    revealjs,
     rlang,
-    rmarkdown,
     shiny,
-    shinyalert,
-    shinycssloaders,
     stringr,
     tibble, 
-    tidyr,
-    yaml
+    tidyr
 Remotes:
     Rapporteket/rapbase@main
 Suggests: 
