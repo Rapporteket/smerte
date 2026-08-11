@@ -40,6 +40,7 @@
 #' @importFrom knitr knit_exit
 #' @importFrom knitr opts_chunk
 #' @importFrom knitr opts_current
+#' @importFrom lubridate floor_date
 #' @importFrom lubridate today
 #' @importFrom lubridate weeks
 #' @importFrom lubridate years
@@ -109,7 +110,5 @@
 #' @importFrom tidyr gather
 #' @importFrom tidyr replace_na
 #' @importFrom tidyr spread
-#' @importFrom zoo as.Date
-#' @importFrom zoo as.yearmon
 ## usethis namespace: end
 NULL
