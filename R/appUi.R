@@ -1,9 +1,17 @@
-regTitle = "Smerteregisteret"
 
-ui <- tagList(
+#' Client (ui) for the smerte app
+#'
+#' @return An shiny app ui object
+#' @export
+
+appUi = function() {
+
+  appTitle = "Smerteregisteret"
+
+  tagList(
   navbarPage(
-    title = regTitle(regTitle),
-    windowTitle = regTitle,
+    title = regTitle(appTitle),
+    windowTitle = appTitle,
     theme = rapTheme(),
     id = "tabs",
 
@@ -112,3 +120,5 @@ ui <- tagList(
     ),
   ) # navbarPage
 ) # tagList
+
+}

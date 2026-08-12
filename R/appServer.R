@@ -1,4 +1,14 @@
-server <- function(input, output, session) {
+#' appServer
+#'
+#' Server logic for the smerte app
+#'
+#' @param input shiny input object
+#' @param output shiny output object
+#' @param session shiny session object
+#'
+#' @return A shiny app server object
+#' @export
+appServer <- function(input, output, session) {
 
   # logShinyInputChanges(input)
 
