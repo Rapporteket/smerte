@@ -6,8 +6,8 @@ params:
   reshId: 'locallyDefined'
   userRole: 'MyRole'
   userFullName: 'Ukjent bruker'
-  startDate: '2017-01-01'
-  endDate: '2017-12-31'
+  startDate: !r lubridate::today() - lubridate::years(1)
+  endDate: !r lubridate::today() - lubridate::weeks(1)
   year: '2016'
   tableFormat: 'html'
   registryName: 'rapbase'
@@ -21,14 +21,16 @@ registryName: Smerteregisteret
 userFullName: '`r params$userFullName`'
 ---
 ```{r set options and load packages, include = FALSE}
+
+library(knitr)
+library(smerte)
+library(dplyr)
+library(ggplot2)
+
 opts_chunk$set(echo=FALSE)
 options(knitr.table.format = params$tableFormat)
 options(tinytex.verbose = TRUE)
 
-library(dplyr)
-library(ggplot2)
-library(gridExtra)
-library(magrittr)
 ```
 
 ```{r get data, include=FALSE}
@@ -408,7 +410,7 @@ angstplot = ggplot(angst, aes(x=HADSScoreAngst)) +
   geom_vline(xintercept = 17, linetype="dotted", 
              color = "red", size=1) 
 
-grid.arrange(depplot, angstplot, ncol=2)
+gridExtra::grid.arrange(depplot, angstplot, ncol=2)
 ```
 
 
@@ -910,12 +912,12 @@ datmed <- bind_rows(DolcontinMalfin, FentanylplDurogesicpl, Metadon, Morfin,
                     Norspanplaster, OxynormOxykodon, OxyxontinReltebon, Palexia,
                     PalladonHydromorfon, Paralginforte, Buprenorfin, Targiniq, 
                     Tramadolvarianter, Andre, Usikker) |>
-  set_rownames(c("DolcontinMalfin", "FentanylplDurogesicpl", "Metadon",
+  magrittr::set_rownames(c("DolcontinMalfin", "FentanylplDurogesicpl", "Metadon",
                  "Morfin", "Norspanplaster", "OxynormOxykodon", 
                  "OxyxontinReltebon", "Palexia", "PalladonHydromorfon", 
                  "Paralginforte", "Buprenorfin", "Targiniq", "Tramadolvarianter",
                  "Andre", "Usikker")) |>
-  set_colnames(c("Antall ja"))
+  magrittr::set_colnames(c("Antall ja"))
 
 mst(tab = datmed,
              col_names = c("Antall ja"),
