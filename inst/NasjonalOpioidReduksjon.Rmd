@@ -6,8 +6,8 @@ params:
   reshId: 'locallyDefined'
   userRole: 'MyRole'
   userFullName: 'Ukjent bruker'
-  startDate: '2017-01-01'
-  endDate: '2017-12-31'
+  startDate: !r lubridate::today() - lubridate::years(1)
+  endDate: !r lubridate::today() - lubridate::weeks(1)
   year: '2016'
   tableFormat: 'html'
   registryName: 'rapbase'
@@ -21,20 +21,15 @@ registryName: Smerteregisteret
 userFullName: '`r params$userFullName`'
 ---
 ```{r set options and load packages, include = FALSE}
+
+library(knitr)
+library(smerte)
+library(dplyr)
+library(lubridate)
+
 opts_chunk$set(echo=FALSE)
 options(knitr.table.format = params$tableFormat)
 options(tinytex.verbose = TRUE)
-
-library(dplyr)
-library(tidyverse)
-library(zoo)
-library(lubridate)
-library(forcats)
-library(stringr)
-library(readr)
-library(magrittr)
-library(xtable)
-library(kableExtra)
 ```
 
 ```{r setup, include=FALSE}
