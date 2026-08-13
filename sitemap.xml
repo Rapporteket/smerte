@@ -3,6 +3,8 @@
 <url><loc>/authors.html</loc></url>
 <url><loc>/index.html</loc></url>
 <url><loc>/news/index.html</loc></url>
+<url><loc>/reference/appServer.html</loc></url>
+<url><loc>/reference/appUi.html</loc></url>
 <url><loc>/reference/bygg_query.html</loc></url>
 <url><loc>/reference/defaultReport.html</loc></url>
 <url><loc>/reference/fikse_sykehusnavn.html</loc></url>
@@ -14,5 +16,6 @@
 <url><loc>/reference/pronoun.html</loc></url>
 <url><loc>/reference/reportProcessor.html</loc></url>
 <url><loc>/reference/smerte-package.html</loc></url>
+<url><loc>/reference/smerteApp.html</loc></url>
 </urlset>
 
