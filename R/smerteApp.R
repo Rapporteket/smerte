@@ -9,6 +9,6 @@ smerteApp <- function() {
 
   shiny::shinyApp(
     ui = appUi,
-    server = smerte::appServer
+    server = appServer
   )
 }
