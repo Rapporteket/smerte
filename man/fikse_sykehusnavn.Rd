@@ -2,7 +2,7 @@
 % Please edit documentation in R/fikse_sykehusnavn.R
 \name{fikse_sykehusnavn}
 \alias{fikse_sykehusnavn}
-\title{Add variable `orgname` if missing, update values if existing}
+\title{Add identifying names to the UnitId}
 \usage{
 fikse_sykehusnavn(df, reshIdVar = UnitId)
 }
@@ -17,10 +17,11 @@ data.frame with variable `orgname`. Old values are overwritten
 if `orgname` already existed if `df`
 }
 \description{
-Add variable `orgname` if missing, update values if existing
+Add variables `orgname`, `SykehusNavn` and
+`SykehusKortnavn` if missing, update values if existing.
 }
 \examples{
-x <- data.frame(UnitId = as.character(c(108141, 109880, NA, 123, 105502)))
-x |> fikse_sykehusnavn(x, reshIdVar = "UnitId")
+x <- data.frame(UnitId = as.character(c(100089, 4201115, NA, 705758, 4204083)))
+x |> fikse_sykehusnavn(reshIdVar = "UnitId")
 
 }
