@@ -6,8 +6,8 @@ params:
   reshId: 'locallyDefined'
   userRole: 'MyRole'
   userFullName: 'Ukjent bruker'
-  startDate: !r today() - years(1)
-  endDate: !r today() - weeks(1)
+  startDate: !r lubridate::today() - lubridate::years(1)
+  endDate: !r lubridate::today() - lubridate::weeks(1)
   year: '2017'
   tableFormat: 'html'
   registryName: 'rapbase'
@@ -21,11 +21,15 @@ registryName: Smerteregisteret
 userFullName: '`r params$userFullName`'
 ---
 ```{r set options and load packages, include = FALSE}
-opts_chunk$set(echo=FALSE)
+knitr::opts_chunk$set(echo=FALSE)
 options(knitr.table.format = params$tableFormat)
 options(tinytex.verbose = TRUE)
 
-#FIX: Må det legges inn noe som avjgør lokasjon
+library(smerte)
+library(dplyr)
+library(lubridate)
+library(tidyr)
+library(stringr)
 ```
 
 ```{r get data, warning = TRUE, message = FALSE}
@@ -118,7 +122,7 @@ raad <- tilsyn_full <- dat |>
   filter(!is.na(Tilsett)) |>
   select(Tilsett, StartdatoTO) |>
   mutate(month = months(as.Date(StartdatoTO)),
-                yearmonth = as.yearmon(StartdatoTO))
+         yearmonth = zoo::as.yearmon(StartdatoTO))
 raad <- raad |>
   mutate(monthname = .data$yearmonth)
 
@@ -284,7 +288,7 @@ tilsyn_full <- dat |>
                                                      "KonfLege"),
                 tilsynstype=str_replace_all(tilsynstype, "AntPasTils",
                                                      "Total"),
-                yearmonth = as.yearmon(StartdatoTO))
+         yearmonth = zoo::as.yearmon(StartdatoTO))
 
 
 #### Alternative approach using yearmonth (last n months regardless) ###########
