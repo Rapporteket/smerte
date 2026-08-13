@@ -76,6 +76,7 @@
 #' @importFrom rapbase statsInput
 #' @importFrom rapbase statsServer2
 #' @importFrom rapbase statsUI
+#' @importFrom rlang :=
 #' @importFrom readr write_csv2
 #' @importFrom readr write_excel_csv2
 #' @importFrom shiny dateRangeInput
