@@ -21,12 +21,13 @@ registryName: Smerteregisteret
 userFullName: '`r params$userFullName`'
 ---
 ```{r set options and load packages, include = FALSE}
-opts_chunk$set(echo=FALSE)
+knitr::opts_chunk$set(echo=FALSE)
 options(knitr.table.format = params$tableFormat)
 options(tinytex.verbose = TRUE)
 options(scipen = 1, digits = 2) #set to two decimal 
 
 library(ggplot2)
+library(smerte)
 library(lubridate)
 library(tidyverse)
 library(dplyr)
@@ -36,7 +37,7 @@ library(zoo)
 
 ```{r get data, warning = FALSE, message=TRUE}
 
-if (isRapContext()) {
+if (rapbase::isRapContext()) {
   dat <- getRegDataLokalEpidural(registryName = params$registryName,
                                      reshId = params$reshId,
                                      userRole=params$userRole,
