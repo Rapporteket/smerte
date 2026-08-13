@@ -1,13 +1,15 @@
 #' Add variable `orgname` if missing, update values if existing
 #'
 #' @param df data.frame, must contain variable `reshIdVar`
+#' @param reshIdVar Variable identifying the ReshId for the units. Can have
+#' different names depending on the table selected.
 #' @return data.frame with variable `orgname`. Old values are overwritten
 #' if `orgname` already existed if `df`
 #'
 #' @export
 #' @examples
 #' x <- data.frame(UnitId = as.character(c(108141, 109880, NA, 123, 105502)))
-#' x |> fikse_sykehusnavn(reshIdVar = "UnitId")
+#' x |> fikse_sykehusnavn(x, reshIdVar = "UnitId")
 #'
 fikse_sykehusnavn <- function(df, reshIdVar = UnitId) {
 

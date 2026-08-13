@@ -8,6 +8,9 @@ fikse_sykehusnavn(df, reshIdVar = UnitId)
 }
 \arguments{
 \item{df}{data.frame, must contain variable `reshIdVar`}
+
+\item{reshIdVar}{Variable identifying the ReshId for the units. Can have
+different names depending on the table selected.}
 }
 \value{
 data.frame with variable `orgname`. Old values are overwritten
@@ -18,6 +21,6 @@ Add variable `orgname` if missing, update values if existing
 }
 \examples{
 x <- data.frame(UnitId = as.character(c(108141, 109880, NA, 123, 105502)))
-x |> fikse_sykehusnavn(reshIdVar = "UnitId")
+x |> fikse_sykehusnavn(x, reshIdVar = "UnitId")
 
 }
