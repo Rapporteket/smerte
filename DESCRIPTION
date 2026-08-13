@@ -35,7 +35,8 @@ Imports:
     DBI, 
     dplyr,
     DT,
-    ggplot2, 
+    ggplot2,
+    gridExtra, 
     kableExtra,
     knitr,
     lubridate,
@@ -45,14 +46,16 @@ Imports:
     shiny,
     stringr,
     tibble, 
-    tidyr
+    tidyr, 
+    zoo
 Remotes:
     Rapporteket/rapbase@main
 Suggests: 
     covr,
     lintr,
     testthat (>= 2.1.0),
-    RMariaDB
+    RMariaDB,
+    yaml
 Encoding: UTF-8
 LazyData: true
 URL: https://github.com/rapporteket/smerte
