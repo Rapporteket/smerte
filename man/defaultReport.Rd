@@ -34,6 +34,14 @@ providing start date. Default is one year ago.}
 \item{endDate}{Character string of the form YYYY-MM-DD or Date object
 providing end date. Default is today minus one week.}
 
+\item{min}{Character string of the form YYYY-MM-DD or Date object
+providing the minimum possible value for the date-slider. Default is
+'1980-01-01'}
+
+\item{max}{Character string of the form YYYY-MM-DD or Date object
+providing the maximum possible value for the date-slider. Default is
+'2100-01-01'}
+
 \item{reportFileName}{Character string providing basename of the file
 representing the report template. Such templates must be placed directly
 under the inst directory of the package.}
