@@ -82,7 +82,7 @@ if(dim(fulldat)[1] < 1) {
 ```{r noData, eval=!dataPresent, results='asis'}
 cat('# Upps...\nI den valgte tidsperioden er det ikke nok data til å gi 
     ut resultater.')
-knit_exit()
+knitr::knit_exit()
 
 ```
 # Tid til død etter utskrivelse

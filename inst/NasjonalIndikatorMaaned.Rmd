@@ -23,13 +23,12 @@ userFullName: '`r params$userFullName`'
 
 ```{r set options and load packages, include = FALSE}
 
-library(knitr)
 library(smerte)
 library(dplyr)
 library(lubridate)
 library(ggplot2)
 
-opts_chunk$set(echo=FALSE)
+knitr::opts_chunk$set(echo=FALSE)
 options(knitr.table.format = params$tableFormat)
 options(tinytex.verbose = TRUE)
 options(scipen = 1, digits = 2) #set to two decimal 

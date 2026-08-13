@@ -24,10 +24,11 @@ userFullName: '`r params$userFullName`'
 ---
 
 ```{r setup, include=FALSE}
-library(knitr)
+
 library(kableExtra)
 library(rapbase)
-opts_chunk$set(echo=FALSE)
+
+knitr::opts_chunk$set(echo=FALSE)
 options(knitr.table.format = params$tableFormat)
 options(tinytex.verbose = TRUE)
 ```

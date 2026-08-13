@@ -22,12 +22,11 @@ userFullName: '`r params$userFullName`'
 ---
 ```{r set options and load packages, include = FALSE}
 
-library(knitr)
 library(smerte)
 library(dplyr)
 library(ggplot2)
 
-opts_chunk$set(echo=FALSE)
+knitr::opts_chunk$set(echo=FALSE)
 options(knitr.table.format = params$tableFormat)
 options(tinytex.verbose = TRUE)
 
@@ -70,7 +69,7 @@ En periode kunne man dele ut pasientregistreringsskjema til pasienter selv om de
 ```{r noData, eval=!dataPresent, results='asis'}
 cat('# Upps...\nI den valgte tidsperioden er det ikke nok data til å gi 
     ut resultater.')
-knit_exit()
+knitr::knit_exit()
 ```
 
 
