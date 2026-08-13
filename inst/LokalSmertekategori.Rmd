@@ -6,8 +6,8 @@ params:
   reshId: 'locallyDefined'
   userRole: 'MyRole'
   userFullName: 'Ukjent bruker'
-  startDate: !r today() - years(1)
-  endDate: !r today() - weeks(1)
+  startDate: !r lubridate::today() - lubridate::years(1)
+  endDate: !r lubridate::today() - lubridate::weeks(1)
   year: '2016'
   tableFormat: 'html'
   registryName: 'rapbase'
@@ -21,9 +21,11 @@ registryName: Smerteregisteret
 userFullName: '`r params$userFullName`'
 ---
 ```{r set options and load packages, include = FALSE}
-opts_chunk$set(echo=FALSE)
+knitr::opts_chunk$set(echo=FALSE)
 options(knitr.table.format = params$tableFormat)
 options(tinytex.verbose = TRUE)
+
+library(smerte)
 ```
 
 ```{r get data, include=FALSE}
@@ -78,7 +80,7 @@ if(dim(fulldat)[1] < 1) {
 ```{r noData, eval=!dataPresent, results='asis'}
 cat('# Upps...\nI den valgte tidsperioden er det ikke nok data til å gi 
     ut resultater.')
-knit_exit()
+knitr::knit_exit()
 
 ```
 

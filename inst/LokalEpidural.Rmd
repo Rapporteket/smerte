@@ -29,7 +29,6 @@ options(scipen = 1, digits = 2) #set to two decimal
 library(ggplot2)
 library(smerte)
 library(lubridate)
-library(tidyverse)
 library(dplyr)
 library(zoo)
 
