@@ -6,8 +6,8 @@ params:
   reshId: 'locallyDefined'
   userRole: 'MyRole'
   userFullName: 'Ukjent bruker'
-  startDate: !r today() - years(1)
-  endDate: !r today() - weeks(1)
+  startDate: !r lubridate::today() - lubridate::years(1)
+  endDate: !r lubridate::today() - lubridate::weeks(1)
   year: '2016'
   tableFormat: 'html'
   registryName: 'rapbase'
@@ -27,6 +27,7 @@ options(tinytex.verbose = TRUE)
 options(scipen = 1, digits = 2) #set to two decimal 
 
 library(ggplot2)
+library(lubridate)
 library(tidyverse)
 library(dplyr)
 library(zoo)
@@ -55,7 +56,7 @@ if (isRapContext()) {
 
 #Legger inn månedene i riktig rekkefølge
 dat <- dat |>
-  mutate(monthname = as.Date(as.yearmon(StartdatoTO)))
+  mutate(monthname = floor_date(StartdatoTO, "month")))
 
 #Tar bare med barn (< 18 år)
 bdat <- dat[dat$alder < 18, ]
