@@ -720,9 +720,9 @@ GROUP BY
 getDataDump <- function(registryName, reshId, userRole, tableName, fromDate, toDate, ...) {
 
   # Liste over tabeller som skal være tilgjengelig for uttrekk
-  raadatatabeller = c("patient", "emp11", "emp_11_pain_diagnosis",
+  raadatatabeller = c("patient", "emp11", "emp11_pain_diagnosis",
                      "emp12", "emp22", "hads",
-                     "mce", "opiodoppf", "pateval", "patreg")
+                     "mce", "opioidoppf", "pateval", "patreg")
 
   koblet = c("allevarnum", "smertediagnosernum", "smertediagnoser", "timetodeath")
 
