@@ -758,7 +758,7 @@ getDataDump <- function(registryName, reshId, userRole, tableName, fromDate, toD
     }
 
   } else {
-    query = bygg_query(tableName, userInput)
+    query = bygg_query(registryName = registryName, tableName, userInput)
   }
 
   # LOGGING
@@ -777,6 +777,8 @@ getDataDump <- function(registryName, reshId, userRole, tableName, fromDate, toD
 #' uttrekk for smerteregisteret. Kjøres som del av datauttrekk til Rapporteket.
 #' Ikke ment å kalles direkte.
 #'
+#' @param registryName Databasenavn for å bygge SQL-query. Hentes automatisk for
+#' user i appServer.
 #' @param tableName Navn på koblet uttrekk som ønskes. Per nå er det støtte for
 #' 'allevarnum', 'smertediagnosernum' og 'smertediagnoser'.
 #' @param userInput parametre hentet fra bruker-input i shiny.
@@ -786,7 +788,7 @@ getDataDump <- function(registryName, reshId, userRole, tableName, fromDate, toD
 #' @export
 #'
 #' @keywords internal
-bygg_query = function(tableName, userInput) {
+bygg_query = function(registryName, tableName, userInput) {
 
   if(tableName == "allevarnum") {
     query = paste0("SELECT
