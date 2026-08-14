@@ -4,9 +4,12 @@
 \alias{bygg_query}
 \title{bygg_query}
 \usage{
-bygg_query(tableName, userInput)
+bygg_query(registryName, tableName, userInput)
 }
 \arguments{
+\item{registryName}{Databasenavn for å bygge SQL-query. Hentes automatisk for
+user i appServer.}
+
 \item{tableName}{Navn på koblet uttrekk som ønskes. Per nå er det støtte for
 'allevarnum', 'smertediagnosernum' og 'smertediagnoser'.}
 
