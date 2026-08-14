@@ -751,7 +751,7 @@ getDataDump <- function(registryName, reshId, userRole, tableName, fromDate, toD
     )
 
     if(tableName %in% c("patient")) {
-      query = str_replace(query, "COALESCE\\(NULLIF\\(mce.PARENT_ID, 'NA'\\), mce.MCEID\\) = tab.MCEID ", "mce.PATIENT_ID = tab.ID ")
+      query = str_replace(query, fixed("COALESCE(NULLIF(mce.PARENT_ID, 'NA'), mce.MCEID) = tab.MCEID "), "mce.PATIENT_ID = tab.ID ")
     }
 
   } else {

@@ -107,6 +107,7 @@
 #' @importFrom shiny tagList
 #' @importFrom shiny uiOutput
 #' @importFrom stats setNames
+#' @importFrom stringr fixed
 #' @importFrom stringr str_replace
 #' @importFrom stringr str_replace_all
 #' @importFrom tibble tribble
