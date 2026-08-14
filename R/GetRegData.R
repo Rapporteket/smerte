@@ -750,8 +750,12 @@ getDataDump <- function(registryName, reshId, userRole, tableName, fromDate, toD
                    userInput
     )
 
+    # Spesialtilfelle for patient-tabell som ikke skal kobles vha MCEID.
     if(tableName %in% c("patient")) {
-      query = str_replace(query, fixed("COALESCE(NULLIF(mce.PARENT_ID, 'NA'), mce.MCEID) = tab.MCEID "), "mce.PATIENT_ID = tab.ID ")
+
+      userInput = str_replace(userInput, fixed("mce.REGISTERED_DATE"), "patient.REGISTERED_DATE")
+      query = paste0("SELECT * FROM patient ", userInput)
+
     }
 
   } else {
