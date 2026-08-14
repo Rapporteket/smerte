@@ -750,12 +750,13 @@ getDataDump <- function(registryName, reshId, userRole, tableName, fromDate, toD
                    userInput
     )
 
-    # Spesialtilfelle for patient-tabell som ikke skal kobles vha MCEID.
-    if(tableName == "patient") {
-
-      userInput = str_replace(userInput, fixed("mce.REGISTERED_DATE"), "patient.REGISTERED_DATE")
-      query = paste0("SELECT * FROM patient ", userInput)
-    }
+    # Spesialhåndtering av patient-tabell som ikke kan filtreres basert på MCEID alene.
+      if (tableName == "patient") {
+        query = paste0(
+          "SELECT patient.* FROM patient WHERE patient.ID IN (
+       SELECT mce.PATIENT_ID FROM mce ", userInput, ")"
+        )
+      }
 
   } else {
     query = bygg_query(registryName = registryName, tableName, userInput)
