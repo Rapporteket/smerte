@@ -749,6 +749,11 @@ getDataDump <- function(registryName, reshId, userRole, tableName, fromDate, toD
                     COALESCE(NULLIF(mce.PARENT_ID, 'NA'), mce.MCEID) = tab.MCEID ",
                    userInput
     )
+
+    if(tableName %in% c("patient")) {
+      query = str_replace(query, "COALESCE\\(NULLIF\\(mce.PARENT_ID, 'NA'\\), mce.MCEID\\) = tab.MCEID ", "mce.PATIENT_ID = tab.ID ")
+    }
+
   } else {
     query = bygg_query(registryName = registryName,
                        tableName,
