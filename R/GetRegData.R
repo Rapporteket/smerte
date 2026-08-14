@@ -749,6 +749,14 @@ getDataDump <- function(registryName, reshId, userRole, tableName, fromDate, toD
                     COALESCE(NULLIF(mce.PARENT_ID, 'NA'), mce.MCEID) = tab.MCEID ",
                    userInput
     )
+
+    # Spesialtilfelle for patient-tabell som ikke skal kobles vha MCEID.
+    if(tableName == "patient") {
+
+      userInput = str_replace(userInput, fixed("mce.REGISTERED_DATE"), "patient.REGISTERED_DATE")
+      query = paste0("SELECT * FROM patient ", userInput)
+    }
+
   } else {
     query = bygg_query(tableName, userInput)
   }
