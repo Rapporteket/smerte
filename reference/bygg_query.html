@@ -19,7 +19,7 @@ Ikke ment å kalles direkte."><!-- mathjax --><script src="https://cdnjs.cloudfl
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">smerte</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.0.21</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.0.22</span>
       </span>
     </div>
 
@@ -57,14 +57,19 @@ Ikke ment å kalles direkte.</p>
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">bygg_query</span><span class="op">(</span><span class="va">tableName</span>, <span class="va">userInput</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">bygg_query</span><span class="op">(</span><span class="va">registryName</span>, <span class="va">tableName</span>, <span class="va">userInput</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
 
 
-<dl><dt id="arg-tablename">tableName<a class="anchor" aria-label="anchor" href="#arg-tablename"></a></dt>
+<dl><dt id="arg-registryname">registryName<a class="anchor" aria-label="anchor" href="#arg-registryname"></a></dt>
+<dd><p>Databasenavn for å bygge SQL-query. Hentes automatisk for
+user i appServer.</p></dd>
+
+
+<dt id="arg-tablename">tableName<a class="anchor" aria-label="anchor" href="#arg-tablename"></a></dt>
 <dd><p>Navn på koblet uttrekk som ønskes. Per nå er det støtte for
 'allevarnum', 'smertediagnosernum' og 'smertediagnoser'.</p></dd>
 
