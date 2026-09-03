@@ -590,7 +590,7 @@ appServer <- function(input, output, session) {
 
   dumps = c("allevarnum", "smertediagnosernum", "smertediagnoser",
             "patient", "emp11", "emp11_pain_diagnosis",
-            "emp12", "emp22", "hads",
+            "emp12", "emp22", "hads", "avdelingsoversikt",
             "mce", "opioidoppf", "pateval", "patreg"
             )
 
