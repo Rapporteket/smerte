@@ -35,112 +35,136 @@ export(smerteApp)
 importFrom(DBI,dbExecute)
 importFrom(DT,dataTableOutput)
 importFrom(bookdown,html_document2)
-importFrom(dplyr,across)
-importFrom(dplyr,arrange)
-importFrom(dplyr,bind_rows)
-importFrom(dplyr,case_when)
-importFrom(dplyr,count)
-importFrom(dplyr,distinct)
-importFrom(dplyr,filter)
-importFrom(dplyr,group_by)
-importFrom(dplyr,left_join)
-importFrom(dplyr,mutate)
-importFrom(dplyr,n)
-importFrom(dplyr,recode)
-importFrom(dplyr,relocate)
-importFrom(dplyr,rename)
-importFrom(dplyr,rowwise)
-importFrom(dplyr,select)
-importFrom(dplyr,select_if)
-importFrom(dplyr,summarise)
-importFrom(dplyr,ungroup)
-importFrom(dplyr,where)
-importFrom(ggplot2,aes)
-importFrom(ggplot2,element_text)
-importFrom(ggplot2,geom_line)
-importFrom(ggplot2,geom_point)
-importFrom(ggplot2,ggplot)
-importFrom(ggplot2,labs)
-importFrom(ggplot2,margin)
-importFrom(ggplot2,theme)
-importFrom(ggplot2,theme_classic)
-importFrom(ggplot2,unit)
+importFrom(dplyr,
+  across,
+  arrange,
+  bind_rows,
+  case_when,
+  count,
+  distinct,
+  filter,
+  group_by,
+  left_join,
+  mutate,
+  n,
+  recode,
+  relocate,
+  rename,
+  rowwise,
+  select,
+  select_if,
+  summarise,
+  ungroup,
+  where
+)
+importFrom(ggplot2,
+  aes,
+  element_text,
+  geom_line,
+  geom_point,
+  ggplot,
+  labs,
+  margin,
+  theme,
+  theme_classic,
+  unit
+)
 importFrom(kableExtra,kable_styling)
-importFrom(knitr,kable)
-importFrom(knitr,knit_exit)
-importFrom(knitr,opts_chunk)
-importFrom(knitr,opts_current)
-importFrom(lubridate,floor_date)
-importFrom(lubridate,today)
-importFrom(lubridate,weeks)
-importFrom(lubridate,years)
-importFrom(lubridate,ymd)
-importFrom(rapbase,appLogger)
-importFrom(rapbase,autoReportFormatInput)
-importFrom(rapbase,autoReportFormatServer)
-importFrom(rapbase,autoReportInput)
-importFrom(rapbase,autoReportOrgInput)
-importFrom(rapbase,autoReportOrgServer)
-importFrom(rapbase,autoReportServer)
-importFrom(rapbase,autoReportUI)
-importFrom(rapbase,describeRegistryDb)
-importFrom(rapbase,exportGuideServer2)
-importFrom(rapbase,exportGuideUI)
-importFrom(rapbase,exportUCInput)
-importFrom(rapbase,exportUCServer)
-importFrom(rapbase,getConfig)
-importFrom(rapbase,isRapContext)
-importFrom(rapbase,loadRegData)
-importFrom(rapbase,logShinyInputChanges)
-importFrom(rapbase,mst)
-importFrom(rapbase,navbarWidgetInput)
-importFrom(rapbase,navbarWidgetServer2)
-importFrom(rapbase,rapCloseDbConnection)
-importFrom(rapbase,rapOpenDbConnection)
-importFrom(rapbase,rapTheme)
-importFrom(rapbase,regTitle)
-importFrom(rapbase,renderRmd)
-importFrom(rapbase,repLogger)
-importFrom(rapbase,statsGuideServer)
-importFrom(rapbase,statsGuideUI)
-importFrom(rapbase,statsInput)
-importFrom(rapbase,statsServer2)
-importFrom(rapbase,statsUI)
-importFrom(readr,write_csv2)
-importFrom(readr,write_excel_csv2)
-importFrom(rlang,":=")
-importFrom(rlang,.data)
-importFrom(shiny,HTML)
-importFrom(shiny,NS)
-importFrom(shiny,dateRangeInput)
-importFrom(shiny,downloadButton)
-importFrom(shiny,downloadHandler)
-importFrom(shiny,fluidPage)
-importFrom(shiny,htmlOutput)
-importFrom(shiny,insertTab)
-importFrom(shiny,mainPanel)
-importFrom(shiny,moduleServer)
-importFrom(shiny,navbarMenu)
-importFrom(shiny,navbarPage)
-importFrom(shiny,observeEvent)
-importFrom(shiny,p)
-importFrom(shiny,radioButtons)
-importFrom(shiny,reactive)
-importFrom(shiny,reactiveVal)
-importFrom(shiny,removeTab)
-importFrom(shiny,renderUI)
-importFrom(shiny,req)
-importFrom(shiny,selectInput)
-importFrom(shiny,shinyApp)
-importFrom(shiny,sidebarLayout)
-importFrom(shiny,sidebarPanel)
-importFrom(shiny,tabPanel)
-importFrom(shiny,tagList)
-importFrom(shiny,uiOutput)
+importFrom(knitr,
+  kable,
+  knit_exit,
+  opts_chunk,
+  opts_current
+)
+importFrom(lubridate,
+  floor_date,
+  today,
+  weeks,
+  years,
+  ymd
+)
+importFrom(rapbase,
+  appLogger,
+  autoReportFormatInput,
+  autoReportFormatServer,
+  autoReportInput,
+  autoReportOrgInput,
+  autoReportOrgServer,
+  autoReportServer,
+  autoReportUI,
+  describeRegistryDb,
+  exportGuideServer2,
+  exportGuideUI,
+  exportUCInput,
+  exportUCServer,
+  getConfig,
+  isRapContext,
+  loadRegData,
+  logShinyInputChanges,
+  mst,
+  navbarWidgetInput,
+  navbarWidgetServer2,
+  rapCloseDbConnection,
+  rapOpenDbConnection,
+  rapTheme,
+  regTitle,
+  renderRmd,
+  repLogger,
+  statsGuideServer,
+  statsGuideUI,
+  statsInput,
+  statsServer2,
+  statsUI
+)
+importFrom(readr,
+  write_csv2,
+  write_excel_csv2
+)
+importFrom(rlang,
+  ":=",
+  .data
+)
+importFrom(shiny,
+  HTML,
+  NS,
+  dateRangeInput,
+  downloadButton,
+  downloadHandler,
+  fluidPage,
+  htmlOutput,
+  insertTab,
+  mainPanel,
+  moduleServer,
+  navbarMenu,
+  navbarPage,
+  observeEvent,
+  p,
+  radioButtons,
+  reactive,
+  reactiveVal,
+  removeTab,
+  renderUI,
+  req,
+  selectInput,
+  shinyApp,
+  sidebarLayout,
+  sidebarPanel,
+  tabPanel,
+  tagList,
+  uiOutput
+)
 importFrom(stats,setNames)
-importFrom(stringr,str_replace_all)
-importFrom(tibble,as_tibble)
-importFrom(tibble,tribble)
-importFrom(tidyr,gather)
-importFrom(tidyr,replace_na)
-importFrom(tidyr,spread)
+importFrom(stringr,
+  str_replace,
+  str_replace_all,
+  str_split_1
+)
+importFrom(tibble,
+  as_tibble,
+  tribble
+)
+importFrom(tidyr,
+  gather,
+  replace_na,
+  spread
+)

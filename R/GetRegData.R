@@ -724,7 +724,7 @@ getDataDump <- function(registryName, reshId, userRole, tableName, fromDate, toD
                      "emp12", "emp22", "hads",
                      "mce", "opioidoppf", "pateval", "patreg")
 
-  koblet = c("allevarnum", "smertediagnosernum", "smertediagnoser", "timetodeath")
+  koblet = c("allevarnum", "smertediagnosernum", "smertediagnoser", "timetodeath", "avdelingsoversikt")
 
   if(!tableName %in% c(raadatatabeller, koblet)) {
     stop(message = "Ukjent datasett")
@@ -738,6 +738,17 @@ getDataDump <- function(registryName, reshId, userRole, tableName, fromDate, toD
     userInput = paste0("WHERE mce.CENTREID IN (", .getDeps(reshId = reshId, userRole = userRole) , ") AND
     mce.REGISTERED_DATE BETWEEN
     CAST('", fromDate, "' AS DATE) AND CAST('", toDate, "' AS DATE)")
+  }
+
+  # Spesialtilfelle for avdelingsoversikt (skal ikke kobles mot mce)
+  if (tableName == "avdelingsoversikt") {
+    if (reshId != 0) {
+    userInput = str_replace(
+      str_split_1(userInput, pattern = "AND")[1],
+      "mce.CENTREID", "d.CENTREID")
+    } else {
+      userInput = ";"
+    }
   }
 
   # Lage spørringer
@@ -1312,6 +1323,27 @@ bygg_query = function(registryName, tableName, userInput) {
                    ,
                    userInput)
 
+  }
+
+  if(tableName == "avdelingsoversikt") {
+
+    query = paste0("SELECT
+      d.ID as DEPARTMENT_ID,
+      d.CENTREID AS DEPARTMENT_CENTREID,
+      d.NAME AS DEPARTMENT_NAME,
+      d.SHORTNAME AS DEPARTMENT_SHORTNAME,
+      d.RESH AS DEPARTMENT_RESH,
+      d.ACTIVE AS DEPARTMENT_ACTIVE,
+      d.LOCATION_ID ,
+      l.CENTREID AS LOCATION_CENTREID,
+      l.NAME AS LOCATIONNAME,
+      l.SHORTNAME AS LOCATION_SHORTNAME ,
+      l.ACTIVE AS LOCATION_ACTIVE
+      FROM departments d
+      INNER JOIN location l on d.LOCATION_ID = l.ID "
+      ,
+      userInput
+      )
   }
 
   return(query)
