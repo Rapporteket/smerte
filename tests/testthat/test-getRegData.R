@@ -123,30 +123,30 @@ test_that("name-id mapping can be obtained", {
                "list")
 })
 
-# test_that("tables can be dumped", {
-#   check_db()
-#   # expect_equal(class(
-#   #   getDataDump("testDb", "allevar", Sys.Date(), Sys.Date())
-#   # ), "data.frame")
-#   expect_equal(class(
-#     getDataDump("testDb", tableName = "allevarnum", userRole = "SC", Sys.Date(), Sys.Date())
-#   ), "data.frame")
-#   # expect_equal(class(
-#   #   getDataDump("testDb", "avdelingsoversikt", Sys.Date(), Sys.Date())
-#   # ), "data.frame")
-#   # expect_equal(class(
-#   #   getDataDump("testDb", "forlopsoversikt", Sys.Date(), Sys.Date())
-#   # ), "data.frame")
-#   # expect_equal(class(
-#   #   getDataDump("testDb", "skjemaoversikt", Sys.Date(), Sys.Date())
-#   # ), "data.frame")
-#   expect_equal(class(
-#     getDataDump("testDb", "smertediagnoser", Sys.Date(), Sys.Date())
-#   ), "data.frame")
-#   expect_equal(class(
-#     getDataDump("testDb", "smertediagnosernum", Sys.Date(), Sys.Date())
-#   ), "data.frame")
-# })
+test_that("tables can be dumped", {
+  check_db()
+  # expect_equal(class(
+  #   getDataDump("testDb", "allevar", Sys.Date(), Sys.Date())
+  # ), "data.frame")
+  expect_equal(class(
+    getDataDump("testDb", tableName = "allevarnum", userRole = "SC", reshId = 10, Sys.Date(), Sys.Date())
+  ), "data.frame")
+  expect_equal(class(
+    getDataDump("testDb", "avdelingsoversikt", userRole = "SC", reshId = 10, Sys.Date(), Sys.Date())
+  ), "data.frame")
+  expect_equal(class(
+    getDataDump("testDb", "forlopsoversikt", userRole = "SC", reshId = 10, Sys.Date(), Sys.Date())
+  ), "data.frame")
+  # expect_equal(class(
+  #   getDataDump("testDb", "skjemaoversikt", Sys.Date(), Sys.Date())
+  # ), "data.frame")
+  expect_equal(class(
+    getDataDump("testDb", "smertediagnoser", userRole = "SC", reshId = 10, Sys.Date(), Sys.Date())
+  ), "data.frame")
+  expect_equal(class(
+    getDataDump("testDb", "smertediagnosernum", userRole = "SC", reshId = 10, Sys.Date(), Sys.Date())
+  ), "data.frame")
+})
 
 test_that("data for lokal tilsyn can be queried", {
   check_db()
