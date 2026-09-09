@@ -29,6 +29,7 @@ export(getRegDataTimetodeath)
 export(getSmerteDiagKatValueLab)
 export(isNationalReg)
 export(isOUSReg)
+export(lag_smerte_kb_kategoriske)
 export(makeRegistryName)
 export(reportProcessor)
 export(smerteApp)
@@ -155,6 +156,7 @@ importFrom(shiny,
 )
 importFrom(stats,setNames)
 importFrom(stringr,
+  str_detect,
   str_replace,
   str_replace_all,
   str_split_1
@@ -166,5 +168,6 @@ importFrom(tibble,
 importFrom(tidyr,
   gather,
   replace_na,
+  separate_wider_regex,
   spread
 )

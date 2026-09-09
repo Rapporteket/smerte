@@ -107,6 +107,7 @@
 #' @importFrom shiny tagList
 #' @importFrom shiny uiOutput
 #' @importFrom stats setNames
+#' @importFrom stringr str_detect
 #' @importFrom stringr str_replace
 #' @importFrom stringr str_replace_all
 #' @importFrom stringr str_split_1
@@ -114,6 +115,7 @@
 #' @importFrom tibble as_tibble
 #' @importFrom tidyr gather
 #' @importFrom tidyr replace_na
+#' @importFrom tidyr separate_wider_regex
 #' @importFrom tidyr spread
 ## usethis namespace: end
 NULL
