@@ -5,7 +5,7 @@
 \title{Lag kodebok for kategoriske variabler i smerteregisteret.}
 \usage{
 lag_smerte_kb_kategoriske(
-  d_text = loadRegData(registryName, query = "SELECT * FROM text")
+  d_text = loadRegData(d_text = registryName, query = "SELECT * FROM text")
 )
 }
 \value{
@@ -19,7 +19,4 @@ og har variablene `tabell`, `variabel_id`, `verdi` og `verditekst`.
 
 Vær obs på at du kobler mot riktig tabell da jeg ikke har sjekket om alle
 kategoriske variabler har samme verdi-verditekst kombinasjon på tvers av skjema.
-}
-\examples{
-kb_smerte_kategoriske = lag_smerte_kb_kategoriske()
 }
