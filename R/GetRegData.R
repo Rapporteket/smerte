@@ -1366,7 +1366,7 @@ bygg_query = function(registryName, tableName, userInput) {
 
     query = paste0("SELECT
                    -- Hospital/centre stuff
-                   mce.CENTREID AS AvdRESH,
+                   mce.CENTREID AS AvdResh,
                    -- Patient stuff
                    CAST(p.ID AS CHAR(10)) AS PasientID,
                    -- NEXT 6 left empty for now
