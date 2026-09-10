@@ -290,6 +290,9 @@ appServer <- function(input, output, session) {
 
   contentDump <- function(file, type, userRole = "LU") {
 
+    # FIXME - Legg til labels for p.avdod i forlopsoversikt
+    # FIXME - Legg til labels for smertediagnoser, og åpne for uttrekk av
+    # denne i dumps
     d <- getDataDump(registryName(),
                              tableName = input$dumpDataSet,
                              reshId = user$org(),
@@ -299,12 +302,15 @@ appServer <- function(input, output, session) {
                              session = session)
 
     if (userRole %in% c("SC", "LC")) {
-      if (input$dumpDataSet %in% c("smertediagnoser", "smertediagnosernum", "smertediagnosernumnasjonal")) {
+      if (input$dumpDataSet %in% c(#"smertediagnoser",
+                                   "smertediagnosernum",
+                                   "forlopsoversikt")) {
 
         d = d |> fikse_sykehusnavn("AvdResh") |>
           relocate(SykehusNavn,
                    .after = "AvdResh")
       }
+
     }
 
     if (type == "xlsx-csv") {
@@ -588,7 +594,9 @@ appServer <- function(input, output, session) {
     dataTableOutput("metaDataTable")
   })
 
-  dumps = c("allevarnum", "smertediagnosernum", "smertediagnoser",
+  dumps = c("allevarnum", "smertediagnosernum",
+            # "smertediagnoser",
+            "forlopsoversikt",
             "patient", "emp11", "emp11_pain_diagnosis",
             "emp12", "emp22", "hads", "avdelingsoversikt",
             "mce", "opioidoppf", "pateval", "patreg"

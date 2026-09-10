@@ -1362,5 +1362,79 @@ bygg_query = function(registryName, tableName, userInput) {
       )
   }
 
+  if(tableName == "forlopsoversikt") {
+
+    query = paste0("SELECT
+                   -- Hospital/centre stuff
+                   mce.CENTREID AS AvdRESH,
+                   -- Patient stuff
+                   CAST(p.ID AS CHAR(10)) AS PasientID,
+                   -- NEXT 6 left empty for now
+                   CAST(NULL AS CHAR(4)) AS PostNr,
+                   CAST(NULL AS CHAR(50)) AS PostSted,
+                   CAST(NULL AS CHAR(50)) AS Kommune,
+                   CAST(NULL AS CHAR(4)) AS Kommunenr,
+                   CAST(NULL AS CHAR(50)) AS Fylke,
+                   CAST(NULL AS CHAR(2)) AS Fylkenr,
+                   p.SSN AS KryptertFnr,
+                   CASE
+                   WHEN IFNULL(p.GENDER,0) = 0 THEN 'Ikke angitt'
+                   WHEN p.GENDER = 1 THEN 'Mann'
+                   WHEN p.GENDER = 2 THEN 'Kvinne'
+                   WHEN p.GENDER = 9 THEN 'Ikke relevant'
+                   ELSE 'Ukjent'
+                   END AS PasientKjonn,
+                   CASE
+                   WHEN p.GENDER = 1 THEN '1'
+                   WHEN p.GENDER = 2 THEN '0'
+                   ELSE NULL
+                   END AS erMann,
+                   datediff(mce.REGISTERED_DATE, p.BIRTH_DATE) / 365.25 AS PasientAlder,
+                   p.BIRTH_DATE AS Fodselsdato,
+                   CAST(NULL AS CHAR(10)) AS Norsktalende,
+                   CAST(NULL AS CHAR(30)) AS Sivilstatus,
+                   CAST(NULL AS CHAR(50)) AS UtdanningSSB,
+                   p.DECEASED AS Avdod,
+                   p.DECEASED_DATE AS AvdodDato,
+                   -- Event stuff
+                   CAST(mce.MCEID AS CHAR(10)) AS ForlopsID,
+                   CAST(LEAST( emp11.STATUS, IFNULL(emp12.STATUS,1), IFNULL(emp21.STATUS,1), IFNULL(emp22.STATUS,1), IFNULL(hads.STATUS,1), mce.STATUS, IFNULL(patreg.STATUS,1), IFNULL(pateval.STATUS,1)) AS CHAR(2)) AS BasisRegStatus,
+                   CASE mce.MCETYPE
+                   WHEN 1 THEN 'Ikke tilsett'
+                   WHEN 2 THEN 'Ikke inkl og/el samtykke'
+                   WHEN 3 THEN 'Inklusjon og samtykke'
+                   ELSE 'Ukjent'
+                   END AS ForlopsType1,
+                   CAST(mce.MCETYPE AS CHAR(2)) AS ForlopsType1Num,
+                   CASE
+                   WHEN mce.INCLUDED = 1 AND mce.CONSENT = 1 THEN 'Inkludert'
+                   WHEN mce.INCLUDED = 1 AND mce.SUPERVISION=1 AND mce.SUFFICIENT = 1 AND mce.NORWEGIAN = 1 AND mce.AGE >= 18 AND mce.COGNITIVE = 0  AND mce.CONSENT != 1 THEN 'Inkluderbar'
+                   WHEN mce.SUPERVISION > 1 THEN 'Ikke tilsett'
+                   ELSE 'Ikke inkluderbar'
+                   END AS ForlopsType2,
+                   CASE
+                   WHEN mce.INCLUDED = 1 AND mce.CONSENT = 1 THEN '1'
+                   WHEN mce.INCLUDED = 1 AND mce.SUPERVISION=1 AND mce.SUFFICIENT = 1 AND mce.NORWEGIAN = 1 AND mce.AGE >= 18 AND mce.COGNITIVE = 0  AND mce.CONSENT != 1 THEN '2'
+                   WHEN mce.SUPERVISION > 1 THEN '3'
+                   ELSE '4'
+                   END AS ForlopsType2Num,
+                   mce.REGISTERED_DATE AS HovedDato,
+                   CAST(NULL AS CHAR(10)) AS KobletForlopsID,
+                   -- Followup stuff
+                   CAST(NULL AS CHAR(2))  AS OppflgRegStatus,
+                   '0' AS ErOppflg,
+                   CAST(NULL AS CHAR(30)) AS OppflgStatus,
+                   CAST(NULL AS CHAR(6)) AS OppflgSekNr
+                   FROM
+                   mce mce INNER JOIN patient p ON mce.PATIENT_ID = p.ID
+                   INNER JOIN emp11 emp11 ON mce.MCEID = emp11.MCEID
+                   LEFT OUTER JOIN emp12 emp12 ON mce.MCEID = emp12.MCEID  AND emp12.FORMORDER = 1
+                   LEFT OUTER JOIN emp12 emp21 ON mce.MCEID = emp21.MCEID  AND emp21.FORMORDER = 2
+                   LEFT OUTER JOIN emp22 emp22 ON mce.MCEID = emp22.MCEID
+                   LEFT OUTER JOIN hads hads ON mce.MCEID = hads.MCEID
+                   LEFT OUTER JOIN pateval pateval ON mce.MCEID = pateval.MCEID
+                   LEFT OUTER JOIN patreg patreg ON mce.MCEID = patreg.MCEID ",
+                   userInput)
+  }
   return(query)
 }
