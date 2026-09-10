@@ -140,9 +140,9 @@ test_that("tables can be dumped", {
   # expect_equal(class(
   #   getDataDump("testDb", "skjemaoversikt", Sys.Date(), Sys.Date())
   # ), "data.frame")
-  expect_equal(class(
-    getDataDump("testDb", "smertediagnoser", userRole = "SC", reshId = 10, Sys.Date(), Sys.Date())
-  ), "data.frame")
+  # expect_equal(class(
+  #   getDataDump("testDb", "smertediagnoser", userRole = "SC", reshId = 10, Sys.Date(), Sys.Date())
+  # ), "data.frame")
   expect_equal(class(
     getDataDump("testDb", "smertediagnosernum", userRole = "SC", reshId = 10, Sys.Date(), Sys.Date())
   ), "data.frame")

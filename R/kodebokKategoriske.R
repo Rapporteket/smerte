@@ -8,20 +8,20 @@
 #' Vær obs på at du kobler mot riktig tabell da jeg ikke har sjekket om alle
 #' kategoriske variabler har samme verdi-verditekst kombinasjon på tvers av skjema.
 #'
+#' @params d_text datasett som inneholder verditekster for listeverdiene.
+#'
 #' @returns
 #' Returnerer en tibble med kategoriske variabler for alle tabeller oppgitt i
 #' 'tabeller'-objektet i funksjonen. Denne kan redigeres hvis nødvendig.
 #'
 #' @export
-#'
-#' @examples
-#' kb_smerte_kategoriske = lag_smerte_kb_kategoriske()
-# FIXME - Denne funksjonen må oppdateres når vi får tilgang til LISTBOXTEXTROW-tabell.
-# Fungerer ikke per i dag, da text-tabell inneholder koder for rekkefølge i grensesnitt,
-# ikke listeverdi for variabel.
 lag_smerte_kb_kategoriske = function(
-    d_text = loadRegData(registryName, query = "SELECT * FROM text")
+    d_text = loadRegData(d_text = registryName, query = "SELECT * FROM text")
     ) {
+
+  # FIXME - Denne funksjonen må oppdateres når vi får tilgang til LISTBOXTEXTROW-tabell.
+  # Fungerer ikke per i dag, da text-tabell inneholder koder for rekkefølge i grensesnitt,
+  # ikke listeverdi for variabel.
 
   # Liste med tabeller vi vil ha labels for.
   tabeller = c("CENTRE", "DEPARTMENTS", "EMP11", "EMP12",
