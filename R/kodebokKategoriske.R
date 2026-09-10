@@ -16,6 +16,9 @@
 #'
 #' @examples
 #' kb_smerte_kategoriske = lag_smerte_kb_kategoriske()
+# FIXME - Denne funksjonen må oppdateres når vi får tilgang til LISTBOXTEXTROW-tabell.
+# Fungerer ikke per i dag, da text-tabell inneholder koder for rekkefølge i grensesnitt,
+# ikke listeverdi for variabel.
 lag_smerte_kb_kategoriske = function(
     d_text = loadRegData(registryName, query = "SELECT * FROM text")
     ) {
