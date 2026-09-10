@@ -724,7 +724,9 @@ getDataDump <- function(registryName, reshId, userRole, tableName, fromDate, toD
                      "emp12", "emp22", "hads",
                      "mce", "opioidoppf", "pateval", "patreg")
 
-  koblet = c("allevarnum", "smertediagnosernum", "smertediagnoser", "timetodeath", "avdelingsoversikt")
+  koblet = c("allevarnum", "smertediagnosernum",
+             #"smertediagnoser",
+             "timetodeath", "avdelingsoversikt", "forlopsoversikt")
 
   if(!tableName %in% c(raadatatabeller, koblet)) {
     stop(message = "Ukjent datasett")
@@ -1271,35 +1273,49 @@ bygg_query = function(registryName, tableName, userInput) {
                    userInput)
   }
 
-  if(tableName == "smertediagnoser") {
-
-    getListTextFunction(registryName)
-
-    query = paste0("SELECT
-    epd.MCEID AS ForlopsID,
-    mce.PATIENT_ID AS PasientID,
-    mce.CENTREID AS AvdResh,
-    epd.ID AS SmerteDiagID,
-    getListText('EMP11_PAINCAT',PAINCAT) AS SmerteKat,
-    CASE PAINCAT
-    WHEN 1 THEN getListText('EMP11_PAINDIAG_ACUTE_CATEGORY', PAINDIAG_CATEGORY)
-    WHEN 2 THEN getListText('EMP11_PAINDIAG_CATEGORY', PAINDIAG_CATEGORY)
-    WHEN 3 THEN	getListText('EMP11_PAINDIAG_CATEGORY', PAINDIAG_CATEGORY)
-    WHEN 4 THEN 'Ikke aktuelt'
-    ELSE 'Ukjent kategori'
-    END AS DiagKat,
-    scd.DESCRIPTION AS DiagSubKat,
-    epd.DIAGCODE AS ICD10Kode,
-    epd.DIAGDESCRIPTION AS ICD10Tekst,
-    epd.DIAG_VERSION AS ICD10Versjon,
-    getListText('EMP11_PAINMAINDIAG',PAINMAINDIAG) AS HovedDiag,
-    epd.CREATEDBY AS OpprettetAv
-    from
-    emp11_pain_diagnosis epd LEFT OUTER JOIN subcatdescription scd ON epd.PAINDIAG_SUBCATEGORY = scd.SUBCAT
-    AND epd.PAINDIAG_CATEGORY = scd.DIAGCAT
-    INNER JOIN mce mce ON COALESCE(NULLIF(mce.PARENT_ID, 'NA'), mce.MCEID) = epd.MCEID ",
-                   userInput)
-  }
+#   if(tableName == "smertediagnoser") {
+#
+#     query <- paste0("
+#     SELECT
+#     epd.MCEID AS ForlopsID,
+#     mce.PATIENT_ID AS PasientID,
+#     mce.CENTREID AS AvdResh,
+#     epd.ID AS SmerteDiagID,
+#     COALESCE(t_paincat.TEXT, CONCAT('Unknown: ', epd.PAINCAT)) AS SmerteKat,
+#     CASE epd.PAINCAT
+#         WHEN 1 THEN COALESCE(t_diagcat_acute.TEXT, CONCAT('Unknown: ', epd.PAINDIAG_CATEGORY))
+#         WHEN 2 THEN COALESCE(t_diagcat.TEXT, CONCAT('Unknown: ', epd.PAINDIAG_CATEGORY))
+#         WHEN 3 THEN COALESCE(t_diagcat.TEXT, CONCAT('Unknown: ', epd.PAINDIAG_CATEGORY))
+#         WHEN 4 THEN 'Ikke aktuelt'
+#         ELSE 'Ukjent kategori'
+#     END AS DiagKat,
+#     scd.DESCRIPTION AS DiagSubKat,
+#     epd.DIAGCODE AS ICD10Kode,
+#     epd.DIAGDESCRIPTION AS ICD10Tekst,
+#     epd.DIAG_VERSION AS ICD10Versjon,
+#     COALESCE(t_maindiag.TEXT, CONCAT('Unknown: ', epd.PAINMAINDIAG)) AS HovedDiag,
+#     epd.CREATEDBY AS OpprettetAv
+# FROM emp11_pain_diagnosis epd
+# LEFT JOIN subcatdescription scd
+#        ON epd.PAINDIAG_SUBCATEGORY = scd.SUBCAT
+#       AND epd.PAINDIAG_CATEGORY = scd.DIAGCAT
+# INNER JOIN mce
+#         ON COALESCE(NULLIF(mce.PARENT_ID, 'NA'), mce.MCEID) = epd.MCEID
+# LEFT JOIN text t_paincat
+#        ON t_paincat.ID = CONCAT('EMP11_PAINCAT_L_', epd.PAINCAT, '_D')
+#       AND t_paincat.LANGUAGEID = 'no'
+# LEFT JOIN text t_diagcat_acute
+#        ON t_diagcat_acute.ID = CONCAT('EMP11_PAINDIAG_ACUTE_CATEGORY_L_', epd.PAINDIAG_CATEGORY, '_D')
+#       AND t_diagcat_acute.LANGUAGEID = 'no'
+# LEFT JOIN text t_diagcat
+#        ON t_diagcat.ID = CONCAT('EMP11_PAINDIAG_CATEGORY_L_', epd.PAINDIAG_CATEGORY, '_D')
+#       AND t_diagcat.LANGUAGEID = 'no'
+# LEFT JOIN text t_maindiag
+#        ON t_maindiag.ID = CONCAT('EMP11_PAINMAINDIAG_L_', epd.PAINMAINDIAG, '_D')
+#       AND t_maindiag.LANGUAGEID = 'no'
+# ", userInput)
+#
+#   }
 
   if(tableName == "timetodeath") {
 
