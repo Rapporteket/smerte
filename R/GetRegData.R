@@ -1376,7 +1376,6 @@ bygg_query = function(registryName, tableName, userInput) {
                    CAST(NULL AS CHAR(4)) AS Kommunenr,
                    CAST(NULL AS CHAR(50)) AS Fylke,
                    CAST(NULL AS CHAR(2)) AS Fylkenr,
-                   p.SSN AS KryptertFnr,
                    CASE
                    WHEN IFNULL(p.GENDER,0) = 0 THEN 'Ikke angitt'
                    WHEN p.GENDER = 1 THEN 'Mann'
