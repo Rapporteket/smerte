@@ -4,9 +4,10 @@
 \alias{lag_smerte_kb_kategoriske}
 \title{Lag kodebok for kategoriske variabler i smerteregisteret.}
 \usage{
-lag_smerte_kb_kategoriske(
-  d_text = loadRegData(d_text = registryName, query = "SELECT * FROM text")
-)
+lag_smerte_kb_kategoriske(d_text)
+}
+\arguments{
+\item{d_text}{datasett som inneholder verditekster for listeverdiene.}
 }
 \value{
 Returnerer en tibble med kategoriske variabler for alle tabeller oppgitt i
