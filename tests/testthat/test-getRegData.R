@@ -80,6 +80,30 @@ test_that("relevant test database and tables can be made", {
   rapbase::rapCloseDbConnection(con)
 })
 
+test_that(".getDeps returnerer forventet utdata", {
+
+  expect_identical(
+    smerte:::.getDeps(reshId = 22, userRole = "LC"),
+    "21, 22"
+  )
+  expect_identical(
+    smerte:::.getDeps(reshId = 22, userRole = "LU"),
+    "22"
+  )
+  expect_identical(
+    smerte:::.getDeps(reshId = 10, userRole = "SC"),
+    "10"
+  )
+  expect_error(
+    smerte:::.getDeps(reshId = "AND", userRole = "SC"),
+    "'AND' er ikke en gyldig reshId."
+  )
+  expect_error(
+    smerte:::.getDeps(reshId = 22, userRole = "SP"),
+    "'SP' er ikke en gyldig rolle."
+  )
+})
+
 # onto main testing
 test_that("hospital name can be read from db", {
   check_db()
