@@ -35,6 +35,10 @@ export(reportProcessor)
 export(smerteApp)
 importFrom(DBI,dbExecute)
 importFrom(DT,dataTableOutput)
+importFrom(assertthat,
+  assert_that,
+  is.number
+)
 importFrom(bookdown,html_document2)
 importFrom(dplyr,
   across,

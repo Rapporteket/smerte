@@ -2,6 +2,8 @@
 "_PACKAGE"
 
 ## usethis namespace: start
+#' @importFrom assertthat assert_that
+#' @importFrom assertthat is.number
 #' @importFrom bookdown html_document2
 #' @importFrom DBI dbExecute
 #' @importFrom dplyr across
