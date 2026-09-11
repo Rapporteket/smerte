@@ -724,7 +724,9 @@ getDataDump <- function(registryName, reshId, userRole, tableName, fromDate, toD
                      "emp12", "emp22", "hads",
                      "mce", "opioidoppf", "pateval", "patreg")
 
-  koblet = c("allevarnum", "smertediagnosernum", "smertediagnoser", "timetodeath")
+  koblet = c("allevarnum", "smertediagnosernum",
+             #"smertediagnoser",
+             "timetodeath", "avdelingsoversikt", "forlopsoversikt")
 
   if(!tableName %in% c(raadatatabeller, koblet)) {
     stop(message = "Ukjent datasett")
@@ -738,6 +740,17 @@ getDataDump <- function(registryName, reshId, userRole, tableName, fromDate, toD
     userInput = paste0("WHERE mce.CENTREID IN (", .getDeps(reshId = reshId, userRole = userRole) , ") AND
     mce.REGISTERED_DATE BETWEEN
     CAST('", fromDate, "' AS DATE) AND CAST('", toDate, "' AS DATE)")
+  }
+
+  # Spesialtilfelle for avdelingsoversikt (skal ikke kobles mot mce)
+  if (tableName == "avdelingsoversikt") {
+    if (reshId != 0) {
+    userInput = str_replace(
+      str_split_1(userInput, pattern = "AND")[1],
+      "mce.CENTREID", "d.CENTREID")
+    } else {
+      userInput = ";"
+    }
   }
 
   # Lage spørringer
@@ -1260,35 +1273,49 @@ bygg_query = function(registryName, tableName, userInput) {
                    userInput)
   }
 
-  if(tableName == "smertediagnoser") {
-
-    getListTextFunction(registryName)
-
-    query = paste0("SELECT
-    epd.MCEID AS ForlopsID,
-    mce.PATIENT_ID AS PasientID,
-    mce.CENTREID AS AvdResh,
-    epd.ID AS SmerteDiagID,
-    getListText('EMP11_PAINCAT',PAINCAT) AS SmerteKat,
-    CASE PAINCAT
-    WHEN 1 THEN getListText('EMP11_PAINDIAG_ACUTE_CATEGORY', PAINDIAG_CATEGORY)
-    WHEN 2 THEN getListText('EMP11_PAINDIAG_CATEGORY', PAINDIAG_CATEGORY)
-    WHEN 3 THEN	getListText('EMP11_PAINDIAG_CATEGORY', PAINDIAG_CATEGORY)
-    WHEN 4 THEN 'Ikke aktuelt'
-    ELSE 'Ukjent kategori'
-    END AS DiagKat,
-    scd.DESCRIPTION AS DiagSubKat,
-    epd.DIAGCODE AS ICD10Kode,
-    epd.DIAGDESCRIPTION AS ICD10Tekst,
-    epd.DIAG_VERSION AS ICD10Versjon,
-    getListText('EMP11_PAINMAINDIAG',PAINMAINDIAG) AS HovedDiag,
-    epd.CREATEDBY AS OpprettetAv
-    from
-    emp11_pain_diagnosis epd LEFT OUTER JOIN subcatdescription scd ON epd.PAINDIAG_SUBCATEGORY = scd.SUBCAT
-    AND epd.PAINDIAG_CATEGORY = scd.DIAGCAT
-    INNER JOIN mce mce ON COALESCE(NULLIF(mce.PARENT_ID, 'NA'), mce.MCEID) = epd.MCEID ",
-                   userInput)
-  }
+#   if(tableName == "smertediagnoser") {
+#
+#     query <- paste0("
+#     SELECT
+#     epd.MCEID AS ForlopsID,
+#     mce.PATIENT_ID AS PasientID,
+#     mce.CENTREID AS AvdResh,
+#     epd.ID AS SmerteDiagID,
+#     COALESCE(t_paincat.TEXT, CONCAT('Unknown: ', epd.PAINCAT)) AS SmerteKat,
+#     CASE epd.PAINCAT
+#         WHEN 1 THEN COALESCE(t_diagcat_acute.TEXT, CONCAT('Unknown: ', epd.PAINDIAG_CATEGORY))
+#         WHEN 2 THEN COALESCE(t_diagcat.TEXT, CONCAT('Unknown: ', epd.PAINDIAG_CATEGORY))
+#         WHEN 3 THEN COALESCE(t_diagcat.TEXT, CONCAT('Unknown: ', epd.PAINDIAG_CATEGORY))
+#         WHEN 4 THEN 'Ikke aktuelt'
+#         ELSE 'Ukjent kategori'
+#     END AS DiagKat,
+#     scd.DESCRIPTION AS DiagSubKat,
+#     epd.DIAGCODE AS ICD10Kode,
+#     epd.DIAGDESCRIPTION AS ICD10Tekst,
+#     epd.DIAG_VERSION AS ICD10Versjon,
+#     COALESCE(t_maindiag.TEXT, CONCAT('Unknown: ', epd.PAINMAINDIAG)) AS HovedDiag,
+#     epd.CREATEDBY AS OpprettetAv
+# FROM emp11_pain_diagnosis epd
+# LEFT JOIN subcatdescription scd
+#        ON epd.PAINDIAG_SUBCATEGORY = scd.SUBCAT
+#       AND epd.PAINDIAG_CATEGORY = scd.DIAGCAT
+# INNER JOIN mce
+#         ON COALESCE(NULLIF(mce.PARENT_ID, 'NA'), mce.MCEID) = epd.MCEID
+# LEFT JOIN text t_paincat
+#        ON t_paincat.ID = CONCAT('EMP11_PAINCAT_L_', epd.PAINCAT, '_D')
+#       AND t_paincat.LANGUAGEID = 'no'
+# LEFT JOIN text t_diagcat_acute
+#        ON t_diagcat_acute.ID = CONCAT('EMP11_PAINDIAG_ACUTE_CATEGORY_L_', epd.PAINDIAG_CATEGORY, '_D')
+#       AND t_diagcat_acute.LANGUAGEID = 'no'
+# LEFT JOIN text t_diagcat
+#        ON t_diagcat.ID = CONCAT('EMP11_PAINDIAG_CATEGORY_L_', epd.PAINDIAG_CATEGORY, '_D')
+#       AND t_diagcat.LANGUAGEID = 'no'
+# LEFT JOIN text t_maindiag
+#        ON t_maindiag.ID = CONCAT('EMP11_PAINMAINDIAG_L_', epd.PAINMAINDIAG, '_D')
+#       AND t_maindiag.LANGUAGEID = 'no'
+# ", userInput)
+#
+#   }
 
   if(tableName == "timetodeath") {
 
@@ -1314,5 +1341,100 @@ bygg_query = function(registryName, tableName, userInput) {
 
   }
 
+  if(tableName == "avdelingsoversikt") {
+
+    query = paste0("SELECT
+      d.ID as DEPARTMENT_ID,
+      d.CENTREID AS DEPARTMENT_CENTREID,
+      d.NAME AS DEPARTMENT_NAME,
+      d.SHORTNAME AS DEPARTMENT_SHORTNAME,
+      d.RESH AS DEPARTMENT_RESH,
+      d.ACTIVE AS DEPARTMENT_ACTIVE,
+      d.LOCATION_ID ,
+      l.CENTREID AS LOCATION_CENTREID,
+      l.NAME AS LOCATIONNAME,
+      l.SHORTNAME AS LOCATION_SHORTNAME ,
+      l.ACTIVE AS LOCATION_ACTIVE
+      FROM departments d
+      INNER JOIN location l on d.LOCATION_ID = l.ID "
+      ,
+      userInput
+      )
+  }
+
+  if(tableName == "forlopsoversikt") {
+
+    query = paste0("SELECT
+                   -- Hospital/centre stuff
+                   mce.CENTREID AS AvdResh,
+                   -- Patient stuff
+                   CAST(p.ID AS CHAR(10)) AS PasientID,
+                   -- NEXT 6 left empty for now
+                   CAST(NULL AS CHAR(4)) AS PostNr,
+                   CAST(NULL AS CHAR(50)) AS PostSted,
+                   CAST(NULL AS CHAR(50)) AS Kommune,
+                   CAST(NULL AS CHAR(4)) AS Kommunenr,
+                   CAST(NULL AS CHAR(50)) AS Fylke,
+                   CAST(NULL AS CHAR(2)) AS Fylkenr,
+                   p.SSN AS KryptertFnr,
+                   CASE
+                   WHEN IFNULL(p.GENDER,0) = 0 THEN 'Ikke angitt'
+                   WHEN p.GENDER = 1 THEN 'Mann'
+                   WHEN p.GENDER = 2 THEN 'Kvinne'
+                   WHEN p.GENDER = 9 THEN 'Ikke relevant'
+                   ELSE 'Ukjent'
+                   END AS PasientKjonn,
+                   CASE
+                   WHEN p.GENDER = 1 THEN '1'
+                   WHEN p.GENDER = 2 THEN '0'
+                   ELSE NULL
+                   END AS erMann,
+                   datediff(mce.REGISTERED_DATE, p.BIRTH_DATE) / 365.25 AS PasientAlder,
+                   p.BIRTH_DATE AS Fodselsdato,
+                   CAST(NULL AS CHAR(10)) AS Norsktalende,
+                   CAST(NULL AS CHAR(30)) AS Sivilstatus,
+                   CAST(NULL AS CHAR(50)) AS UtdanningSSB,
+                   p.DECEASED AS Avdod,
+                   p.DECEASED_DATE AS AvdodDato,
+                   -- Event stuff
+                   CAST(mce.MCEID AS CHAR(10)) AS ForlopsID,
+                   CAST(LEAST( emp11.STATUS, IFNULL(emp12.STATUS,1), IFNULL(emp21.STATUS,1), IFNULL(emp22.STATUS,1), IFNULL(hads.STATUS,1), mce.STATUS, IFNULL(patreg.STATUS,1), IFNULL(pateval.STATUS,1)) AS CHAR(2)) AS BasisRegStatus,
+                   CASE mce.MCETYPE
+                   WHEN 1 THEN 'Ikke tilsett'
+                   WHEN 2 THEN 'Ikke inkl og/el samtykke'
+                   WHEN 3 THEN 'Inklusjon og samtykke'
+                   ELSE 'Ukjent'
+                   END AS ForlopsType1,
+                   CAST(mce.MCETYPE AS CHAR(2)) AS ForlopsType1Num,
+                   CASE
+                   WHEN mce.INCLUDED = 1 AND mce.CONSENT = 1 THEN 'Inkludert'
+                   WHEN mce.INCLUDED = 1 AND mce.SUPERVISION=1 AND mce.SUFFICIENT = 1 AND mce.NORWEGIAN = 1 AND mce.AGE >= 18 AND mce.COGNITIVE = 0  AND mce.CONSENT != 1 THEN 'Inkluderbar'
+                   WHEN mce.SUPERVISION > 1 THEN 'Ikke tilsett'
+                   ELSE 'Ikke inkluderbar'
+                   END AS ForlopsType2,
+                   CASE
+                   WHEN mce.INCLUDED = 1 AND mce.CONSENT = 1 THEN '1'
+                   WHEN mce.INCLUDED = 1 AND mce.SUPERVISION=1 AND mce.SUFFICIENT = 1 AND mce.NORWEGIAN = 1 AND mce.AGE >= 18 AND mce.COGNITIVE = 0  AND mce.CONSENT != 1 THEN '2'
+                   WHEN mce.SUPERVISION > 1 THEN '3'
+                   ELSE '4'
+                   END AS ForlopsType2Num,
+                   mce.REGISTERED_DATE AS HovedDato,
+                   CAST(NULL AS CHAR(10)) AS KobletForlopsID,
+                   -- Followup stuff
+                   CAST(NULL AS CHAR(2))  AS OppflgRegStatus,
+                   '0' AS ErOppflg,
+                   CAST(NULL AS CHAR(30)) AS OppflgStatus,
+                   CAST(NULL AS CHAR(6)) AS OppflgSekNr
+                   FROM
+                   mce mce INNER JOIN patient p ON mce.PATIENT_ID = p.ID
+                   INNER JOIN emp11 emp11 ON mce.MCEID = emp11.MCEID
+                   LEFT OUTER JOIN emp12 emp12 ON mce.MCEID = emp12.MCEID  AND emp12.FORMORDER = 1
+                   LEFT OUTER JOIN emp12 emp21 ON mce.MCEID = emp21.MCEID  AND emp21.FORMORDER = 2
+                   LEFT OUTER JOIN emp22 emp22 ON mce.MCEID = emp22.MCEID
+                   LEFT OUTER JOIN hads hads ON mce.MCEID = hads.MCEID
+                   LEFT OUTER JOIN pateval pateval ON mce.MCEID = pateval.MCEID
+                   LEFT OUTER JOIN patreg patreg ON mce.MCEID = patreg.MCEID ",
+                   userInput)
+  }
   return(query)
 }
