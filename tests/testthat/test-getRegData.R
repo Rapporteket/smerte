@@ -170,6 +170,15 @@ test_that("tables can be dumped", {
 
   expect_equal(class(
     getDataDump(registryName = "testDb",
+                reshId = 22,
+                userRole = "LC",
+                tableName = "avdelingsoversikt",
+                fromDate = Sys.Date(),
+                toDate = Sys.Date())
+  ), "data.frame")
+
+  expect_equal(class(
+    getDataDump(registryName = "testDb",
                 reshId = 0,
                 userRole = "SC",
                 tableName = "forlopsoversikt",
