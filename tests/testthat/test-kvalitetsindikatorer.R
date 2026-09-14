@@ -9,13 +9,13 @@ testdata <- data.frame(
     AntTilsFysioT    = c(0L, 0L, 0L, 0L, NA_integer_, 0L),
     AntTilsPsyk      = c(0L, 0L, 0L, 0L, NA_integer_, 0L),
     AntTilsSosio     = c(0L, 0L, 0L, 0L, NA_integer_, 0L),
-    AntTilsKonfLege  = c(0L, 0L, 0L, 0L, NA_integer_, 0L),
+    AntTilsKonfLege  = c(0L, 0L, 0L, 0L, NA_integer_, 0L)
   )
 
-  expect_equal(ki_behandlertils(testdata) |>
+  expect_equal(ki_behandlertilsyn(testdata) |>
                  select(ki_teller),
                c(FALSE, FALSE, TRUE, TRUE, FALSE, FALSE))
-  expect_equal(ki_behandlertils(testdata) |> select(ki_nevner),
+  expect_equal(ki_behandlertilsyn(testdata) |> select(ki_nevner),
                rep(TRUE, 6))
   expect_error(ki_behandlertilsyn(testdata |> select(-AntTilsPsyk)),
                "Variabelen 'AntTilsPsyk' må være med i inndata. ")

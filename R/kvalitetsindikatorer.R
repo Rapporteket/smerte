@@ -29,6 +29,6 @@
 #'
 #' @examples
 #' d_behtils = ki_behandlertilsyn(d)
-ki_behandlertilsyn = function() {
+ki_behandlertilsyn = function(d) {
 
 }
