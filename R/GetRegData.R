@@ -1354,10 +1354,10 @@ bygg_query = function(registryName, tableName, userInput) {
       d.SHORTNAME AS DEPARTMENT_SHORTNAME,
       d.RESH AS DEPARTMENT_RESH,
       d.ACTIVE AS DEPARTMENT_ACTIVE,
-      d.LOCATION_ID ,
+      d.LOCATION_ID,
       l.CENTREID AS LOCATION_CENTREID,
       l.NAME AS LOCATIONNAME,
-      l.SHORTNAME AS LOCATION_SHORTNAME ,
+      l.SHORTNAME AS LOCATION_SHORTNAME,
       l.ACTIVE AS LOCATION_ACTIVE
       FROM departments d
       INNER JOIN location l on d.LOCATION_ID = l.ID "
