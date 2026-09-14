@@ -301,16 +301,14 @@ appServer <- function(input, output, session) {
                              toDate = input$dumpDateRange[2],
                              session = session)
 
-    if (userRole %in% c("SC", "LC")) {
-      if (input$dumpDataSet %in% c(#"smertediagnoser",
-                                   "smertediagnosernum",
-                                   "forlopsoversikt")) {
+    if (input$dumpDataSet %in%
+        c(#"smertediagnoser",
+          "smertediagnosernum",
+          "forlopsoversikt")) {
 
         d = d |> fikse_sykehusnavn("AvdResh") |>
           relocate(SykehusNavn,
                    .after = "AvdResh")
-      }
-
     }
 
     if (type == "xlsx-csv") {
