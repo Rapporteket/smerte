@@ -746,6 +746,7 @@ getDataDump <- function(registryName, reshId, userRole, tableName, fromDate, toD
   }
 
   # Spesialtilfelle for avdelingsoversikt (skal ikke kobles mot mce)
+  # Nasjonal instans (reshId = 0) skal se alle avdelinger
   if (tableName == "avdelingsoversikt") {
     if (reshId != 0) {
     userInput = str_replace(
