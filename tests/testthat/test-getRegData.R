@@ -49,7 +49,7 @@ test_config <- paste0(
   "reg:",
   "\n  smerte:",
   "\n    nationalAccess:",
-  "\n      reshId : 10",
+  "\n      reshId : 0",
   "\n      userRole : SC",
   "\n      nameKey : Nasjonal",
   "\n    ousAccess:",
@@ -91,8 +91,8 @@ test_that(".getDeps returnerer forventet utdata", {
     "22"
   )
   expect_identical(
-    smerte:::.getDeps(reshId = 10, userRole = "SC"),
-    "10"
+    smerte:::.getDeps(reshId = 0, userRole = "SC"),
+    "0"
   )
   expect_error(
     smerte:::.getDeps(reshId = "AND", userRole = "SC"),
@@ -151,7 +151,7 @@ test_that("tables can be dumped", {
   check_db()
   expect_equal(class(
     getDataDump(registryName = "testDb",
-                reshId = 10,
+                reshId = 0,
                 userRole = "SC",
                 tableName = "allevarnum",
                 fromDate = Sys.Date(),
@@ -161,7 +161,7 @@ test_that("tables can be dumped", {
 
   expect_equal(class(
     getDataDump(registryName = "testDb",
-                reshId = 10,
+                reshId = 0,
                 userRole = "SC",
                 tableName = "avdelingsoversikt",
                 fromDate = Sys.Date(),
@@ -170,7 +170,7 @@ test_that("tables can be dumped", {
 
   expect_equal(class(
     getDataDump(registryName = "testDb",
-                reshId = 10,
+                reshId = 0,
                 userRole = "SC",
                 tableName = "forlopsoversikt",
                 fromDate = Sys.Date(),
@@ -188,7 +188,7 @@ test_that("tables can be dumped", {
    # ), "data.frame")
   # expect_equal(class(
     # getDataDump(registryName = "testDb",
-    #             reshId = 10,
+    #             reshId = 0,
     #             userRole = "SC",
     #             tableName = "smertediagnoser",
     #             fromDate = Sys.Date(),
@@ -197,7 +197,7 @@ test_that("tables can be dumped", {
     # ), "data.frame")
   expect_equal(class(
     getDataDump(registryName = "testDb",
-                reshId = 10,
+                reshId = 0,
                 userRole = "SC",
                 tableName = "smertediagnosernum",
                 fromDate = Sys.Date(),
