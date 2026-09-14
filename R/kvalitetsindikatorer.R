@@ -7,7 +7,7 @@
 #' Dette finnes ved å telle opp antall registrerte tilsyn for
 #' Lege (`AntTilsLege`), Sykepleier (`AntTilsSykPleier`),
 #' Fysioterapeut (`AntTilsFysioT`), Psykolog (`AntTilsPsyk`),
-#' Sosionom (`AntTilsSosio`), og Konferert med lege (`KonfLege`).
+#' Sosionom (`AntTilsSosio`), og Konferert med lege (`AntTilsKonfLege`).
 #'
 #' Funksjonen teller opp antall registrerte tilsyn for overnevnte variabler
 #' og returnerer `ki_nevner = TRUE/FALSE` avhengig av om pasienten skal
