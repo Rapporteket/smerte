@@ -1360,7 +1360,7 @@ bygg_query = function(registryName, tableName, userInput) {
       l.SHORTNAME AS LOCATION_SHORTNAME,
       l.ACTIVE AS LOCATION_ACTIVE
       FROM departments d
-      INNER JOIN location l on d.LOCATION_ID = l.ID "
+      LEFT JOIN location l on d.LOCATION_ID = l.ID "
       ,
       userInput
       )
