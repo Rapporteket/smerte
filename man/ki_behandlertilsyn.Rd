@@ -12,8 +12,8 @@ ki_behandlertilsyn(d)
 \value{
 Returnerer Inndatasett med følgende ekstra variabler.
 
-\item{ki_teller}{TRUE/FALSE avhengig av om pasienten skal være med i teller.}
-\item{ki_nevner}{TRUE/FALSE avhengig av om pasienten skal være med i nevner.}
+\item{ki_krit_teller}{TRUE/FALSE avhengig av om pasienten skal være med i teller.}
+\item{ki_krit_nevner}{TRUE/FALSE avhengig av om pasienten skal være med i nevner.}
 }
 \description{
 Indikatoren regner ut andel pasienter som mottar tilsyn fra to eller flere
@@ -24,10 +24,10 @@ Fysioterapeut (`AntTilsFysioT`), Psykolog (`AntTilsPsyk`),
 Sosionom (`AntTilsSosio`), og Konferert med lege (`AntTilsKonfLege`).
 
 Funksjonen teller opp antall registrerte tilsyn for overnevnte variabler
-og returnerer `ki_nevner = TRUE/FALSE` avhengig av om pasienten skal
+og returnerer `ki_krit_nevner = TRUE/FALSE` avhengig av om pasienten skal
 inkluderes i indikator.
-`ki_teller = TRUE/FALSE` avhengig av om det er registrert to eller flere
-tilsyn og `ki_nevner = TRUE`.
+`ki_krit_teller = TRUE/FALSE` avhengig av om det er registrert to eller flere
+tilsyn og `ki_krit_nevner = TRUE`.
 
 Utdata kan videre mates inn i `rapwhale::aggreger_ki_prop()` for å beregne
 andel for aktuelle undergrupper.

@@ -48,6 +48,7 @@ importFrom(dplyr,
   left_join,
   mutate,
   n,
+  pick,
   recode,
   relocate,
   rename,
@@ -158,6 +159,7 @@ importFrom(stats,setNames)
 importFrom(stringr,str_replace_all)
 importFrom(tibble,
   as_tibble,
+  tibble,
   tribble
 )
 importFrom(tidyr,
