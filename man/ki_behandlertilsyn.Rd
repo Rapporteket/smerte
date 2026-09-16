@@ -10,28 +10,35 @@ ki_behandlertilsyn(d)
 \item{d}{datasett som inneholder de radene vi skal beregne indikator for.}
 }
 \value{
-Returnerer Inndatasett med følgende ekstra variabler.
-
-\item{ki_krit_teller}{TRUE/FALSE avhengig av om pasienten skal være med i teller.}
-\item{ki_krit_nevner}{TRUE/FALSE avhengig av om pasienten skal være med i nevner.}
+Returnerer inndata, med ekstra kolonner `ki_krit_teller` og
+`ki_krit_nevner`egnet for bruk med [rapwhale::aggreger_ki_prop()].
 }
 \description{
 Indikatoren regner ut andel pasienter som mottar tilsyn fra to eller flere
 behandlergrupper.
 Dette finnes ved å telle opp antall registrerte tilsyn for
-Lege (`AntTilsLege`), Sykepleier (`AntTilsSykPleier`),
-Fysioterapeut (`AntTilsFysioT`), Psykolog (`AntTilsPsyk`),
-Sosionom (`AntTilsSosio`), og Konferert med lege (`AntTilsKonfLege`).
+Lege (**AntTilsLege**), Sykepleier (**AntTilsSykPleier**),
+Fysioterapeut (**AntTilsFysioT**), Psykolog (**AntTilsPsyk**),
+Sosionom (**AntTilsSosio**), og Konferert med lege (**AntTilsKonfLege**).
 
 Funksjonen teller opp antall registrerte tilsyn for overnevnte variabler
-og returnerer `ki_krit_nevner = TRUE/FALSE` avhengig av om pasienten skal
-inkluderes i indikator.
-`ki_krit_teller = TRUE/FALSE` avhengig av om det er registrert to eller flere
-tilsyn og `ki_krit_nevner = TRUE`.
+og returnerer `ki_krit_nevner` er `TRUE` eller `FALSE` avhengig av om pasienten er
+tilsett av behandler og dermed skal inkluderes i indikator.
+`ki_krit_teller` er `TRUE` hvis det er registrert to eller flere
+tilsyn samtidig som  `ki_krit_nevner` er `TRUE`.
 
-Utdata kan videre mates inn i `rapwhale::aggreger_ki_prop()` for å beregne
-andel for aktuelle undergrupper.
+Utdata kan videre mates inn i [rapwhale::aggreger_ki_prop()], gruppert etter
+ønske for å beregne andel for aktuelle undergrupper.
 }
 \examples{
+d = tibble::tibble(
+AntTilsLege      = c(0L, 1L, 2L, 5L, NA_integer_, NA_integer_),
+AntTilsSykPleier = c(0L, 0L, 0L, 0L, NA_integer_, 0L),
+AntTilsFysioT    = c(0L, 0L, 0L, 0L, NA_integer_, 0L),
+AntTilsPsyk      = c(0L, 0L, 0L, 0L, NA_integer_, 0L),
+AntTilsSosio     = c(0L, 0L, 0L, 0L, NA_integer_, 0L),
+AntTilsKonfLege  = c(0L, 0L, 0L, 0L, NA_integer_, 0L),
+Tilsett          = c(1L, 1L, 1L, 1L, 4L, 1L))
+
 d_behtils = ki_behandlertilsyn(d)
 }
