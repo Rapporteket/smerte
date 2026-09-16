@@ -42,15 +42,18 @@ Imports:
     knitr,
     lubridate,
     rapbase,
+    rapwhale (>= 0.5.1),
     readr,
     rlang,
     shiny,
     stringr,
     tibble, 
-    tidyr, 
+    tidyr,
+    tidyselect,
     zoo
 Remotes:
     Rapporteket/rapbase@main
+    Rapporteket/rapwhale@main
 Suggests: 
     covr,
     lintr,

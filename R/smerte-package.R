@@ -2,6 +2,8 @@
 "_PACKAGE"
 
 ## usethis namespace: start
+#' @importFrom assertthat assert_that
+#' @importFrom assertthat has_name
 #' @importFrom bookdown html_document2
 #' @importFrom DBI dbExecute
 #' @importFrom dplyr across
@@ -77,7 +79,9 @@
 #' @importFrom rapbase statsInput
 #' @importFrom rapbase statsServer2
 #' @importFrom rapbase statsUI
+#' @importFrom rapwhale kjed_ord
 #' @importFrom rlang :=
+#' @importFrom rlang .data
 #' @importFrom readr write_csv2
 #' @importFrom readr write_excel_csv2
 #' @importFrom shiny dateRangeInput
@@ -106,6 +110,7 @@
 #' @importFrom shiny sidebarPanel
 #' @importFrom shiny tabPanel
 #' @importFrom shiny tagList
+#' @importFrom tidyselect all_of
 #' @importFrom shiny uiOutput
 #' @importFrom stats setNames
 #' @importFrom stringr str_replace_all

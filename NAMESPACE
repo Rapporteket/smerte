@@ -35,6 +35,10 @@ export(reportProcessor)
 export(smerteApp)
 importFrom(DBI,dbExecute)
 importFrom(DT,dataTableOutput)
+importFrom(assertthat,
+  assert_that,
+  has_name
+)
 importFrom(bookdown,html_document2)
 importFrom(dplyr,
   across,
@@ -118,6 +122,7 @@ importFrom(rapbase,
   statsServer2,
   statsUI
 )
+importFrom(rapwhale,kjed_ord)
 importFrom(readr,
   write_csv2,
   write_excel_csv2
@@ -167,3 +172,4 @@ importFrom(tidyr,
   replace_na,
   spread
 )
+importFrom(tidyselect,all_of)
