@@ -76,52 +76,16 @@ messagebehtils <- ""
 
 # Klargjøre variabler for behandlertilsyn her
 if (dim(dat)[1] < 1) {
-  messagebehtils <- "I den valgte tidsperioden er det ikke nok data til å angi denne kvalitetsindikatoren."
+messagebehtils <- "I den valgte tidsperioden er det ikke nok data til å angi denne kvalitetsindikatoren."
 } else {
-  if (!isRapContext()) {
-    #Må gjøre variablene numerisk for bruk i tabell
-    dat$AntTilsLege <- as.numeric(levels(dat$AntTilsLege))[dat$AntTilsLege]
-    #dat$AntTilsLege <- as.numeric((dat$AntTilsLege))
-    dat$AntTilsSykPleier <- as.numeric(levels(dat$AntTilsSykPleier))[dat$AntTilsSykPleier]
-    #dat$AntTilsSykPleier <- as.numeric((dat$AntTilsSykPleier))
-    dat$AntTilsFysioT <- as.numeric(levels(dat$AntTilsFysioT))[dat$AntTilsFysioT]
-    #dat$AntTilsFysioT <- as.numeric(dat$AntTilsFysioT)
-    dat$AntTilsPsyk <- as.numeric(levels(dat$AntTilsPsyk))[dat$AntTilsPsyk]
-    #dat$AntTilsPsyk <- as.numeric(dat$AntTilsPsyk)
-    dat$AntTilsSosio <- as.numeric(levels(dat$AntTilsSosio))[dat$AntTilsSosio]
-    dat$AntPasTils <- as.numeric(levels(dat$AntPasTils))[dat$AntPasTils]
-  }
   
   #Tar først ut alle som ikke har fått tilsyn
-  behdat <- dat[!(dat$AntPasTils == 0 | is.na(dat$AntPasTils)), ]
+  d_behandlertilsyn <- ki_behandlertilsyn(dat)
   
-  #Lager tom variabel for antall behandlertilsyn som skal fylles inn
-  behdat$behtils <- NA
+  tabto = aggreger_ki_prop(d_behandlertilsyn) |> 
+    select(ki_teller, ki_nevner, est)
   
-  #Sjekk om to eller flere behandlergrupper ikke er NA
-  for(i in 1:dim(behdat)[1]){
-    j = 0 #summerer antall behandlere
-    if(!(is.na(behdat$AntTilsLege[i]))){
-      j <- j+1}
-    if(!(is.na(behdat$AntTilsSykPleier[i]))){
-      j <- j+1}
-    if(!(is.na(behdat$AntTilsPsyk[i]))){
-      j <- j+1}
-    if(!(is.na(behdat$AntTilsFysioT[i]))){
-      j <- j+1}
-    if(!(is.na(behdat$AntTilsSosio[i]))){
-      j <- j+1}
-    if(j >= 2){behdat$behtils[i] <- 1} else{behdat$behtils[i] <- 0} # Setter til 1 dersom to eller flere behandlere, 0 ellers.
-    j = 0 #setter til 0 før sum for neste pasient telles opp
-  }
-  
-  #Verdier som skal vises i tabell for denne indikatoren
-  ant <- sum(behdat$behtils == 1)
-  totant <- sum(behdat$behtils == 1) + sum(behdat$behtils == 0)
-  and <- sum(behdat$behtils == 1) / (sum(behdat$behtils == 1) + sum(behdat$behtils == 0))
-  antikketils <- sum(dat$AntPasTils == 0 | is.na(dat$AntPasTils)) #antall som ikke har hatt noe tilsyn
-  
-  tabto <- cbind(ant, totant, and)
+  antikketils = nrow(d_behandlertilsyn |> filter(!ki_krit_nevner))
   
   mst(
     tab = tabto,
@@ -141,25 +105,23 @@ Figuren under viser hvordan andelen har fordelt seg i løpet av året.
 
 messagetils <- ""
 
-if (dim(behdat)[1] < 1) {
-  messagetils <- "I den valgte tidsperioden er det ikke nok data til å vise figur for denne kvalitetsindikatoren."
-} else {
+# if (dim(d_behandlertilsyn)[1] < 1) {
+#   messagetils <- "I den valgte tidsperioden er det ikke nok data til å vise figur for denne kvalitetsindikatoren."
+# } else {
   #Aggregate by month for plot
   #Grouping by month and finding frequency for behtils, then filtering on the "correct" frequency (if not, we get the inverse too)
-  plotdat <- behdat |>
-    group_by(month = monthname, behtils) |>
-    summarise(n = n()) |>
-    mutate(freq = n/sum(n)) |>
-    filter(behtils == 1)
+  plotdat <- d_behandlertilsyn |>
+    group_by(month = monthname) |>
+    aggreger_ki_prop()
   
   #Plotting plotdat
-  ggplot(plotdat, aes(month, freq)) + 
+  ggplot(plotdat, aes(month, est)) + 
     geom_line(aes(group = 1)) + geom_point() +
     scale_x_date(date_labels = "%m-%y") +
     labs(x = "Måned", y = "Andel", subtitle = "Andel tilsett av to eller flere faggrupper per måned") + theme_classic() +
     theme(axis.text.x = element_text(size = 9), plot.margin = unit(c(1, 1, 2, 0), "cm"), axis.title.y = element_text(margin = margin(t = 0, r = 10, b = 0, l = 0)), axis.title.x = element_text(margin = margin(t = 10, r = 0, b = 0, l = 0))) 
   
-}
+# }
 
 ```
 `r messagetils`
