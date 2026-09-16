@@ -90,52 +90,17 @@ messagebehtils <- ""
 if (dim(dat)[1] < 1) {
   messagebehtils <- "I den valgte tidsperioden er det ikke nok data til å angi denne kvalitetsindikatoren."
 } else {
-  if (!isRapContext()) {
-    #Må gjøre variablene numerisk for bruk i tabell
-    dat$AntTilsLege <- as.numeric(levels(dat$AntTilsLege))[dat$AntTilsLege]
-    dat$AntTilsSykPleier <- as.numeric(levels(dat$AntTilsSykPleier))[dat$AntTilsSykPleier]
-    dat$AntTilsFysioT <- as.numeric(levels(dat$AntTilsFysioT))[dat$AntTilsFysioT]
-    dat$AntTilsPsyk <- as.numeric(levels(dat$AntTilsPsyk))[dat$AntTilsPsyk]
-    dat$AntTilsSosio <- as.numeric(levels(dat$AntTilsSosio))[dat$AntTilsSosio]
-    #dat$AntPasTils <- as.numeric(levels(dat$AntPasTils))[dat$AntPasTils] er tydeligvis numerisk i min datadump
-  }
-  
-  #I nasjonal har alle fått tilsyn => trenger ikke å da vekk 0 tilsyn eller NA.
-  
-  #Lager tom variabel for antall behandlertilsyn som skal fylles inn
-  dat$behtils <- NA
-  
-  #Sjekk om to eller flere behandlergrupper ikke er NA
-  #Trenger bare ta bort NA, pga "null" fra factor blir til NA her. Dvs ingen har 0. NB: gjelder dette for tall direkte også?
-  for(i in 1:dim(dat)[1]){
-    j = 0 #summerer antall behandlere
-    if(!(is.na(dat$AntTilsLege[i]))){
-      j <- j+1}
-    if(!(is.na(dat$AntTilsSykPleier[i]))){
-      j <- j+1}
-    if(!(is.na(dat$AntTilsPsyk[i]))){
-      j <- j+1}
-    if(!(is.na(dat$AntTilsFysioT[i]))){
-      j <- j+1}
-    if(!(is.na(dat$AntTilsSosio[i]))){
-      j <- j+1}
-    if(j >= 2){dat$behtils[i] <- 1} else{dat$behtils[i] <- 0} # Setter til 1 dersom to eller flere behandlere, 0 ellers.
-    j = 0 #setter til 0 før sum for neste pasient telles opp
-  }
-  
-  #Til tabell
-  kvalind1 <- dat |>
-    group_by(SykehusNavn, behtils) |>
-    summarise(n = n()) |>
-    mutate( ant = sum(n), freq = n/sum(n)) |>
-    filter(behtils == 1)
-  #Tar bort kolonne for behtils oppfylt
-  kvalind1 <- kvalind1 |>
-    select(SykehusNavn, n, ant, freq)
+  d_ki_behandlertilsyn = smerte::ki_behandlertilsyn(dat) 
+   
+  d_ki_behandlertilsyn_per_sykehus = d_ki_behandlertilsyn |> 
+    group_by(SykehusNavn) |> 
+    rapwhale::aggreger_ki_prop() |> 
+    select(-konfint_nedre, -konfint_ovre) |> 
+    relocate(SykehusNavn, ki_teller, ki_nevner, est)
   
   #Tabell
   mst(
-    tab = kvalind1,
+    tab = d_ki_behandlertilsyn_per_sykehus,
     col_names = c("Sykehus", "Antall", "Totalt antall", "Andel"),
     type = params$tableFormat,
     cap = paste0("Oversikt over andel pasienter som har hatt tilsyn av to eller flere behandlergrupper."),
@@ -154,26 +119,29 @@ if (dim(dat)[1] < 1) {
   messagetilsfig <- "I den valgte tidsperioden er det ikke nok data til å vise figur for denne kvalitetsindikatoren."
 } else {
   #Aggregate by month for plot
-  
-  ind1plot <- dat |>
-    group_by(SykehusNavn, monthname, behtils) |>
-    summarise(n = n()) |>
-    mutate( ant = sum(n), freq = n/sum(n)) |>
-    filter(behtils == 1)
-  
-  #Adding the mean of the groups each month
-  meanind1plot <- ind1plot |> 
-    group_by(monthname) |>
-    summarise(freq = mean(freq)) |>
-    mutate(SykehusNavn="Snitt", .before = monthname)
+  ind1plot = d_ki_behandlertilsyn |>
+    group_by(SykehusNavn, monthname) |> 
+    aggreger_ki_prop()
+    
+  meanind1plot = d_ki_behandlertilsyn |> 
+    group_by(monthname) |> 
+    aggreger_ki_prop() |> 
+    add_column(SykehusNavn = "Snitt")
   
   #Merging the two tibbles
   ind1plot <- bind_rows(ind1plot, meanind1plot)
   
   #Plotting plotdat
-  ggplot(ind1plot, aes(monthname, freq)) + 
-    geom_line(aes(group = factor(SykehusNavn), colour=factor(SykehusNavn)), size = 0.5) +
-    geom_point(aes(group = factor(SykehusNavn), colour=factor(SykehusNavn)), size = 1) + 
+  ggplot(ind1plot, aes(monthname, est)) + 
+    geom_line(data = ind1plot |> filter(SykehusNavn != "Snitt"), 
+              aes(group = factor(SykehusNavn), colour=factor(SykehusNavn)), size = 0.5) +
+    geom_point(data = ind1plot |> filter(SykehusNavn != "Snitt"), 
+               aes(group = factor(SykehusNavn), colour=factor(SykehusNavn)), size = 1) + 
+    geom_line(data = ind1plot |> filter(SykehusNavn == "Snitt"), 
+              aes(group = SykehusNavn, colour=SykehusNavn), size = 1.5) +
+    geom_point(data = ind1plot |> filter(SykehusNavn == "Snitt"), 
+               aes(group = SykehusNavn, colour=SykehusNavn), size = 1.3) + 
+    
     labs(x = "Måned", y = "Andel", subtitle = "Andel tilsett av to eller flere faggrupper (månedlig)", color = "Sykehus") +
     theme_classic() +
     theme(axis.text.x = element_text(size = 8.5),
@@ -185,7 +153,6 @@ if (dim(dat)[1] < 1) {
           axis.title.x = element_text(margin = margin(t = 10, r = 0, b = 0, l = 0))
     )
 }
-
 ```
 `r messagetilsfig`
 
