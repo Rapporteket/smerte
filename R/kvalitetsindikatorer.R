@@ -49,11 +49,9 @@ ki_behandlertilsyn = function(d) {
                            "' må være med i inndata."))
 
   d |> mutate(
-    across(all_of(indikatorvariabler), \(x) replace_na(x, replace = 0)),
-    ki_krit_nevner = TRUE,
-    ki_krit_teller = ki_krit_nevner &
-      (rowSums(pick(all_of(indikatorvariabler))) >= 2)
+    across(all_of(indikatorvariabler[indikatorvariabler != "Tilsett"]), \(x) replace_na(x, replace = 0)),
+    ki_krit_nevner = .data$Tilsett == 1,
+    ki_krit_teller = .data$ki_krit_nevner &
+      (rowSums(pick(all_of(indikatorvariabler[indikatorvariabler != "Tilsett"]))) >= 2)
     )
 }
-
-
