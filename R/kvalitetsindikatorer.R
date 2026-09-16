@@ -38,11 +38,15 @@
 ki_behandlertilsyn = function(d) {
 
   indikatorvariabler = c("AntTilsLege", "AntTilsSykPleier", "AntTilsFysioT",
-                         "AntTilsPsyk", "AntTilsSosio", "AntTilsKonfLege")
+                         "AntTilsPsyk", "AntTilsSosio", "AntTilsKonfLege",
+                         "Tilsett")
 
-  assertthat::assert_that(all(assertthat::has_name(d, indikatorvariabler)),
-                          msg = paste0("'",
-                                       rapwhale::kjed_ord(indikatorvariabler[!indikatorvariabler %in% names(d)], "', '", "' og '"), "' må være med i inndata."))
+  assert_that(all(has_name(d, indikatorvariabler)),
+              msg = paste0("'",
+                           kjed_ord(indikatorvariabler[!indikatorvariabler %in% names(d)],
+                                    skiljeteikn = "', '",
+                                    og = "' og '"),
+                           "' må være med i inndata."))
 
   d |> mutate(
     across(all_of(indikatorvariabler), \(x) replace_na(x, replace = 0)),
