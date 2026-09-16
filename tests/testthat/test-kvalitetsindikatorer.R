@@ -9,7 +9,8 @@ testdata <- tibble(
     AntTilsFysioT    = c(0L, 0L, 0L, 0L, NA_integer_, 0L),
     AntTilsPsyk      = c(0L, 0L, 0L, 0L, NA_integer_, 0L),
     AntTilsSosio     = c(0L, 0L, 0L, 0L, NA_integer_, 0L),
-    AntTilsKonfLege  = c(0L, 0L, 0L, 0L, NA_integer_, 0L)
+    AntTilsKonfLege  = c(0L, 0L, 0L, 0L, NA_integer_, 0L),
+    Tilsett          = c(1L, 1L, 1L, 1L, 4L, 1L)
   )
 
 testresultat = tibble(
@@ -19,7 +20,8 @@ testresultat = tibble(
   AntTilsPsyk      = c(0L, 0L, 0L, 0L, 0L, 0L),
   AntTilsSosio     = c(0L, 0L, 0L, 0L, 0L, 0L),
   AntTilsKonfLege  = c(0L, 0L, 0L, 0L, 0L, 0L),
-  ki_krit_nevner   = c(rep(TRUE,6)),
+  Tilsett          = c(1L, 1L, 1L, 1L, 4L, 1L),
+  ki_krit_nevner   = c(rep(TRUE,4), FALSE, TRUE),
   ki_krit_teller   = c(FALSE, FALSE, TRUE, TRUE, FALSE, FALSE)
   )
 
@@ -28,6 +30,8 @@ testresultat = tibble(
 
   expect_error(ki_behandlertilsyn(testdata |> select(-AntTilsPsyk)),
                "'AntTilsPsyk' må være med i inndata.")
+  expect_error(ki_behandlertilsyn(testdata |> select(-Tilsett)),
+               "'Tilsett' må være med i inndata.")
   expect_error(ki_behandlertilsyn(testdata |> select(-AntTilsPsyk, -AntTilsSosio, -AntTilsKonfLege)),
                "'AntTilsPsyk', 'AntTilsSosio' og 'AntTilsKonfLege' må være med i inndata.")
 
