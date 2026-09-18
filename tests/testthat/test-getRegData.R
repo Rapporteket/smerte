@@ -49,7 +49,7 @@ test_config <- paste0(
   "reg:",
   "\n  smerte:",
   "\n    nationalAccess:",
-  "\n      reshId : 10",
+  "\n      reshId : 0",
   "\n      userRole : SC",
   "\n      nameKey : Nasjonal",
   "\n    ousAccess:",
@@ -78,6 +78,30 @@ test_that("relevant test database and tables can be made", {
 
   }
   rapbase::rapCloseDbConnection(con)
+})
+
+test_that(".getDeps returnerer forventet utdata", {
+
+  expect_identical(
+    smerte:::.getDeps(reshId = 22, userRole = "LC"),
+    "21, 22"
+  )
+  expect_identical(
+    smerte:::.getDeps(reshId = 22, userRole = "LU"),
+    "22"
+  )
+  expect_identical(
+    smerte:::.getDeps(reshId = 0, userRole = "SC"),
+    "0"
+  )
+  expect_error(
+    smerte:::.getDeps(reshId = "AND", userRole = "SC"),
+    "'AND' er ikke en gyldig reshId."
+  )
+  expect_error(
+    smerte:::.getDeps(reshId = 22, userRole = "SP"),
+    "'SP' er ikke en gyldig rolle."
+  )
 })
 
 # onto main testing
@@ -123,30 +147,73 @@ test_that("name-id mapping can be obtained", {
                "list")
 })
 
-# test_that("tables can be dumped", {
-#   check_db()
-#   # expect_equal(class(
-#   #   getDataDump("testDb", "allevar", Sys.Date(), Sys.Date())
-#   # ), "data.frame")
-#   expect_equal(class(
-#     getDataDump("testDb", tableName = "allevarnum", userRole = "SC", Sys.Date(), Sys.Date())
-#   ), "data.frame")
-#   # expect_equal(class(
-#   #   getDataDump("testDb", "avdelingsoversikt", Sys.Date(), Sys.Date())
-#   # ), "data.frame")
-#   # expect_equal(class(
-#   #   getDataDump("testDb", "forlopsoversikt", Sys.Date(), Sys.Date())
-#   # ), "data.frame")
-#   # expect_equal(class(
-#   #   getDataDump("testDb", "skjemaoversikt", Sys.Date(), Sys.Date())
-#   # ), "data.frame")
-#   expect_equal(class(
-#     getDataDump("testDb", "smertediagnoser", Sys.Date(), Sys.Date())
-#   ), "data.frame")
-#   expect_equal(class(
-#     getDataDump("testDb", "smertediagnosernum", Sys.Date(), Sys.Date())
-#   ), "data.frame")
-# })
+test_that("tables can be dumped", {
+  check_db()
+  expect_equal(class(
+    getDataDump(registryName = "testDb",
+                reshId = 0,
+                userRole = "SC",
+                tableName = "allevarnum",
+                fromDate = Sys.Date(),
+                toDate = Sys.Date()
+                )
+  ), "data.frame")
+
+  expect_equal(class(
+    getDataDump(registryName = "testDb",
+                reshId = 0,
+                userRole = "SC",
+                tableName = "avdelingsoversikt",
+                fromDate = Sys.Date(),
+                toDate = Sys.Date())
+  ), "data.frame")
+
+  expect_equal(class(
+    getDataDump(registryName = "testDb",
+                reshId = 22,
+                userRole = "LC",
+                tableName = "avdelingsoversikt",
+                fromDate = Sys.Date(),
+                toDate = Sys.Date())
+  ), "data.frame")
+
+  expect_equal(class(
+    getDataDump(registryName = "testDb",
+                reshId = 0,
+                userRole = "SC",
+                tableName = "forlopsoversikt",
+                fromDate = Sys.Date(),
+                toDate = Sys.Date()
+                )
+  ), "data.frame")
+  # expect_equal(class(
+   #   getDataDump(registryName = "testDb",
+   #               reshId 0,
+   #               userRole = "SC",
+   #               tableName = "skjemaoversikt",
+   #               fromDate = Sys.Date(),
+   #               toDate = Sys.Date()
+   #               )
+   # ), "data.frame")
+  # expect_equal(class(
+    # getDataDump(registryName = "testDb",
+    #             reshId = 0,
+    #             userRole = "SC",
+    #             tableName = "smertediagnoser",
+    #             fromDate = Sys.Date(),
+    #             toDate = Sys.Date()
+    #             )
+    # ), "data.frame")
+  expect_equal(class(
+    getDataDump(registryName = "testDb",
+                reshId = 0,
+                userRole = "SC",
+                tableName = "smertediagnosernum",
+                fromDate = Sys.Date(),
+                toDate = Sys.Date()
+                )
+  ), "data.frame")
+})
 
 test_that("data for lokal tilsyn can be queried", {
   check_db()
