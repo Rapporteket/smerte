@@ -910,6 +910,8 @@ bygg_query = function(registryName, tableName, userInput) {
     -- NB! Table emp11 has child tables that you need to consider!
     emp12.REGISTERED_DATE AS Regdato12,
     emp12.PATIENT_ALLRIGHT AS AngiNRS12,
+    emp12.STRONGEST_PAIN AS StSm12,
+    emp12.WEAKEST_PAIN AS SvSm12,
     emp12.STRONGPAIN_STILL AS StSmRo12,
     emp12.WEAKPAIN_STILL AS SvSmRo12,
     emp12.STRONGPAIN_MOTION AS StSmBev12,
@@ -918,6 +920,8 @@ bygg_query = function(registryName, tableName, userInput) {
     emp12.PATIENT_FUNCTIONLEVEL AS Funksjon12,
     emp21.REGISTERED_DATE AS Regdato21,
     emp21.PATIENT_ALLRIGHT AS AngiNRS21,
+    emp21.STRONGEST_PAIN AS StSm21,
+    emp21.WEAKEST_PAIN AS SvSm21,
     emp21.STRONGPAIN_STILL AS StSmRo21,
     emp21.WEAKPAIN_STILL AS SvSmRo21,
     emp21.STRONGPAIN_MOTION AS StSmBev21,
