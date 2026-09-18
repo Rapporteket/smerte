@@ -46,31 +46,31 @@ library(testthat)
 
 test_that("Funksjonen returnerer forventet resultat", {
   d_test <- tibble(
-    id     = c(1, 2, 3, 4, 5),
-    StSm12 = c(8, 5, 2, NA_integer_, 5),
-    StSm21 = c(4, 5, 3, 3, NA_integer_),
-    SvSm12 = c(3, 4, 1, NA_integer_, 5),
-    SvSm21 = c(6, 2, 1, 4, NA_integer_)
+    id     = c(1, 2, 3, 4, 5, 6),
+    StSm12 = c(8, 5, 2, NA_integer_, 5, 3),
+    StSm21 = c(4, 5, 3, 3, NA_integer_, 2),
+    SvSm12 = c(3, 4, 1, NA_integer_, 5, NA_integer_),
+    SvSm21 = c(6, 2, 1, 4, NA_integer_, NA_integer_)
   )
 
   d_forventet_sterk = tibble(
-    id     = c(1, 2, 3, 4, 5),
-    StSm12 = c(8, 5, 2, NA_integer_, 5),
-    StSm21 = c(4, 5, 3, 3, NA_integer_),
-    SvSm12 = c(3, 4, 1, NA_integer_, 5),
-    SvSm21 = c(6, 2, 1, 4, NA_integer_),
-    ki_krit_nevner = c(TRUE, TRUE, TRUE, FALSE, FALSE),
-    ki_krit_teller = c(TRUE, FALSE, FALSE, FALSE, FALSE)
+    id     = c(1, 2, 3, 4, 5, 6),
+    StSm12 = c(8, 5, 2, NA_integer_, 5, 3),
+    StSm21 = c(4, 5, 3, 3, NA_integer_, 2),
+    SvSm12 = c(3, 4, 1, NA_integer_, 5, NA_integer_),
+    SvSm21 = c(6, 2, 1, 4, NA_integer_, NA_integer_),
+    ki_krit_nevner = c(TRUE, TRUE, TRUE, FALSE, FALSE, TRUE),
+    ki_krit_teller = c(TRUE, FALSE, FALSE, FALSE, FALSE, TRUE)
   )
 
   d_forventet_svak = tibble(
-    id     = c(1, 2, 3, 4, 5),
-    StSm12 = c(8, 5, 2, NA_integer_, 5),
-    StSm21 = c(4, 5, 3, 3, NA_integer_),
-    SvSm12 = c(3, 4, 1, NA_integer_, 5),
-    SvSm21 = c(6, 2, 1, 4, NA_integer_),
-    ki_krit_nevner = c(TRUE, TRUE, TRUE, FALSE, FALSE),
-    ki_krit_teller = c(FALSE, TRUE, FALSE, FALSE, FALSE)
+    id     = c(1, 2, 3, 4, 5, 6),
+    StSm12 = c(8, 5, 2, NA_integer_, 5, 3),
+    StSm21 = c(4, 5, 3, 3, NA_integer_, 2),
+    SvSm12 = c(3, 4, 1, NA_integer_, 5, NA_integer_),
+    SvSm21 = c(6, 2, 1, 4, NA_integer_, NA_integer_),
+    ki_krit_nevner = c(TRUE, TRUE, TRUE, FALSE, FALSE, FALSE),
+    ki_krit_teller = c(FALSE, TRUE, FALSE, FALSE, FALSE, FALSE)
   )
 
   expect_identical(ki_smerteendring(d_test, var = "sterkeste"),
