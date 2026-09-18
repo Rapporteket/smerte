@@ -1,20 +1,20 @@
-#' Add identifying names to the UnitId
+#' Legg til sykehusnavn
 #'
-#' @description Add variables `orgname`, `SykehusNavn` and
-#' `SykehusKortnavn` if missing, update values if existing.
+#' @description Legger til variablene `orgname`, `SykehusNavn` og
+#' `SykehusKortnavn` hvis disse ikke finnes i datasettet `d`.
 #'
-#' @param df data.frame, must contain variable `reshIdVar`
-#' @param reshIdVar Variable identifying the ReshId for the units. Can have
-#' different names depending on the table selected.
-#' @return data.frame with variable `orgname`. Old values are overwritten
-#' if `orgname` already existed if `df`
+#' @param d tibble eller data.frame, som inneholder variabelen `reshIdVar`.
+#' @param reshIdVar Tekststreng for å identifisere hvilken variabel som inneholder
+#' ReshId for enhetene. Kan varierer mellom ulike tabeller.
+#'
+#' @return Returnerer opprinnelig datasett i tillegg til kolonnene `orgname`,
+#' `SykehusNavn` og `SykehusKortnavn` hvis disse ikke finnes fra før.
 #'
 #' @export
 #' @examples
 #' x <- data.frame(UnitId = as.character(c(100089, 4201115, NA, 705758, 4204083)))
 #' x |> fikse_sykehusnavn(reshIdVar = "UnitId")
-#'
-fikse_sykehusnavn <- function(df, reshIdVar = UnitId) {
+fikse_sykehusnavn <- function(d, reshIdVar = "UnitId") {
 
   sykehusoversikt = tribble(
     ~ "reshID", ~"orgname"             , ~"SykehusNavn"                    , ~"SykehusKortnavn",
@@ -34,11 +34,23 @@ fikse_sykehusnavn <- function(df, reshIdVar = UnitId) {
     "100083"    , "Helse Stavanger"      , "Helse stavanger"                 , "SUS"
   )
 
-  if (!(reshIdVar %in% names(df))) stop(paste0("df must contain variable: ", reshIdVar))
+  if (!(reshIdVar %in% names(d))) stop(paste0("Inndata må inneholde variabelen: '", reshIdVar, "'"))
+
+  ukjent_resh = setdiff(d[[reshIdVar]], sykehusoversikt$reshID)
+
+  if (length(ukjent_resh) > 0L) {
+    warning(
+      "ReshID: ",
+      paste0("'", ukjent_resh, "'", collapse = ", "),
+      " finnes ikke i tabell.",
+      call. = FALSE
+    )
+  }
+
 
   sykehusoversikt_temp = sykehusoversikt |>
     rename(!!reshIdVar := reshID)
 
-  left_join(df, sykehusoversikt_temp, by = reshIdVar)
+  left_join(d, sykehusoversikt_temp, by = reshIdVar)
 
 }

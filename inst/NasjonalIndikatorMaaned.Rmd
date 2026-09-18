@@ -27,6 +27,8 @@ library(smerte)
 library(dplyr)
 library(lubridate)
 library(ggplot2)
+library(tibble)
+library(rapwhale)
 
 knitr::opts_chunk$set(echo=FALSE)
 options(knitr.table.format = params$tableFormat)
@@ -80,7 +82,7 @@ dat <- dat |>
 Smerteregisteret har seks kvalitetsindikatorer som skal være til hjelp i utviklingen av god smertebehandling. Merk at det her skilles mellom forløp og pasienter, siden samme pasient kan ha flere forløp. I denne rapporten vises __nasjonale__ tall i perioden __`r format(params$startDate, "%d. %b %Y")`__ til __`r format(params$endDate, "%d. %b %Y")`__, det vil si at alle forløp som er inkluderbare og har samtykke er med.
 
 # Tilsett av to eller flere faggrupper
-Andel forløp hvor pasientene tilses av to eller flere faggrupper. Det er ønskelig med høyest mulig andel. De ulike faggruppene er lege, sykepleier, sosionom, psykolog og fysioterapeut. Med "totalt antall" menes her alle forløp som har minimum ett tilsyn. 
+Andel forløp hvor pasientene tilses av to eller flere faggrupper. Det er ønskelig med høyest mulig andel. De ulike faggruppene er lege, sykepleier, sosionom, psykolog, fysioterapeut eller om det er konferert med lege. Med "totalt antall" menes her alle forløp som har minimum ett tilsyn. 
 
 ```{r behandlertilsyn, warning = FALSE, message=FALSE, results='asis'}
 
@@ -90,52 +92,17 @@ messagebehtils <- ""
 if (dim(dat)[1] < 1) {
   messagebehtils <- "I den valgte tidsperioden er det ikke nok data til å angi denne kvalitetsindikatoren."
 } else {
-  if (!isRapContext()) {
-    #Må gjøre variablene numerisk for bruk i tabell
-    dat$AntTilsLege <- as.numeric(levels(dat$AntTilsLege))[dat$AntTilsLege]
-    dat$AntTilsSykPleier <- as.numeric(levels(dat$AntTilsSykPleier))[dat$AntTilsSykPleier]
-    dat$AntTilsFysioT <- as.numeric(levels(dat$AntTilsFysioT))[dat$AntTilsFysioT]
-    dat$AntTilsPsyk <- as.numeric(levels(dat$AntTilsPsyk))[dat$AntTilsPsyk]
-    dat$AntTilsSosio <- as.numeric(levels(dat$AntTilsSosio))[dat$AntTilsSosio]
-    #dat$AntPasTils <- as.numeric(levels(dat$AntPasTils))[dat$AntPasTils] er tydeligvis numerisk i min datadump
-  }
-  
-  #I nasjonal har alle fått tilsyn => trenger ikke å da vekk 0 tilsyn eller NA.
-  
-  #Lager tom variabel for antall behandlertilsyn som skal fylles inn
-  dat$behtils <- NA
-  
-  #Sjekk om to eller flere behandlergrupper ikke er NA
-  #Trenger bare ta bort NA, pga "null" fra factor blir til NA her. Dvs ingen har 0. NB: gjelder dette for tall direkte også?
-  for(i in 1:dim(dat)[1]){
-    j = 0 #summerer antall behandlere
-    if(!(is.na(dat$AntTilsLege[i]))){
-      j <- j+1}
-    if(!(is.na(dat$AntTilsSykPleier[i]))){
-      j <- j+1}
-    if(!(is.na(dat$AntTilsPsyk[i]))){
-      j <- j+1}
-    if(!(is.na(dat$AntTilsFysioT[i]))){
-      j <- j+1}
-    if(!(is.na(dat$AntTilsSosio[i]))){
-      j <- j+1}
-    if(j >= 2){dat$behtils[i] <- 1} else{dat$behtils[i] <- 0} # Setter til 1 dersom to eller flere behandlere, 0 ellers.
-    j = 0 #setter til 0 før sum for neste pasient telles opp
-  }
-  
-  #Til tabell
-  kvalind1 <- dat |>
-    group_by(SykehusNavn, behtils) |>
-    summarise(n = n()) |>
-    mutate( ant = sum(n), freq = n/sum(n)) |>
-    filter(behtils == 1)
-  #Tar bort kolonne for behtils oppfylt
-  kvalind1 <- kvalind1 |>
-    select(SykehusNavn, n, ant, freq)
+  d_ki_behandlertilsyn = ki_behandlertilsyn(dat) 
+   
+  d_ki_behandlertilsyn_per_sykehus = d_ki_behandlertilsyn |> 
+    group_by(SykehusNavn) |> 
+    aggreger_ki_prop() |> 
+    select(-konfint_nedre, -konfint_ovre) |> 
+    relocate(SykehusNavn, ki_teller, ki_nevner, est)
   
   #Tabell
   mst(
-    tab = kvalind1,
+    tab = d_ki_behandlertilsyn_per_sykehus,
     col_names = c("Sykehus", "Antall", "Totalt antall", "Andel"),
     type = params$tableFormat,
     cap = paste0("Oversikt over andel pasienter som har hatt tilsyn av to eller flere behandlergrupper."),
@@ -154,26 +121,29 @@ if (dim(dat)[1] < 1) {
   messagetilsfig <- "I den valgte tidsperioden er det ikke nok data til å vise figur for denne kvalitetsindikatoren."
 } else {
   #Aggregate by month for plot
-  
-  ind1plot <- dat |>
-    group_by(SykehusNavn, monthname, behtils) |>
-    summarise(n = n()) |>
-    mutate( ant = sum(n), freq = n/sum(n)) |>
-    filter(behtils == 1)
-  
-  #Adding the mean of the groups each month
-  meanind1plot <- ind1plot |> 
-    group_by(monthname) |>
-    summarise(freq = mean(freq)) |>
-    mutate(SykehusNavn="Snitt", .before = monthname)
+  ind1plot = d_ki_behandlertilsyn |>
+    group_by(SykehusNavn, monthname) |> 
+    aggreger_ki_prop()
+    
+  meanind1plot = d_ki_behandlertilsyn |> 
+    group_by(monthname) |> 
+    aggreger_ki_prop() |> 
+    add_column(SykehusNavn = "Snitt")
   
   #Merging the two tibbles
   ind1plot <- bind_rows(ind1plot, meanind1plot)
   
   #Plotting plotdat
-  ggplot(ind1plot, aes(monthname, freq)) + 
-    geom_line(aes(group = factor(SykehusNavn), colour=factor(SykehusNavn)), size = 0.5) +
-    geom_point(aes(group = factor(SykehusNavn), colour=factor(SykehusNavn)), size = 1) + 
+  ggplot(ind1plot, aes(monthname, est)) + 
+    geom_line(data = ind1plot |> filter(SykehusNavn != "Snitt"), 
+              aes(group = factor(SykehusNavn), colour=factor(SykehusNavn)), size = 0.5) +
+    geom_point(data = ind1plot |> filter(SykehusNavn != "Snitt"), 
+               aes(group = factor(SykehusNavn), colour=factor(SykehusNavn)), size = 1) + 
+    geom_line(data = ind1plot |> filter(SykehusNavn == "Snitt"), 
+              aes(group = SykehusNavn, colour=SykehusNavn), size = 1.5) +
+    geom_point(data = ind1plot |> filter(SykehusNavn == "Snitt"), 
+               aes(group = SykehusNavn, colour=SykehusNavn), size = 1.3) + 
+    
     labs(x = "Måned", y = "Andel", subtitle = "Andel tilsett av to eller flere faggrupper (månedlig)", color = "Sykehus") +
     theme_classic() +
     theme(axis.text.x = element_text(size = 8.5),
@@ -185,7 +155,6 @@ if (dim(dat)[1] < 1) {
           axis.title.x = element_text(margin = margin(t = 10, r = 0, b = 0, l = 0))
     )
 }
-
 ```
 `r messagetilsfig`
 
@@ -354,7 +323,7 @@ if (dim(dat)[1] < 1) {
 `r messageforn`
 
 # Nedgang i smerte
-Andel forløp hvor pasienten har nedgang i smertescore Numeric Rating Scale (NRS) fra første til siste tilsyn. Totalt måles endring for følgende fire smertetilstander: _sterkeste_ og _svakeste_ smerte i _ro_ og i _bevegelse_. Det er ønskelig med høyest mulig andel. Det er kun de forløpene der spørsmålet er besvart både ved første og siste tilsyn som inkluderes ("vet ikke" telles heller ikke med).
+Andel forløp hvor pasienten har nedgang i smertescore Numeric Rating Scale (NRS) fra første til siste tilsyn. Det måles endring for _sterkeste_ og _svakeste_ smerte ved første og siste tilsyn. Det er ønskelig med høyest mulig andel. Det er kun de forløpene der spørsmålet er besvart både ved første og siste tilsyn som inkluderes ("vet ikke" telles heller ikke med).
 
 ```{r smertenivaa, warning = FALSE, message=FALSE, results='asis'}
 messageniva <- ""
@@ -364,117 +333,39 @@ messageniva <- ""
 if (dim(dat)[1] < 1) {
   messageniva <- "I den valgte tidsperioden er det ikke nok data til å angi denne kvalitetsindikatoren."
 } else {
+
+  ki_smerteendring_sterkeste = ki_smerteendring(dat, var = "sterkeste")
   
-  if (!isRapContext()) {
-    #Må gjøre variablene numerisk for bruk i tabell
-    dat$SvSmRo12 <- as.numeric(levels(dat$SvSmRo12))[dat$SvSmRo12]
-    dat$SvSmRo21 <- as.numeric(levels(dat$SvSmRo21))[dat$SvSmRo21]
-    dat$StSmRo12 <- as.numeric(levels(dat$StSmRo12))[dat$StSmRo12]
-    dat$StSmRo21 <- as.numeric(levels(dat$StSmRo21))[dat$StSmRo21]
-    dat$SvSmBev12 <- as.numeric(levels(dat$SvSmBev12))[dat$SvSmBev12]
-    dat$SvSmBev21 <- as.numeric(levels(dat$SvSmBev21))[dat$SvSmBev21]
-    dat$StSmBev12 <- as.numeric(levels(dat$StSmBev12))[dat$StSmBev12]
-    dat$StSmBev21 <- as.numeric(levels(dat$StSmBev21))[dat$StSmBev21]
-  }
+  ki_sme_sterk = ki_smerteendring_sterkeste |> 
+    group_by(SykehusNavn) |> 
+    aggreger_ki_prop()
   
-  #Lager nye variabler som skal inneholde endring i NRS, settes initielt til NA
-  dat$stro <- dat$svro <- dat$stbe <- dat$svbe <-  NA
-  #For de som har svart begge ganger finner vi endring i NRS. Positiv endring = nedgang i smerte, negativ endring = oppgang i smerte. 99 er vet ikke og må også fjernes
-  for(i in 1:dim(dat)[1]){
-    if(!is.na(dat$StSmBev12[i]) & !is.na(dat$StSmBev21[i]) & dat$StSmBev12[i] != 99 & dat$StSmBev21[i] != 99)
-    {dat$stbe[i] <- dat$StSmBev12[i] - dat$StSmBev21[i]}
-    if(!is.na(dat$SvSmBev12[i]) & !is.na(dat$SvSmBev21[i]) & dat$SvSmBev12[i] != 99 & dat$SvSmBev21[i] != 99)
-    {dat$svbe[i] <- dat$SvSmBev12[i] - dat$SvSmBev21[i]}
-    if(!is.na(dat$StSmRo12[i]) & !is.na(dat$StSmRo21[i]) & dat$StSmRo12[i] != 99 & dat$StSmRo21[i] != 99)
-    {dat$stro[i] <- dat$StSmRo12[i] - dat$StSmRo21[i]}
-    if(!is.na(dat$SvSmRo12[i]) & !is.na(dat$SvSmRo21[i]) & dat$SvSmRo12[i] != 99 & dat$SvSmRo21[i] != 99)
-    {dat$svro[i] <- dat$SvSmRo12[i] - dat$SvSmRo21[i]}
-  }
+  ki_smerteendring_svakeste = ki_smerteendring(dat, var = "svakeste")
   
-  #Sterkeste bevegelse
-  kvalind41 <- dat |>
-    filter(!is.na(stbe))|>
-    mutate(stbe1 = stbe > 0) |>
-    group_by(SykehusNavn, stbe1) |>
-    summarise(n = n()) |>
-    mutate(ant = sum(n), freq = n/sum(n)) |>
-    filter(stbe1 > 0)
-  kvalind41 <- kvalind41 |>
-    select(SykehusNavn, n, ant, freq)
+  ki_sme_svakeste = ki_smerteendring_svakeste |> 
+    group_by(SykehusNavn) |> 
+    aggreger_ki_prop()
   
-  #Svakeste bevegelse
-  kvalind42 <- dat |>
-    filter(!is.na(svbe))|>
-    mutate(svbe1 = svbe > 0) |>
-    group_by(SykehusNavn, svbe1) |>
-    summarise(n = n()) |>
-    mutate(ant = sum(n), freq = n/sum(n)) |>
-    filter(svbe1 > 0)
-  kvalind42 <- kvalind42 |>
-    select(SykehusNavn, n, ant, freq)
-  
-  #Sterkeste ro
-  kvalind43 <- dat |>
-    filter(!is.na(stro))|>
-    mutate(stro1 = stro > 0) |>
-    group_by(SykehusNavn, stro1) |>
-    summarise(n = n()) |>
-    mutate(ant = sum(n), freq = n/sum(n)) |>
-    filter(stro1 > 0)
-  kvalind43 <- kvalind43 |>
-    select(SykehusNavn, n, ant, freq)
-  
-  #Svakeste ro
-  kvalind44 <- dat |>
-    filter(!is.na(svro)) |>
-    mutate(svro1 = svro > 0) |>
-    group_by(SykehusNavn, svro1) |>
-    summarise(n = n()) |>
-    mutate(ant = sum(n), freq = n/sum(n)) |>
-    filter(svro1 > 0)
-  kvalind44 <- kvalind44 |>
-    select(SykehusNavn, n, ant, freq)
-  
-  #Sterkeste bevegelse
+#Sterkeste smerte
  tab41 <- mst(
-    tab = kvalind41,
+    tab = ki_sme_sterk |> 
+      select(SykehusNavn, ki_teller, ki_nevner, est),
     col_names = c("Sykehus", "Antall", "Totalt antall", "Andel"),
     type = params$tableFormat,
-    cap = paste0("Oversikt over andel pasienter som hadde nedang i NRS fra første til siste måling for sterkeste smerte i bevegelse."),
+    cap = paste0("Oversikt over andel pasienter som hadde nedang i NRS fra første til siste måling for sterkeste smerte."),
     digs = 2,
     align = c("l", "r", "r", "r"))
   
-  #Svakeste bevegelse
+#Svakeste smerte
  tab42 <- mst(
-    tab = kvalind42,
+    tab = ki_sme_svakeste |> 
+      select(SykehusNavn, ki_teller, ki_nevner, est),
     col_names = c("Sykehus", "Antall", "Totalt antall", "Andel"),
     type = params$tableFormat,
-    cap = paste0("Oversikt over andel pasienter som hadde nedang i NRS fra første til siste måling for svakeste smerte i bevegelse."),
+    cap = paste0("Oversikt over andel pasienter som hadde nedang i NRS fra første til siste måling for svakeste smerte."),
     digs = 2,
     align = c("l", "r", "r", "r"))
-  
-  #Sterkeste ro
-  tab43 <- mst(
-    tab = kvalind43,
-    col_names = c("Sykehus", "Antall", "Totalt antall", "Andel"),
-    type = params$tableFormat,
-    cap = paste0("Oversikt over andel pasienter som hadde nedang i NRS fra første til siste måling for sterkeste smerte i ro."),
-    digs = 2,
-    align = c("l", "r", "r", "r"))
-  
-  #Svakeste ro
- tab44 <- mst(
-    tab = kvalind44,
-    col_names = c("Sykehus", "Antall", "Totalt antall", "Andel"),
-    type = params$tableFormat,
-    cap = paste0("Oversikt over andel pasienter som hadde nedang i NRS fra første til siste måling for svakeste smerte i ro."),
-    digs = 2,
-    align = c("l", "r", "r", "r"))
-  
-  
 }
-
-
 ```
 `r messageniva`
 
@@ -500,28 +391,6 @@ if (dim(dat)[1] < 1) {
 ```
 `r messagetab2`
 
-```{r nrstab3, warning = FALSE, message=FALSE, results='asis'}
-messagetab3 <- ""
-
-if (dim(dat)[1] < 1) {
-  messagetab3 <- "I den valgte tidsperioden er det ikke nok data til å vise tabell for denne kvalitetsindikatoren."
-} else {
-  tab43
-}
-```
-`r messagetab3`
-
-```{r nrstab4, warning = FALSE, message=FALSE, results='asis'}
-messagetab4 <- ""
-
-if (dim(dat)[1] < 1) {
-  messagetab4 <- "I den valgte tidsperioden er det ikke nok data til å vise tabell for denne kvalitetsindikatoren."
-} else {
-  tab44
-}
-```
-`r messagetab4`
-
 Figuren under viser hvordan andelene har fordelt seg i løpet av året for de fire NRS-målene.
 ```{r nrsfig, warning = FALSE, message=FALSE, results='asis', fig.align='center', out.width='100%'}
 messagenrsfig <- ""
@@ -530,7 +399,6 @@ if (dim(dat)[1] < 1) {
   messagenrsfig <- "I den valgte tidsperioden er det ikke nok data til å vise figur for denne kvalitetsindikatoren."
 } else {
   
-  #Aggregate by month for plot
   #Common plot details
   plotdetails = list(
     geom_line(
@@ -554,120 +422,51 @@ if (dim(dat)[1] < 1) {
     )
   )
   
-  ####
-  #Sterkeste smerte i bevegelse
-  ind41plot = dat |>
-    filter(!is.na(stbe)) |>
-    mutate(stbe1 = stbe > 0) |>
-    group_by(SykehusNavn, monthname, stbe1) |>
-    summarise(n = n()) |>
-    mutate(ant = sum(n), freq = n/sum(n)) |>
-    filter(stbe1 == 1)
+  ind41plot = ki_smerteendring_sterkeste |> 
+    filter(ki_krit_nevner) |> 
+    group_by(SykehusNavn, monthname) |> 
+    aggreger_ki_prop() 
   
-  #Adding the mean of the groups each month
-  meanind41plot <- ind41plot |> 
-    group_by(monthname) |>
-    summarise(freq = mean(freq)) |>
-    mutate(SykehusNavn="Snitt", .before = monthname)
+  meanind41plot = ki_smerteendring_sterkeste |> 
+    filter(ki_krit_nevner) |> 
+    group_by(monthname) |> 
+    aggreger_ki_prop() |> 
+    mutate(SykehusNavn = "Snitt")
   
-  #Merging the two tibbles
+#Merging the two tibbles
   ind41plot <- bind_rows(ind41plot, meanind41plot)
   
-  p1 = ggplot(ind41plot, aes(monthname, freq)) + 
+  p1 = ggplot(ind41plot, aes(monthname, est)) + 
     plotdetails +
     labs(
       x = "Måned", y = "Andel",
-      title = "Andel med nedgang i NRS for sterkeste smerte i bevegelse (månedlig)",
+      title = "Andel med nedgang i NRS for sterkeste smerte (månedlig)",
       color = "Sykehus"
     ) 
   
-  ####
-  #Svakeste smerte i bevegelse
-  ind42plot <- dat |>
-    filter(!is.na(svbe)) |>
-    mutate(svbe1 = svbe > 0) |>
-    group_by(SykehusNavn, monthname, svbe1) |>
-    summarise(n = n()) |>
-    mutate(ant = sum(n), freq = n/sum(n)) |>
-    filter(svbe1 == 1)
-  
-  #Adding the mean of the groups each month
-  meanind42plot <- ind42plot |> 
-    group_by(monthname) |>
-    summarise(freq = mean(freq)) |>
-    mutate(SykehusNavn="Snitt", .before = monthname)
+  ind42plot = ki_smerteendring_svakeste |> 
+    filter(ki_krit_nevner) |> 
+    group_by(SykehusNavn, monthname) |> 
+    aggreger_ki_prop()
+
+  meanind42plot = ki_smerteendring_svakeste |> 
+    filter(ki_krit_nevner) |> 
+    group_by(monthname) |> 
+    aggreger_ki_prop() |> 
+    mutate(SykehusNavn = "Snitt")
   
   #Merging the two tibbles
   ind42plot <- bind_rows(ind42plot, meanind42plot)
   
   #Plotting plotdat
-  p2 = ggplot(ind42plot, aes(monthname, freq)) + 
+  p2 = ggplot(ind42plot, aes(monthname, est)) + 
     plotdetails +
     labs(
       x = "Måned",
       y = "Andel",
-      title = "Andel med nedgang i NRS for svakeste smerte i bevegelse (månedlig)",
+      title = "Andel med nedgang i NRS for svakeste smerte (månedlig)",
       color = "Sykehus"
     )
-  
-  ####
-  #Sterkeste smerte i ro
-  ind43plot <- dat |>
-    filter(!is.na(stro)) |>
-    mutate(stro1 = stro > 0) |>
-    group_by(SykehusNavn, monthname, stro1) |>
-    summarise(n = n()) |>
-    mutate(ant = sum(n), freq = n/sum(n)) |>
-    filter(stro1 == 1)
-  
-  #Adding the mean of the groups each month
-  meanind43plot <- ind43plot |> 
-    group_by(monthname) |>
-    summarise(freq = mean(freq)) |>
-    mutate(SykehusNavn="Snitt", .before = monthname)
-  
-  #Merging the two tibbles
-  ind43plot <- bind_rows(ind43plot, meanind43plot)
-  
-  #Plotting plotdat
-  p3 = ggplot(ind43plot, aes(monthname, freq)) + 
-    plotdetails +
-    labs(
-      x = "Måned",
-      y = "Andel",
-      title = "Andel med nedgang i NRS for sterkeste smerte i ro (månedlig)",
-      color = "Sykehus"
-    )
-  
-  ####
-  #Svakeste smerte i ro
-  ind44plot <- dat |>
-    filter(!is.na(svro)) |>
-    mutate(svro1 = svro > 0) |>
-    group_by(SykehusNavn, monthname, svro1) |>
-    summarise(n = n()) |>
-    mutate(ant = sum(n), freq = n/sum(n)) |>
-    filter(svro1 == 1)
-  
-  #Adding the mean of the groups each month
-  meanind44plot <- ind44plot |> 
-    group_by(monthname) |>
-    summarise(freq = mean(freq)) |>
-    mutate(SykehusNavn="Snitt", .before = monthname)
-  
-  #Merging the two tibbles
-  ind44plot <- bind_rows(ind44plot, meanind44plot)
-  
-  #Plotting plotdat
-  p4 = ggplot(ind44plot, aes(monthname, freq)) + 
-    plotdetails +
-    labs(
-      x = "Måned",
-      y = "Andel",
-      title = "Andel med nedgang i NRS for svakeste smerte i ro (månedlig)",
-      color = "Sykehus"
-    )
-  
 }
 ```
 `r messagenrsfig`
@@ -693,29 +492,6 @@ if (dim(dat)[1] < 1) {
 }
 ```
 `r message2`
-
-```{r nrsfig3, warning = FALSE, message=FALSE, results='asis', fig.align='center', out.width='100%', fig.width = 14, fig.asp = 0.5}
-message3 <- ""
-
-if (dim(dat)[1] < 1) {
-  message3 <- "I den valgte tidsperioden er det ikke nok data til å vise figur for denne kvalitetsindikatoren."
-} else {
-  print(p3)
-}
-```
-`r message3`
-
-```{r nrsfig4, warning = FALSE, message=FALSE, results='asis', fig.align='center', out.width='100%', fig.width = 14, fig.asp = 0.5}
-message4 <- ""
-
-if (dim(dat)[1] < 1) {
-  message4 <- "I den valgte tidsperioden er det ikke nok data til å vise figur for denne kvalitetsindikatoren."
-} else {
-  print(p4)
-}
-```
-`r message4`
-
 # Ikke-medikamentell behandling
 Andel pasienter hvor ikke-medikamentell behandling startes, endres og/eller følges opp av Smerteteam. Det er ønskelig å utnytte også ikke-medikamentell behandling ved akutt smertebehandling. Dette inkluderer alt fra enkle tiltak som for eksempel varme/kuldebehandling og mobilisering til  berøringstrening og speilbehandling.  Videre også ulike fysioterapeutiske tiltak inkludert TENS og avspenning og ikke minst kognitive tilnærminger som for eksempel avledning, smertemestring og endringsorientert samtale.
 
@@ -919,7 +695,7 @@ if (dim(dat)[1] < 1) {
   
   #VidereOppf, BehNedtrappAvsluttTils og Journalnotat
   nedtr <- dat |>
-    filter(!is.na(AkseptabelSmerte21)) |>
+    filter(!is.na(AkseptabelSmerte21), Tilsett == 1) |>
     group_by(SykehusNavn, AkseptabelSmerte21) |>
     summarise(n = n()) |>
     mutate( ant = sum(n), freq = n/sum(n)) |>

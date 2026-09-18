@@ -29,6 +29,8 @@ export(getRegDataTimetodeath)
 export(getSmerteDiagKatValueLab)
 export(isNationalReg)
 export(isOUSReg)
+export(ki_behandlertilsyn)
+export(ki_smerteendring)
 export(lag_smerte_kb_kategoriske)
 export(makeRegistryName)
 export(reportProcessor)
@@ -37,6 +39,7 @@ importFrom(DBI,dbExecute)
 importFrom(DT,dataTableOutput)
 importFrom(assertthat,
   assert_that,
+  has_name
   is.number
 )
 importFrom(bookdown,html_document2)
@@ -49,9 +52,11 @@ importFrom(dplyr,
   distinct,
   filter,
   group_by,
+  if_else,
   left_join,
   mutate,
   n,
+  pick,
   recode,
   relocate,
   rename,
@@ -121,6 +126,7 @@ importFrom(rapbase,
   statsServer2,
   statsUI
 )
+importFrom(rapwhale,kjed_ord)
 importFrom(readr,
   write_csv2,
   write_excel_csv2
@@ -159,19 +165,23 @@ importFrom(shiny,
   uiOutput
 )
 importFrom(stats,setNames)
+importFrom(stringr,str_replace_all)
+importFrom(tibble,
+  as_tibble,
+  tibble,
+  tribble
+)
 importFrom(stringr,
   str_detect,
   str_replace,
   str_replace_all,
   str_split_1
 )
-importFrom(tibble,
-  as_tibble,
-  tribble
-)
 importFrom(tidyr,
   gather,
   replace_na,
-  separate_wider_regex,
   spread
+)
+importFrom(tidyselect,all_of)
+  separate_wider_regex
 )
