@@ -30,6 +30,7 @@ export(getSmerteDiagKatValueLab)
 export(isNationalReg)
 export(isOUSReg)
 export(ki_behandlertilsyn)
+export(ki_smerteendring)
 export(makeRegistryName)
 export(reportProcessor)
 export(smerteApp)
@@ -49,6 +50,7 @@ importFrom(dplyr,
   distinct,
   filter,
   group_by,
+  if_else,
   left_join,
   mutate,
   n,
