@@ -560,17 +560,19 @@ if (dim(dat)[1] < 1) {
   kvalitetsindikatoren."
 } else {
   
-  #Verdier som skal vises i tabell for denne indikatoren
-  ant <- sum(dat$AkseptabelSmerte21 == 1, na.rm = TRUE)
+  dat_aks = dat |> filter(Tilsett == 1)
   
-  totant <- sum(!is.na(dat$AkseptabelSmerte21))
+  #Verdier som skal vises i tabell for denne indikatoren
+  ant <- sum(dat_aks$AkseptabelSmerte21 == 1, na.rm = TRUE)
+  
+  totant <- sum(!is.na(dat_aks$AkseptabelSmerte21))
   
   and <- ant/totant
   
   #Før, for sammenligning men ikke indikator
-  antfoer <- sum(dat$AkseptabelSmerte12 == 1, na.rm = TRUE)
+  antfoer <- sum(dat_aks$AkseptabelSmerte12 == 1, na.rm = TRUE)
   
-  totantfoer <- sum(!is.na(dat$AkseptabelSmerte12))
+  totantfoer <- sum(!is.na(dat_aks$AkseptabelSmerte12))
   
   andfoer <- antfoer/totantfoer
   # 
@@ -600,7 +602,7 @@ messageplotaks <- ""
 
 #Aggregate by month for plot
 plotaks<- dat |> 
-  filter(
+  filter(Tilsett == 1, 
     !is.na(AkseptabelSmerte21)) |>
   group_by(month = monthname, AkseptabelSmerte21) |>
   summarise(n = n()) |>

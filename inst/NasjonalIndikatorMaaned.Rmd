@@ -695,7 +695,7 @@ if (dim(dat)[1] < 1) {
   
   #VidereOppf, BehNedtrappAvsluttTils og Journalnotat
   nedtr <- dat |>
-    filter(!is.na(AkseptabelSmerte21)) |>
+    filter(!is.na(AkseptabelSmerte21), Tilsett == 1) |>
     group_by(SykehusNavn, AkseptabelSmerte21) |>
     summarise(n = n()) |>
     mutate( ant = sum(n), freq = n/sum(n)) |>
