@@ -36,12 +36,13 @@ library(zoo)
 ```{r get data, warning = TRUE, message = FALSE}
 
 if (isRapContext()) {
-  dat <- getRegDataLokalTilsynsrapportMaaned(
+  dat <- getDataDump(
     registryName = params$registryName,
     reshId = params$reshId,
     userRole = params$userRole,
-    startDate = params$startDate,
-    endDate = params$endDate,
+    tableName = "tilsyn",
+    fromDate = params$startDate,
+    toDate = params$endDate,
     session = params$shinySession
   )
 } else {
@@ -93,7 +94,7 @@ tilsynsdata <- tilsynsdata |>
                                    Tilsett == 3 ~ "Nei, ikke kapasitet",
                                    Tilsett == 4 ~ "Nei, men gitt råd",
                                    Tilsett == 5 ~ "Nei, annen grunn",
-                                   Tilsett == 6 ~ "Mangler verdi",
+                                   Tilsett == 6 ~ "Nei, ikke prioritert",
                                    FALSE ~ "Ikke angitt"))
 tilsynsdata <- tilsynsdata[ ,c(4,2,3)]
 
@@ -113,7 +114,6 @@ mst(
 )
 
 ```
-
 
 ```{r rådtabell, warning=TRUE, message=TRUE, results='asis'}
 ###Her klargjøres data for tilsynstabell
@@ -169,7 +169,7 @@ knitr::knit_exit()
 #Tabell når alt er på plass
 mst(
   tab = sum_raad_maned,
-  col_names = c("Måned", "Ja", "Ikke behov", "Ikke kapasitet", "Gitt råd", "Annen grunn", "Mangler verdi")[c(1,as.numeric(names(sum_raad_maned)[-1])+1)],
+  col_names = c("Måned", "Ja", "Ikke behov", "Ikke kapasitet", "Gitt råd", "Annen grunn", "Ikke prioritert")[c(1,as.numeric(names(sum_raad_maned)[-1])+1)],
   type = params$tableFormat,
   cap = paste0("Månedsfordeling for tilsynstabellen. Merk at kun de alternativene som har minst ett forløp vises i tabellen."),
   digs = 0,
@@ -238,36 +238,38 @@ mst(
 
 ```
 
-# Behandlertilsyn og pasienttilsyn per måned
+# Tilsyn og råd per måned
 
-Denne tabellen viser hvor mange som har fått tilsyn av de ulike
-behandlergruppene per måned. I tillegg vises antall pasienttilsyn og totalt
-antall behandlertilsyn. Antall pasienter er antall unike pasienter som er
-tilsett minst én gang. Antall henvisninger viser antall forløp som er registert
-(altså uavhenging av om samme pasient er henvist flere ganger i løpet av
-perioden).
+Denne tabellen viser hvor mange som har fått råd eller tilsyn av de ulike 
+behandlergruppene per måned. I tillegg vises antall pasienttilsyn og 
+totalt antall behandlertilsyn (inkludert råd). Antall pasienter er 
+antall unike pasienter med et registrert forløp. Antall henvisninger 
+viser antall forløp som er registrert (altså uavhengig av om 
+samme pasient er henvist flere ganger i løpet av perioden).
 
 ```{r behandlertabell, warning=TRUE, message=TRUE, results='asis'}
 ### Her klargjøres data for behandlertabell
 
-if (!isRapContext()) {
-  #Må gjøre variablene numerisk for bruk i tabell
-  dat$AntTilsLege <- as.numeric(levels(dat$AntTilsLege))[dat$AntTilsLege]
-  dat$AntTilsSykPleier <-
-    as.numeric(levels(dat$AntTilsSykPleier))[dat$AntTilsSykPleier]
-  dat$AntTilsFysioT <- as.numeric(levels(dat$AntTilsFysioT))[dat$AntTilsFysioT]
-  dat$AntTilsPsyk <- as.numeric(levels(dat$AntTilsPsyk))[dat$AntTilsPsyk]
-  dat$AntTilsSosio <- as.numeric(levels(dat$AntTilsSosio))[dat$AntTilsSosio]
-  dat$AntPasTils <- as.numeric(levels(dat$AntPasTils))[dat$AntPasTils]
-}
+# if (!isRapContext()) {
+#   #Må gjøre variablene numerisk for bruk i tabell
+#   # dat$AntTilsLege <- as.numeric(levels(dat$AntTilsLege))[dat$AntTilsLege]
+#   # dat$AntTilsSykPleier <-
+#   #   as.numeric(levels(dat$AntTilsSykPleier))[dat$AntTilsSykPleier]
+#   # dat$AntTilsFysioT <- as.numeric(levels(dat$AntTilsFysioT))[dat$AntTilsFysioT]
+#   # dat$AntTilsPsyk <- as.numeric(levels(dat$AntTilsPsyk))[dat$AntTilsPsyk]
+#   # dat$AntTilsSosio <- as.numeric(levels(dat$AntTilsSosio))[dat$AntTilsSosio]
+#   # dat$AntTilsRadBehandlerAST <- as.numeric(levels(dat$AntTilsRadBehandlerAST))[dat$AntTilsRadBehandlerAST]
+#   # dat$AntPasTils <- as.numeric(levels(dat$AntPasTils))[dat$AntPasTils]
+#   
+# }
 
 #Organiserer data etter tilsynstype og måned
 tilsyn_full <- dat |>
   select(AntPasTils, AntTilsLege, AntTilsSykPleier, AntTilsFysioT,
-                AntTilsPsyk, AntTilsSosio, AntTilsKonfLege, StartdatoTO, PasientID, ForlopsID,
+                AntTilsPsyk, AntTilsSosio, AntTilsKonfLege, AntTilsRadBehandlerAST, StartdatoTO, PasientID, ForlopsID,
                 Tilsett, DEPARTMENT_NAME, DEPARTMENT_SHORTNAME, InnlAvd) |>
   gather(key = tilsynstype, value=antall, AntPasTils, AntTilsLege,
-                AntTilsSykPleier, AntTilsFysioT, AntTilsPsyk, AntTilsSosio, AntTilsKonfLege) |>
+                AntTilsSykPleier, AntTilsFysioT, AntTilsPsyk, AntTilsSosio, AntTilsKonfLege, AntTilsRadBehandlerAST) |>
   mutate(antall = replace(antall, is.na(antall), 0), 
                 month = months(as.Date(StartdatoTO)),
                 tilsynstype=str_replace_all(tilsynstype,"AntTilsLege",
@@ -287,6 +289,9 @@ tilsyn_full <- dat |>
                 tilsynstype=str_replace_all(tilsynstype,
                                                      "AntTilsKonfLege", 
                                                      "KonfLege"),
+                tilsynstype=str_replace_all(tilsynstype, 
+                                                     "AntTilsRadBehandlerAST",
+                                                     "RadBehandlerAST"),
                 tilsynstype=str_replace_all(tilsynstype, "AntPasTils",
                                                      "Total"),
          yearmonth = as.yearmon(StartdatoTO))
@@ -303,7 +308,7 @@ sum_tilsyn_maned = tilsyn_full |>
   spread(tilsynstype, antall) |>
   rowwise() |> 
   mutate(Behandlertilsyn = sum(Fysioterapeut, Lege, Psykolog, Sosionom, 
-                                      Sykepleier))
+                                      Sykepleier, KonfLege, RadBehandlerAST))
 
 antall_pas_maned <- tilsyn_full |>
   group_by(monthname) |>
@@ -311,6 +316,7 @@ antall_pas_maned <- tilsyn_full |>
   count(monthname, name = "n_pas")
 
 antall_henv_maned <- tilsyn_full |>
+  group_by(monthname) |>
   distinct(ForlopsID, .keep_all = TRUE) |>
   count(monthname, name = "n_henv")
 # 
@@ -351,17 +357,17 @@ sum_tilsyn_maned <- sum_tilsyn_maned |>
 sum_tilsyn_maned$monthname[is.na(sum_tilsyn_maned$monthname)] <- "Total"
 
 # Bytte på rekkefølgen slik at behandlertilsyn kommer før pasienttilsyn
-sum_tilsyn_maned <- sum_tilsyn_maned[,c(1, 2, 3, 4, 5, 6, 7, 9, 8, 10, 11)]
+sum_tilsyn_maned <- sum_tilsyn_maned |> 
+  relocate(Behandlertilsyn, .before = Total)
 
 mst(
   tab = sum_tilsyn_maned,
-  col_names = c("Måned", "Fysio", "Konf. lege", "Lege", "Psyk", "Sosio",
-                "Sykepl", "Beh tilsyn", "Pas tilsyn", "Ant pas",
-                "Ant henv"),
+  col_names = c("Måned", "Fysio", "Konf. lege", "Lege", "Psyk", "Råd gitt av behandler", "Sosio",
+                "Sykepl", "Beh tilsyn", "Pas tilsyn", "Ant pas", "Ant henv"),
   type = params$tableFormat,
   cap = paste0("Antall tilsyn per måned for de ulike behandlergruppene."),
   digs = 0,
-  align = c("l", "r", "r", "r", "r", "r", "r", "r", "r", "r", "r"))
+  align = c("l", "r", "r", "r", "r", "r", "r", "r", "r", "r", "r", "r"))
 ```
 
 
