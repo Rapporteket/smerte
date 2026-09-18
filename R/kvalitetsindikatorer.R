@@ -116,6 +116,6 @@ ki_smerteendring = function(d, var) {
   d |>
     mutate(
       ki_krit_nevner = !is.na(.data[[ind_vars[1]]]) & !is.na(.data[[ind_vars[2]]]),
-      ki_krit_teller = ki_krit_nevner & .data[[ind_vars[2]]] < .data[[ind_vars[1]]]
+      ki_krit_teller = .data$ki_krit_nevner & .data[[ind_vars[2]]] < .data[[ind_vars[1]]]
     )
 }
