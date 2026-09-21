@@ -52,7 +52,7 @@ Imports:
     tidyselect,
     zoo
 Remotes:
-    Rapporteket/rapbase@main
+    Rapporteket/rapbase@main,
     Rapporteket/rapwhale@main
 Suggests: 
     covr,
