@@ -39,7 +39,7 @@ importFrom(DBI,dbExecute)
 importFrom(DT,dataTableOutput)
 importFrom(assertthat,
   assert_that,
-  has_name
+  has_name,
   is.number
 )
 importFrom(bookdown,html_document2)
@@ -165,23 +165,21 @@ importFrom(shiny,
   uiOutput
 )
 importFrom(stats,setNames)
-importFrom(stringr,str_replace_all)
-importFrom(tibble,
-  as_tibble,
-  tibble,
-  tribble
-)
 importFrom(stringr,
   str_detect,
   str_replace,
   str_replace_all,
   str_split_1
 )
+importFrom(tibble,
+  as_tibble,
+  tibble,
+  tribble
+)
 importFrom(tidyr,
   gather,
   replace_na,
+  separate_wider_regex,
   spread
 )
 importFrom(tidyselect,all_of)
-  separate_wider_regex
-)
