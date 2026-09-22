@@ -3,26 +3,33 @@ context("ki_behandlertilsyn")
 
 test_that("ki_behandlertilsyn gir forventet resultat", {
 
+  # 0 Tilsyn men tilsett = 1
+  # 1 tilsyn, tilsett = 1,
+  # 2 tilsyn, tilsett = 1,
+  # 3 tilsyn, tilsett = 1,
+  # 2 tilsyn, NA i annen variabel
+  #
+
 testdata <- tibble(
     AntTilsLege      = c(0L, 1L, 2L, 5L, NA_integer_, NA_integer_),
-    AntTilsSykPleier = c(0L, 0L, 0L, 0L, NA_integer_, 0L),
-    AntTilsFysioT    = c(0L, 0L, 0L, 0L, NA_integer_, 0L),
-    AntTilsPsyk      = c(0L, 0L, 0L, 0L, NA_integer_, 0L),
+    AntTilsSykPleier = c(0L, 0L, 0L, 0L, NA_integer_, 1L),
+    AntTilsFysioT    = c(0L, 0L, 0L, 1L, NA_integer_, 1L),
+    AntTilsPsyk      = c(0L, 0L, 1L, 2L, NA_integer_, 0L),
     AntTilsSosio     = c(0L, 0L, 0L, 0L, NA_integer_, 0L),
     AntTilsKonfLege  = c(0L, 0L, 0L, 0L, NA_integer_, 0L),
     Tilsett          = c(1L, 1L, 1L, 1L, 4L, 1L)
   )
 
 testresultat = tibble(
-  AntTilsLege      = c(0L, 1L, 2L, 5L, 0L, 0L),
-  AntTilsSykPleier = c(0L, 0L, 0L, 0L, 0L, 0L),
-  AntTilsFysioT    = c(0L, 0L, 0L, 0L, 0L, 0L),
-  AntTilsPsyk      = c(0L, 0L, 0L, 0L, 0L, 0L),
-  AntTilsSosio     = c(0L, 0L, 0L, 0L, 0L, 0L),
-  AntTilsKonfLege  = c(0L, 0L, 0L, 0L, 0L, 0L),
+  AntTilsLege      = c(0L, 1L, 2L, 5L, NA_integer_, NA_integer_),
+  AntTilsSykPleier = c(0L, 0L, 0L, 0L, NA_integer_, 1L),
+  AntTilsFysioT    = c(0L, 0L, 0L, 1L, NA_integer_, 1L),
+  AntTilsPsyk      = c(0L, 0L, 1L, 2L, NA_integer_, 0L),
+  AntTilsSosio     = c(0L, 0L, 0L, 0L, NA_integer_, 0L),
+  AntTilsKonfLege  = c(0L, 0L, 0L, 0L, NA_integer_, 0L),
   Tilsett          = c(1L, 1L, 1L, 1L, 4L, 1L),
   ki_krit_nevner   = c(rep(TRUE,4), FALSE, TRUE),
-  ki_krit_teller   = c(FALSE, FALSE, TRUE, TRUE, FALSE, FALSE)
+  ki_krit_teller   = c(FALSE, FALSE, TRUE, TRUE, FALSE, TRUE)
   )
 
   expect_identical(ki_behandlertilsyn(testdata),

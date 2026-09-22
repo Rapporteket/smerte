@@ -48,11 +48,12 @@ ki_behandlertilsyn = function(d) {
                                     og = "' og '"),
                            "' må være med i inndata."))
 
+  behandlergrupper = indikatorvariabler[indikatorvariabler != "Tilsett"]
+
   d |> mutate(
-    across(all_of(indikatorvariabler[indikatorvariabler != "Tilsett"]), \(x) replace_na(x, replace = 0)),
     ki_krit_nevner = .data$Tilsett == 1,
     ki_krit_teller = .data$ki_krit_nevner &
-      (rowSums(pick(all_of(indikatorvariabler[indikatorvariabler != "Tilsett"]))) >= 2)
+      (rowSums(pick(all_of(behandlergrupper)), na.rm = TRUE > 0) >= 2)
     )
 }
 
