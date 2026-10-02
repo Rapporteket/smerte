@@ -11,25 +11,25 @@ test_that("ki_behandlertilsyn gir forventet resultat", {
   #
 
 testdata <- tibble(
-    AntTilsLege      = c(0L, 1L, 2L, 5L, NA_integer_, NA_integer_, 0L),
-    AntTilsSykPleier = c(0L, 0L, 0L, 0L, NA_integer_, 1L, 0L),
-    AntTilsFysioT    = c(0L, 0L, 0L, 1L, NA_integer_, 1L, 0L),
-    AntTilsPsyk      = c(0L, 0L, 1L, 2L, NA_integer_, 0L, 0L),
-    AntTilsSosio     = c(0L, 0L, 0L, 0L, NA_integer_, 0L, 0L),
-    AntTilsKonfLege  = c(0L, 0L, 0L, 0L, NA_integer_, 0L, 0L),
-    Tilsett          = c(1L, 1L, 1L, 1L, 4L, 1L, NA_integer_)
+    AntTilsLege      = c(0L, 1L, 2L, 2L, 5L, NA_integer_, NA_integer_, 0L),
+    AntTilsSykPleier = c(0L, 0L, 0L, 0L, 0L, NA_integer_, 1L, 0L),
+    AntTilsFysioT    = c(0L, 0L, 0L, 0L, 1L, NA_integer_, 1L, 0L),
+    AntTilsPsyk      = c(0L, 0L, 0L, 1L, 2L, NA_integer_, 0L, 0L),
+    AntTilsSosio     = c(0L, 0L, 0L, 0L, 0L, NA_integer_, 0L, 0L),
+    AntTilsKonfLege  = c(0L, 0L, 0L, 0L, 0L, NA_integer_, 0L, 0L),
+    Tilsett          = c(1L, 1L, 1L, 1L, 1L, 4L, 1L, NA_integer_)
   )
 
 testresultat = tibble(
-  AntTilsLege      = c(0L, 1L, 2L, 5L, NA_integer_, NA_integer_, 0L),
-  AntTilsSykPleier = c(0L, 0L, 0L, 0L, NA_integer_, 1L, 0L),
-  AntTilsFysioT    = c(0L, 0L, 0L, 1L, NA_integer_, 1L, 0L),
-  AntTilsPsyk      = c(0L, 0L, 1L, 2L, NA_integer_, 0L, 0L),
-  AntTilsSosio     = c(0L, 0L, 0L, 0L, NA_integer_, 0L, 0L),
-  AntTilsKonfLege  = c(0L, 0L, 0L, 0L, NA_integer_, 0L, 0L),
-  Tilsett          = c(1L, 1L, 1L, 1L, 4L, 1L, NA_integer_),
-  ki_krit_nevner   = c(rep(TRUE,4), FALSE, TRUE, FALSE),
-  ki_krit_teller   = c(FALSE, FALSE, TRUE, TRUE, FALSE, TRUE, FALSE)
+  AntTilsLege      = c(0L, 1L, 2L, 2L, 5L, NA_integer_, NA_integer_, 0L),
+  AntTilsSykPleier = c(0L, 0L, 0L, 0L, 0L, NA_integer_, 1L, 0L),
+  AntTilsFysioT    = c(0L, 0L, 0L, 0L, 1L, NA_integer_, 1L, 0L),
+  AntTilsPsyk      = c(0L, 0L, 0L, 1L, 2L, NA_integer_, 0L, 0L),
+  AntTilsSosio     = c(0L, 0L, 0L, 0L, 0L, NA_integer_, 0L, 0L),
+  AntTilsKonfLege  = c(0L, 0L, 0L, 0L, 0L, NA_integer_, 0L, 0L),
+  Tilsett          = c(1L, 1L, 1L, 1L, 1L, 4L, 1L, NA_integer_),
+  ki_krit_nevner   = c(rep(TRUE,5), FALSE, TRUE, FALSE),
+  ki_krit_teller   = c(FALSE, FALSE, FALSE, TRUE, TRUE, FALSE, TRUE, FALSE)
   )
 
   expect_identical(ki_behandlertilsyn(testdata),
