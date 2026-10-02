@@ -349,14 +349,12 @@ if (dim(dat)[1] < 1) {
   #Aggregate by month for plot
   
   p1 = ki_smerteendring_sterkeste |> 
-    mutate(monthname = floor_date(StartdatoTO, "month")) |> 
     filter(ki_krit_nevner) |> 
     group_by(monthname) |> 
     aggreger_ki_prop() |> 
     mutate(measure = "sterkeste")
   
   p2 = ki_smerteendring_svakeste |> 
-     mutate(monthname = floor_date(StartdatoTO, "month")) |> 
     filter(ki_krit_nevner) |> 
     group_by(monthname) |> 
     aggreger_ki_prop() |> 
