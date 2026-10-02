@@ -53,7 +53,7 @@ ki_behandlertilsyn = function(d) {
   d |> mutate(
     ki_krit_nevner = .data$Tilsett == 1,
     ki_krit_teller = .data$ki_krit_nevner &
-      (rowSums(pick(all_of(behandlergrupper)), na.rm = TRUE > 0) >= 2)
+      (rowSums(pick(all_of(behandlergrupper)) > 0, na.rm = TRUE) >= 2)
     )
 }
 
