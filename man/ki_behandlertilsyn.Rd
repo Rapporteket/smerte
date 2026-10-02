@@ -16,16 +16,17 @@ Returnerer inndata, med ekstra kolonner `ki_krit_teller` og
 \description{
 Indikatoren regner ut andel pasienter som mottar tilsyn fra to eller flere
 behandlergrupper.
-Dette finnes ved å telle opp antall registrerte tilsyn for
-Lege (**AntTilsLege**), Sykepleier (**AntTilsSykPleier**),
-Fysioterapeut (**AntTilsFysioT**), Psykolog (**AntTilsPsyk**),
-Sosionom (**AntTilsSosio**), og Konferert med lege (**AntTilsKonfLege**).
+Dette finnes ved å telle opp hvor mange av behandlergruppene som har
+registrerte tilsyn. Behandlergruppene er Lege (**AntTilsLege**),
+Sykepleier (**AntTilsSykPleier**),Fysioterapeut (**AntTilsFysioT**),
+Psykolog (**AntTilsPsyk**), Sosionom (**AntTilsSosio**),
+og Konferert med lege (**AntTilsKonfLege**).
 
 Funksjonen teller opp antall registrerte tilsyn for overnevnte variabler
 og returnerer `ki_krit_nevner` er `TRUE` eller `FALSE` avhengig av om pasienten er
 tilsett av behandler og dermed skal inkluderes i indikator.
-`ki_krit_teller` er `TRUE` hvis det er registrert to eller flere
-tilsyn samtidig som  `ki_krit_nevner` er `TRUE`.
+`ki_krit_teller` er `TRUE` hvis det er registrert tilsyn for to eller flere
+behandlergrupper samtidig som `ki_krit_nevner` er `TRUE`.
 
 Utdata kan videre mates inn i [rapwhale::aggreger_ki_prop()], gruppert etter
 ønske for å beregne andel for aktuelle undergrupper.
