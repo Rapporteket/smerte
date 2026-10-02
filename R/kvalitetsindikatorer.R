@@ -51,7 +51,7 @@ ki_behandlertilsyn = function(d) {
   behandlergrupper = indikatorvariabler[indikatorvariabler != "Tilsett"]
 
   d |> mutate(
-    ki_krit_nevner = .data$Tilsett == 1,
+    ki_krit_nevner = .data$Tilsett == 1 & !is.na(.data$Tilsett),
     ki_krit_teller = .data$ki_krit_nevner &
       (rowSums(pick(all_of(behandlergrupper)) > 0, na.rm = TRUE) >= 2)
     )
