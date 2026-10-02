@@ -1,7 +1,7 @@
 Package: smerte
 Type: Package
 Title: R-pakke for smerteregisteret
-Version: 2.0.22
+Version: 2.0.23
 Authors@R: c(
     person(given = "Janne",
            family = "Mannseth",
@@ -42,15 +42,18 @@ Imports:
     knitr,
     lubridate,
     rapbase,
+    rapwhale (>= 0.5.1),
     readr,
     rlang,
     shiny,
     stringr,
     tibble, 
-    tidyr, 
+    tidyr,
+    tidyselect,
     zoo
 Remotes:
-    Rapporteket/rapbase@main
+    Rapporteket/rapbase@main,
+    Rapporteket/rapwhale@main
 Suggests: 
     covr,
     lintr,

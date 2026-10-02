@@ -727,9 +727,8 @@ getDataDump <- function(registryName, reshId, userRole, tableName, fromDate, toD
                      "emp12", "emp22", "hads",
                      "mce", "opioidoppf", "pateval", "patreg")
 
-  koblet = c("allevarnum", "smertediagnosernum",
-             #"smertediagnoser",
-             "timetodeath", "avdelingsoversikt", "forlopsoversikt")
+  koblet = c("allevarnum", "smertediagnosernum", "timetodeath", "tilsyn", 
+             "avdelingsoversikt", "forlopsoversikt")           
 
   if(!tableName %in% c(raadatatabeller, koblet)) {
     stop(message = "Ukjent datasett")
@@ -927,6 +926,8 @@ bygg_query = function(registryName, tableName, userInput) {
     -- NB! Table emp11 has child tables that you need to consider!
     emp12.REGISTERED_DATE AS Regdato12,
     emp12.PATIENT_ALLRIGHT AS AngiNRS12,
+    emp12.STRONGEST_PAIN AS StSm12,
+    emp12.WEAKEST_PAIN AS SvSm12,
     emp12.STRONGPAIN_STILL AS StSmRo12,
     emp12.WEAKPAIN_STILL AS SvSmRo12,
     emp12.STRONGPAIN_MOTION AS StSmBev12,
@@ -935,6 +936,8 @@ bygg_query = function(registryName, tableName, userInput) {
     emp12.PATIENT_FUNCTIONLEVEL AS Funksjon12,
     emp21.REGISTERED_DATE AS Regdato21,
     emp21.PATIENT_ALLRIGHT AS AngiNRS21,
+    emp21.STRONGEST_PAIN AS StSm21,
+    emp21.WEAKEST_PAIN AS SvSm21,
     emp21.STRONGPAIN_STILL AS StSmRo21,
     emp21.WEAKPAIN_STILL AS SvSmRo21,
     emp21.STRONGPAIN_MOTION AS StSmBev21,
@@ -1344,6 +1347,35 @@ bygg_query = function(registryName, tableName, userInput) {
                    userInput)
 
   }
+
+  if(tableName == "tilsyn") {
+
+    query = paste0("SELECT
+                  emp22.CAREGIVER_DOCTOR_TIMES AS AntTilsLege,
+                  emp22.CAREGIVER_NURSE_TIMES AS AntTilsSykPleier,
+                  emp22.CAREGIVER_PHYSIOTHERAPIST_TIMES AS AntTilsFysioT,
+                  emp22.CAREGIVER_PSYCHOLOGIST_TIMES AS AntTilsPsyk,
+                  emp22.CAREGIVER_SOCIAL_WORKER_TIMES AS AntTilsSosio,
+                  emp22.CAREGIVER_DOCTOR_CONS_TIMES AS AntTilsKonfLege,
+                  emp22.CAREGIVER_DOCTOR_ADVICE_TIMES AS AntTilsRadBehandlerAST,
+                  emp22.CONSULTATIONS AS AntPasTils,
+                  mce.SUPERVISION AS Tilsett,
+                  emp11.REGISTERED_DATE AS RegDato11,
+                  mce.REGISTERED_DATE AS StartdatoTO,
+                  emp11.DEPARTMENT AS InnlAvd,
+                  mce.PATIENT_ID AS PasientID,
+                  mce.MCEID AS ForlopsID,
+                  d.ID as DEPARTMENT_ID,
+                  d.NAME AS DEPARTMENT_NAME,
+                  d.SHORTNAME AS DEPARTMENT_SHORTNAME
+                  FROM
+                  mce
+                  LEFT JOIN emp11 ON COALESCE(NULLIF(mce.PARENT_ID, 'NA'), mce.MCEID) = emp11.MCEID
+                  LEFT JOIN emp22 ON COALESCE(NULLIF(mce.PARENT_ID, 'NA'), mce.MCEID) = emp22.MCEID
+                  LEFT JOIN departments d ON emp11.DEPARTMENT = d.ID "
+                  ,
+                  userInput)
+}
 
   if(tableName == "avdelingsoversikt") {
 
