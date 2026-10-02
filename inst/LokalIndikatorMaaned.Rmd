@@ -337,7 +337,7 @@ if (dim(dat)[1] < 1) {
 ```
 `r messagesmerte`
 
-Figuren under viser hvordan andelene har fordelt seg i per måned for sterkeste og svakeste smerteintensitet.
+Figuren under viser hvordan andelene har fordelt seg per måned for sterkeste og svakeste smerteintensitet.
 
 ```{r nrsfig, warning = FALSE, message=FALSE, results='asis', fig.align='center', out.width='100%', fig.width = 14}
 
