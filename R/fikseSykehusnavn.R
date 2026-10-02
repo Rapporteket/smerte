@@ -49,7 +49,7 @@ fikse_sykehusnavn <- function(d, reshIdVar = "UnitId") {
 
 
   sykehusoversikt_temp = sykehusoversikt |>
-    rename(!!reshIdVar := reshID)
+    rename(!!reshIdVar := "reshID")
 
   left_join(d, sykehusoversikt_temp, by = reshIdVar)
 
