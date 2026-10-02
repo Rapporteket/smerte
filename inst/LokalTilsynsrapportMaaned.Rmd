@@ -95,7 +95,7 @@ tilsynsdata <- tilsynsdata |>
                                    Tilsett == 4 ~ "Nei, men gitt råd",
                                    Tilsett == 5 ~ "Nei, annen grunn",
                                    Tilsett == 6 ~ "Nei, ikke prioritert",
-                                   FALSE ~ "Ikke angitt"))
+                            .default = "Ikke angitt"))
 tilsynsdata <- tilsynsdata[ ,c(4,2,3)]
 
 #Hvis den skal fjernes en gang
