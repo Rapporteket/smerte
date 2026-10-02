@@ -136,7 +136,7 @@ if (dim(dat)[1] < 1) {
   #Plotting plotdat
   ggplot(ind1plot, aes(monthname, est)) + 
     geom_line(data = ind1plot |> filter(SykehusNavn != "Snitt"), 
-              aes(group = factor(SykehusNavn), colour=factor(SykehusNavn)), size = 0.5) +
+              aes(group = factor(SykehusNavn), colour=factor(SykehusNavn)), linewidth = 0.5) +
     geom_point(data = ind1plot |> filter(SykehusNavn != "Snitt"), 
                aes(group = factor(SykehusNavn), colour=factor(SykehusNavn)), size = 1) + 
     geom_line(data = ind1plot |> filter(SykehusNavn == "Snitt"), 
