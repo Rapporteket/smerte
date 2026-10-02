@@ -115,10 +115,10 @@ ki_smerteendring = function(d, var) {
     )
   }
 
+  # '%in% 0:10' sikrer at vi ikke inkluderer NA-verdier eller svar = 99 (vet ikke)
   d |>
     mutate(
-      across(all_of(ind_vars), ~ na_if(.x, 99)),
-      ki_krit_nevner = !is.na(.data[[ind_vars[1]]]) & !is.na(.data[[ind_vars[2]]]),
+      ki_krit_nevner = .data[[ind_vars[1]]] %in% 0:10 & .data[[ind_vars[2]]] %in% 0:10,
       ki_krit_teller = .data$ki_krit_nevner & .data[[ind_vars[2]]] < .data[[ind_vars[1]]]
     )
 }

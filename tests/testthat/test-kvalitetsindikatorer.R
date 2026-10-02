@@ -62,7 +62,7 @@ test_that("Funksjonen returnerer forventet resultat", {
 
   d_forventet_sterk = tibble(
     id     = c(1, 2, 3, 4, 5, 6, 7),
-    StSm12 = c(8, 5, 2, NA_integer_, 5, 3, NA_integer_),
+    StSm12 = c(8, 5, 2, NA_integer_, 5, 3, 99),
     StSm21 = c(4, 5, 3, 3, NA_integer_, 2, 4),
     SvSm12 = c(3, 4, 1, NA_integer_, 5, NA_integer_, 4),
     SvSm21 = c(6, 2, 1, 4, NA_integer_, NA_integer_, 99),
@@ -75,7 +75,7 @@ test_that("Funksjonen returnerer forventet resultat", {
     StSm12 = c(8, 5, 2, NA_integer_, 5, 3, 99),
     StSm21 = c(4, 5, 3, 3, NA_integer_, 2, 4),
     SvSm12 = c(3, 4, 1, NA_integer_, 5, NA_integer_, 4),
-    SvSm21 = c(6, 2, 1, 4, NA_integer_, NA_integer_, NA_integer_),
+    SvSm21 = c(6, 2, 1, 4, NA_integer_, NA_integer_, 99),
     ki_krit_nevner = c(TRUE, TRUE, TRUE, FALSE, FALSE, FALSE, FALSE),
     ki_krit_teller = c(FALSE, TRUE, FALSE, FALSE, FALSE, FALSE, FALSE)
   )
