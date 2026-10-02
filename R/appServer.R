@@ -18,9 +18,9 @@ appServer <- function(input, output, session) {
     matrix(nrow=2) |>
     t() |>
     as.data.frame() |>
-    rename(orgname = .data$V1, UnitId = .data$V2)
+    rename(orgname = V1, UnitId = V2)
 
-  map_orgname <- fikse_sykehusnavn(map_db_resh |> select(-.data$orgname), "UnitId")
+  map_orgname <- fikse_sykehusnavn(map_db_resh |> select(-orgname), "UnitId")
 
   user <- navbarWidgetServer2(
     "navbar-widget",
@@ -307,7 +307,7 @@ appServer <- function(input, output, session) {
           "forlopsoversikt")) {
 
         d = d |> fikse_sykehusnavn("AvdResh") |>
-          relocate(.data$SykehusNavn,
+          relocate(SykehusNavn,
                    .after = "AvdResh")
     }
 
