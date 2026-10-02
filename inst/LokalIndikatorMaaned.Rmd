@@ -106,9 +106,9 @@ Figuren under viser hvordan andelen har fordelt seg i løpet av året.
 
 messagetils <- ""
 
-# if (dim(d_behandlertilsyn)[1] < 1) {
-#   messagetils <- "I den valgte tidsperioden er det ikke nok data til å vise figur for denne kvalitetsindikatoren."
-# } else {
+if (dim(d_behandlertilsyn)[1] < 1) {
+  messagetils <- "I den valgte tidsperioden er det ikke nok data til å vise figur for denne kvalitetsindikatoren."
+} else {
   #Aggregate by month for plot
   #Grouping by month and finding frequency for behtils, then filtering on the "correct" frequency (if not, we get the inverse too)
   plotdat <- d_behandlertilsyn |>
@@ -122,7 +122,7 @@ messagetils <- ""
     labs(x = "Måned", y = "Andel", subtitle = "Andel tilsett av to eller flere faggrupper per måned") + theme_classic() +
     theme(axis.text.x = element_text(size = 9), plot.margin = unit(c(1, 1, 2, 0), "cm"), axis.title.y = element_text(margin = margin(t = 0, r = 10, b = 0, l = 0)), axis.title.x = element_text(margin = margin(t = 10, r = 0, b = 0, l = 0))) 
   
-# }
+}
 
 ```
 `r messagetils`
