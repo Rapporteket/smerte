@@ -352,7 +352,7 @@ if (dim(dat)[1] < 1) {
       select(SykehusNavn, ki_teller, ki_nevner, est),
     col_names = c("Sykehus", "Antall", "Totalt antall", "Andel"),
     type = params$tableFormat,
-    cap = paste0("Oversikt over andel pasienter som hadde nedang i NRS fra første til siste måling for sterkeste smerte."),
+    cap = paste0("Oversikt over andel pasienter som hadde nedgang i NRS fra første til siste måling for sterkeste smerte."),
     digs = 2,
     align = c("l", "r", "r", "r"))
   
@@ -362,7 +362,7 @@ if (dim(dat)[1] < 1) {
       select(SykehusNavn, ki_teller, ki_nevner, est),
     col_names = c("Sykehus", "Antall", "Totalt antall", "Andel"),
     type = params$tableFormat,
-    cap = paste0("Oversikt over andel pasienter som hadde nedang i NRS fra første til siste måling for svakeste smerte."),
+    cap = paste0("Oversikt over andel pasienter som hadde nedgang i NRS fra første til siste måling for svakeste smerte."),
     digs = 2,
     align = c("l", "r", "r", "r"))
 }

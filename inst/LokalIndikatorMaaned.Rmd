@@ -329,7 +329,7 @@ if (dim(dat)[1] < 1) {
     tab = tabnrs,
     col_names = c("Antall", "Totalt antall", "Andel"),
     type = params$tableFormat,
-    cap = paste0("Oversikt over andel pasienter som hadde nedang i NRS fra første til siste måling for de som har besvart spørsmålene begge ganger."),
+    cap = paste0("Oversikt over andel pasienter som hadde nedgang i NRS fra første til siste måling for de som har besvart spørsmålene begge ganger."),
     digs = 2,
     align = c("r", "r", "r"))
   #Det var totalt ", antiknrs, " av pasientene som ikke besvarte både første og siste spørsmål som dermed er tatt bort.
