@@ -49,7 +49,6 @@ context("smerteendring")
 # ki_krit_teller er riktig beregnet avhengig av smerteendring, (>0, <0, =0)
 # Forventet feilmelding gitt manglende variabler.
 # Typekontroll for aktuelle variabler med forventet feilmelding.
-library(testthat)
 
 test_that("Funksjonen returnerer forventet resultat", {
   d_test <- tibble(
