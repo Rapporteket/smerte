@@ -182,4 +182,7 @@ importFrom(tidyr,
   separate_wider_regex,
   spread
 )
-importFrom(tidyselect,all_of)
+importFrom(tidyselect,
+  all_of,
+  any_of
+)

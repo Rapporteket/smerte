@@ -17,7 +17,7 @@ Returnerer opprinnelig datasett i tillegg til kolonnene `orgname`,
 `SykehusNavn` og `SykehusKortnavn` hvis disse ikke finnes fra før.
 }
 \description{
-Legger til variablene `orgname`, `SykehusNavn` og
+Legger til eller erstatter variablene `orgname`, `SykehusNavn` og
 `SykehusKortnavn` hvis disse ikke finnes i datasettet `d`.
 }
 \examples{

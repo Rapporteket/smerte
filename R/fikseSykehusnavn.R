@@ -1,6 +1,6 @@
 #' Legg til sykehusnavn
 #'
-#' @description Legger til variablene `orgname`, `SykehusNavn` og
+#' @description Legger til eller erstatter variablene `orgname`, `SykehusNavn` og
 #' `SykehusKortnavn` hvis disse ikke finnes i datasettet `d`.
 #'
 #' @param d tibble eller data.frame, som inneholder variabelen `reshIdVar`.
@@ -51,6 +51,8 @@ fikse_sykehusnavn <- function(d, reshIdVar = "UnitId") {
   sykehusoversikt_temp = sykehusoversikt |>
     rename(!!reshIdVar := "reshID")
 
-  left_join(d, sykehusoversikt_temp, by = reshIdVar)
+  left_join(d |>
+              select(-any_of(c("orgname", "SykehusNavn", "SykehusKortnavn"))),
+            sykehusoversikt_temp, by = reshIdVar)
 
 }
