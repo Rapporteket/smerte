@@ -727,8 +727,8 @@ getDataDump <- function(registryName, reshId, userRole, tableName, fromDate, toD
                      "emp12", "emp22", "hads",
                      "mce", "opioidoppf", "pateval", "patreg")
 
-  koblet = c("allevarnum", "smertediagnosernum", "timetodeath", "tilsyn", 
-             "avdelingsoversikt", "forlopsoversikt")           
+  koblet = c("allevarnum", "smertediagnosernum", "timetodeath", "tilsyn",
+             "avdelingsoversikt", "forlopsoversikt")
 
   if(!tableName %in% c(raadatatabeller, koblet)) {
     stop(message = "Ukjent datasett")
@@ -738,10 +738,16 @@ getDataDump <- function(registryName, reshId, userRole, tableName, fromDate, toD
   if (reshId == 0) {
     userInput = paste0("WHERE mce.REGISTERED_DATE BETWEEN
     CAST('", fromDate, "' AS DATE) AND CAST('", toDate, "' AS DATE)")
+
+    # Filter for å fjerne pasienter som har reservert seg.
+    nasjonalt_filter = " AND mcelist.INCLUDED_RAPPORTEKET = 1 AND mcelist.MCE_COMPLETE = 1 AND mcelist.INCLUDED = 1 "
+
   } else {
     userInput = paste0("WHERE mce.CENTREID IN (", .getDeps(reshId = reshId, userRole = userRole) , ") AND
     mce.REGISTERED_DATE BETWEEN
     CAST('", fromDate, "' AS DATE) AND CAST('", toDate, "' AS DATE)")
+
+    nasjonalt_filter = " "
   }
 
   # Spesialtilfelle for avdelingsoversikt (skal ikke kobles mot mce)
@@ -775,7 +781,7 @@ getDataDump <- function(registryName, reshId, userRole, tableName, fromDate, toD
       }
 
   } else {
-    query = bygg_query(registryName = registryName, tableName, userInput)
+    query = bygg_query(registryName = registryName, tableName, userInput, nasjonalt_filter)
   }
 
   # LOGGING
@@ -799,13 +805,15 @@ getDataDump <- function(registryName, reshId, userRole, tableName, fromDate, toD
 #' @param tableName Navn på koblet uttrekk som ønskes. Per nå er det støtte for
 #' 'allevarnum', 'smertediagnosernum' og 'smertediagnoser'.
 #' @param userInput parametre hentet fra bruker-input i shiny.
+#' @param nasjonalt_filter for å ta bort pasienter som ikke skal overføres til rapporter
+#' på nasjonal instans.
 #'
 #' @returns
 #' Returnerer spørring for aktuelt uttrekk.
 #' @export
 #'
 #' @keywords internal
-bygg_query = function(registryName, tableName, userInput) {
+bygg_query = function(registryName, tableName, userInput, nasjonalt_filter) {
 
   if(tableName == "allevarnum") {
     query = paste0("SELECT
@@ -1234,8 +1242,7 @@ bygg_query = function(registryName, tableName, userInput) {
     LEFT OUTER  JOIN pateval pateval ON mce.MCEID = pateval.MCEID
     LEFT OUTER  JOIN patreg patreg ON mce.MCEID = patreg.MCEID ",
                    userInput,
-                   " AND mcelist.INCLUDED_RAPPORTEKET = 1 AND mcelist.MCE_COMPLETE = 1 AND mcelist.INCLUDED = 1
-    AND
+                   nasjonalt_filter, " AND
     CAST(
     (SELECT CASE mce.MCETYPE
      WHEN 1 THEN LEAST(mce.STATUS, emp11.STATUS)
