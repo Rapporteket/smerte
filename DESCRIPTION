@@ -1,7 +1,7 @@
 Package: smerte
 Type: Package
 Title: R-pakke for smerteregisteret
-Version: 2.0.23
+Version: 2.0.24
 Authors@R: c(
     person(given = "Janne",
            family = "Mannseth",
