@@ -4,7 +4,7 @@
 \alias{bygg_query}
 \title{bygg_query}
 \usage{
-bygg_query(registryName, tableName, userInput)
+bygg_query(registryName, tableName, userInput, nasjonalt_filter)
 }
 \arguments{
 \item{registryName}{Databasenavn for å bygge SQL-query. Hentes automatisk for
@@ -14,6 +14,9 @@ user i appServer.}
 'allevarnum', 'smertediagnosernum' og 'smertediagnoser'.}
 
 \item{userInput}{parametre hentet fra bruker-input i shiny.}
+
+\item{nasjonalt_filter}{for å ta bort pasienter som ikke skal overføres til rapporter
+på nasjonal instans.}
 }
 \value{
 Returnerer spørring for aktuelt uttrekk.
