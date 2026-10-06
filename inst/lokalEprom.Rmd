@@ -25,6 +25,7 @@ userFullName: '`r params$userFullName`'
 library(smerte)
 library(dplyr)
 library(ggplot2)
+library(gridExtra)
 
 knitr::opts_chunk$set(echo=FALSE)
 options(knitr.table.format = params$tableFormat)
