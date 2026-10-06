@@ -384,8 +384,8 @@ sum_tilsyn_avdeling <- tilsyn_full |>
   summarise(antall = sum(antall), .groups = "drop_last") |> 
   spread(tilsynstype, antall) |>
   rowwise() |> 
-  mutate(behandlertilsyn = sum(Fysioterapeut, Lege, Psykolog, Sosionom,
-                                      Sykepleier))
+  mutate(behandlertilsyn = sum(Fysioterapeut, Lege, Psykolog, Sosionom, 
+                                      Sykepleier, KonfLege, RadBehandlerAST))
 
 antall_pas_avdeling <- tilsyn_full |>
   distinct(ForlopsID, .keep_all = TRUE) |>
@@ -416,20 +416,20 @@ sum_tilsyn_avdeling <- sum_tilsyn_avdeling |>
 sum_tilsyn_avdeling[nrow(sum_tilsyn_avdeling), 1] <- "Total"
 
 # Bytte på rekkefølgen slik at behandlertilsyn kommer før pasienttilsyn
-sum_tilsyn_avdeling = sum_tilsyn_avdeling[,c(1,2,3,4,5,6,7,9,8,10)]
 sum_tilsyn_avdeling = sum_tilsyn_avdeling |>
+  relocate(behandlertilsyn, .before = Total) |> 
   mutate(DEPARTMENT_SHORTNAME =
                   str_replace_all(DEPARTMENT_SHORTNAME, "\n", " "))
 
 mst(
   tab = sum_tilsyn_avdeling,
-  col_names = c("Avdeling", "Fysio", "Konf. lege", "Lege", "Psyk", "Sosio", "Sykepl",
-                "Beh tilsyn", "Pas tilsyn", "Ant henv"),
+  col_names = c("Avdeling", "Fysio", "Konf. lege", "Lege", "Psyk", "Råd gitt av behandler", "Sosio",
+                "Sykepl", "Beh tilsyn", "Pas tilsyn", "Ant henv"),
   type = params$tableFormat,
   cap = paste("Antall tilsyn per avdeling.",
               "Vises i synkende rekkefølge fra flest pasienter til", 
               "færrest."),
   digs = 0,
-  align = c("l", "r", "r", "r", "r", "r", "r", "r", "r", "r"))
+  align = c("l", "r", "r", "r", "r", "r", "r", "r", "r", "r", "r"))
 
 ```
