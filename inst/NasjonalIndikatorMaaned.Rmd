@@ -170,14 +170,16 @@ if (dim(dat)[1] < 1) {
   messagetils <- "I den valgte tidsperioden er det ikke nok data til å angi denne kvalitetsindikatoren."
 } else {
   
-  dat$henvtils <- NA
-  for(i in 1:dim(dat)[1]){
-    if(dat$HenvistDato[i] == dat$StartdatoTO[i]){dat$henvtils[i] <- 1}  #1 betyr at man er henvist og tilsett samme dag
-    else{dat$henvtils[i] <- 0} #0 betyr at man ikke er tilsett samme dag som man ble henvist
+  dat_henvist = dat |> filter(Tilsett == 1 & !is.na(Tilsett))
+  
+  dat_henvist$henvtils <- NA
+  for(i in 1:dim(dat_henvist)[1]){
+    if(dat_henvist$HenvistDato[i] == dat_henvist$StartdatoTO[i]){dat_henvist$henvtils[i] <- 1}  #1 betyr at man er henvist og tilsett samme dag
+    else{dat_henvist$henvtils[i] <- 0} #0 betyr at man ikke er tilsett samme dag som man ble henvist
   }
   
   #Til tabell
-  kvalind2 <- dat |>
+  kvalind2 <- dat_henvist |>
     group_by(SykehusNavn, henvtils) |>
     summarise(n = n()) |>
     mutate( ant = sum(n), freq = n/sum(n)) |>
@@ -206,11 +208,11 @@ Figuren under viser hvordan andelen har fordelt seg i løpet av året.
 
 messagehenv <- ""
 
-if (dim(dat)[1] < 1) {
+if (dim(dat_henvist)[1] < 1) {
   messagehenv <- "I den valgte tidsperioden er det ikke nok data til å vise figur for denne kvalitetsindikatoren."
 } else {
   
-  ind2plot <- dat |>
+  ind2plot <- dat_henvist |>
     group_by(SykehusNavn, monthname, henvtils) |>
     summarise(n = n()) |>
     mutate(ant = sum(n), freq = n/sum(n)) |>
@@ -506,7 +508,7 @@ if (dim(dat)[1] < 1) {
 } else {
   
   ikkmed <- dat |>
-    filter(!is.na(IkkeMedBeh), Tilsett == 1) |>
+    filter(Tilsett == 1 & !is.na(Tilsett)) |>
     group_by(SykehusNavn, IkkeMedBeh) |>
     summarise(n = n()) |>
     mutate( ant = sum(n), freq = n/sum(n)) |>
@@ -539,7 +541,7 @@ Figuren under viser hvordan andelen har fordelt seg i løpet av året.
 messageik <- ""
 
 plotikmed <- dat |>
-  filter(!is.na(IkkeMedBeh)) |>
+  filter(Tilsett == 1 & !is.na(Tilsett)) |> 
   group_by(SykehusNavn, monthname, IkkeMedBeh) |>
   summarise(n = n()) |>
   mutate(ant = sum(n), freq = n/sum(n)) |>
@@ -695,7 +697,7 @@ if (dim(dat)[1] < 1) {
   
   #VidereOppf, BehNedtrappAvsluttTils og Journalnotat
   nedtr <- dat |>
-    filter(!is.na(AkseptabelSmerte21), Tilsett == 1) |>
+    filter(Tilsett == 1 & !is.na(Tilsett)) |>
     group_by(SykehusNavn, AkseptabelSmerte21) |>
     summarise(n = n()) |>
     mutate( ant = sum(n), freq = n/sum(n)) |>
@@ -725,8 +727,7 @@ Figuren under viser hvordan andelen har fordelt seg i løpet av året.
 messageaksfig <- ""
 
 plotaks <- dat |>
-  filter(
-    !is.na(AkseptabelSmerte21)) |>
+  filter(Tilsett == 1 & !is.na(Tilsett)) |>
   group_by(SykehusNavn, monthname, AkseptabelSmerte21) |>
   summarise(n = n()) |>
   mutate(ant = sum(n), freq = n/sum(n)) |>

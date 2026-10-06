@@ -138,7 +138,7 @@ messagehenvdat <- ""
 # Klargjøre variabler for tid fra henvsining til tilsyn her.
 
 #Tar først ut alle som ikke har fått tilsyn
-henvdat <- dat[!(dat$AntPasTils == 0 | is.na(dat$AntPasTils)), ]
+henvdat <- dat |> filter(Tilsett == 1 & !is.na(Tilsett))
 
 if (dim(henvdat)[1] < 1) {
   messagehenvdat <- "I den valgte tidsperioden er det ikke nok data til å angi denne kvalitetsindikatoren."
@@ -399,14 +399,18 @@ if (dim(dat)[1] < 1) {
   kvalitetsindikatoren."
 } else {
   
+  dat_ikkemed = dat |> filter(Tilsett == 1 & !is.na(Tilsett))
+  
   #Verdier som skal vises i tabell for denne indikatoren
-  ant <- sum(dat$IkkeMedBeh == 1, na.rm = TRUE)
-  totant <- sum(dat$IkkeMedBeh == 1, na.rm = TRUE) + 
-    sum(dat$IkkeMedBeh == 0, na.rm = TRUE)
-  and <- sum(dat$IkkeMedBeh == 1, na.rm = TRUE) / 
-    (sum(dat$IkkeMedBeh == 1, na.rm = TRUE) + 
-       sum(dat$IkkeMedBeh == 0, na.rm = TRUE))
-  antiksvar <- sum(is.na(dat$IkkeMedBeh))
+  ant <- sum(dat_ikkemed$IkkeMedBeh == 1, na.rm = TRUE)
+  # totant <- sum(dat_ikkemed$IkkeMedBeh == 1, na.rm = TRUE) + 
+  #   sum(dat_ikkemed$IkkeMedBeh == 0, na.rm = TRUE)
+  totant = nrow(dat_ikkemed)
+  # and <- sum(dat_ikkemed$IkkeMedBeh == 1, na.rm = TRUE) / 
+  #   (sum(dat_ikkemed$IkkeMedBeh == 1, na.rm = TRUE) + 
+  #      sum(dat_ikkemed$IkkeMedBeh == 0, na.rm = TRUE))
+  and <- ant/totant
+  antiksvar <- sum(is.na(dat_ikkemed$IkkeMedBeh))
   
   tabikmed <- cbind(ant, totant, and)
   
@@ -435,8 +439,8 @@ messageik <- ""
 #Aggregate by month for plot
 #Grouping by month and finding frequency (remove NA here), then filtering on the "correct" frequency (if not, we get the inverse too)
 #Kun de som har blitt tilsett er aktuell for denne
-plotikmed <- dat |>
-  filter(!is.na(IkkeMedBeh), Tilsett == 1) |>
+plotikmed <- dat_ikkemed |>
+  filter(!is.na(IkkeMedBeh)) |>
   group_by(month = monthname, IkkeMedBeh) |>
   summarise(n = n()) |>
   mutate(freq = n/sum(n)) |>
@@ -558,7 +562,7 @@ if (dim(dat)[1] < 1) {
   kvalitetsindikatoren."
 } else {
   
-  dat_aks = dat |> filter(Tilsett == 1)
+  dat_aks = dat |> filter(Tilsett == 1 & !is.na(Tilsett))
   
   #Verdier som skal vises i tabell for denne indikatoren
   ant <- sum(dat_aks$AkseptabelSmerte21 == 1, na.rm = TRUE)
@@ -600,7 +604,7 @@ messageplotaks <- ""
 
 #Aggregate by month for plot
 plotaks<- dat |> 
-  filter(Tilsett == 1, 
+  filter(Tilsett == 1 & !is.na(Tilsett), 
     !is.na(AkseptabelSmerte21)) |>
   group_by(month = monthname, AkseptabelSmerte21) |>
   summarise(n = n()) |>
