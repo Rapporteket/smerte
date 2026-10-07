@@ -37,6 +37,7 @@ Imports:
     dplyr,
     DT,
     ggplot2,
+    gridExtra,
     kableExtra,
     knitr,
     lubridate,
@@ -48,7 +49,8 @@ Imports:
     stringr,
     tibble, 
     tidyr,
-    tidyselect
+    tidyselect, 
+    zoo
 Remotes:
     Rapporteket/rapbase@main,
     Rapporteket/rapwhale@main
