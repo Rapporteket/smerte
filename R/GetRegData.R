@@ -739,7 +739,7 @@ getDataDump <- function(registryName, reshId, userRole, tableName, fromDate, toD
     userInput = paste0("WHERE mce.REGISTERED_DATE BETWEEN
     CAST('", fromDate, "' AS DATE) AND CAST('", toDate, "' AS DATE)")
 
-    # Filter for å fjerne pasienter som har reservert seg.
+    # Filter for å fjerne pasienter fra overføring til nasjonalt uttrekk.
     nasjonalt_filter = " AND mcelist.INCLUDED_RAPPORTEKET = 1 AND mcelist.MCE_COMPLETE = 1 AND mcelist.INCLUDED = 1 "
 
   } else {
