@@ -440,7 +440,7 @@ messageik <- ""
 #Grouping by month and finding frequency (remove NA here), then filtering on the "correct" frequency (if not, we get the inverse too)
 #Kun de som har blitt tilsett er aktuell for denne
 plotikmed <- dat_ikkemed |>
-  filter(!is.na(IkkeMedBeh)) |>
+  # filter(!is.na(IkkeMedBeh)) |>
   group_by(month = monthname, IkkeMedBeh) |>
   summarise(n = n()) |>
   mutate(freq = n/sum(n)) |>
