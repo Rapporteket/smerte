@@ -19,7 +19,7 @@ Ikke ment å kalles direkte."><!-- mathjax --><script src="https://cdnjs.cloudfl
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">smerte</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.0.23</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.0.24</span>
       </span>
     </div>
 
@@ -46,7 +46,7 @@ Ikke ment å kalles direkte."><!-- mathjax --><script src="https://cdnjs.cloudfl
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>bygg_query</h1>
-    <small class="dont-index">Source: <a href="https://github.com/rapporteket/smerte/blob/v2.0.23/R/GetRegData.R" class="external-link"><code>R/GetRegData.R</code></a></small>
+    <small class="dont-index">Source: <a href="https://github.com/rapporteket/smerte/blob/main/R/GetRegData.R" class="external-link"><code>R/GetRegData.R</code></a></small>
     <div class="hidden name"><code>bygg_query.Rd</code></div>
     </div>
 
@@ -57,7 +57,7 @@ Ikke ment å kalles direkte.</p>
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">bygg_query</span><span class="op">(</span><span class="va">registryName</span>, <span class="va">tableName</span>, <span class="va">userInput</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">bygg_query</span><span class="op">(</span><span class="va">registryName</span>, <span class="va">tableName</span>, <span class="va">userInput</span>, <span class="va">nasjonalt_filter</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -76,6 +76,11 @@ user i appServer.</p></dd>
 
 <dt id="arg-userinput">userInput<a class="anchor" aria-label="anchor" href="#arg-userinput"></a></dt>
 <dd><p>parametre hentet fra bruker-input i shiny.</p></dd>
+
+
+<dt id="arg-nasjonalt-filter">nasjonalt_filter<a class="anchor" aria-label="anchor" href="#arg-nasjonalt-filter"></a></dt>
+<dd><p>for å ta bort pasienter som ikke skal overføres til rapporter
+på nasjonal instans.</p></dd>
 
 </dl></div>
     <div id="value">
