@@ -819,7 +819,6 @@ bygg_query = function(registryName, tableName, userInput, nasjonalt_filter) {
     query = paste0("SELECT
     mce.PATIENT_ID AS PasientID,
     mce.CENTREID AS AvdRESH,
-    -- getFriendlyName(mce.CENTREID) AS SykehusNavn,
     mce.MCEID AS ForlopsID,
     mce.INCLUDED_RAPPORTEKET as InklusjonStatus,
     emp11.REGISTERED_DATE AS RegDato11,
