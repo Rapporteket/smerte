@@ -816,10 +816,36 @@ getDataDump <- function(registryName, reshId, userRole, tableName, fromDate, toD
 bygg_query = function(registryName, tableName, userInput, nasjonalt_filter) {
 
   if(tableName == "allevarnum") {
-    query = paste0("SELECT
+
+    query = paste0("WITH mce_mapping AS (
+    SELECT
+    MCEID,
+    COALESCE(PARENT_ID, MCEID) AS MAIN_MCEID
+    FROM mce
+    ),
+    hads_mapped AS (
+    SELECT f.*, mapping.MAIN_MCEID
+    FROM hads AS f
+    JOIN mce_mapping AS mapping ON mapping.MCEID = f.MCEID
+    ),
+    opioidoppf_mapped AS (
+    SELECT f.*, mapping.MAIN_MCEID
+    FROM opioidoppf AS f
+    JOIN mce_mapping AS mapping ON mapping.MCEID = f.MCEID
+    ),
+    pateval_mapped AS (
+    SELECT f.*, mapping.MAIN_MCEID
+    FROM pateval AS f
+    JOIN mce_mapping AS mapping ON mapping.MCEID = f.MCEID
+    ),
+    patreg_mapped AS (
+    SELECT f.*, mapping.MAIN_MCEID
+    FROM patreg AS f
+    JOIN mce_mapping AS mapping ON mapping.MCEID = f.MCEID
+    )
+    SELECT
     mce.PATIENT_ID AS PasientID,
     mce.CENTREID AS AvdRESH,
-    -- getFriendlyName(mce.CENTREID) AS SykehusNavn,
     mce.MCEID AS ForlopsID,
     mce.INCLUDED_RAPPORTEKET as InklusjonStatus,
     emp11.REGISTERED_DATE AS RegDato11,
@@ -1151,49 +1177,96 @@ bygg_query = function(registryName, tableName, userInput, nasjonalt_filter) {
     mce.NOCONSENT_REASON AS TypeManglSamt,
     mce.CONSENT_DATE AS DatoSamtykke,
     mce.CONSENT_WITHDRAW_DATE AS DatotrekSamt,
-    opioidoppf.REGISTERED_DATE AS DatoUtfylOpioid,
-    opioidoppf.COMPLETE AS PasdelUtfylOpioid,
-    opioidoppf.INCOMPLETE_REASON AS AarsakmanglUtfylOpioid,
-    opioidoppf.DISCHARGED_HOSPITAL AS Utskrevetsykehus,
-    opioidoppf.MEDICATION_DISCHARGED AS Smstilletterutskrivelse,
-    opioidoppf.MEDICIN_DOLCONTIN AS DolcontinMalfin,
-    opioidoppf.MEDICIN_FENTANYLPLASTER AS FentanylplDurogesicpl,
-    opioidoppf.MEDICIN_METADON AS Metadon,
-    opioidoppf.MEDICIN_MORFIN AS Morfin,
-    opioidoppf.MEDICIN_NORSPAN_PLASTER AS Norspanplaster,
-    opioidoppf.MEDICIN_OXYCONTIN AS OxyxontinReltebon,
-    opioidoppf.MEDICIN_OXYNORM AS OxynormOxykodon,
-    opioidoppf.MEDICIN_PALEXIA AS Palexia,
-    opioidoppf.MEDICIN_PALLADON AS PalladonHydromorfon,
-    opioidoppf.MEDICIN_PARALGIN_FORTE AS Paralginforte,
-    opioidoppf.MEDICIN_SUBUTEX AS Buprenorfin,
-    opioidoppf.MEDICIN_TARGINIQ AS Targiniq,
-    opioidoppf.MEDICIN_TRAMADOL AS Tramadolvarianter,
-    opioidoppf.MEDICIN_OTHER AS Andre,
-    opioidoppf.MEDICIN_USIKKER AS Usikker,
-    opioidoppf.MEDICATION_IN_USE AS Fortsattbruk,
-    opioidoppf.INFO_MED_REDUCING AS InfoNedtrapping,
-    opioidoppf.INFO_MED_REDUCING_BY_WHOM AS HvemInfoNedtrapping,
-    opioidoppf.INFO_MED_REDUCING_METHOD_YES_ORAL AS MuntligInfoNedtrapp,
-    opioidoppf.INFO_MED_REDUCING_METHOD_YES_TEXT_PLAN AS SkriftligNedtrappingsplan,
-    opioidoppf.INFO_MED_REDUCING_METHOD_YES_PAPER AS InfoBrosjyreNedtrapp,
-    opioidoppf.FOLLOW_MED_RECOMMENDATION AS FolgeAnbefalingNedtrapp,
-    opioidoppf.CHALLENGES_DOWNSCALE_ABSTINENCE AS OpplevdAbstinenssympt,
-    opioidoppf.REALIZED_ABSTINENCE_ABSTINENCE AS ForstodAbstinenssympt,
-    opioidoppf.KNOW_WHAT_TO_DO_ABSTINENCE_ABSTINENCE AS LosningProblemAbstinens,
-    opioidoppf.CHALLENGES_DOWNSCALE_REALIZED AS OpplevdPlagsomTretthet,
-    opioidoppf.KNOW_WHAT_TO_DO_DOWNSCALE AS LosningProblemTretthet,
-    opioidoppf.INFO_MED_DRIVING AS InfoSmertestillBilkjoring,
-    opioidoppf.INFO_MED_DRIVING_BY_WHOM AS HvemInfoSmertestillBilkjoring,
-    opioidoppf.INFO_METHOD_MED_DRIVING_ORAL AS MuntligInfoBilkjoring,
-    opioidoppf.INFO_METHOD_MED_DRIVING_WRITTEN AS SkriftigInfoBilkjoring,
-    opioidoppf.INFO_MED_REDUCING_YES_PAPER3 AS InfoBrosyjreBilkjoring,
-    opioidoppf.CONTACT_DOWNSCALE AS HenvendelseAngSmertestill,
-    opioidoppf.NEED_INFO_DOWNSCALE AS InfoBrukNedtrapp,
-    opioidoppf.NEED_INFO_DRIVING AS InfoSmstillBilkjoring,
-    opioidoppf.NEED_INFO_ABSTINENCE AS InfoAbstinenser,
-    opioidoppf.NEED_INFO_SIDE_EFFECTS AS InfoBivirkninger,
-    opioidoppf.NEED_INFO_FREQUENT_FOLLOW_UP AS TettOppfolging,
+    opioidoppf4.REGISTERED_DATE AS DatoUtfylOpioid4,
+    opioidoppf4.COMPLETE AS PasdelUtfylOpioid4,
+    opioidoppf4.TYPE AS Type4,
+    opioidoppf4.INCOMPLETE_REASON AS AarsakmanglUtfylOpioid4,
+    opioidoppf4.DISCHARGED_HOSPITAL AS Utskrevetsykehus4,
+    opioidoppf4.MEDICATION_DISCHARGED AS Smstilletterutskrivelse4,
+    opioidoppf4.MEDICIN_DOLCONTIN AS DolcontinMalfin4,
+    opioidoppf4.MEDICIN_FENTANYLPLASTER AS FentanylplDurogesicpl4,
+    opioidoppf4.MEDICIN_METADON AS Metadon4,
+    opioidoppf4.MEDICIN_MORFIN AS Morfin4,
+    opioidoppf4.MEDICIN_NORSPAN_PLASTER AS Norspanplaster4,
+    opioidoppf4.MEDICIN_OXYCONTIN AS OxyxontinReltebon4,
+    opioidoppf4.MEDICIN_OXYNORM AS OxynormOxykodon4,
+    opioidoppf4.MEDICIN_PALEXIA AS Palexia4,
+    opioidoppf4.MEDICIN_PALLADON AS PalladonHydromorfon4,
+    opioidoppf4.MEDICIN_PARALGIN_FORTE AS Paralginforte4,
+    opioidoppf4.MEDICIN_SUBUTEX AS Buprenorfin4,
+    opioidoppf4.MEDICIN_TARGINIQ AS Targiniq4,
+    opioidoppf4.MEDICIN_TRAMADOL AS Tramadolvarianter4,
+    opioidoppf4.MEDICIN_OTHER AS Andre4,
+    opioidoppf4.MEDICIN_USIKKER AS Usikker4,
+    opioidoppf4.MEDICATION_IN_USE AS Fortsattbruk4,
+    opioidoppf4.INFO_MED_REDUCING AS InfoNedtrapping4,
+    opioidoppf4.INFO_MED_REDUCING_BY_WHOM AS HvemInfoNedtrapping4,
+    opioidoppf4.INFO_MED_REDUCING_METHOD_YES_ORAL AS MuntligInfoNedtrapp4,
+    opioidoppf4.INFO_MED_REDUCING_METHOD_YES_TEXT_PLAN AS SkriftligNedtrappingsplan4,
+    opioidoppf4.INFO_MED_REDUCING_METHOD_YES_PAPER AS InfoBrosjyreNedtrapp4,
+    opioidoppf4.FOLLOW_MED_RECOMMENDATION AS FolgeAnbefalingNedtrapp4,
+    opioidoppf4.CHALLENGES_DOWNSCALE_ABSTINENCE AS OpplevdAbstinenssympt4,
+    opioidoppf4.REALIZED_ABSTINENCE_ABSTINENCE AS ForstodAbstinenssympt4,
+    opioidoppf4.KNOW_WHAT_TO_DO_ABSTINENCE_ABSTINENCE AS LosningProblemAbstinens4,
+    opioidoppf4.CHALLENGES_DOWNSCALE_REALIZED AS OpplevdPlagsomTretthet4,
+    opioidoppf4.KNOW_WHAT_TO_DO_DOWNSCALE AS LosningProblemTretthet4,
+    opioidoppf4.INFO_MED_DRIVING AS InfoSmertestillBilkjoring4,
+    opioidoppf4.INFO_MED_DRIVING_BY_WHOM AS HvemInfoSmertestillBilkjoring4,
+    opioidoppf4.INFO_METHOD_MED_DRIVING_ORAL AS MuntligInfoBilkjoring4,
+    opioidoppf4.INFO_METHOD_MED_DRIVING_WRITTEN AS SkriftigInfoBilkjoring4,
+    opioidoppf4.INFO_MED_REDUCING_YES_PAPER3 AS InfoBrosyjreBilkjoring4,
+    opioidoppf4.CONTACT_DOWNSCALE AS HenvendelseAngSmertestill4,
+    opioidoppf4.NEED_INFO_DOWNSCALE AS InfoBrukNedtrapp4,
+    opioidoppf4.NEED_INFO_DRIVING AS InfoSmstillBilkjoring4,
+    opioidoppf4.NEED_INFO_ABSTINENCE AS InfoAbstinenser4,
+    opioidoppf4.NEED_INFO_SIDE_EFFECTS AS InfoBivirkninger4,
+    opioidoppf4.NEED_INFO_FREQUENT_FOLLOW_UP AS TettOppfolging4,
+    -- 12 uker
+    opioidoppf12.REGISTERED_DATE AS DatoUtfylOpioid12,
+    opioidoppf12.COMPLETE AS PasdelUtfylOpioid12,
+    opioidoppf12.TYPE AS Type12,
+    opioidoppf12.INCOMPLETE_REASON AS AarsakmanglUtfylOpioid12,
+    opioidoppf12.DISCHARGED_HOSPITAL AS Utskrevetsykehus12,
+    opioidoppf12.MEDICATION_DISCHARGED AS Smstilletterutskrivelse12,
+    opioidoppf12.MEDICIN_DOLCONTIN AS DolcontinMalfin12,
+    opioidoppf12.MEDICIN_FENTANYLPLASTER AS FentanylplDurogesicpl12,
+    opioidoppf12.MEDICIN_METADON AS Metadon12,
+    opioidoppf12.MEDICIN_MORFIN AS Morfin12,
+    opioidoppf12.MEDICIN_NORSPAN_PLASTER AS Norspanplaster12,
+    opioidoppf12.MEDICIN_OXYCONTIN AS OxyxontinReltebon12,
+    opioidoppf12.MEDICIN_OXYNORM AS OxynormOxykodon12,
+    opioidoppf12.MEDICIN_PALEXIA AS Palexia12,
+    opioidoppf12.MEDICIN_PALLADON AS PalladonHydromorfon12,
+    opioidoppf12.MEDICIN_PARALGIN_FORTE AS Paralginforte12,
+    opioidoppf12.MEDICIN_SUBUTEX AS Buprenorfin12,
+    opioidoppf12.MEDICIN_TARGINIQ AS Targiniq12,
+    opioidoppf12.MEDICIN_TRAMADOL AS Tramadolvarianter12,
+    opioidoppf12.MEDICIN_OTHER AS Andre12,
+    opioidoppf12.MEDICIN_USIKKER AS Usikker12,
+    opioidoppf12.MEDICATION_IN_USE AS Fortsattbruk12,
+    opioidoppf12.INFO_MED_REDUCING AS InfoNedtrapping12,
+    opioidoppf12.INFO_MED_REDUCING_BY_WHOM AS HvemInfoNedtrapping12,
+    opioidoppf12.INFO_MED_REDUCING_METHOD_YES_ORAL AS MuntligInfoNedtrapp12,
+    opioidoppf12.INFO_MED_REDUCING_METHOD_YES_TEXT_PLAN AS SkriftligNedtrappingsplan12,
+    opioidoppf12.INFO_MED_REDUCING_METHOD_YES_PAPER AS InfoBrosjyreNedtrapp12,
+    opioidoppf12.FOLLOW_MED_RECOMMENDATION AS FolgeAnbefalingNedtrapp12,
+    opioidoppf12.CHALLENGES_DOWNSCALE_ABSTINENCE AS OpplevdAbstinenssympt12,
+    opioidoppf12.REALIZED_ABSTINENCE_ABSTINENCE AS ForstodAbstinenssympt12,
+    opioidoppf12.KNOW_WHAT_TO_DO_ABSTINENCE_ABSTINENCE AS LosningProblemAbstinens12,
+    opioidoppf12.CHALLENGES_DOWNSCALE_REALIZED AS OpplevdPlagsomTretthet12,
+    opioidoppf12.KNOW_WHAT_TO_DO_DOWNSCALE AS LosningProblemTretthet12,
+    opioidoppf12.INFO_MED_DRIVING AS InfoSmertestillBilkjoring12,
+    opioidoppf12.INFO_MED_DRIVING_BY_WHOM AS HvemInfoSmertestillBilkjoring12,
+    opioidoppf12.INFO_METHOD_MED_DRIVING_ORAL AS MuntligInfoBilkjoring12,
+    opioidoppf12.INFO_METHOD_MED_DRIVING_WRITTEN AS SkriftigInfoBilkjoring12,
+    opioidoppf12.INFO_MED_REDUCING_YES_PAPER3 AS InfoBrosyjreBilkjoring12,
+    opioidoppf12.CONTACT_DOWNSCALE AS HenvendelseAngSmertestill12,
+    opioidoppf12.NEED_INFO_DOWNSCALE AS InfoBrukNedtrapp12,
+    opioidoppf12.NEED_INFO_DRIVING AS InfoSmstillBilkjoring12,
+    opioidoppf12.NEED_INFO_ABSTINENCE AS InfoAbstinenser12,
+    opioidoppf12.NEED_INFO_SIDE_EFFECTS AS InfoBivirkninger12,
+    opioidoppf12.NEED_INFO_FREQUENT_FOLLOW_UP AS TettOppfolging12,
+
     patient.REGISTERED_DATE AS DatoinhOppl,
     patient.BIRTH_DATE AS Fdato,
     patient.GENDER AS Kjonn,
@@ -1220,6 +1293,7 @@ bygg_query = function(registryName, tableName, userInput, nasjonalt_filter) {
     pateval.PAINTEAM_ORGANIZATION AS EvalSpm9,
     pateval.PAINTEAM_TREATMENT_OVERALL AS EvalSpm10,
     pateval.PAINTEAM_MISTREAT AS EvalSpm11,
+
     patreg.REGISTERED_DATE AS DatoUfylPR,
     patreg.COMPLETE AS PasDelUfylPR,
     patreg.INCOMPLETE_REASON AS GrManglUtfylPR,
@@ -1232,17 +1306,19 @@ bygg_query = function(registryName, tableName, userInput, nasjonalt_filter) {
     patreg.PAINNOTTOSTAND AS PRSpm6
     FROM
     mce mce INNER JOIN patient patient ON mce.PATIENT_ID = patient.ID
-    INNER JOIN emp11 emp11 ON mce.MCEID = emp11.MCEID
+    LEFT JOIN emp11 emp11 ON mce.MCEID = emp11.MCEID
     INNER JOIN mcelist mcelist ON mce.MCEID = mcelist.MCEID
-    LEFT OUTER  JOIN emp12 emp12 ON mce.MCEID = emp12.MCEID  AND emp12.FORMORDER = 1
-    LEFT OUTER  JOIN emp12 emp21 ON mce.MCEID = emp21.MCEID  AND emp21.FORMORDER = 2
-    LEFT OUTER  JOIN emp22 emp22 ON mce.MCEID = emp22.MCEID
-    LEFT OUTER  JOIN hads hads ON mce.MCEID = hads.MCEID
-    LEFT OUTER  JOIN opioidoppf opioidoppf ON mce.MCEID = opioidoppf.MCEID
-    LEFT OUTER  JOIN pateval pateval ON mce.MCEID = pateval.MCEID
-    LEFT OUTER  JOIN patreg patreg ON mce.MCEID = patreg.MCEID ",
+    LEFT JOIN emp12 emp12 ON mce.MCEID = emp12.MCEID  AND emp12.FORMORDER = 1
+    LEFT JOIN emp12 emp21 ON mce.MCEID = emp21.MCEID  AND emp21.FORMORDER = 2
+    LEFT JOIN emp22 emp22 ON mce.MCEID = emp22.MCEID
+    LEFT JOIN hads_mapped hads ON mce.MCEID = hads.MAIN_MCEID
+    LEFT JOIN opioidoppf_mapped opioidoppf4 ON mce.MCEID = opioidoppf4.MAIN_MCEID AND opioidoppf4.TYPE = 1
+    LEFT JOIN opioidoppf_mapped opioidoppf12 ON mce.MCEID = opioidoppf12.MAIN_MCEID AND opioidoppf12.TYPE = 2
+    LEFT JOIN pateval_mapped pateval ON mce.MCEID = pateval.MAIN_MCEID
+    LEFT JOIN patreg_mapped patreg ON mce.MCEID = patreg.MAIN_MCEID ",
                    userInput,
-                   nasjonalt_filter, " AND
+                   nasjonalt_filter,
+    " AND mce.PARENT_ID IS NULL AND
     CAST(
     (SELECT CASE mce.MCETYPE
      WHEN 1 THEN LEAST(mce.STATUS, emp11.STATUS)
@@ -1256,16 +1332,17 @@ bygg_query = function(registryName, tableName, userInput, nasjonalt_filter) {
      )
      ELSE -1 END) AS SIGNED
      ) = 1
-    AND CAST(
-    (SELECT CASE
-     WHEN MCETYPE != 1 THEN LEAST(
-       IFNULL(hads.STATUS, 1),
-       IFNULL(pateval.STATUS, 1),
-       IFNULL(patreg.STATUS, 1),
-       IFNULL(opioidoppf.STATUS, 1)
-     )
-     ELSE 1 END) AS SIGNED
-    ) = 1")
+    -- AND CAST(
+    -- (SELECT CASE
+    --  WHEN MCETYPE != 1 THEN LEAST(
+    --    IFNULL(hads.STATUS, 1),
+    --    IFNULL(pateval.STATUS, 1),
+    --    IFNULL(patreg.STATUS, 1),
+    --    IFNULL(opioidoppf4.STATUS, 1),
+    --    IFNULL(opioidoppf12.STATUS, 1)
+    --  )
+    -- ELSE 1 END) AS SIGNED
+    -- ) = 1")
   }
 
   if(tableName == "smertediagnosernum") {
@@ -1283,8 +1360,9 @@ bygg_query = function(registryName, tableName, userInput, nasjonalt_filter) {
                    epd.PAINMAINDIAG,
                    epd.CREATEDBY AS OpprettetAv
                    FROM mce mce
-                   INNER JOIN emp11_pain_diagnosis epd ON COALESCE(NULLIF(mce.PARENT_ID, 'NA'), mce.MCEID) = epd.MCEID ",
-                   userInput)
+                   INNER JOIN emp11_pain_diagnosis epd ON mce.MCEID = epd.MCEID ",
+                   userInput,
+                   " AND mce.MCETYPE = 3")
   }
 
 #   if(tableName == "smertediagnoser") {
@@ -1348,10 +1426,11 @@ bygg_query = function(registryName, tableName, userInput, nasjonalt_filter) {
                    FROM mce
                    INNER JOIN patient ON mce.PATIENT_ID = patient.ID
                    INNER JOIN emp11 ON mce.MCEID = emp11.MCEID
-                   INNER JOIN emp11_pain_diagnosis epd ON COALESCE(NULLIF(mce.PARENT_ID, 'NA'), mce.MCEID) = epd.MCEID
-                   LEFT OUTER JOIN emp22 ON COALESCE(NULLIF(mce.PARENT_ID, 'NA'), mce.MCEID) = emp22.MCEID "
+                   INNER JOIN emp11_pain_diagnosis epd ON mce.MCEID = epd.MCEID
+                   LEFT JOIN emp22 ON mce.MCEID = emp22.MCEID "
                    ,
-                   userInput)
+                   userInput,
+                   " AND mce.MCETYPE = 3")
 
   }
 
@@ -1377,11 +1456,12 @@ bygg_query = function(registryName, tableName, userInput, nasjonalt_filter) {
                   d.SHORTNAME AS DEPARTMENT_SHORTNAME
                   FROM
                   mce
-                  LEFT JOIN emp11 ON COALESCE(NULLIF(mce.PARENT_ID, 'NA'), mce.MCEID) = emp11.MCEID
-                  LEFT JOIN emp22 ON COALESCE(NULLIF(mce.PARENT_ID, 'NA'), mce.MCEID) = emp22.MCEID
+                  INNER JOIN emp11 ON mce.MCEID = emp11.MCEID
+                  INNER JOIN emp22 ON mce.MCEID = emp22.MCEID
                   LEFT JOIN departments d ON emp11.DEPARTMENT = d.ID "
                   ,
-                  userInput)
+                  userInput,
+                  " AND mce.MCETYPE = 3")
 }
 
   if(tableName == "avdelingsoversikt") {
