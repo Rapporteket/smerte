@@ -1360,8 +1360,9 @@ bygg_query = function(registryName, tableName, userInput, nasjonalt_filter) {
                    epd.PAINMAINDIAG,
                    epd.CREATEDBY AS OpprettetAv
                    FROM mce mce
-                   INNER JOIN emp11_pain_diagnosis epd ON COALESCE(NULLIF(mce.PARENT_ID, 'NA'), mce.MCEID) = epd.MCEID ",
-                   userInput)
+                   INNER JOIN emp11_pain_diagnosis epd ON mce.MCEID = epd.MCEID ",
+                   userInput,
+                   " AND mce.MCETYPE = 3")
   }
 
 #   if(tableName == "smertediagnoser") {
@@ -1425,10 +1426,11 @@ bygg_query = function(registryName, tableName, userInput, nasjonalt_filter) {
                    FROM mce
                    INNER JOIN patient ON mce.PATIENT_ID = patient.ID
                    INNER JOIN emp11 ON mce.MCEID = emp11.MCEID
-                   INNER JOIN emp11_pain_diagnosis epd ON COALESCE(NULLIF(mce.PARENT_ID, 'NA'), mce.MCEID) = epd.MCEID
-                   LEFT OUTER JOIN emp22 ON COALESCE(NULLIF(mce.PARENT_ID, 'NA'), mce.MCEID) = emp22.MCEID "
+                   INNER JOIN emp11_pain_diagnosis epd ON mce.MCEID = epd.MCEID
+                   LEFT JOIN emp22 ON mce.MCEID = emp22.MCEID "
                    ,
-                   userInput)
+                   userInput,
+                   " AND mce.MCETYPE = 3")
 
   }
 
@@ -1454,11 +1456,12 @@ bygg_query = function(registryName, tableName, userInput, nasjonalt_filter) {
                   d.SHORTNAME AS DEPARTMENT_SHORTNAME
                   FROM
                   mce
-                  LEFT JOIN emp11 ON COALESCE(NULLIF(mce.PARENT_ID, 'NA'), mce.MCEID) = emp11.MCEID
-                  LEFT JOIN emp22 ON COALESCE(NULLIF(mce.PARENT_ID, 'NA'), mce.MCEID) = emp22.MCEID
+                  INNER JOIN emp11 ON mce.MCEID = emp11.MCEID
+                  INNER JOIN emp22 ON mce.MCEID = emp22.MCEID
                   LEFT JOIN departments d ON emp11.DEPARTMENT = d.ID "
                   ,
-                  userInput)
+                  userInput,
+                  " AND mce.MCETYPE = 3")
 }
 
   if(tableName == "avdelingsoversikt") {
