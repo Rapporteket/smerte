@@ -796,13 +796,13 @@ Tabell \@ref(tab:evalspm11) viser oversikten over det ellevte spørsmålet i Eva
 ```{r opi, warning = FALSE, message=FALSE, results='asis', eval=dataPresent}
 
 #Antall som har fått tilsendt skjema
-antUtsendt <- sum(dat$PasdelUtfylOpioid == 1, na.rm = TRUE) +
-  sum(dat$PasdelUtfylOpioid == 0, na.rm = TRUE)
+antUtsendt <- sum(dat$PasdelUtfylOpioid4 == 1, na.rm = TRUE) +
+  sum(dat$PasdelUtfylOpioid4 == 0, na.rm = TRUE)
 #Antall som ikke har fått tilsendt skjema
-antIkkeUtsendt <- sum(is.na(dat$PasdelUtfylOpioid))
+antIkkeUtsendt <- sum(is.na(dat$PasdelUtfylOpioid4))
 #Antall som svarte
-antsvar <- sum(dat$PasdelUtfylOpioid == 1, na.rm =TRUE)
-antiksvar <- sum(dat$PasdelUtfylOpioid == 0, na.rm =TRUE)
+antsvar <- sum(dat$PasdelUtfylOpioid4 == 1, na.rm =TRUE)
+antiksvar <- sum(dat$PasdelUtfylOpioid4 == 0, na.rm =TRUE)
 
 #Finner svarandel, men tar høyde for at vi ikke kan dele på 0 (aka ingen skjema sendt ut)
 andsvar <- NA
@@ -813,20 +813,20 @@ if(antUtsendt != 0) {
 }
 
 
-datO <- dat[!is.na(dat$PasdelUtfylOpioid), ]
+datO <- dat[!is.na(dat$PasdelUtfylOpioid4), ]
 #Bruker her pakkene dplyr og magrittr
 opio <- datO |>
-  count(AarsakmanglUtfylOpioid) |>
+  count(AarsakmanglUtfylOpioid4) |>
   mutate(prosent = round(100 * (n / sum(n))))
 #Gi navn i stedet for tall til alternativene for tilsyn/ikke tilsyn
 opio = opio |>
-  mutate(grunnOpi = case_when(AarsakmanglUtfylOpioid == 1 ~ "Tidsmangel behandler",
-                              AarsakmanglUtfylOpioid == 2 ~ "Tidlig utskrivning",
-                              AarsakmanglUtfylOpioid == 3 ~ "Kritisk syk/død",
-                              AarsakmanglUtfylOpioid == 4 ~ "Pasient klarer ikke",
-                              AarsakmanglUtfylOpioid == 5 ~ "Manglende samtykke",
-                              AarsakmanglUtfylOpioid == 7 ~ "Ikke besvart ePPROMS",
-                              AarsakmanglUtfylOpioid == 9 ~ "Annet"))
+  mutate(grunnOpi = case_when(AarsakmanglUtfylOpioid4 == 1 ~ "Tidsmangel behandler",
+                              AarsakmanglUtfylOpioid4 == 2 ~ "Tidlig utskrivning",
+                              AarsakmanglUtfylOpioid4 == 3 ~ "Kritisk syk/død",
+                              AarsakmanglUtfylOpioid4 == 4 ~ "Pasient klarer ikke",
+                              AarsakmanglUtfylOpioid4 == 5 ~ "Manglende samtykke",
+                              AarsakmanglUtfylOpioid4 == 7 ~ "Ikke besvart ePPROMS",
+                              AarsakmanglUtfylOpioid4 == 9 ~ "Annet"))
 #Endrer rekkefølge og tar i tilleg ved NA-raden (siste)
 opio <- opio[1:(dim(opio)[1]-1), c(4, 2, 3)]
 
@@ -843,11 +843,11 @@ I den valgte tidsperioden fikk tilsammen `r antUtsendt` pasienter av totalt `r d
 ```{r utskr, warning = FALSE, message=FALSE, results='asis', eval=dataPresent}
 
 #Utskrevet sykehus + medikamenter etterpå
-utskr <- sum(datO$Utskrevetsykehus == 1, na.rm = TRUE)
-ikutskr <- sum(datO$Utskrevetsykehus == 0, na.rm = TRUE)
+utskr <- sum(datO$Utskrevetsykehus4 == 1, na.rm = TRUE)
+ikutskr <- sum(datO$Utskrevetsykehus4 == 0, na.rm = TRUE)
 
-smet <- sum(datO$Smstilletterutskrivelse == 1, na.rm = TRUE)
-iksmet <- sum(datO$Smstilletterutskrivelse == 0, na.rm = TRUE)
+smet <- sum(datO$Smstilletterutskrivelse4 == 1, na.rm = TRUE)
+iksmet <- sum(datO$Smstilletterutskrivelse4 == 0, na.rm = TRUE)
 messageutme <- paste0("Det er ", utskr, " pasienter som svarte ja på at de 
                       er utskrevet av sykehus, mens ", ikutskr, " pasienter 
                       svarte nei. Samtidig svarer ", smet, " av de som svarte 
@@ -859,54 +859,54 @@ På spørsmål om pasienten var skrevet ut av sykehus (ved besvarelse) var det `
 ```{r medik, warning = FALSE, message=FALSE, results='asis', eval=dataPresent}
 #Bruker tidyverse
 #Lager ny data for kun de som bruker smertestillende etter utskrivelse:
-datOE <- datO[datO$Smstilletterutskrivelse == 1, ]
-
+datOE <- datO[datO$Smstilletterutskrivelse4 == 1, ]
+ 
 #Medikamenter
 DolcontinMalfin <- datOE |>
-  select(DolcontinMalfin) |> 
-  summarise(antja = sum(DolcontinMalfin == 1, na.rm=TRUE)) 
+  select(DolcontinMalfin4) |> 
+  summarise(antja = sum(DolcontinMalfin4 == 1, na.rm=TRUE)) 
 FentanylplDurogesicpl <- datOE |>
-  select(FentanylplDurogesicpl) |>
-  summarise(antja = sum(FentanylplDurogesicpl == 1, na.rm = TRUE)) 
+  select(FentanylplDurogesicpl4) |>
+  summarise(antja = sum(FentanylplDurogesicpl4 == 1, na.rm = TRUE)) 
 Metadon <- datOE |>
-  select(Metadon) |>
-  summarise(antja = sum(Metadon == 1, na.rm = TRUE)) 
+  select(Metadon4) |>
+  summarise(antja = sum(Metadon4 == 1, na.rm = TRUE)) 
 Morfin <- datOE |>
-  select(Morfin) |>
-  summarise(antja = sum(Morfin== 1, na.rm=TRUE)) 
+  select(Morfin4) |>
+  summarise(antja = sum(Morfin4== 1, na.rm=TRUE)) 
 Norspanplaster <- datOE |>
-  select(Norspanplaster) |>
-  summarise(antja = sum(Norspanplaster== 1, na.rm=TRUE)) 
+  select(Norspanplaster4) |>
+  summarise(antja = sum(Norspanplaster4== 1, na.rm=TRUE)) 
 OxynormOxykodon <- datOE |>
-  select(OxynormOxykodon) |>
-  summarise(antja = sum(OxynormOxykodon== 1, na.rm=TRUE)) 
+  select(OxynormOxykodon4) |>
+  summarise(antja = sum(OxynormOxykodon4== 1, na.rm=TRUE)) 
 OxyxontinReltebon <- datOE |>
-  select(OxyxontinReltebon) |>
-  summarise(antja = sum(OxyxontinReltebon== 1, na.rm=TRUE)) 
+  select(OxyxontinReltebon4) |>
+  summarise(antja = sum(OxyxontinReltebon4== 1, na.rm=TRUE)) 
 Palexia <- datOE |>
-  select(Palexia) |>
-  summarise(antja = sum(Palexia== 1, na.rm=TRUE)) 
+  select(Palexia4) |>
+  summarise(antja = sum(Palexia4== 1, na.rm=TRUE)) 
 PalladonHydromorfon <- datOE |>
-  select(PalladonHydromorfon) |>
-  summarise(antja = sum(PalladonHydromorfon== 1, na.rm=TRUE)) 
+  select(PalladonHydromorfon4) |>
+  summarise(antja = sum(PalladonHydromorfon4== 1, na.rm=TRUE)) 
 Paralginforte <- datOE |>
-  select(Paralginforte) |>
-  summarise(antja = sum(Paralginforte== 1, na.rm=TRUE)) 
+  select(Paralginforte4) |>
+  summarise(antja = sum(Paralginforte4== 1, na.rm=TRUE)) 
 Buprenorfin <- datOE |>
-  select(Buprenorfin) |>
-  summarise(antja = sum(Buprenorfin== 1, na.rm=TRUE)) 
+  select(Buprenorfin4) |>
+  summarise(antja = sum(Buprenorfin4== 1, na.rm=TRUE)) 
 Targiniq <- datOE |>
-  select(Targiniq) |>
-  summarise(antja = sum(Targiniq== 1, na.rm=TRUE)) 
+  select(Targiniq4) |>
+  summarise(antja = sum(Targiniq4== 1, na.rm=TRUE)) 
 Tramadolvarianter <- datOE |>
-  select(Tramadolvarianter) |>
-  summarise(antja = sum(Tramadolvarianter== 1, na.rm=TRUE)) 
+  select(Tramadolvarianter4) |>
+  summarise(antja = sum(Tramadolvarianter4== 1, na.rm=TRUE)) 
 Andre <- datOE |>
-  select(Andre) |>
-  summarise(antja = sum(Andre== 1, na.rm=TRUE)) 
+  select(Andre4) |>
+  summarise(antja = sum(Andre4== 1, na.rm=TRUE)) 
 Usikker <- datOE |>
-  select(Usikker) |>
-  summarise(antja = sum(Usikker== 1, na.rm=TRUE)) 
+  select(Usikker4) |>
+  summarise(antja = sum(Usikker4== 1, na.rm=TRUE)) 
 #Binder data sammen
 datmed <- bind_rows(DolcontinMalfin, FentanylplDurogesicpl, Metadon, Morfin, 
                     Norspanplaster, OxynormOxykodon, OxyxontinReltebon, Palexia,
@@ -929,14 +929,14 @@ mst(tab = datmed,
 
 #Bruker fortsatt noe
 bruk <- datO |>
-  count(Fortsattbruk) |>
+  count(Fortsattbruk4) |>
   mutate(prosent = round(100 * (n / sum(n))))
 #Gi navn i stedet for tall til alternativene for tilsyn/ikke tilsyn
 bruk = bruk |>
-  mutate(brukna = case_when(Fortsattbruk == 0 ~ "Nei",
-                            Fortsattbruk == 1 ~ "Ja, i samme dosering",
-                            Fortsattbruk == 2 ~ "Ja, i høyere dosering",
-                            Fortsattbruk == 3 ~ "Ja, i lavere dosering"))
+  mutate(brukna = case_when(Fortsattbruk4 == 0 ~ "Nei",
+                            Fortsattbruk4 == 1 ~ "Ja, i samme dosering",
+                            Fortsattbruk4 == 2 ~ "Ja, i høyere dosering",
+                            Fortsattbruk4 == 3 ~ "Ja, i lavere dosering"))
 #Endrer rekkefølge og tar i tilleg ved NA-raden (siste)
 bruk <- bruk[1:(dim(bruk)[1]-1), c(4, 2, 3)]
 
@@ -954,12 +954,12 @@ Tabell \@ref(tab:medtab) viser en oversikt over hvilke medikamenter som har blit
 #Info nedtrapping
 #nedtrer her pakkene dplyr og magrittr
 nedtr <- datO |>
-  count(InfoNedtrapping) |>
+  count(InfoNedtrapping4) |>
   mutate(prosent = round(100 * (n / sum(n))))
 #Gi navn i stedet for tall til alternativene for tilsyn/ikke tilsyn
 nedtr = nedtr |>
-  mutate(infned = case_when(InfoNedtrapping == 0 ~ "Nei",
-                            InfoNedtrapping == 1 ~ "Ja"))
+  mutate(infned = case_when(InfoNedtrapping4 == 0 ~ "Nei",
+                            InfoNedtrapping4 == 1 ~ "Ja"))
 #Endrer rekkefølge og tar i tilleg ved NA-raden (siste)
 nedtr <- nedtr[1:(dim(nedtr)[1]-1), c(4, 2, 3)]
 
@@ -974,14 +974,14 @@ mst(tab = nedtr,
 
 #Info hvem
 hvem <- datO |>
-  count(HvemInfoNedtrapping) |>
+  count(HvemInfoNedtrapping4) |>
   mutate(prosent = round(100 * (n / sum(n))))
 #Gi navn i stedet for tall til alternativene for tilsyn/ikke tilsyn
 hvem <- hvem |>
-  mutate(infhvem = case_when(HvemInfoNedtrapping == 1 ~ "Smerteteam",
-                             HvemInfoNedtrapping == 2 ~ "Annet helsepersonell",
-                             HvemInfoNedtrapping == 3 ~ "Begge",
-                             HvemInfoNedtrapping == 9 ~ "Vet ikke"))
+  mutate(infhvem = case_when(HvemInfoNedtrapping4 == 1 ~ "Smerteteam",
+                             HvemInfoNedtrapping4 == 2 ~ "Annet helsepersonell",
+                             HvemInfoNedtrapping4 == 3 ~ "Begge",
+                             HvemInfoNedtrapping4 == 9 ~ "Vet ikke"))
 #Endrer rekkefølge og tar i tilleg ved NA-raden (siste)
 hvem <- hvem[1:(dim(hvem)[1]-1), c(4, 2, 3)]
 
@@ -998,27 +998,27 @@ Tabell \@ref(tab:infonedtab) viser om pasienten har fått informasjon om nedtrap
 
 ```{r skrimun, warning = FALSE, message=FALSE, results='asis', eval=dataPresent}
 #Skriftlig og muntlig beskjed
-munt <- sum(datO$MuntligInfoNedtrapp == 1, na.rm = TRUE)
-ikmunt <- sum(datO$MuntligInfoNedtrapp == 0, na.rm = TRUE)
+munt <- sum(datO$MuntligInfoNedtrapp4 == 1, na.rm = TRUE)
+ikmunt <- sum(datO$MuntligInfoNedtrapp4 == 0, na.rm = TRUE)
 
-skri <- sum(datO$SkriftligNedtrappingsplan == 1, na.rm = TRUE)
-ikskri <- sum(datO$SkriftligNedtrappingsplan == 0, na.rm = TRUE)
+skri <- sum(datO$SkriftligNedtrappingsplan4 == 1, na.rm = TRUE)
+ikskri <- sum(datO$SkriftligNedtrappingsplan4 == 0, na.rm = TRUE)
 
-brosj <- sum(datO$InfoBrosjyreNedtrapp == 1, na.rm = TRUE)
-ikbrosj <- sum(datO$InfoBrosjyreNedtrapp == 0, na.rm = TRUE)
+brosj <- sum(datO$InfoBrosjyreNedtrapp4 == 1, na.rm = TRUE)
+ikbrosj <- sum(datO$InfoBrosjyreNedtrapp4 == 0, na.rm = TRUE)
 
 
 #Info fulgt nedtraping
 #fulgter her pakkene dplyr og magrittr
 fulgt <- datO |>
-  count(FolgeAnbefalingNedtrapp) |>
+  count(FolgeAnbefalingNedtrapp4) |>
   mutate(prosent = round(100 * (n / sum(n))))
 #Gi navn i stedet for tall til alternativene for tilsyn/ikke tilsyn
 fulgt <- fulgt |>
-  mutate(inffulgt = case_when(FolgeAnbefalingNedtrapp == 1 ~ "Ja",
-                              FolgeAnbefalingNedtrapp == 2 ~ "Nei, lenger enn anbefalt",
-                              FolgeAnbefalingNedtrapp == 3 ~ "Nei, har ikke kunnet trappe ned",
-                              FolgeAnbefalingNedtrapp == 4 ~ "Ja, raskere"))
+  mutate(inffulgt = case_when(FolgeAnbefalingNedtrapp4 == 1 ~ "Ja",
+                              FolgeAnbefalingNedtrapp4 == 2 ~ "Nei, lenger enn anbefalt",
+                              FolgeAnbefalingNedtrapp4 == 3 ~ "Nei, har ikke kunnet trappe ned",
+                              FolgeAnbefalingNedtrapp4 == 4 ~ "Ja, raskere"))
 #Endrer rekkefølge og tar i tilleg ved NA-raden (siste)
 fulgt <- fulgt[1:(dim(fulgt)[1]-1), c(4, 2, 3)]
 
@@ -1038,13 +1038,13 @@ Tabell \@ref(tab:nedrfulgtplan) viser hva pasientene har svart på om de klarte 
 ```{r absti, warning = FALSE, message=FALSE, results='asis', eval=dataPresent}
 #Info plagsomme abstinenser
 absti <- datO |>
-  count(OpplevdAbstinenssympt) |>
+  count(OpplevdAbstinenssympt4) |>
   mutate(prosent = round(100 * (n / sum(n))))
 #Gi navn i stedet for tall til alternativene for tilsyn/ikke tilsyn
 absti <- absti |>
-  mutate(infabsti = case_when(OpplevdAbstinenssympt == 0 ~ "Nei",
-                              OpplevdAbstinenssympt == 1 ~ "Ja",
-                              OpplevdAbstinenssympt == 9 ~ "Usikker"))
+  mutate(infabsti = case_when(OpplevdAbstinenssympt4 == 0 ~ "Nei",
+                              OpplevdAbstinenssympt4 == 1 ~ "Ja",
+                              OpplevdAbstinenssympt4 == 9 ~ "Usikker"))
 #Endrer rekkefølge og tar i tilleg ved NA-raden (siste)
 absti <- absti[1:(dim(absti)[1]-1), c(4, 2, 3)]
 
@@ -1059,13 +1059,13 @@ mst(tab = absti,
 
 #Info forstod forstodabstinenser
 forstoabsti <- datO |>
-  count(ForstodAbstinenssympt) |>
+  count(ForstodAbstinenssympt4) |>
   mutate(prosent = round(100 * (n / sum(n))))
 #Gi navn i stedet for tall til alternativene for tilsyn/ikke tilsyn
 forstoabsti <- forstoabsti |>
-  mutate(infforstoabsti = case_when(ForstodAbstinenssympt == 0 ~ "Nei",
-                                    ForstodAbstinenssympt == 1 ~ "Ja",
-                                    ForstodAbstinenssympt == 9 ~ "Usikker"))
+  mutate(infforstoabsti = case_when(ForstodAbstinenssympt4 == 0 ~ "Nei",
+                                    ForstodAbstinenssympt4 == 1 ~ "Ja",
+                                    ForstodAbstinenssympt4 == 9 ~ "Usikker"))
 #Endrer rekkefølge og tar i tilleg ved NA-raden (siste)
 forstoabsti <- forstoabsti[1:(dim(forstoabsti)[1]-1), c(4, 2, 3)]
 
@@ -1079,13 +1079,13 @@ mst(tab = forstoabsti,
 
 #Info løsning
 losn <- datO |>
-  count(LosningProblemAbstinens) |>
+  count(LosningProblemAbstinens4) |>
   mutate(prosent = round(100 * (n / sum(n))))
 #Gi navn i stedet for tall til alternativene for tilsyn/ikke tilsyn
 losn <- losn |>
-  mutate(inflosn = case_when(LosningProblemAbstinens == 0 ~ "Nei",
-                             LosningProblemAbstinens == 1 ~ "Ja",
-                             LosningProblemAbstinens == 9 ~ "Usikker"))
+  mutate(inflosn = case_when(LosningProblemAbstinens4 == 0 ~ "Nei",
+                             LosningProblemAbstinens4 == 1 ~ "Ja",
+                             LosningProblemAbstinens4 == 9 ~ "Usikker"))
 #Endrer rekkefølge og tar i tilleg ved NA-raden (siste)
 losn <- losn[1:(dim(losn)[1]-1), c(4, 2, 3)]
 
@@ -1103,12 +1103,12 @@ Tabell \@ref(tab:abstietter) viser en oversikt over om pasienten har opplevd  ab
 ```{r trett, warning = FALSE, message=FALSE, results='asis', eval=dataPresent}
 #Info tretthet
 trett <- datO |>
-  count(OpplevdPlagsomTretthet) |>
+  count(OpplevdPlagsomTretthet4) |>
   mutate(prosent = round(100 * (n / sum(n))))
 #Gi navn i stedet for tall til alternativene for tilsyn/ikke tilsyn
 trett <- trett |>
-  mutate(inftrett = case_when(OpplevdPlagsomTretthet == 0 ~ "Nei",
-                              OpplevdPlagsomTretthet == 1 ~ "Ja"))
+  mutate(inftrett = case_when(OpplevdPlagsomTretthet4 == 0 ~ "Nei",
+                              OpplevdPlagsomTretthet4 == 1 ~ "Ja"))
 #Endrer rekkefølge og tar i tilleg ved NA-raden (siste)
 trett <- trett[1:(dim(trett)[1]-1), c(4, 2, 3)]
 
@@ -1124,13 +1124,13 @@ mst(tab = trett,
 
 #Info trettloshet
 trettlos <- datO |>
-  count(LosningProblemTretthet) |>
+  count(LosningProblemTretthet4) |>
   mutate(prosent = round(100 * (n / sum(n))))
 #Gi navn i stedet for tall til alternativene for tilsyn/ikke tilsyn
 trettlos <- trettlos |>
-  mutate(inftrettlos = case_when(LosningProblemTretthet == 0 ~ "Nei",
-                                 LosningProblemTretthet == 1 ~ "Ja",
-                                 LosningProblemTretthet == 9 ~ "Vet ikke"))
+  mutate(inftrettlos = case_when(LosningProblemTretthet4 == 0 ~ "Nei",
+                                 LosningProblemTretthet4 == 1 ~ "Ja",
+                                 LosningProblemTretthet4 == 9 ~ "Vet ikke"))
 #Endrer rekkefølge og tar i tilleg ved NA-raden (siste)
 trettlos <- trettlos[1:(dim(trettlos)[1]-1), c(4, 2, 3)]
 
@@ -1147,13 +1147,13 @@ Tabell \@ref(tab:tretth) viser en oversikt over spørsmålet "Opplevde du plagso
 ```{r bil, warning = FALSE, message=FALSE, results='asis', eval=dataPresent}
 #Bilkjøring
 bil <- datO |>
-  count(InfoSmertestillBilkjoring) |>
+  count(InfoSmertestillBilkjoring4) |>
   mutate(prosent = round(100 * (n / sum(n))))
 #Gi navn i stedet for tall til alternativene for tilsyn/ikke tilsyn
 bil <- bil |>
-  mutate(infbil = case_when(InfoSmertestillBilkjoring == 0 ~ "Nei",
-                            InfoSmertestillBilkjoring == 1 ~ "Ja",
-                            InfoSmertestillBilkjoring == 9 ~ "Ikke aktuelt"))
+  mutate(infbil = case_when(InfoSmertestillBilkjoring4 == 0 ~ "Nei",
+                            InfoSmertestillBilkjoring4 == 1 ~ "Ja",
+                            InfoSmertestillBilkjoring4 == 9 ~ "Ikke aktuelt"))
 #Endrer rekkefølge og tar i tilleg ved NA-raden (siste)
 bil <- bil[1:(dim(bil)[1]-1), c(4, 2, 3)]
 
@@ -1169,14 +1169,14 @@ mst(tab = bil,
 
 #Info hvembil
 hvembil <- datO |>
-  count(HvemInfoSmertestillBilkjoring) |>
+  count(HvemInfoSmertestillBilkjoring4) |>
   mutate(prosent = round(100 * (n / sum(n))))
 #Gi navn i stedet for tall til alternativene for tilsyn/ikke tilsyn
 hvembil <- hvembil |>
-  mutate(infhvembil = case_when(HvemInfoSmertestillBilkjoring == 1 ~ "Smerteteam",
-                                HvemInfoSmertestillBilkjoring == 2 ~ "Annet helsepersonell",
-                                HvemInfoSmertestillBilkjoring == 3 ~ "Begge",
-                                HvemInfoSmertestillBilkjoring == 9 ~ "Vet ikke"))
+  mutate(infhvembil = case_when(HvemInfoSmertestillBilkjoring4 == 1 ~ "Smerteteam",
+                                HvemInfoSmertestillBilkjoring4 == 2 ~ "Annet helsepersonell",
+                                HvemInfoSmertestillBilkjoring4 == 3 ~ "Begge",
+                                HvemInfoSmertestillBilkjoring4 == 9 ~ "Vet ikke"))
 #Endrer rekkefølge og tar i tilleg ved NA-raden (siste)
 hvembil <- hvembil[1:(dim(hvembil)[1]-1), c(4, 2, 3)]
 
@@ -1191,26 +1191,26 @@ mst(tab = hvembil,
 
 #Beskjedbil
 #Skriftlig og muntlig beskjed
-muntbil <- sum(datO$MuntligInfoBilkjoring == 1, na.rm = TRUE)
-ikmuntbil <- sum(datO$MuntligInfoBilkjoring == 0, na.rm = TRUE)
+muntbil <- sum(datO$MuntligInfoBilkjoring4 == 1, na.rm = TRUE)
+ikmuntbil <- sum(datO$MuntligInfoBilkjoring4 == 0, na.rm = TRUE)
 
-skribil <- sum(datO$SkriftigInfoBilkjoring == 1, na.rm = TRUE)
-ikskribil <- sum(datO$SkriftigInfoBilkjoring == 0, na.rm = TRUE)
+skribil <- sum(datO$SkriftigInfoBilkjoring4 == 1, na.rm = TRUE)
+ikskribil <- sum(datO$SkriftigInfoBilkjoring4 == 0, na.rm = TRUE)
 
-brosjbil <- sum(datO$InfoBrosyjreBilkjoring == 1, na.rm = TRUE)
-ikbrosjbil <- sum(datO$InfoBrosyjreBilkjoring == 0, na.rm = TRUE)
+brosjbil <- sum(datO$InfoBrosyjreBilkjoring4 == 1, na.rm = TRUE)
+ikbrosjbil <- sum(datO$InfoBrosyjreBilkjoring4 == 0, na.rm = TRUE)
 
 
 
 #Info spørsmål
 hvorinfo <- datO |>
-  count(HenvendelseAngSmertestill) |>
+  count(HenvendelseAngSmertestill4) |>
   mutate(prosent = round(100 * (n / sum(n))))
 #Gi navn i stedet for tall til alternativene for tilsyn/ikke tilsyn
 hvorinfo <- hvorinfo |>
-  mutate(infhvorinfo = case_when(HenvendelseAngSmertestill == 0 ~ "Nei",
-                                 HenvendelseAngSmertestill == 1 ~ "Ja",
-                                 HenvendelseAngSmertestill == 9 ~ "Usikker"))
+  mutate(infhvorinfo = case_when(HenvendelseAngSmertestill4 == 0 ~ "Nei",
+                                 HenvendelseAngSmertestill4 == 1 ~ "Ja",
+                                 HenvendelseAngSmertestill4 == 9 ~ "Usikker"))
 #Endrer rekkefølge og tar i tilleg ved NA-raden (siste)
 hvorinfo <- hvorinfo[1:(dim(hvorinfo)[1]-1), c(4, 2, 3)]
 
