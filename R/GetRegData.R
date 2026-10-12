@@ -1457,11 +1457,10 @@ bygg_query = function(registryName, tableName, userInput, nasjonalt_filter) {
                   FROM
                   mce
                   INNER JOIN emp11 ON mce.MCEID = emp11.MCEID
-                  INNER JOIN emp22 ON mce.MCEID = emp22.MCEID
+                  LEFT JOIN emp22 ON mce.MCEID = emp22.MCEID
                   LEFT JOIN departments d ON emp11.DEPARTMENT = d.ID "
                   ,
-                  userInput,
-                  " AND mce.MCETYPE = 3")
+                  userInput)
 }
 
   if(tableName == "avdelingsoversikt") {
