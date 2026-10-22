@@ -94,6 +94,14 @@ test_that(".getDeps returnerer forventet utdata", {
     smerte:::.getDeps(reshId = 0, userRole = "SC"),
     "0"
   )
+  expect_identical(
+    smerte:::.getDeps(reshId = "0", userRole = "SC"),
+    "0"
+  )
+  expect_identical(
+    smerte:::.getDeps(reshId = "22", userRole = "LC"),
+    "21, 22"
+  )
   expect_error(
     smerte:::.getDeps(reshId = "AND", userRole = "SC"),
     "'AND' er ikke en gyldig reshId."

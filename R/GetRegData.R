@@ -19,7 +19,7 @@ NULL
 
 .getDeps <- function(reshId, userRole) {
 
-  assert_that(is.number(reshId), msg = paste0("'", reshId, "' er ikke en gyldig reshId."))
+  assert_that(is.number(reshId) | str_detect(reshId, "^\\d+$"), msg = paste0("'", reshId, "' er ikke en gyldig reshId."))
   assert_that(userRole %in% c("LU", "LC", "SC"), msg = paste0("'", userRole, "' er ikke en gyldig rolle."))
 
   conf <- getConfig(fileName = "rapbaseConfig.yml")
