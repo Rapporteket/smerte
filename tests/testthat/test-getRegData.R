@@ -107,6 +107,10 @@ test_that(".getDeps returnerer forventet utdata", {
     "'AND' er ikke en gyldig reshId."
   )
   expect_error(
+    smerte:::.getDeps(reshId = 22.1, userRole = "SC"),
+    "'22.1' er ikke en gyldig reshId."
+  )
+  expect_error(
     smerte:::.getDeps(reshId = 22, userRole = "SP"),
     "'SP' er ikke en gyldig rolle."
   )

@@ -39,8 +39,7 @@ importFrom(DBI,dbExecute)
 importFrom(DT,dataTableOutput)
 importFrom(assertthat,
   assert_that,
-  has_name,
-  is.number
+  has_name
 )
 importFrom(bookdown,html_document2)
 importFrom(dplyr,
